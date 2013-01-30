@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <base href="/">
+  <title>Historia - Programator Xitanium</title>
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+<div id="container">
+  <h1 id="hd"><a href="/">Programator Xitanium</a></h1>
+  <hr>
+  <h2>Historia</h2>
+  <p>Wybierz wpisy, które chcesz wyświetlić lub wyeksportować.</p>
+  <hr>
+  <div id="history-entries">
+    <% files.forEach(function(file) { %>
+    <p class="history-entry">
+      <button class="btn" data-toggle="button"><%= file %></button>
+    </p>
+    <% }) %>
+  </div>
+  <div class="form-actions">
+    <button type="button" class="btn btn-large btn-primary show-history-entries">Pokaż wpisy</button>
+    <button type="button" class="btn btn-large btn-primary export-history-entries">Eksportuj wpisy</button>
+  </div>
+</div>
+<script src="js/jquery.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/history.js"></script>
+</body>
+</html>

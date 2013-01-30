@@ -39,8 +39,9 @@
   </ul>
   <ul id="history">
     <% historyEntries.forEach(function(historyEntry) { %>
-    <li class="btn btn-<%= historyEntry.result ? 'success' : 'danger' %>"><%= historyEntry.aoc %> @ <%= historyEntry.timeString %>
-      <% }) %>
+    <li><a href="/history/<%= historyEntry.dateString %>/<%= historyEntry.id %>" class="btn btn-<%= historyEntry.result ? 'success' : 'danger' %>"><%= historyEntry.aoc %> @ <%= historyEntry.timeString %></a>
+    <% }) %>
+    <li><a href="/history" class="btn">Historia</a>
   </ul>
 </div>
 <script src="js/jquery.min.js"></script>

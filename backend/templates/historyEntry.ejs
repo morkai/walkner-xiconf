@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <base href="/">
+  <title>Historia - Programator Xitanium</title>
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+<div id="container">
+  <h1 id="hd"><a href="/">Programator Xitanium</a></h1>
+  <hr>
+  <h2>
+    <a href="/history">Historia</a>
+    \
+    <a href="/history/<%= historyEntry.dateString %>"><%= historyEntry.dateString %></a>
+    \
+    <%= historyEntry.id %>
+  </h2>
+  <dl class="well">
+    <dt>Programowana wartość:
+    <dd><%= historyEntry.aoc %>
+    <dt>Czas programowania:
+    <dd><%= historyEntry.dateString %> <%= historyEntry.timeString %>
+    <dt>Wynik programowania:
+    <dd><%= historyEntry.result ? 'Sukces' : 'Porażka' %>
+    <dt>Odpowiedź ConfigProgrammer.exe:
+    <dd><pre><code><%= historyEntry.stdout %></code></pre>
+  </dl>
+</div>
+</body>
+</html>

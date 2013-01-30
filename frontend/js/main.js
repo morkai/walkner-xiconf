@@ -108,31 +108,37 @@ $(function()
 
   function addHistoryEntry(historyEntry)
   {
-    var $historyEntry = $('<li class="btn"></li>');
+    var $historyEntry = $('<li><a href="" class="btn"></a></li>');
+    var $a = $historyEntry.find('a');
 
-    $historyEntry.addClass(
+    $a.addClass(
       historyEntry.result ? 'btn-success' : 'btn-danger'
     );
 
-    $historyEntry.html(
+    $a.attr(
+      'href',
+      '/history/' + historyEntry.dateString + '/' + historyEntry.id
+    );
+
+    $a.html(
       historyEntry.aoc + ' @ ' + historyEntry.timeString
     );
 
-    $history.append($historyEntry);
+    var $children = $history.children();
 
-    $historyEntry.hide();
-    $historyEntry.css('opacity', 1);
-    $historyEntry.fadeIn(function()
+    $historyEntry.insertBefore($children.last());
+
+    $a.hide();
+    $a.css('opacity', 1);
+    $a.fadeIn(function()
     {
       setTimeout(function() {
-        $historyEntry.fadeTo(400, .3, function()
+        $a.fadeTo(400, .3, function()
         {
-          $historyEntry.css('opacity', '');
+          $a.css('opacity', '');
         });
       }, 3000);
     });
-
-    var $children = $history.children();
 
     if ($children.length > 20)
     {

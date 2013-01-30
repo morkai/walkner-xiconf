@@ -7,20 +7,20 @@ function log()
   var args = Array.prototype.slice.call(arguments);
 
   args.unshift("%s\t" + args[0]);
-  args[1] = getDateTime(new Date(), true);
+  args[1] = getDateTime(new Date());
 
   console.log.apply(console, args);
 }
 
-function getDateTime(date, local)
+function getDateTime(date)
 {
-  return date[local ? 'getFullYear' : 'getUTCFullYear']() + '-'
-    + pad0(date[local ? 'getMonth' : 'getUTCMonth']() + 1) + '-'
-    + pad0(date[local ? 'getDate' : 'getUTCDate']()) + ' '
-    + pad0(date[local ? 'getHours' : 'getUTCHours']()) + ':'
-    + pad0(date[local ? 'getMinutes' : 'getUTCMinutes']()) + ':'
-    + pad0(date[local ? 'getSeconds' : 'getUTCSeconds']()) + '.'
-    + pad0(date[local ? 'getMilliseconds' : 'getUTCMilliseconds'](), 4);
+  return date.getFullYear() + '-'
+    + pad0(date.getMonth() + 1) + '-'
+    + pad0(date.getDate()) + ' '
+    + pad0(date.getHours()) + ':'
+    + pad0(date.getMinutes()) + ':'
+    + pad0(date.getSeconds()) + '.'
+    + pad0(date.getMilliseconds(), 4);
 }
 
 function pad0(str, length)
@@ -43,7 +43,23 @@ var express = require('express');
 var config = require('./config');
 
 var historyEntries = [];
+var nextHistoryEntryId = 0;
 var programming = false;
+
+fs.readFile(getHistoryFileName(Date.now()), 'utf8', function(err, contents)
+{
+  if (!err)
+  {
+    var matches = contents.match(/\n/g);
+
+    if (matches)
+    {
+      nextHistoryEntryId = matches.length;
+
+      log("Set the next history entry ID to %d", nextHistoryEntryId);
+    }
+  }
+});
 
 var app = express();
 
@@ -75,6 +91,111 @@ app.get('/', function(req, res)
     config: config,
     historyEntries: historyEntries,
     programming: programming
+  });
+});
+
+app.get('/history', function(req, res, next)
+{
+  fs.readdir(DATA_PATH, function(err, allFiles)
+  {
+    if (err)
+    {
+      return next(err);
+    }
+
+    var fileRegExp = /^([0-9]{4}-[0-9]{2}-[0-9]{2})\.txt$/;
+    var files = [];
+
+    allFiles.forEach(function(file)
+    {
+      var matches = file.match(fileRegExp);
+
+      if (matches !== null && matches[1])
+      {
+        files.push(matches[1]);
+      }
+    });
+
+    res.render('history', {
+      files: files.sort().reverse()
+    });
+  });
+});
+
+app.get('/history/:date', function(req, res, next)
+{
+  var dates = req.params.date.split('+').filter(validateDate);
+
+  if (!dates.length)
+  {
+    return res.send("Date parameter is required", 400);
+  }
+
+  var entries = [];
+
+  function fetchNextEntries()
+  {
+    var date = dates.shift();
+
+    if (!date)
+    {
+      return exportHistoryEntries(entries, req, res);
+    }
+
+    fs.readFile(DATA_PATH + '/' + date + '.txt', 'utf8', function(err, contents)
+    {
+      if (err)
+      {
+        return next(err);
+      }
+
+      entries.push.apply(
+        entries,
+        contents.trim().split('\n').map(JSON.parse).reverse()
+      );
+
+      return fetchNextEntries();
+    });
+  }
+
+  fetchNextEntries();
+});
+
+app.get('/history/:date/:id', function(req, res, next)
+{
+  var date = req.params.date;
+
+  if (!validateDate(date))
+  {
+    return res.send("Invalid date parameter", 400);
+  }
+
+  var id = parseInt(req.params.id, 10);
+
+  if (isNaN(id) || id < 0)
+  {
+    return res.send("Invalid ID parameter", 400);
+  }
+
+  var file = DATA_PATH + '/' + date + '.txt';
+
+  fs.readFile(file, 'utf8', function(err, contents)
+  {
+    if (err)
+    {
+      return next(err);
+    }
+
+    var lines = contents.trim().split('\n');
+
+    if (typeof lines[id] !== 'string')
+    {
+      return res.send("History entry not found", 404);
+    }
+
+    res.render('historyEntry', {
+      historyEntry: JSON.parse(lines[id])
+    });
   });
 });
 
@@ -127,6 +248,7 @@ function program(aoc, done)
     }
 
     var historyEntry = {
+      id: nextHistoryEntryId++,
       time: Date.now(),
       result: success,
       aoc: aoc,
@@ -212,24 +334,14 @@ function writeProgramConfig(aoc)
 
 function addHistoryEntry(historyEntry)
 {
-  var date = new Date(historyEntry.time);
-  var year = date.getUTCFullYear();
-  var month = date.getUTCMonth() + 1;
-  var day = date.getUTCDate();
-
-  var historyFile = DATA_PATH + '/'
-    + year + '-'
-    + (month < 10 ? '0' : '') + month + '-'
-    + (day < 10 ? '0' : '') + day + '.txt';
-
-  var data = JSON.stringify(historyEntry) + "\n";
-
-  var dateTime = getDateTime(new Date(historyEntry.time), true).split(' ');
+  var dateTime = getDateTime(new Date(historyEntry.time)).split(' ');
 
   historyEntry.dateString = dateTime[0];
   historyEntry.timeString = dateTime[1].split('.')[0];
 
-  fs.appendFile(historyFile, data, 'utf8', function(err)
+  var data = JSON.stringify(historyEntry) + '\n';
+
+  fs.appendFile(getHistoryFileName(historyEntry.time), data, 'utf8', function(err)
   {
     if (err)
     {
@@ -245,4 +357,55 @@ function addHistoryEntry(historyEntry)
       }
     }
   });
+}
+
+function getHistoryFileName(time)
+{
+  var date = new Date(time);
+  var year = date.getFullYear();
+  var month = date.getMonth() + 1;
+  var day = date.getDate();
+
+  return DATA_PATH + '/'
+    + year + '-'
+    + (month < 10 ? '0' : '') + month + '-'
+    + (day < 10 ? '0' : '') + day + '.txt';
+}
+
+var dateRegExp = /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/;
+
+function validateDate(date)
+{
+  return dateRegExp.test(date);
+}
+
+function exportHistoryEntries(entries, req, res)
+{
+  switch (req.query.export)
+  {
+    case 'json':
+      return res.json(entries);
+      break;
+
+    case 'csv':
+      res.attachment('xitanium+' + req.params.date + '.csv');
+
+      entries.forEach(function(entry)
+      {
+        res.write(
+          entry.dateString + ',' +
+          entry.timeString + ',' +
+          (entry.result ? 1 : 0) + ','
+          + entry.aoc + '\r\n'
+        );
+      });
+
+      return res.end();
+
+    default:
+      return res.render('historyEntries', {
+        dates: req.params.date,
+        historyEntries: entries
+      });
+  }
 }

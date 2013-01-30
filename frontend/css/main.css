@@ -9,15 +9,52 @@ body {
   cursor: default;
   overflow: hidden;
 }
+a:hover {
+  text-decoration: none;
+}
 #container {
   text-align: center;
 }
 hr {
   margin: 40px 0;
 }
-#hd {
+h1 {
   font-size: 64px;
-  margin: 30px 0 0 0;
+  margin: 40px 0 0 0;
+}
+h2 {
+  line-height: 1;
+  margin: 0;
+}
+.well {
+  width: 770px;
+  margin: 40px auto;
+  box-sizing: border-box;
+  text-align: left;
+}
+.table {
+  width: 770px;
+  margin: 40px auto;
+}
+.table thead th {
+  background-image: linear-gradient(top, white, #E6E6E6);
+  background-image: -webkit-linear-gradient(top, white, #E6E6E6);
+  background-image: -moz-linear-gradient(top, white, #E6E6E6);
+  background-image: -o-linear-gradient(top, white, #E6E6E6);
+  text-align: center;
+}
+.table td {
+  cursor: pointer;
+  text-align: center;
+}
+pre {
+  margin-bottom: 0;
+}
+dt {
+  margin-top: 1em;
+}
+dt:first-child {
+  margin-top: 0;
 }
 #programForm {
   margin: 0 auto;
@@ -50,7 +87,7 @@ hr {
   width: 300px;
   height: 300px;
 }
-#hd, .status {
+#hd, .status, h2 {
   text-shadow: 0 0 3px #CCC;
 }
 #history {
@@ -67,9 +104,27 @@ hr {
 #history:hover .btn {
   opacity: 1;
 }
-#history .btn {
+#history li {
   margin: 0 10px 10px 0;
+  display: inline-block;
+}
+#history .btn {
   font-size: 18px;
   opacity: .5;
   border-radius: 100px;
 }
+#history li:last-child .btn {
+  opacity: 1;
+  border-radius: 4px;
+}
+#history-entries {
+  max-width: 770px;
+  margin: 0 auto;
+}
+.history-entry {
+  display: inline-block;
+}
+.history-entry input {
+  vertical-align: top;
+}
+
