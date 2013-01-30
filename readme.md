@@ -1,7 +1,5 @@
 # Xitanium Config Programmer Overlay
 
-TODO
-
 ## Requirements
 
 ### node.js
@@ -36,7 +34,24 @@ Give write permissions to `walkner-xiconf/data/` directory.
 
 ## Configuration
 
-TODO
+Configuration settings can be changed in the `backend/config.js` file.
+
+  * `path` - path to a directory with the `ConfigProgrammer.exe`.
+
+  * `args` - additional arguments passed to the `ConfigProgrammer.exe`.
+
+  * `timeout` - number of ms after which the `ConfigProgrammer.exe` will be
+    killed if it doesn't exit.
+
+  * `minAoc` - minimum AOC value.
+
+  * `maxAoc` - maximum AOC value.
+
+  * `successString` - string that the `ConfigProgrammer.exe` has to output to
+    consider the programming process successful.
+
+  * `failureString` - string that the `ConfigProgrammer.exe` has to output to
+    consider the programming process failed.
 
 ## Start
 

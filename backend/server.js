@@ -2,40 +2,6 @@ var LISTEN_PORT = 1337;
 var LISTEN_ADDR = '127.0.0.1';
 var DATA_PATH = __dirname + '/../data';
 
-function log()
-{
-  var args = Array.prototype.slice.call(arguments);
-
-  args.unshift("%s\t" + args[0]);
-  args[1] = getDateTime(new Date());
-
-  console.log.apply(console, args);
-}
-
-function getDateTime(date)
-{
-  return date.getFullYear() + '-'
-    + pad0(date.getMonth() + 1) + '-'
-    + pad0(date.getDate()) + ' '
-    + pad0(date.getHours()) + ':'
-    + pad0(date.getMinutes()) + ':'
-    + pad0(date.getSeconds()) + '.'
-    + pad0(date.getMilliseconds(), 4);
-}
-
-function pad0(str, length)
-{
-  str = str + '';
-  length = length || 2;
-
-  while (str.length < length)
-  {
-    str = '0' + str;
-  }
-
-  return str;
-}
-
 var spawn = require('child_process').spawn;
 var fs = require('fs');
 var http = require('http');
@@ -408,4 +374,38 @@ function exportHistoryEntries(entries, req, res)
         historyEntries: entries
       });
   }
+}
+
+function log()
+{
+  var args = Array.prototype.slice.call(arguments);
+
+  args.unshift("%s\t" + args[0]);
+  args[1] = getDateTime(new Date());
+
+  console.log.apply(console, args);
+}
+
+function getDateTime(date)
+{
+  return date.getFullYear() + '-'
+    + pad0(date.getMonth() + 1) + '-'
+    + pad0(date.getDate()) + ' '
+    + pad0(date.getHours()) + ':'
+    + pad0(date.getMinutes()) + ':'
+    + pad0(date.getSeconds()) + '.'
+    + pad0(date.getMilliseconds(), 4);
+}
+
+function pad0(str, length)
+{
+  str = str + '';
+  length = length || 2;
+
+  while (str.length < length)
+  {
+    str = '0' + str;
+  }
+
+  return str;
 }
