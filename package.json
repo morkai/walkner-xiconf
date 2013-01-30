@@ -1,0 +1,26 @@
+{
+  "name": "walkner-xiconf",
+  "version": "0.1.0",
+  "description": "Overlay application for Xitanium Config Programmer.",
+  "license": "CC BY-NC 3.0",
+  "homepage": "https://github.com/morkai/walkner-xiconf",
+  "author": {
+    "name": "Łukasz Walukiewicz",
+    "email": "lukasz@walukiewicz.eu",
+    "url": "http://lukasz.walukiewicz.eu/"
+  },
+  "bugs": "https://github.com/morkai/walkner-xiconf/issues",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/morkai/walkner-xiconf.git"
+  },
+  "engine": ["node >=0.8.0"],
+  "main": "./backend/server",
+  "dependencies": {
+    "express"        : "3.0.x",
+    "ejs"            : "0.8.x"
+  },
+  "scripts": {
+    "start": "node ./backend/server.js"
+  }
+}
