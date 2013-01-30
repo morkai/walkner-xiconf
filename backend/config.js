@@ -1,9 +1,9 @@
 /**
- * Path to the ConfigProgrammer.exe.
+ * Path to a directory with the ConfigProgrammer.exe.
  *
  * @type {string}
  */
-exports.cmd = 'C:\\Program Files (x86)\\Philips\\Xitanium outdoor config\\ConfigProgrammer.exe';
+exports.path = 'C:/Program Files (x86)/Philips/Xitanium outdoor config';
 
 /**
  * Additional arguments passed to the ConfigProgrammer.exe.
@@ -14,7 +14,7 @@ exports.args = [
   '-a',
   '255',
   '-d',
-  'C:\\Program Files (x86)\\Philips\\Xitanium outdoor config\\memorybank.xml'
+  exports.path + '/memorybank.xml'
 ];
 
 /**
@@ -38,3 +38,19 @@ exports.minAoc = 0;
  * @type {number}
  */
 exports.maxAoc = 2500;
+
+/**
+ * String that the ConfigProgrammer.exe has to output to consider the
+ * programming process successful.
+ *
+ * @type {string}
+ */
+exports.successString = 'Verification succes!';
+
+/**
+ * String that the ConfigProgrammer.exe has to output to consider the
+ * programming process failed.
+ *
+ * @type {string}
+ */
+exports.failureString = 'Write FAILED!';

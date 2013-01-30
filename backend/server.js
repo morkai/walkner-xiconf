@@ -72,7 +72,9 @@ app.configure('production', function()
 app.get('/', function(req, res)
 {
   res.render('index', {
-    historyEntries: historyEntries
+    config: config,
+    historyEntries: historyEntries,
+    programming: programming
   });
 });
 
@@ -113,34 +115,99 @@ function program(aoc, done)
 
   log("Programming AOC=%d...", aoc);
 
-  setTimeout(
-    function()
+  tryToProgram(aoc, function(success, stdout)
+  {
+    if (success)
     {
-      var success = Math.round(Math.random()) === 1;
+      log("Successfully programmed AOC=%d :)", aoc);
+    }
+    else
+    {
+      log("Failed to program AOC=%d :(", aoc);
+    }
 
-      if (success)
-      {
-        log("Successfully programmed AOC=%d :)", aoc);
-      }
-      else
-      {
-        log("Failed to program AOC=%d :(", aoc);
-      }
+    var historyEntry = {
+      time: Date.now(),
+      result: success,
+      aoc: aoc,
+      stdout: stdout
+    };
 
-      var historyEntry = {
-        time: Date.now(),
-        result: success,
-        aoc: aoc
-      };
+    addHistoryEntry(historyEntry);
 
-      addHistoryEntry(historyEntry);
+    programming = false;
 
-      programming = false;
+    done(historyEntry);
+  });
+}
 
-      done(historyEntry);
-    },
-    Math.floor(Math.random() * 5000) + 500
-  );
+function tryToProgram(aoc, done)
+{
+  var configFile = writeProgramConfig(aoc);
+  var args = [].concat(config.args);
+
+  args.push('-f', configFile);
+
+  var cp = spawn(config.path + '\\ConfigProgrammer.exe', args, {
+    cwd: config.path
+  });
+
+  var success = false;
+  var stdout = '';
+
+  var timeoutTimer = setTimeout(function()
+  {
+    timeoutTimer = null;
+
+    success = false;
+    stdout += '\r\nProcess timed out!';
+
+    cp.kill();
+  }, config.timeout);
+
+  cp.on('exit', function()
+  {
+    fs.unlinkSync(configFile);
+
+    clearTimeout(timeoutTimer);
+
+    done(success, stdout);
+  });
+
+  cp.stdout.setEncoding('utf8');
+  cp.stdout.on('data', function(data)
+  {
+    stdout += data;
+
+    if (stdout.lastIndexOf(config.failureString) !== -1)
+    {
+      cp.kill();
+    }
+    else if (stdout.lastIndexOf(config.successString) !== -1)
+    {
+      success = true;
+
+      cp.kill();
+    }
+  });
+}
+
+function writeProgramConfig(aoc)
+{
+  var xml = [
+    '<?xml version="1.0" encoding="utf-8"?>',
+    '<ConfigData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">',
+      '<writeValues>',
+        '<MBEntry MembankName="MB_LED_AOC" Id="usAocCurrent" Data="' + aoc + '" />',
+      '</writeValues>',
+    '</ConfigData>'
+  ].join('\r\n');
+
+  var configFile = DATA_PATH + '/config.xml';
+
+  fs.writeFileSync(configFile, xml, 'utf8');
+
+  return configFile;
 }
 
 function addHistoryEntry(historyEntry)

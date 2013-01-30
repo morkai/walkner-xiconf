@@ -1,5 +1,14 @@
 $(function()
 {
+  if (!window.CONFIG)
+  {
+    window.CONFIG = {
+      programming: false,
+      minAoc: 0,
+      maxAoc: 1000
+    };
+  }
+
   var $aoc = $('#aoc');
   var $program = $('#program');
   var $status = $('.status');
@@ -35,7 +44,7 @@ $(function()
 
     var aoc = parseInt($aoc.val());
 
-    if (isNaN(aoc))
+    if (isNaN(aoc) || aoc > CONFIG.maxAoc || aoc < CONFIG.minAoc)
     {
       $aoc.val('');
       $aoc.focus();
