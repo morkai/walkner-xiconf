@@ -164,17 +164,48 @@ $(function()
     $newStatus.fadeIn();
   }
 
+  var focusQueue = [];
+  var focusing = false;
+
   function focusResult(result, done)
   {
+    if (focusing)
+    {
+      focusQueue.push([result, done]);
+
+      return;
+    }
+
+    focusing = true;
+
     var childPosition = $result.find('li').index($('#result-' + result));
 
     if ($result.roundabout('getChildInFocus') === childPosition)
     {
-      return done && done();
+      focusing = false;
+
+      done && done();
+
+      if (focusQueue.length)
+      {
+        focusResult.apply(null, focusQueue.shift());
+      }
+
+      return;
     }
 
     $result.roundabout(
-      'animateToChild', childPosition, 300, done || function() {}
+      'animateToChild', childPosition, 300, function()
+      {
+        focusing = false;
+
+        done && done();
+
+        if (focusQueue.length)
+        {
+          focusResult.apply(null, focusQueue.shift());
+        }
+      }
     );
   }
 
