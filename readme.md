@@ -32,6 +32,8 @@ cd walkner-xiconf/
 npm install
 ```
 
+Give write permissions to `walkner-xiconf/data/` directory.
+
 ## Configuration
 
 TODO

@@ -33,9 +33,14 @@
     </span>
   </p>
   <ul id="result">
-    <li id="result-late"><img src="img/glassy-smiley-late.svg">
-    <li id="result-good"><img src="img/glassy-smiley-good.svg">
-    <li id="result-bad"><img src="img/glassy-smiley-bad.svg">
+    <li id="result-program"><img src="img/glassy-smiley-late.svg">
+    <li id="result-success"><img src="img/glassy-smiley-good.svg">
+    <li id="result-failure"><img src="img/glassy-smiley-bad.svg">
+  </ul>
+  <ul id="history">
+    <% historyEntries.forEach(function(historyEntry) { %>
+    <li class="btn btn-<%= historyEntry.result ? 'success' : 'danger' %>"><%= historyEntry.aoc %> @ <%= historyEntry.timeString %>
+      <% }) %>
   </ul>
 </div>
 <script src="js/jquery.min.js"></script>

@@ -5,6 +5,7 @@ $(function()
   var $status = $('.status');
   var $statusTime = $('#status-time');
   var $result = $('#result');
+  var $history = $('#history');
 
   $status.hide();
   $status.filter('#status-wait').show();
@@ -43,44 +44,35 @@ $(function()
     }
 
     $program.attr('disabled', true);
+    $aoc.attr('disabled', true);
 
     changeStatus('program', aoc);
 
-    focusResult('late', function()
+    var req = $.ajax({
+      type: 'post',
+      url: '/program',
+      dataType: 'json',
+      data: {
+        aoc: aoc
+      }
+    });
+
+    req.always(function()
     {
-      var req = $.ajax({
-        type: 'post',
-        url: '/program',
-        data: {
-          aoc: aoc
-        }
-      });
+      $program.attr('disabled', false);
+      $aoc.attr('disabled', false);
+      $aoc.val('');
+      $aoc.focus();
+    });
 
-      req.always(function(xhr)
-      {
-        $aoc.val('');
-        $aoc.focus();
-      });
+    req.fail(function()
+    {
+      changeStatus('failure', aoc);
+    });
 
-      req.fail(function(xhr)
-      {
-        changeStatus('failure', aoc);
-
-        focusResult('bad', function()
-        {
-          $program.attr('disabled', false);
-        });
-      });
-
-      req.done(function(data)
-      {
-        changeStatus('success', aoc);
-
-        focusResult('good', function()
-        {
-          $program.attr('disabled', false);
-        });
-      });
+    req.done(function(historyEntry)
+    {
+      handleProgrammingResult(historyEntry);
     });
 
     return false;
@@ -88,11 +80,56 @@ $(function()
 
   $aoc.blur(function()
   {
-    setTimeout(function()
-    {
-      $aoc.focus();
-    }, 1);
+    setTimeout(function() { $aoc.focus(); }, 1);
   });
+
+  function handleProgrammingResult(historyEntry)
+  {
+    addHistoryEntry(historyEntry);
+
+    if (historyEntry.result)
+    {
+      changeStatus('success', historyEntry.aoc);
+    }
+    else
+    {
+      changeStatus('failure', historyEntry.aoc);
+    }
+  }
+
+  function addHistoryEntry(historyEntry)
+  {
+    var $historyEntry = $('<li class="btn"></li>');
+
+    $historyEntry.addClass(
+      historyEntry.result ? 'btn-success' : 'btn-danger'
+    );
+
+    $historyEntry.html(
+      historyEntry.aoc + ' @ ' + historyEntry.timeString
+    );
+
+    $history.append($historyEntry);
+
+    $historyEntry.hide();
+    $historyEntry.css('opacity', 1);
+    $historyEntry.fadeIn(function()
+    {
+      setTimeout(function() {
+        $historyEntry.fadeTo(400, .3, function()
+        {
+          $historyEntry.css('opacity', '');
+        });
+      }, 3000);
+    });
+
+    var $children = $history.children();
+
+    if ($children.length > 20)
+    {
+      $children.first().remove();
+    }
+  }
 
   function changeStatus(newStatus, aoc)
   {
@@ -110,6 +147,8 @@ $(function()
       add0(now.getMinutes()) + ':' +
       add0(now.getSeconds())
     );
+
+    focusResult(newStatus);
 
     $newStatus.find('.status-aoc').text(aoc);
     $status.filter(':visible').hide();

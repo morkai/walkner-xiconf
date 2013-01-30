@@ -7,6 +7,7 @@ body {
   background-color: #FFF;
   color: #333;
   cursor: default;
+  overflow: hidden;
 }
 #container {
   text-align: center;
@@ -16,10 +17,10 @@ hr {
 }
 #hd {
   font-size: 64px;
-  margin: 30px 0 40px 0;
+  margin: 30px 0 0 0;
 }
 #programForm {
-  margin: 40px auto;
+  margin: 0 auto;
 }
 #aoc {
   font-family: "Courier New", monospace;
@@ -51,4 +52,24 @@ hr {
 }
 #hd, .status {
   text-shadow: 0 0 3px #CCC;
+}
+#history {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  margin: 0;
+  list-style: none;
+  overflow: hidden;
+  white-space: nowrap;
+  z-index: 300;
+  height: 40px;
+}
+#history:hover .btn {
+  opacity: 1;
+}
+#history .btn {
+  margin: 0 10px 10px 0;
+  font-size: 18px;
+  opacity: .5;
+  border-radius: 100px;
 }
