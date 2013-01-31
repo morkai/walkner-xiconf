@@ -221,4 +221,15 @@ $(function()
 
     return (str.length === 1 ? '0' : '') + str;
   }
+
+  setTimeout(function() { $result.hide(); }, 100);
+  setTimeout(function() { $result.show(); }, 200);
+
+  $result.find('img').each(function(i, el)
+  {
+    var $img = $(this);
+
+    setTimeout(function() { $img.hide(); }, 100 * i + 300);
+    setTimeout(function() { $img.show(); }, 100 * i + 400);
+  });
 });
