@@ -10,9 +10,10 @@ var config = require('./config');
 
 var historyEntries = [];
 var nextHistoryEntryId = 0;
+var lastHistoryFileName = getHistoryFileName(Date.now());
 var programming = false;
 
-fs.readFile(getHistoryFileName(Date.now()), 'utf8', function(err, contents)
+fs.readFile(lastHistoryFileName, 'utf8', function(err, contents)
 {
   if (!err)
   {
@@ -300,6 +301,15 @@ function writeProgramConfig(aoc)
 
 function addHistoryEntry(historyEntry)
 {
+  var historyFileName = getHistoryFileName(historyEntry.time);
+
+  if (historyFileName !== lastHistoryFileName)
+  {
+    lastHistoryFileName = historyFileName;
+    nextHistoryEntryId = 0;
+    historyEntry.id = 0;
+  }
+
   var dateTime = getDateTime(new Date(historyEntry.time)).split(' ');
 
   historyEntry.dateString = dateTime[0];
@@ -307,7 +317,7 @@ function addHistoryEntry(historyEntry)
 
   var data = JSON.stringify(historyEntry) + '\n';
 
-  fs.appendFile(getHistoryFileName(historyEntry.time), data, 'utf8', function(err)
+  fs.appendFile(historyFileName, data, 'utf8', function(err)
   {
     if (err)
     {
