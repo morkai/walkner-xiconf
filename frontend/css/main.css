@@ -7,7 +7,6 @@ body {
   background-color: #FFF;
   color: #333;
   cursor: default;
-  overflow: hidden;
 }
 a:hover {
   text-decoration: none;
