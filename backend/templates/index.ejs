@@ -13,23 +13,23 @@
   <h1 id="hd">Programator Xitanium</h1>
   <hr>
   <form id="programForm" class="input-append">
-    <input id="aoc" class="span2" type="text" maxlength="4" autocomplete="off" autofocus>
+    <input id="nc" class="span2" type="text" maxlength="12" autocomplete="off" autofocus>
     <input id="program" class="btn btn-primary" type="submit" value="Programuj">
   </form>
   <hr>
-  <p id="status">
-    <span id="status-time">HH:MM:SS</span>
-    <span id="status-wait" class="status">
+  <p id="state">
+    <span id="state-time">HH:MM:SS</span>
+    <span id="state-wait" class="state">
       Czekam na programowanie...
     </span>
-    <span id="status-program" class="status">
-      Programuję wartość <span class="status-aoc">0</span>...
+    <span id="state-program" class="state">
+      Programuję <span data-property="program.label">?</span> (<span data-property="program.aoc">0</span>)...
     </span>
-    <span id="status-success" class="status">
-      Zaprogramowano wartość <span class="status-aoc">0</span>!
+    <span id="state-success" class="state">
+      Zaprogramowano <span data-property="program.label">?</span> (<span data-property="program.aoc">0</span>)!
     </span>
-    <span id="status-failure" class="status">
-      Nie udało się zaprogramować wartości <span class="status-aoc">0</span>!
+    <span id="state-failure" class="state">
+      Programowanie <span data-property="program.nc">?</span> nie powiodło się<span data-property="error">?</span>!
     </span>
   </p>
   <ul id="result">
@@ -39,19 +39,16 @@
   </ul>
   <ul id="history">
     <% historyEntries.forEach(function(historyEntry) { %>
-    <li><a href="/history/<%= historyEntry.dateString %>/<%= historyEntry.id %>" class="btn btn-<%= historyEntry.result ? 'success' : 'danger' %>"><%= historyEntry.aoc %> @ <%= historyEntry.timeString %></a>
+    <li><a href="/history/<%= historyEntry.dateString %>/<%= historyEntry.id %>" class="btn btn-<%= historyEntry.result ? 'success' : 'danger' %>"><%= historyEntry.program.nc %> @ <%= historyEntry.timeString %></a>
     <% }) %>
     <li><a href="/history" class="btn">Historia</a>
   </ul>
 </div>
+<script src="socket.io/socket.io.js"></script>
 <script src="js/jquery.min.js"></script>
 <script src="js/jquery.roundabout.min.js"></script>
 <script>
-var CONFIG = {
-  minAoc: <%= config.minAoc %>,
-  maxAoc: <%= config.maxAoc %>,
-  programming: <%= programming %>
-};
+var CONFIG = <%- JSON.stringify(config) %>
 </script>
 <script src="js/main.js"></script>
 </body>

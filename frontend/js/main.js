@@ -1,23 +1,27 @@
+var socket = io.connect();
+
 $(function()
 {
   if (!window.CONFIG)
   {
     window.CONFIG = {
-      programming: false,
-      minAoc: 0,
-      maxAoc: 1000
+      state: 'wait',
+      historyEntry: null
     };
   }
 
-  var $aoc = $('#aoc');
+  var focusQueue = [];
+  var focusing = false;
+
+  var $nc = $('#nc');
   var $program = $('#program');
-  var $status = $('.status');
-  var $statusTime = $('#status-time');
+  var $state = $('.state');
+  var $stateTime = $('#state-time');
   var $result = $('#result');
   var $history = $('#history');
 
-  $status.hide();
-  $status.filter('#status-wait').show();
+  $state.hide();
+  $state.filter('#state-wait').show();
 
   var size = window.innerHeight;
 
@@ -35,6 +39,8 @@ $(function()
     clickToFocus: false
   });
 
+  changeState(CONFIG.state, CONFIG.historyEntry || {});
+
   $('#programForm').submit(function()
   {
     if ($program.is(':disabled'))
@@ -42,54 +48,65 @@ $(function()
       return false;
     }
 
-    var aoc = parseInt($aoc.val());
+    var nc = $nc.val();
 
-    if (isNaN(aoc) || aoc > CONFIG.maxAoc || aoc < CONFIG.minAoc)
+    if (!/^[0-9]{12}$/.test(nc))
     {
-      $aoc.val('');
-      $aoc.focus();
+      $nc.val('');
+      $nc.focus();
 
       return false;
     }
 
     $program.attr('disabled', true);
-    $aoc.attr('disabled', true);
+    $nc.attr('disabled', true);
 
-    changeStatus('program', aoc);
+    changeState('wait');
 
-    var req = $.ajax({
-      type: 'post',
-      url: '/program',
-      dataType: 'json',
-      data: {
-        aoc: aoc
+    socket.emit('program', nc, function(err)
+    {
+      if (err)
+      {
+        changeState('failure', {error: err.message, nc: nc});
+
+        $program.attr('disabled', false);
+        $nc.attr('disabled', false).val('');
       }
-    });
-
-    req.always(function()
-    {
-      $program.attr('disabled', false);
-      $aoc.attr('disabled', false);
-      $aoc.val('');
-      $aoc.focus();
-    });
-
-    req.fail(function()
-    {
-      changeStatus('failure', aoc);
-    });
-
-    req.done(function(historyEntry)
-    {
-      handleProgrammingResult(historyEntry);
     });
 
     return false;
   });
 
-  $aoc.blur(function()
+  socket.on('state changed', function(newState, historyEntry)
   {
-    setTimeout(function() { $aoc.focus(); }, 1);
+    changeState(newState, historyEntry);
+
+    switch (newState)
+    {
+      case 'program':
+      {
+        $program.attr('disabled', true);
+        $nc.attr('disabled', true).val(historyEntry.program.nc);
+
+        break;
+      }
+
+      case 'success':
+      case 'failure':
+      {
+        addHistoryEntry(historyEntry);
+
+        $program.attr('disabled', false);
+        $nc.attr('disabled', false).val('');
+
+        break;
+      }
+    }
+  });
+
+  $nc.blur(function()
+  {
+    setTimeout(function() { $nc.focus(); }, 1);
   });
 
   function handleProgrammingResult(historyEntry)
@@ -98,11 +115,11 @@ $(function()
 
     if (historyEntry.result)
     {
-      changeStatus('success', historyEntry.aoc);
+      changeState('success', historyEntry);
     }
     else
     {
-      changeStatus('failure', historyEntry.aoc);
+      changeState('failure', historyEntry);
     }
   }
 
@@ -121,7 +138,7 @@ $(function()
     );
 
     $a.html(
-      historyEntry.aoc + ' @ ' + historyEntry.timeString
+      historyEntry.program.nc + ' @ ' + historyEntry.timeString
     );
 
     var $children = $history.children();
@@ -146,32 +163,46 @@ $(function()
     }
   }
 
-  function changeStatus(newStatus, aoc)
+  function changeState(newState, historyEntry)
   {
-    var $newStatus = $status.filter('#status-' + newStatus);
+    var $newState = $state.filter('#state-' + newState);
 
-    if (!$newStatus.length)
+    if (!$newState.length)
     {
       return;
     }
 
     var now = new Date();
 
-    $statusTime.show().text(
+    $stateTime.show().text(
       add0(now.getHours()) + ':' +
       add0(now.getMinutes()) + ':' +
       add0(now.getSeconds())
     );
 
-    focusResult(newStatus);
+    focusResult(newState === 'wait' ? 'program' : newState);
 
-    $newStatus.find('.status-aoc').text(aoc);
-    $status.filter(':visible').hide();
-    $newStatus.fadeIn();
+    $newState.find('[data-property]').each(function()
+    {
+      var $property = $(this);
+
+      var value = getPropertyValue(
+        historyEntry, $property.attr('data-property')
+      );
+
+      if (value === null)
+      {
+        $property.hide();
+      }
+      else
+      {
+        $property.text(value).show();
+      }
+    });
+
+    $state.filter(':visible').hide();
+    $newState.fadeIn();
   }
-
-  var focusQueue = [];
-  var focusing = false;
 
   function focusResult(result, done)
   {
@@ -220,5 +251,29 @@ $(function()
     str = str + '';
 
     return (str.length === 1 ? '0' : '') + str;
+  }
+
+  function getPropertyValue(obj, path)
+  {
+    path = path.split('.');
+
+    while (path.length)
+    {
+      if (obj === null || typeof obj !== 'object')
+      {
+        return obj;
+      }
+
+      var property = path.shift();
+
+      if (!obj.hasOwnProperty(property))
+      {
+        return null;
+      }
+
+      obj = obj[property];
+    }
+
+    return obj;
   }
 });

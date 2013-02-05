@@ -3,6 +3,8 @@ var DATA_FILE_NAME_REGEXP = /^([0-9]{4}-[0-9]{2}-[0-9]{2})\.txt$/;
 var DATA_PATH = __dirname + '/../../data';
 
 var fs = require('fs');
+var csv = require('csv');
+var config = require('../config');
 
 app.get('/history', function(req, res, next)
 {
@@ -134,19 +136,29 @@ function exportHistoryEntries(entries, req, res)
 
     case 'csv':
     {
-      res.attachment('xitanium+' + req.params.date + '.csv');
+      //res.attachment('xitanium+' + req.params.date + '.csv');
 
-      entries.forEach(function(entry)
-      {
-        res.write(
-          entry.dateString + ',' +
-            entry.timeString + ',' +
-            (entry.result ? 1 : 0) + ','
-            + entry.aoc + '\r\n'
-        );
-      });
-
-      return res.end();
+      return csv()
+        .from.array(entries)
+        .transform(function(entry)
+        {
+          return [
+            entry.program.nc,
+            entry.program.label,
+            entry.program.aoc,
+            entry.dateString,
+            entry.timeString,
+            entry.result ? '1': '0'
+          ];
+        })
+        .to(res, {
+          delimiter: config.csvOptions.delimiter,
+          quote: config.csvOptions.quote,
+          escape: config.csvOptions.escape,
+          lineBreaks: 'windows',
+          header: true,
+          columns: [].concat(config.csvOptions.columns, ['date', 'time', 'result'])
+        });
     }
 
     default:

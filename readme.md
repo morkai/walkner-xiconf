@@ -36,16 +36,18 @@ Give write permissions to `walkner-xiconf/data/` directory.
 
 Configuration settings can be changed in the `backend/config.js` file.
 
-  * `path` - path to a directory with the `ConfigProgrammer.exe`.
+  * `programsFilePath` - path to a CSV file with 12NC to AOC values.
 
-  * `args` - additional arguments passed to the `ConfigProgrammer.exe`.
+  * `csvOptions` - CSV options used to parse the programs file.
+
+  * `configFilePath` - path to where the config.xml file should be generated.
+
+  * `programmerPath` - path to a directory with the `ConfigProgrammer.exe`.
+
+  * `programmerArgs` - additional arguments passed to the `ConfigProgrammer.exe`.
 
   * `timeout` - number of ms after which the `ConfigProgrammer.exe` will be
     killed if it doesn't exit.
-
-  * `minAoc` - minimum AOC value.
-
-  * `maxAoc` - maximum AOC value.
 
   * `successString` - string that the `ConfigProgrammer.exe` has to output to
     consider the programming process successful.

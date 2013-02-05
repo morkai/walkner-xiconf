@@ -58,11 +58,11 @@ dt:first-child {
 #programForm {
   margin: 0 auto;
 }
-#aoc {
+#nc {
   font-family: "Courier New", monospace;
   font-size: 64px;
   height: 64px;
-  width: 155px;
+  width: 465px;
   text-align: center;
 }
 #program {
@@ -70,14 +70,17 @@ dt:first-child {
   height: 74px;
   font-variant: small-caps;
 }
-#status {
+#state {
   font-size: 32px;
 }
-#status-time {
+#state-time {
   color: #CCC;
   font-style: oblique;
   margin-right: 12px;
   display: none;
+}
+#state-failure span[data-property="error"]:before {
+  content: ": ";
 }
 #result {
   list-style: none;
@@ -86,7 +89,7 @@ dt:first-child {
   width: 300px;
   height: 300px;
 }
-#hd, .status, h2 {
+#hd, .state, h2 {
   text-shadow: 0 0 3px #CCC;
 }
 #history {
@@ -126,4 +129,3 @@ dt:first-child {
 .history-entry input {
   vertical-align: top;
 }
-

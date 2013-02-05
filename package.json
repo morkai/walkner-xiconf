@@ -18,7 +18,8 @@
   "main": "./backend/server",
   "dependencies": {
     "express"        : "3.0.x",
-    "ejs"            : "0.8.x"
+    "ejs"            : "0.8.x",
+    "csv"            : "0.2.x"
   },
   "scripts": {
     "start": "node ./backend/server.js"

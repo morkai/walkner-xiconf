@@ -20,8 +20,12 @@
     <%= historyEntry.id %>
   </h2>
   <dl class="well">
+    <dt>Kod 12NC:
+    <dd><%= historyEntry.program.nc %>
+    <dt>Etykieta:
+    <dd><%= historyEntry.program.label %>
     <dt>Programowana wartość:
-    <dd><%= historyEntry.aoc %>
+    <dd><%= historyEntry.program.aoc %>
     <dt>Czas programowania:
     <dd><%= historyEntry.dateString %> <%= historyEntry.timeString %>
     <dt>Wynik programowania:

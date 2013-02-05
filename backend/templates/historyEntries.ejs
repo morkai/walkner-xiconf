@@ -17,8 +17,9 @@
     <thead>
     <tr>
       <th>#
-      <th>Data
-      <th>Czas
+      <th>Data i czas
+      <th>12NC
+      <th>Etykieta
       <th>Wartość
       <th>Wynik
     </tr>
@@ -27,9 +28,10 @@
     <% historyEntries.forEach(function(historyEntry, i) { %>
     <tr data-date="<%= historyEntry.dateString %>" data-id="<%= historyEntry.id %>">
       <td><%= i + 1 %>
-      <td><%= historyEntry.dateString %>
-      <td><%= historyEntry.timeString %>
-      <td><%= historyEntry.aoc %>
+      <td><%= historyEntry.dateString %> <%= historyEntry.timeString %>
+      <td><%= historyEntry.program.nc %>
+      <td><%= historyEntry.program.label %>
+      <td><%= historyEntry.program.aoc %>
       <td><%= historyEntry.result ? 'Sukces' : 'Porażka' %>
     </tr>
     <% }) %>

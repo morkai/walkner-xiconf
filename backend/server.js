@@ -1,10 +1,10 @@
 var fs = require('fs');
 var http = require('http');
+var socketIo = require('socket.io');
 var express = require('express');
 var config = require('./config');
 
 var LISTEN_PORT = 1337;
-var LISTEN_ADDR = '127.0.0.1';
 var DATA_PATH = __dirname + '/../data';
 
 app = express();
@@ -17,6 +17,32 @@ app.log = function()
   args[1] = app.getDateTime(new Date());
 
   console.log.apply(console, args);
+};
+
+/**
+ * Current app state.
+ *
+ * @type {string}
+ */
+app.state = 'wait';
+
+/**
+ * Current history entry.
+ *
+ * @type {Object|null}
+ */
+app.historyEntry = null;
+
+/**
+ * Changes the current state and broadcasts it to all clients.
+ *
+ * @param {string} newState
+ */
+app.changeState = function(newState)
+{
+  app.state = newState;
+
+  app.io.sockets.emit('state changed', app.state, app.historyEntry);
 };
 
 /**
@@ -62,13 +88,6 @@ app.getHistoryFileName = function(time)
 app.lastHistoryFileName = app.getHistoryFileName(Date.now());
 
 /**
- * Whether or now the programming is happening.
- *
- * @type {boolean}
- */
-app.programming = false;
-
-/**
  * @param {Date} date
  * @return {string}
  */
@@ -98,9 +117,14 @@ fs.readFile(app.lastHistoryFileName, 'utf8', function(err, contents)
   }
 });
 
-http.createServer(app).listen(LISTEN_PORT, LISTEN_ADDR, function()
+app.httpServer = http.createServer(app);
+app.httpServer.listen(LISTEN_PORT, function()
 {
-  app.log("HTTP server listening on %s:%d", LISTEN_ADDR, LISTEN_PORT);
+  app.log("HTTP server listening on port %d", LISTEN_PORT);
+});
+
+app.io = socketIo.listen(app.httpServer, {
+  log: false
 });
 
 app.set('views', __dirname + '/templates');
@@ -123,7 +147,11 @@ app.configure('production', function()
   app.use(express.errorHandler());
 });
 
+require('./programmer');
 require('./routes');
+require('./sockets');
+
+app.reloadPrograms();
 
 /**
  * @private
