@@ -35,11 +35,14 @@ $(function()
     height: size + 'px'
   });
 
-  $result.roundabout({
-    clickToFocus: false
-  });
+  $(window).on('load', function()
+  {
+    $result.roundabout({
+      clickToFocus: false
+    });
 
-  changeState(CONFIG.state, CONFIG.historyEntry || {});
+    changeState(CONFIG.state, CONFIG.historyEntry || {});
+  });
 
   $('#programForm').submit(function()
   {
