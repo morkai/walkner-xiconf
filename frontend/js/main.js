@@ -109,20 +109,6 @@ $(function()
     setTimeout(function() { $nc.focus(); }, 1);
   });
 
-  function handleProgrammingResult(historyEntry)
-  {
-    addHistoryEntry(historyEntry);
-
-    if (historyEntry.result)
-    {
-      changeState('success', historyEntry);
-    }
-    else
-    {
-      changeState('failure', historyEntry);
-    }
-  }
-
   function addHistoryEntry(historyEntry)
   {
     var $historyEntry = $('<li><a href="" class="btn"></a></li>');
