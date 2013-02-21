@@ -89,6 +89,9 @@ dt:first-child {
   width: 300px;
   height: 300px;
 }
+#result img {
+  width: 100%;
+}
 #hd, .state, h2 {
   text-shadow: 0 0 3px #CCC;
 }
