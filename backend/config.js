@@ -53,7 +53,7 @@ exports.programmerArgs = [
   '-a',
   '255',
   '-d',
-  exports.path + '/memorybank.xml'
+  exports.programmerPath + '/memorybank.xml'
 ];
 
 /**
