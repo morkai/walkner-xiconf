@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset=utf-8>
+    <title>Walkner Xiconf - Dokumentacja</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="./index.css">
+  </head>
+  <body class="help">
+    <div id="helpContainer">
+      <div id="toc">
+        <h1>Walkner Xiconf</h1>
+        <ol></ol>
+      </div>
+      <section id="help-intro" class="pbb">
+        <h1>Wstęp</h1>
+        <p>Niniejszy dokument stanowi dokumentację użytkownika dla aplikacji <em>Walkner Xiconf</em>.</p>
+        <p>
+          Uruchomienie aplikacji odbywa się poprzez wpisanie przez użytkownika adresu IP i portu
+          serwera w przeglądarce internetowej. Dane te różnią się w zależności od tego, z jakiego
+          komputera użytkownik chce otworzyć aplikację.
+        </p>
+        <p>
+          Do otwarcia aplikacji na komputerze, na którym znajduje się serwer aplikacji
+          należy wejść na adres <a href="http://localhost:1337/">http://localhost:1337/</a>
+          lub <a href="http://127.0.0.1:1337/">http://127.0.0.1:1337/</a>.
+        </p>
+        <p>
+          Do aplikacji można także wejść z innego komputera. W tym celu należy znać adres IP
+          komputera, na którym uruchomiony jest serwer aplikacji oraz port na jakim nasłuchuje
+          na żądania (domyślnie <code>1337</code>). W celu poznania portu, należy skontaktować
+          się z osobą, która konfigurowała serwer aplikacji. Aby poznać adres IP
+          komputera należy skontaktować się z administratorem sieci lub na komputerze z serwerem
+          aplikacji wpisać w linii poleceń:
+        </p>
+        <pre>ipconfig /all</pre>
+        <p>
+          Na przykład, dla adresu IP <code>192.168.1.100</code>, musimy wpisać w przeglądarkę
+          adres http://192.168.1.100:1337/.
+        </p>
+      </section>
+      <section id="help-requirements">
+        <h1>Wymagania</h1>
+        <p>
+          Do poprawnego korzystania z aplikacji,
+          użytkownik musi mieć zainstalowaną jedną z popularnych, aktualnych
+          przeglądarek internetowych.
+        </p>
+        <p id=browsers>
+          <a href="http://google.com/chrome"><img src="images/128-chrome.png" alt="Google Chrome" title="Pobierz Google Chrome"></a>
+          <a href="http://getfirefox.com/"><img src="images/128-firefox.png" alt="Firefox" title="Pobierz Firefoxa"></a>
+          <a href="http://www.opera.com/download/"><img src="images/128-opera.png" alt="Opera" title="Pobierz Operę"></a>
+          <a href="http://apple.com/safari"><img src="images/128-safari.png" alt="Safari" title="Pobierz Safari"></a>
+          <a href="http://windows.microsoft.com/pl-PL/internet-explorer/products/ie/home"><img src="images/128-ie.png" alt="Internet Explorer" title="Pobierz Internet Explorer"></a>
+        </p>
+      </section>
+      <section id="help-programming" class="pbb">
+        <h1>Programowanie</h1>
+        <p class="image">
+          <img class="screen" src="screens/program-wait.png" alt="Programowanie"><br>
+          Ekran programowanie
+        </p>
+        <p>Na ekranie programowania znajdują się:</p>
+        <ul>
+          <li>pole kodu 12NC oraz przycisk programowania,
+          <li>
+            informacja o aktualnym stanie programatora w postaci krótkiej wiadomości
+            oraz obrazów &quot;buziek&quot;,
+          <li>pasek ostatnio wykonanych programowań oraz przycisk do historii.
+        </ul>
+        <p>
+          Programator może w danej chwili znajdować się w jednym z czterech stanów:
+        </p>
+        <ol>
+          <li>
+            <em>Czekam na programowanie</em> - stan, w którym programator znajduje się
+            przed uruchomieniem pierwszego programowania od startu serwera aplikacji.
+            Stan ten obrazuje buźka żółta.
+          <li>
+            <em>Programuję</em> - stan, w którym programator znajduje się po
+            kliknięciu przycisku <input type="button" class="btn btn-primary" value="Programuj">,
+            aż do momentu ukończenia programowania (tzn. przejścia do stanu <em>Programowanie udane</em>
+            lub do stanu <em>Programowanie nieudane</em>). Znajdując się w tym stanie,
+            nie można przeprowadzać innego programowania (pole kodu 12NC i przycisk programowania
+            są zablokowane).
+            Stan ten obrazuje buźka żółta.
+          <li>
+            <em>Programowanie udane</em> - stan, w którym programator znajduje się
+            po udanym programowaniu. Znajdując się w tym stanie, można uruchomić
+            kolejne programowanie.
+            Stan ten obrazuje buźka zielona.
+          <li>
+            <em>Programowanie nieudane</em> - stan, w którym programator znajduje się
+            po nieudanym programowaniu. Znajdując się w tym stanie, można uruchomić
+            kolejne programowanie.
+            Stan ten obrazuje buźka czerwona.
+        </ol>
+        <div id="smileys" class="pbb">
+          <p class="image">
+            <img src="../img/glassy-smiley-late.png" alt="Buźka stanów Czekam na programowanie i Programuję"><br>
+            Czekam na programowanie/Programuję
+          </p>
+          <p class="image">
+            <img src="../img/glassy-smiley-good.png" alt="Buźka stanu Programowanie udane"><br>
+            Programowanie udane
+          </p>
+          <p class="image">
+            <img src="../img/glassy-smiley-bad.png" alt="Buźka stanu Programowanie nieudane"><br>
+            Programowanie nieudane
+          </p>
+        </div>
+        <p>
+          Programowanie rozpoczyna się po wpisaniu kodu 12NC i wciśnięciu przycisku
+          <kbd>Enter</kbd> lub <input type="button" class="btn btn-primary" value="Programuj">.
+          Kod 12NC musi składać się z 12 cyfr. W przeciwym wypadku wartość pola zostanie
+          wyczyszczona i programowanie nie zostanie rozpoczęte.
+        </p>
+        <p>
+          Po wysłaniu poprawnego kodu 12NC do serwera aplikacji, ten sprawdzi, czy
+          taki kod istnieje na aktualnej liście programów. Jeżeli nie istnieje,
+          do użytkownika zostanie zwrócony błąd z odpowiednim komunikatem.
+          Jeżeli istnieje, odczytana zostanie etykieta oraz wartość przypisana do
+          danego kodu 12NC, a następnie uruchomiony zostanie program <code>ConfigProgrammer.exe</code>
+          z odpowiednimi parametrami. Na koniec, odczytany zostanie wynik zwrócony przez
+          <code>ConfigProgrammer.exe</code> i na jego podstawie podjęta zostanie decyzja
+          czy programowanie udało się czy nie. Serwer aplikacji informuje użytkownika
+          o podjętej decyzji i w między czasie zapisuje to programowanie jako nowy
+          wpis w historii.
+        </p>
+        <p class="image">
+          <img class="screen" src="screens/program-failure.png" alt="Programowanie nieudane"><br>
+          Ekran nieudanego programowania
+        </p>
+      </section>
+      <section id="help-history" class="pbb" data-page="5">
+        <h1>Historia</h1>
+        <section id="help-history-picker">
+          <h1>Wybór wpisów</h1>
+          <p class="image">
+            <img class="screen" src="screens/history-picker.png" alt="Wybór wpisów z historii"><br>
+            Ekran wyboru wpisów z historii
+          </p>
+          <p>
+            Do ekranu wyboru wpisów z historii możemy przejść klikając na przycisk
+            <input type="button" class="btn" value="Historia"> znajdujący się
+            w prawym dolnym rogu głównego ekranu aplikacji - ekranu programowania.
+          </p>
+          <p>
+            Na tym ekranie mamy możliwość wyboru wpisów, których szczegóły chcemy
+            wyświetlić w postaci listy lub wyeksportować do formatu CSV. Aby wybrać
+            wpisy należy wcisnać na przycisk z datą wpisów, które nas interesują.
+            Po zaznaczeniu jednego lub kilku dni możemy wcisnąć przycisk
+            <input type="button" class="btn btn-primary" value="Pokaż wpisy">,
+            aby przejść do <a href="#help-history-entries">ekranu listy wpisów</a>
+            lub przycisk <input type="button" class="btn btn-primary" value="Eksportuj wpisy">,
+            aby wyeksportować wybrane wpisy do formatu CSV (zobacz <a href="#help-history-export">Eksport wybranych wpisów</a>).
+          </p>
+          <p>
+            Aby wrócić do ekranu programatora, klikamy na nagłówek <a>Programator Xitanium</a>.
+          </p>
+        </section>
+        <section id="help-history-entries" class="pbb">
+          <h1>Lista wybranych wpisów</h1>
+          <p class="image">
+            <img class="screen" src="screens/history-entries.png" alt="Lista wybranych wpisów z historii"><br>
+            Ekran listy wybranych wpisów z historii
+          </p>
+          <p>
+            Do ekranu listy wybranych wpisów z historii możemy przejść wybierając
+            wpisy na <a href="#help-history-picker">ekranie wyboru wpisów z historii</a> i klikając przycisk
+            <input type="button" class="btn btn-primary" value="Pokaż wpisy">.
+          </p>
+          <p>
+            Na tym ekranie przedstawione są wszystkie wpisy z wybranych dni w formie
+            tabeli. Wyświetlane informacje to kolejno:
+          </p>
+          <ul>
+            <li>data i czas programowania,
+            <li>kod 12NC użyty do programowania,
+            <li>etykieta oraz programowana wartość odczytane z pliku programów przy użyciu danego kodu 12NC,
+            <li>wynik programowania.
+          </ul>
+          <p>
+            Klikając na dowolny wiersz, zostaniemy przeniesieni do <a href="#help-history-entry">ekranu szczegółów danego wpisu</a>.
+          </p>
+          <p>
+            Wciskając przycisk <input type="button" class="btn btn-primary" value="Eksportuj wpisy">,
+            wpisy widoczne na ekranie w formie tabeli zostaną wyeksportowane do formatu CSV.
+          </p>
+          <p>
+            Aby wrócić do ekranu wyboru wpisów z historii, klikamy na nagłówek <a>Historia</a>.
+          </p>
+          <p>
+            Aby wrócić do ekranu programatora, klikamy na nagłówek <a>Programator Xitanium</a>.
+          </p>
+        </section>
+        <section id="help-history-entry" class="pbb">
+          <h1>Szczegóły wybranego wpisu</h1>
+          <p class="image">
+            <img class="screen" src="screens/history-entry.png" alt="Szczegóły wybranego wpisu z historii"><br>
+            Ekran szczegółów wybranego wpisu z historii
+          </p>
+          <p>
+            Do ekranu szczegółów wybranego wpisu możemy przejść klikając na dany wpis
+            w tabeli wpisów na <a href="#help-history-entries">ekranie listy wybranych wpisów</a>
+            lub w pasku ostatnich wpisów na <a href="#help-programming">ekranie programowania</a>.
+          </p>
+          <p>
+            Na tym ekranie przedstawione są wszystkie zapisane informacje dotyczące
+            danego programowania:
+          </p>
+          <ul>
+            <li>kod 12NC użyty do programowania,
+            <li>etykieta oraz programowana wartość odczytane z pliku programów przy użyciu danego kodu 12NC,
+            <li>data i czas programowania,
+            <li>wynik programowania,
+            <li>odpowiedź z uruchomienia programu <code>ConfigProgrammer.exe</code>.
+          </ul>
+          <p>
+            Aby wrócić do ekranu listy wszystkich wpisów z tego samego dnia,
+            klikamy na nagłówek z datą, np. <a>2013-02-21</a>.
+          </p>
+          <p>
+            Aby wrócić do ekranu wyboru wpisów z historii, klikamy na nagłówek <a>Historia</a>.
+          </p>
+          <p>
+            Aby wrócić do ekranu programatora, klikamy na nagłówek <a>Programator Xitanium</a>.
+          </p>
+        </section>
+        <section id="help-history-export" class="pbb">
+          <h1>Eksport wybranych wpisów</h1>
+          <p>
+            Eksportowanie wpisów odbywa się poprzez wybranie wpisów i kliknięcie
+            przycisku <input type="button" class="btn btn-primary" value="Eksportuj wpisy">
+            na <a href="#help-history-picker">ekranie wyboru wpisów z historii</a>
+            lub kliknięcie przycisku <input type="button" class="btn btn-primary" value="Eksportuj wpisy">
+            na <a href="#help-history-entries">ekranie wybranych wpisów z historii</a>.
+          </p>
+          <p>
+            Przykładowe, wyeksportowane dane wyglądają następująco:
+          </p>
+          <pre><code>nc;label;aoc;date;time;result
+442710180710;PROGRAM XT IN 200 D;200;2013-02-21;15:48:28;0
+442710180710;PROGRAM XT IN 200 D;200;2013-02-21;15:48:22;1
+442710180710;PROGRAM XT IN 200 D;200;2013-02-21;15:45:47;1
+442710180710;PROGRAM XT IN 200 D;200;2013-02-21;15:39:45;0
+442710180710;PROGRAM XT IN 200 D;200;2013-02-21;15:39:06;1</code></pre>
+          <p>
+            Pierwszy wiersz zawiera nazwy kolumn.
+            Kolumny rozdzielone są znakiem średnika (<code>;</code>).
+          </p>
+          <p>
+            Eksportowane są następujące informacje o wybranych wpisach:
+          </p>
+          <ul>
+            <li><code>nc</code> - kod 12NC użyty do programowania,
+            <li><code>label</code> - etykieta odczytana z pliku programów przy użyciu danego kodu 12NC,
+            <li><code>aoc</code> - programowana wartość odczytana z pliku programów przy użyciu danego kodu 12NC,
+            <li><code>date</code> - data programowania,
+            <li><code>time</code> - czas programowania,
+            <li><code>result</code> - wynik programowania (<code>1</code> - programowanie powiodło się, <code>0</code> - programowanie nie powiodło się).</li>
+          </ul>
+        </section>
+      </section>
+    </div>
+    <script src="../js/jquery.min.js"></script>
+    <script src="index.js"></script>
+  </body>
+</html>
