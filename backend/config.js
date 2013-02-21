@@ -1,4 +1,11 @@
 /**
+ * Port on which the HTTP server should listen for requests.
+ *
+ * @type {number}
+ */
+exports.httpPort = 1337;
+
+/**
  * Path to a CSV file with 12NC to AOC values.
  *
  * This file will be read and parsed when the application server first starts

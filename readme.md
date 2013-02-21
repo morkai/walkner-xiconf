@@ -36,6 +36,8 @@ Give write permissions to `walkner-xiconf/data/` directory.
 
 Configuration settings can be changed in the `backend/config.js` file.
 
+  * `httpPort` - port on which the HTTP server should listen for requests.
+
   * `programsFilePath` - path to a CSV file with 12NC to AOC values.
 
   * `csvOptions` - CSV options used to parse the programs file.

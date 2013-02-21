@@ -4,7 +4,6 @@ var socketIo = require('socket.io');
 var express = require('express');
 var config = require('./config');
 
-var LISTEN_PORT = 1337;
 var DATA_PATH = __dirname + '/../data';
 
 app = express();
@@ -118,9 +117,9 @@ fs.readFile(app.lastHistoryFileName, 'utf8', function(err, contents)
 });
 
 app.httpServer = http.createServer(app);
-app.httpServer.listen(LISTEN_PORT, function()
+app.httpServer.listen(config.httpPort, function()
 {
-  app.log("HTTP server listening on port %d", LISTEN_PORT);
+  app.log("HTTP server listening on port %d", config.httpPort);
 });
 
 app.io = socketIo.listen(app.httpServer, {
