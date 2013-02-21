@@ -124,7 +124,8 @@ app.httpServer.listen(LISTEN_PORT, function()
 });
 
 app.io = socketIo.listen(app.httpServer, {
-  log: false
+  log: false,
+  transports: ['websocket', 'xhr-polling']
 });
 
 app.set('views', __dirname + '/templates');
