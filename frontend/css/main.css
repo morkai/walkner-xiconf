@@ -62,6 +62,7 @@ dt:first-child {
   font-family: "Courier New", monospace;
   font-size: 64px;
   height: 64px;
+  line-height: 1;
   width: 465px;
   text-align: center;
 }
