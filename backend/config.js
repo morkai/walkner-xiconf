@@ -6,10 +6,50 @@
 exports.httpPort = 1337;
 
 /**
+ * Path to an XSLX file with 12NC to AOC values.
+ *
+ * If specified, this file will be read and parsed when the application server
+ * first starts.
+ *
+ * Overrides the `csvProgramsFilePath` setting.
+ *
+ * @type {string}
+ */
+exports.xlsxProgramsFilePath = '\\\\AdaM\\Xiconf\\lista etykiet graficznych.xlsx';
+
+/**
+ * XLSX options used to parse the programs file.
+ *
+ * Available options are:
+ *
+ *   - `sheetId` - a numeric ID of the worksheet with the programs data.
+ *   - `ncColumn` - a column with the 12NC data (A-Z).
+ *   - `labelColumn` - a column with the label data (A-Z). The AOC value will
+ *     be extracted from the cells in this column by using the specified
+ *     `aocRegExp`.
+ *   - `labelRegExp` - a regular expression used to extract a label text
+ *     from the label column. The first capture group will be used as the label
+ *     text.
+ *   - `aocRegExp` - a regular expression used to extract an AOC value from
+ *     the label text. The first capture group will be used as the AOC value.
+ *
+ * @type {object}
+ */
+exports.xlsxOptions = {
+  sheetId: 1,
+  ncColumn: 'A',
+  labelColumn: 'B',
+  labelRegExp: /^LABEL\s+"(.*?)"$/i,
+  aocRegExp: /\s+IN\s+([0-9]+)/i
+};
+
+/**
  * Path to a CSV file with 12NC to AOC values.
  *
- * This file will be read and parsed when the application server first starts
- * and then when its contents has been modified.
+ * If specified, this file will be read and parsed when the application server
+ * first starts and then when its contents has been modified.
+ *
+ * Has no effect if the `xlsxProgramsFilePath` setting is specified.
  *
  * @type {string}
  */

@@ -1,43 +1,48 @@
 var spawn = require('child_process').spawn;
 var fs = require('fs');
-var csv = require('csv');
 var config = require('./config');
+var programsParser = null;
 
-fs.watchFile(
-  config.csvProgramsFilePath,
-  {persistent: true, interval: 2000},
-  function(curr, prev)
-  {
-    if (curr.mtime !== prev.mtime)
+if (config.xlsxProgramsFilePath && config.xlsxProgramsFilePath.length)
+{
+  programsParser = require('./xlsxProgramsParser');
+}
+else
+{
+  programsParser = require('./csvProgramsParser');
+
+  fs.watchFile(
+    config.csvProgramsFilePath,
+    {persistent: true, interval: 2000},
+    function(curr, prev)
     {
-      app.reloadPrograms();
+      if (curr.mtime !== prev.mtime)
+      {
+        app.reloadPrograms();
+      }
     }
-  }
-);
+  );
+}
 
 app.programs = {};
 
 app.reloadPrograms = function()
 {
-  app.programs = {};
+  var programs = {};
 
-  var programsNumber = 0;
-
-  csv().from.path(config.csvProgramsFilePath, config.csvOptions)
-    .on('error', function(err)
+  programsParser.parse(function(err, programs)
+  {
+    if (err)
     {
       app.log("Error while reloading programs: %s", err.message);
-    })
-    .on('record', function(row)
+    }
+    else
     {
-      ++programsNumber;
+      app.programs = programs;
 
-      app.programs[row.nc] = row;
-    })
-    .on('end', function()
-    {
-      app.log("Reloaded %d programs!", programsNumber);
-    });
+      app.log("Reloaded %d programs!", Object.keys(programs).length);
+    }
+  });
 };
 
 app.program = function(nc, done)
