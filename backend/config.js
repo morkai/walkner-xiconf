@@ -13,7 +13,7 @@ exports.httpPort = 1337;
  *
  * @type {string}
  */
-exports.programsFilePath = __dirname + '/../data/programs.csv';
+exports.csvProgramsFilePath = __dirname + '/../data/programs.csv';
 
 /**
  * CSV options used to parse the programs file.

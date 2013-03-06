@@ -4,7 +4,7 @@ var csv = require('csv');
 var config = require('./config');
 
 fs.watchFile(
-  config.programsFilePath,
+  config.csvProgramsFilePath,
   {persistent: true, interval: 2000},
   function(curr, prev)
   {
@@ -23,7 +23,7 @@ app.reloadPrograms = function()
 
   var programsNumber = 0;
 
-  csv().from.path(config.programsFilePath, config.csvOptions)
+  csv().from.path(config.csvProgramsFilePath, config.csvOptions)
     .on('error', function(err)
     {
       app.log("Error while reloading programs: %s", err.message);
