@@ -38,7 +38,9 @@ Configuration settings can be changed in the `backend/config.js` file.
 
   * `httpPort` - port on which the HTTP server should listen for requests.
 
-  * `xlsxProgramsFilePath` - Path to an XSLX file with 12NC to AOC values.
+  * `reloadPassword` - password required to reload the programs through a browser.
+
+  * `xlsxProgramsFilePath` - path to an XSLX file with 12NC to AOC values.
 
   * `xlsxOptions` - XLSX options used to parse the programs file.
 

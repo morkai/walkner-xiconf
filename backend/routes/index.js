@@ -12,3 +12,4 @@ app.get('/', function(req, res)
 });
 
 require('./history');
+require('./programs');

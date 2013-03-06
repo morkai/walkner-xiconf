@@ -6,6 +6,13 @@
 exports.httpPort = 1337;
 
 /**
+ * Password required to reload the programs through a browser.
+ *
+ * @type {string}
+ */
+exports.reloadPassword = '7331';
+
+/**
  * Path to an XSLX file with 12NC to AOC values.
  *
  * If specified, this file will be read and parsed when the application server

@@ -26,7 +26,7 @@ else
 
 app.programs = {};
 
-app.reloadPrograms = function()
+app.reloadPrograms = function(done)
 {
   var programs = {};
 
@@ -42,6 +42,8 @@ app.reloadPrograms = function()
 
       app.log("Reloaded %d programs!", Object.keys(programs).length);
     }
+
+    done && done(err, programs);
   });
 };
 
