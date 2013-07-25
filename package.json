@@ -2,7 +2,7 @@
   "name": "walkner-xiconf",
   "version": "0.4.0",
   "description": "Overlay application for Xitanium Config Programmer.",
-  "license": "CC BY-NC 3.0",
+  "license": "NPOSL-3.0",
   "homepage": "https://github.com/morkai/walkner-xiconf",
   "author": {
     "name": "Łukasz Walukiewicz",
