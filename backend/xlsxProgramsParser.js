@@ -172,6 +172,16 @@ function prepareSharedStrings(rawSharedStrings)
       parts.forEach(function(part) { str += part.t; });
     }
 
+    if (typeof str === 'object' && Object.keys(str).length === 0)
+    {
+      str = '';
+    }
+
+    if (typeof str !== 'string')
+    {
+      str = JSON.stringify(str);
+    }
+
     sharedStrings.push(str.trim());
   });
 
