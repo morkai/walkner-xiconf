@@ -46,6 +46,11 @@ h2 {
 .table td {
   text-align: center;
 }
+.profile code {
+  overflow: auto;
+  max-height: 400px;
+  display: block;
+}
 pre {
   margin-bottom: 0;
 }

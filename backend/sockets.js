@@ -1,3 +1,4 @@
+'use strict';
 
 app.io.sockets.on('connection', function(socket)
 {
@@ -5,7 +6,10 @@ app.io.sockets.on('connection', function(socket)
   {
     app.program(nc, function(err)
     {
-      cb && cb(err ? {message: err.message} : null);
+      if (typeof cb === 'function')
+      {
+        cb(err ? {message: err.message} : null);
+      }
     });
   });
 });

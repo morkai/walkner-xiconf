@@ -1,50 +1,32 @@
-var spawn = require('child_process').spawn;
+'use strict';
+
 var fs = require('fs');
+var spawn = require('child_process').spawn;
 var config = require('./config');
-var programsParser = null;
 
-if (config.xlsxProgramsFilePath && config.xlsxProgramsFilePath.length)
-{
-  programsParser = require('./xlsxProgramsParser');
-}
-else
-{
-  programsParser = require('./csvProgramsParser');
-
-  fs.watchFile(
-    config.csvProgramsFilePath,
-    {persistent: true, interval: 2000},
-    function(curr, prev)
-    {
-      if (curr.mtime !== prev.mtime)
-      {
-        app.reloadPrograms();
-      }
-    }
-  );
-}
-
-app.programs = {};
-
-app.reloadPrograms = function(done)
-{
-  var programs = {};
-
-  programsParser.parse(function(err, programs)
-  {
-    if (err)
-    {
-      app.log("Error while reloading programs: %s", err.message);
-    }
-    else
-    {
-      app.programs = programs;
-
-      app.log("Reloaded %d programs!", Object.keys(programs).length);
-    }
-
-    done && done(err, programs);
-  });
+var EXIT_CODES = {
+  // general
+  '-1': 'błąd aplikacji',
+  4: 'błąd weryfikacji',
+  9: 'nie znaleziono pliku konfiguracyjnego programatora',
+  10: 'nieprawidłowy plik konfiguracyjny programatora',
+  // writing feature data
+  101: 'brak opcji drivera do zapisu',
+  // selecting feature data
+  200: 'nie znaleziono pliku konfiguracyjnego drivera',
+  201: 'nieprawidłowy plik konfiguracyjny drivera',
+  202: 'pusty plik konfiguracyjny drivera',
+  203: 'wykryto zduplikowane opcje drivera',
+  // device identification
+  500: 'nie znaleziono urządzenia',
+  501: 'znaleziono za dużo urządzeń',
+  502: 'nie można wykonać wyszukiwania urządzeń',
+  // converting feature info
+  600: 'brak opcji drivera do konwersji',
+  // system preparation
+  700: 'nie podłączono interfejsu',
+  // converting feature data
+  800: 'nie możliwa konwersja danych opcji drivera'
 };
 
 app.program = function(nc, done)
@@ -59,153 +41,220 @@ app.program = function(nc, done)
     return done(new Error("nieprawidłowy kod 12NC"));
   }
 
-  var program = app.programs[nc];
-
-  if (typeof program === 'undefined')
+  loadWorkflowFile(function(err, workflow)
   {
-    return done(new Error("kod 12NC nie istnieje"));
-  }
-
-  var historyEntry = app.historyEntry = {
-    id: app.nextHistoryEntryId++,
-    time: Date.now(),
-    program: program,
-    result: null,
-    stdout: null,
-    dateString: null,
-    timeString: null
-  };
-
-  var dateTime = app.getDateTime(new Date(historyEntry.time)).split(' ');
-
-  historyEntry.dateString = dateTime[0];
-  historyEntry.timeString = dateTime[1].split('.')[0];
-
-  done(null);
-
-  app.changeState('program');
-
-  app.log("Programming nc=%s aoc=%d label=%s...", program.nc, program.aoc, program.label);
-
-  tryToProgram(function(result, stdout)
-  {
-    if (result)
+    if (err)
     {
-      app.log("Programmed nc=%s", program.nc);
-    }
-    else
-    {
-      app.log("Failed to program nc=%s", program.nc);
+      return done(err);
     }
 
-    historyEntry.result = result;
-    historyEntry.stdout = stdout;
+    loadFeatureFile(nc, function(err, feature)
+    {
+      if (err)
+      {
+        return done(err);
+      }
 
-    saveCurrentHistoryEntry();
-
-    app.changeState(result ? 'success' : 'failure');
+      doProgramming(nc, workflow, feature, done);
+    });
   });
 };
 
 /**
  * @private
- * @param {function(boolean, string)} done
+ * @param {string} nc
+ * @param {function(Error|null, string|null)} done
  */
-function tryToProgram(done)
+function loadFeatureFile(nc, done)
 {
-  var historyEntry = app.historyEntry;
+  var featureFile = config.featureFilePattern.replace('${nc}', nc);
 
-  try
+  fs.readFile(featureFile, 'utf8', function(err, contents)
   {
-    writeProgramConfig(historyEntry.program.aoc);
-  }
-  catch (x)
-  {
-    return done(false, x.message);
-  }
-
-  var cmd = config.programmerPath + '/ConfigProgrammer.exe';
-  var args = ['-f', config.configFilePath].concat(config.programmerArgs);
-
-  var cp = spawn(cmd, args, {cwd: config.programmerPath});
-
-  var success = false;
-  var stdout = '';
-
-  var timeoutTimer = setTimeout(function()
-  {
-    timeoutTimer = null;
-
-    success = false;
-    stdout += '\r\nProcess timed out!';
-
-    cp.kill();
-  }, config.timeout);
-
-  cp.on('exit', function()
-  {
-    fs.unlinkSync(config.configFilePath);
-
-    clearTimeout(timeoutTimer);
-
-    done(success, stdout);
-  });
-
-  cp.stdout.setEncoding('utf8');
-  cp.stdout.on('data', function(data)
-  {
-    stdout += data;
-
-    if (stdout.lastIndexOf(config.failureString) !== -1)
+    if (err)
     {
-      cp.kill();
+      switch (err.code)
+      {
+        case 'ENOENT':
+          err.message = EXIT_CODES[200];
+          break;
+      }
     }
-    else if (stdout.lastIndexOf(config.successString) !== -1)
-    {
-      success = true;
 
-      cp.kill();
-    }
+    done(err, contents);
   });
 }
 
 /**
  * @private
- * @param {number} aoc
+ * @param {function(Error|null, string|null)} done
  */
-function writeProgramConfig(aoc)
+function loadWorkflowFile(done)
 {
-  var xml = [
-    '<?xml version="1.0" encoding="utf-8"?>',
-    '<ConfigData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">',
-    '<writeValues>',
-    '<MBEntry MembankName="MB_LED_AOC" Id="usAocCurrent" Data="' + aoc + '" />',
-    '</writeValues>',
-    '</ConfigData>'
-  ].join('\r\n');
+  fs.readFile(config.workflowFile, 'utf8', function(err, contents)
+  {
+    if (err)
+    {
+      switch (err.code)
+      {
+        case 'ENOENT':
+          err.message = EXIT_CODES[9];
+          break;
+      }
+    }
 
-  fs.writeFileSync(config.configFilePath, xml, 'utf8');
+    done(err, contents);
+  });
 }
 
 /**
  * @private
+ * @param {string} nc
+ * @param {string} workflow
+ * @param {string} feature
+ * @param {function(Error|null)} done
  */
-function saveCurrentHistoryEntry()
+function doProgramming(nc, workflow, feature, done)
+{
+  var historyEntry = app.historyEntry = {
+    startedAt: Date.now(),
+    finishedAt: 0,
+    nc: nc,
+    exitCode: 0,
+    error: null,
+    result: '?',
+    workflow: workflow,
+    feature: feature
+  };
+
+  var query = "INSERT INTO history (startedAt, nc, workflow, feature) "
+    + "VALUES(?, ?, ?, ?)";
+  var params = [
+    historyEntry.startedAt,
+    historyEntry.nc,
+    historyEntry.workflow,
+    historyEntry.feature
+  ];
+
+  app.db.run(query, params, function(err)
+  {
+    if (err)
+    {
+      return done(err);
+    }
+
+    app.db.all("SELECT last_insert_rowid() AS id", function(err, rows)
+    {
+      if (err)
+      {
+        return done(err);
+      }
+
+      historyEntry.id = rows[0].id;
+
+      app.applyDateTimeStrings(historyEntry, historyEntry.startedAt);
+
+      done(null);
+
+      app.changeState('program');
+
+      app.log("Programming nc=%s...", nc);
+
+      tryToProgram(historyEntry.nc, function(err, exitCode, result)
+      {
+        if (err)
+        {
+          historyEntry.error = err.message;
+        }
+        else if (exitCode !== 0)
+        {
+          historyEntry.error = EXIT_CODES[exitCode] || ('błąd ' + exitCode);
+        }
+
+        historyEntry.exitCode = exitCode;
+        historyEntry.result = result;
+
+        if (historyEntry.error)
+        {
+          app.log("Failed to program nc=%s", nc);
+        }
+        else
+        {
+          app.log("Programmed nc=%s", nc);
+        }
+
+        saveCurrentHistoryEntry(function()
+        {
+          app.changeState(historyEntry.error ? 'failure' : 'success');
+        });
+      });
+    });
+  });
+}
+
+/**
+ * @private
+ * @param {string} nc
+ * @param {function(Error|null, number, string)} done
+ */
+function tryToProgram(nc, done)
+{
+  var args = [
+    '/f', config.featureFilePattern.replace('${nc}', nc),
+    '/w', config.workflowFile,
+    '/i', config.interface,
+    '/v', config.logVerbosity
+  ];
+
+  var programmer = spawn(config.programmerFile, args, {
+    env: process.env
+  });
+
+  var result = '';
+  var error = null;
+
+  programmer.on('exit', function(code)
+  {
+    done(error, code, result);
+  });
+
+  programmer.on('error', function(err)
+  {
+    error = err;
+  });
+
+  programmer.stderr.on('data', function(stderr)
+  {
+    result += stderr.toString();
+  });
+
+  programmer.stdout.on('data', function(stdout)
+  {
+    result += stdout.toString();
+  });
+}
+
+/**
+ * @private
+ * @param {function(Error=)} [done]
+ */
+function saveCurrentHistoryEntry(done)
 {
   var historyEntry = app.historyEntry;
-  var historyFileName = app.getHistoryFileName(historyEntry.time);
 
-  if (historyFileName !== app.lastHistoryFileName)
-  {
-    app.lastHistoryFileName = historyFileName;
-    app.nextHistoryEntryId = 0;
+  historyEntry.finishedAt = Date.now();
 
-    historyEntry.id = 0;
-  }
+  var query = "UPDATE history SET finishedAt=?, exitCode=?, error=?, result=? "
+    + "WHERE rowid=?";
+  var data = [
+    historyEntry.finishedAt,
+    historyEntry.exitCode,
+    historyEntry.error,
+    historyEntry.result,
+    historyEntry.id
+  ];
 
-  var data = JSON.stringify(historyEntry) + '\n';
-
-  fs.appendFile(historyFileName, data, 'utf8', function(err)
+  app.db.run(query, data, function(err)
   {
     if (err)
     {
@@ -220,5 +269,7 @@ function saveCurrentHistoryEntry()
         app.historyEntries.shift();
       }
     }
+
+    done && done(err);
   });
 }

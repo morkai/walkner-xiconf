@@ -1,5 +1,7 @@
 $(function()
 {
+  'use strict';
+
   var $historyEntries = $('#history-entries');
 
   $('.show-history-entries').click(function()

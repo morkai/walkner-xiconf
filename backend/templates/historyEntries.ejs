@@ -23,8 +23,6 @@
       <th>#
       <th>Data i czas
       <th>12NC
-      <th>Etykieta
-      <th>Wartość
       <th>Wynik
     </tr>
     </thead>
@@ -33,10 +31,8 @@
     <tr data-date="<%= historyEntry.dateString %>" data-id="<%= historyEntry.id %>">
       <td><%= i + 1 %>
       <td><%= historyEntry.dateString %> <%= historyEntry.timeString %>
-      <td><%= historyEntry.program.nc %>
-      <td><%= historyEntry.program.label %>
-      <td><%= historyEntry.program.aoc %>
-      <td><%= historyEntry.result ? 'Sukces' : 'Porażka' %>
+      <td><%= historyEntry.nc %>
+      <td><%= historyEntry.error ? 'Porażka' : 'Sukces' %>
     </tr>
     <% }) %>
     </tbody>

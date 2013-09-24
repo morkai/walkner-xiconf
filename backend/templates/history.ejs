@@ -15,9 +15,9 @@
   <p>Wybierz wpisy, które chcesz wyświetlić lub wyeksportować.</p>
   <hr>
   <div id="history-entries">
-    <% files.forEach(function(file) { %>
+    <% days.forEach(function(day) { %>
     <p class="history-entry">
-      <button class="btn" data-toggle="button"><%= file %></button>
+      <button class="btn" data-toggle="button"><%= day %></button>
     </p>
     <% }) %>
   </div>

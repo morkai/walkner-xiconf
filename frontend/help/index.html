@@ -67,8 +67,7 @@
             informacja o aktualnym stanie programatora w postaci krótkiej wiadomości
             oraz obrazów &quot;buziek&quot;,
           <li>pasek ostatnio wykonanych programowań,
-          <li>przycisk przekierowujący do historii,
-          <li>przycisk przekierowujący do listy aktualnie załadowanych programów.</li>
+          <li>przycisk przekierowujący do historii.
         </ul>
         <p>
           Programator może w danej chwili znajdować się w jednym z czterech stanów:
@@ -119,12 +118,12 @@
         </p>
         <p>
           Po wysłaniu poprawnego kodu 12NC do serwera aplikacji, ten sprawdzi, czy
-          taki kod istnieje na aktualnej liście programów. Jeżeli nie istnieje,
+          istnije plik konfiguracyjny cech (feature) dla danego kodu 12NC oraz
+          plik konfiguracyjny workflow. Jeżeli nie istnieje,
           do użytkownika zostanie zwrócony błąd z odpowiednim komunikatem.
-          Jeżeli istnieje, odczytana zostanie etykieta oraz wartość przypisana do
-          danego kodu 12NC, a następnie uruchomiony zostanie program <code>ConfigProgrammer.exe</code>
+          Jeżeli istnieje, uruchomiony zostanie program programatora
           z odpowiednimi parametrami. Na koniec, odczytany zostanie wynik zwrócony przez
-          <code>ConfigProgrammer.exe</code> i na jego podstawie podjęta zostanie decyzja
+          program programatora i na jego podstawie podjęta zostanie decyzja
           czy programowanie udało się czy nie. Serwer aplikacji informuje użytkownika
           o podjętej decyzji i w między czasie zapisuje to programowanie jako nowy
           wpis w historii.
@@ -134,29 +133,7 @@
           Ekran nieudanego programowania
         </p>
       </section>
-      <section id="help-programs" class="pbb" data-page="5">
-        <h1>Programy</h1>
-        <p class="image">
-          <img class="screen" src="screens/programs.png" alt="Załadowane programy"><br>
-          Ekran załadowanych programów
-        </p>
-        <p>
-          Do ekranu programów  możemy przejść klikając na przycisk
-          <input type="button" class="btn" value="Programy"> znajdujący się
-          w prawym dolnym rogu głównego ekranu aplikacji - ekranu programowania.
-        </p>
-        <p>
-          Na tym ekranie mamy możliwość wglądu w to jakie programy są w danym momencie
-          załadowane i z jakiego pochodzą źródła (plik CSV lub XLSX). Możemy
-          także wymusić przeładowanie danych poprzez wpisanie hasła przeładowania
-          i wciśnięcie przycisku
-          <input type="button" class="btn btn-primary" value="Przeładuj programy">.
-        </p>
-        <p>
-          Aby wrócić do ekranu programatora, klikamy na nagłówek <a>Programator Xitanium</a>.
-        </p>
-      </section>
-      <section id="help-history" class="pbb">
+      <section id="help-history" class="pbb" data-page="5">
         <h1>Historia</h1>
         <section id="help-history-picker">
           <h1>Wybór wpisów</h1>
@@ -201,7 +178,6 @@
           <ul>
             <li>data i czas programowania,
             <li>kod 12NC użyty do programowania,
-            <li>etykieta oraz programowana wartość odczytane z pliku programów przy użyciu danego kodu 12NC,
             <li>wynik programowania.
           </ul>
           <p>
@@ -235,12 +211,16 @@
           </p>
           <ul>
             <li>kod 12NC użyty do programowania,
-            <li>etykieta oraz programowana wartość odczytane z pliku programów przy użyciu danego kodu 12NC,
-            <li>data i czas programowania,
-            <li>wynik programowania,
-            <li>odpowiedź z uruchomienia programu <code>ConfigProgrammer.exe</code>.
+            <li>data i czas rozpoczęcia programowania,
+            <li>data i czas ukończenia programowania,
+            <li>wynik programowania (porażka/sukces),
+            <li>komunikat błedu (tylko w przypadku porażki),</li>
+            <li>kod wyjściowy programu programatora,
+            <li>komunikaty programu programatora,</li>
+            <li>zawartość pliku konfiguracyjnego programatora,</li>
+            <li>zawartość pliku konfiguracyjnego drivera.</li>
           </ul>
-          <p>
+          <p class="pbb">
             Aby wrócić do ekranu listy wszystkich wpisów z tego samego dnia,
             klikamy na nagłówek z datą, np. <a>2013-02-21</a>.
           </p>
@@ -251,7 +231,7 @@
             Aby wrócić do ekranu programatora, klikamy na nagłówek <a>Programator Xitanium</a>.
           </p>
         </section>
-        <section id="help-history-export" class="pbb">
+        <section id="help-history-export" class="pbb" data-page="9">
           <h1>Eksport wybranych wpisów</h1>
           <p>
             Eksportowanie wpisów odbywa się poprzez wybranie wpisów i kliknięcie
@@ -263,12 +243,14 @@
           <p>
             Przykładowe, wyeksportowane dane wyglądają następująco:
           </p>
-          <pre><code>nc;label;aoc;date;time;result
-442710180710;PROGRAM XT IN 200 D;200;2013-02-21;15:48:28;0
-442710180710;PROGRAM XT IN 200 D;200;2013-02-21;15:48:22;1
-442710180710;PROGRAM XT IN 200 D;200;2013-02-21;15:45:47;1
-442710180710;PROGRAM XT IN 200 D;200;2013-02-21;15:39:45;0
-442710180710;PROGRAM XT IN 200 D;200;2013-02-21;15:39:06;1</code></pre>
+          <pre><code>nc;date;time;result;error
+111111111111;2013-09-24;15:02:23;0;nie podłączono interfejsu
+906957348298;2013-09-24;15:10:40;1;
+222222222222;2013-09-24;15:20:06;0;nieprawidłowy plik konfiguracyjny programatora
+333333333333;2013-09-24;15:20:11;0;wykryto zduplikowane opcje drivera
+980684737392;2013-09-24;15:20:13;1;
+444444444444;2013-09-24;15:20:15;0;błąd weryfikacji
+111111111111;2013-09-24;15:20:17;0;nie podłączono interfejsu</code></pre>
           <p>
             Pierwszy wiersz zawiera nazwy kolumn.
             Kolumny rozdzielone są znakiem średnika (<code>;</code>).
@@ -278,11 +260,10 @@
           </p>
           <ul>
             <li><code>nc</code> - kod 12NC użyty do programowania,
-            <li><code>label</code> - etykieta odczytana z pliku programów przy użyciu danego kodu 12NC,
-            <li><code>aoc</code> - programowana wartość odczytana z pliku programów przy użyciu danego kodu 12NC,
             <li><code>date</code> - data programowania,
             <li><code>time</code> - czas programowania,
-            <li><code>result</code> - wynik programowania (<code>1</code> - programowanie powiodło się, <code>0</code> - programowanie nie powiodło się).</li>
+            <li><code>result</code> - wynik programowania (<code>1</code> - programowanie powiodło się, <code>0</code> - programowanie nie powiodło się),
+            <li><code>error</code> - komunikat błędu.
           </ul>
         </section>
       </section>

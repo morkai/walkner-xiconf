@@ -1,5 +1,7 @@
 $(function()
 {
+  'use strict';
+
   $('.table').on('click', 'td', function()
   {
     var $tr = $(this).parent();

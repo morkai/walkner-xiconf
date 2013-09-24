@@ -1,4 +1,4 @@
-var config = require('../config');
+'use strict';
 
 app.get('/', function(req, res)
 {
@@ -12,4 +12,3 @@ app.get('/', function(req, res)
 });
 
 require('./history');
-require('./programs');

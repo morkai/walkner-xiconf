@@ -2,6 +2,10 @@ var socket = io.connect();
 
 $(function()
 {
+  /*jshint maxstatements:999*/
+
+  'use strict';
+
   if (!window.CONFIG)
   {
     window.CONFIG = {
@@ -41,7 +45,7 @@ $(function()
       clickToFocus: false
     });
 
-    changeState(CONFIG.state, CONFIG.historyEntry || {});
+    changeState(window.CONFIG.state, window.CONFIG.historyEntry || {});
   });
 
   $('#programForm').submit(function()
@@ -87,23 +91,17 @@ $(function()
     switch (newState)
     {
       case 'program':
-      {
         $program.attr('disabled', true);
-        $nc.attr('disabled', true).val(historyEntry.program.nc);
-
+        $nc.attr('disabled', true).val(historyEntry.nc);
         break;
-      }
 
       case 'success':
       case 'failure':
-      {
         addHistoryEntry(historyEntry);
 
         $program.attr('disabled', false);
         $nc.attr('disabled', false).val('');
-
         break;
-      }
     }
   });
 
@@ -118,7 +116,7 @@ $(function()
     var $a = $historyEntry.find('a');
 
     $a.addClass(
-      historyEntry.result ? 'btn-success' : 'btn-danger'
+      historyEntry.error ? 'btn-danger' : 'btn-success'
     );
 
     $a.attr(
@@ -127,7 +125,7 @@ $(function()
     );
 
     $a.html(
-      historyEntry.program.nc + ' @ ' + historyEntry.timeString
+      historyEntry.nc + ' @ ' + historyEntry.timeString
     );
 
     var $children = $history.children();
@@ -138,12 +136,13 @@ $(function()
     $a.css('opacity', 1);
     $a.fadeIn(function()
     {
-      setTimeout(function() {
-        $a.fadeTo(400, .3, function()
+      setTimeout(
+        function()
         {
-          $a.css('opacity', '');
-        });
-      }, 3000);
+          $a.fadeTo(400, 0.3, function() { $a.css('opacity', ''); });
+        },
+        3000
+      );
     });
 
     if ($children.length > 20)
@@ -210,7 +209,10 @@ $(function()
     {
       focusing = false;
 
-      done && done();
+      if (done)
+      {
+        done();
+      }
 
       if (focusQueue.length)
       {
@@ -225,7 +227,10 @@ $(function()
       {
         focusing = false;
 
-        done && done();
+        if (done)
+        {
+          done();
+        }
 
         if (focusQueue.length)
         {

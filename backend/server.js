@@ -1,12 +1,13 @@
-var fs = require('fs');
+'use strict';
+
 var http = require('http');
 var socketIo = require('socket.io');
 var express = require('express');
 var config = require('./config');
 
-var DATA_PATH = __dirname + '/../data';
+global.app = express();
 
-app = express();
+require('./db');
 
 app.log = function()
 {
@@ -52,41 +53,6 @@ app.changeState = function(newState)
 app.historyEntries = [];
 
 /**
- * ID of the next history entry.
- *
- * Also an index of the line it is on in the data file.
- *
- * @type {number}
- */
-app.nextHistoryEntryId = 0;
-
-/**
- * @param {number} time
- * @return {string}
- */
-app.getHistoryFileName = function(time)
-{
-  var date = new Date(time);
-  var year = date.getFullYear();
-  var month = date.getMonth() + 1;
-  var day = date.getDate();
-
-  return DATA_PATH + '/'
-    + year + '-'
-    + (month < 10 ? '0' : '') + month + '-'
-    + (day < 10 ? '0' : '') + day + '.txt';
-};
-
-/**
- * Name of the last history file name.
- *
- * Used to reset the next history entry ID when it changes.
- *
- * @type {string}
- */
-app.lastHistoryFileName = app.getHistoryFileName(Date.now());
-
-/**
  * @param {Date} date
  * @return {string}
  */
@@ -101,20 +67,18 @@ app.getDateTime = function(date)
     + pad0(date.getMilliseconds(), 4);
 };
 
-fs.readFile(app.lastHistoryFileName, 'utf8', function(err, contents)
+/**
+ * @param {object} obj
+ * @param {number} time
+ */
+app.applyDateTimeStrings = function(obj, time)
 {
-  if (!err)
-  {
-    var matches = contents.match(/\n/g);
+  var date = new Date(time);
+  var dateTime = app.getDateTime(date).split(' ');
 
-    if (matches)
-    {
-      app.nextHistoryEntryId = matches.length;
-
-      app.log("Set the next history entry ID to %d", app.nextHistoryEntryId);
-    }
-  }
-});
+  obj.dateString = dateTime[0];
+  obj.timeString = dateTime[1].split('.')[0];
+};
 
 app.httpServer = http.createServer(app);
 app.httpServer.listen(config.httpPort, function()
@@ -150,8 +114,6 @@ app.configure('production', function()
 require('./programmer');
 require('./routes');
 require('./sockets');
-
-app.reloadPrograms();
 
 /**
  * @private

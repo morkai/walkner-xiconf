@@ -14,16 +14,14 @@
     "type": "git",
     "url": "http://github.com/morkai/walkner-xiconf.git"
   },
-  "engine": ["node >=0.8.0"],
+  "engine": ["node >=0.10.18"],
   "main": "./backend/server",
   "dependencies": {
-    "express"        : "~3.1.0",
-    "ejs"            : "~0.8.3",
-    "csv"            : "~0.2.6",
-    "socket.io"      : "~0.9.13",
-    "xml2js"         : "~0.2.6",
-    "unzip"          : "~0.1.4",
-    "stream-buffers" : "~0.2.4"
+    "express"        : "~3.4.0",
+    "ejs"            : "~0.8.4",
+    "csv"            : "~0.3.6",
+    "socket.io"      : "~0.9.16",
+    "sqlite3"        : "~2.1.17"
   },
   "scripts": {
     "start": "node ./backend/server.js"

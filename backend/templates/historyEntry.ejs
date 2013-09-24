@@ -14,23 +14,31 @@
   <h2>
     <a href="/history">Historia</a>
     \
-    <a href="/history/<%= historyEntry.dateString %>"><%= historyEntry.dateString %></a>
+    <a href="/history/<%= historyEntry.startedAt.dateString %>"><%= historyEntry.startedAt.dateString %></a>
     \
     <%= historyEntry.id %>
   </h2>
   <dl class="well">
     <dt>Kod 12NC:
-    <dd><%= historyEntry.program.nc %>
-    <dt>Etykieta:
-    <dd><%= historyEntry.program.label %>
-    <dt>Programowana wartość:
-    <dd><%= historyEntry.program.aoc %>
-    <dt>Czas programowania:
-    <dd><%= historyEntry.dateString %> <%= historyEntry.timeString %>
+    <dd><%= historyEntry.nc %>
+    <dt>Start programowania:
+    <dd><%= historyEntry.startedAt.dateString %> <%= historyEntry.startedAt.timeString %>
+    <dt>Koniec programowania:
+    <dd><%= historyEntry.finishedAt.dateString %> <%= historyEntry.finishedAt.timeString %>
     <dt>Wynik programowania:
-    <dd><%= historyEntry.result ? 'Sukces' : 'Porażka' %>
-    <dt>Odpowiedź ConfigProgrammer.exe:
-    <dd><pre><code><%= historyEntry.stdout %></code></pre>
+    <dd><%= historyEntry.error ? 'Porażka' : 'Sukces' %>
+    <% if (historyEntry.error) { %>
+    <dt>Komunikat błędu:
+    <dd><%= historyEntry.error %>
+    <% } %>
+    <dt>Kod wyjściowy programu programatora:</dt>
+    <dd><%= historyEntry.exitCode %></dd>
+    <dt>Komunikaty programu programatora:</dt>
+    <dd class="profile"><pre><code><%= historyEntry.result %></code></pre>
+    <dt>Plik konfiguracyjny programatora:
+    <dd class="profile"><pre><code><%= historyEntry.workflow %></code></pre>
+    <dt>Plik konfiguracyjny drivera:
+    <dd class="profile"><pre><code><%= historyEntry.feature %></code></pre>
   </dl>
 </div>
 </body>

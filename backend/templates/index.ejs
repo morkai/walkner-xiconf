@@ -22,13 +22,13 @@
       Czekam na programowanie...
     </span>
     <span id="state-program" class="state">
-      Programuję <span data-property="program.label">?</span> (<span data-property="program.aoc">0</span>)...
+      Programuję <span data-property="nc">?</span>...
     </span>
     <span id="state-success" class="state">
-      Zaprogramowano <span data-property="program.label">?</span> (<span data-property="program.aoc">0</span>)!
+      Zaprogramowano <span data-property="nc">?</span>!
     </span>
     <span id="state-failure" class="state">
-      Programowanie <span data-property="program.nc">?</span> nie powiodło się<span data-property="error">?</span>!
+      Programowanie <span data-property="nc">?</span> nie powiodło się<span data-property="error">?</span>!
     </span>
   </p>
   <ul id="result">
@@ -38,12 +38,11 @@
   </ul>
   <ul id="history">
     <% historyEntries.forEach(function(historyEntry) { %>
-    <li><a href="/history/<%= historyEntry.dateString %>/<%= historyEntry.id %>" class="btn btn-<%= historyEntry.result ? 'success' : 'danger' %>"><%= historyEntry.program.nc %> @ <%= historyEntry.timeString %></a>
+    <li><a href="/history/<%= historyEntry.dateString %>/<%= historyEntry.id %>" class="btn btn-<%= historyEntry.error ? 'danger' : 'success' %>"><%= historyEntry.nc %> @ <%= historyEntry.timeString %></a>
     <% }) %>
     <li><a href="/history" class="btn">Historia</a>
   </ul>
 </div>
-<a id="showProgramsLink" href="/programs" class="btn">Programy</a>
 <script src="/socket.io/socket.io.js"></script>
 <script src="/js/jquery.min.js"></script>
 <script src="/js/jquery.roundabout.min.js"></script>

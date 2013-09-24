@@ -1,34 +1,26 @@
-var DATE_REG_EXP = /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/;
-var DATA_FILE_NAME_REGEXP = /^([0-9]{4}-[0-9]{2}-[0-9]{2})\.txt$/;
-var DATA_PATH = __dirname + '/../../data';
+'use strict';
 
-var fs = require('fs');
 var csv = require('csv');
 var config = require('../config');
 
 app.get('/history', function(req, res, next)
 {
-  fs.readdir(DATA_PATH, function(err, allFiles)
+  var query = "SELECT DISTINCT "
+    + "strftime('%Y-%m-%d', startedAt / 1000, 'unixepoch', 'localtime') "
+    + "AS date FROM history";
+
+  app.db.all(query, function(err, rows)
   {
     if (err)
     {
       return next(err);
     }
 
-    var files = [];
-
-    allFiles.forEach(function(file)
-    {
-      var matches = file.match(DATA_FILE_NAME_REGEXP);
-
-      if (matches !== null && matches[1])
+    res.render('history', {
+      days: rows.map(function(row)
       {
-        files.push(matches[1]);
-      }
-    });
-
-    return res.render('history', {
-      files: files.sort().reverse()
+        return row.date;
+      })
     });
   });
 });
@@ -53,9 +45,14 @@ app.get('/history/:date', function(req, res, next)
       return exportHistoryEntries(entries, req, res);
     }
 
-    var file = DATA_PATH + '/' + date + '.txt';
+    var query = "SELECT rowid AS id, startedAt, nc, error FROM history "
+      + "WHERE startedAt BETWEEN ? AND ?";
+    var data = [
+      new Date(date + ' 00:00:00').getTime(),
+      new Date(date + ' 23:59:59').getTime()
+    ];
 
-    return fs.readFile(file, 'utf8', function(err, contents)
+    app.db.all(query, data, function(err, rows)
     {
       if (err)
       {
@@ -64,7 +61,12 @@ app.get('/history/:date', function(req, res, next)
 
       entries.push.apply(
         entries,
-        contents.trim().split('\n').map(JSON.parse).reverse()
+        rows.map(function(row)
+        {
+          app.applyDateTimeStrings(row, row.startedAt);
+
+          return row;
+        })
       );
 
       return fetchNextEntries();
@@ -90,35 +92,55 @@ app.get('/history/:date/:id', function(req, res, next)
     return res.send("Invalid ID parameter", 400);
   }
 
-  var file = DATA_PATH + '/' + date + '.txt';
+  var query = "SELECT *, rowid AS id FROM history WHERE rowid=?";
 
-  return fs.readFile(file, 'utf8', function(err, contents)
+  app.db.all(query, [id], function(err, rows)
   {
     if (err)
     {
       return next(err);
     }
 
-    var lines = contents.trim().split('\n');
-
-    if (typeof lines[id] !== 'string')
+    if (rows.length === 0)
     {
-      return res.send("History entry not found", 404);
+      return res.send(404);
+    }
+
+    var row = rows[0];
+
+    var startedAt = {time: row.startedAt};
+    var finishedAt = {time: row.finishedAt};
+
+    app.applyDateTimeStrings(startedAt, row.startedAt);
+    app.applyDateTimeStrings(finishedAt, row.finishedAt);
+
+    row.startedAt = startedAt;
+    row.finishedAt = finishedAt;
+
+    if (typeof row.workflow !== 'string')
+    {
+      row.workflow = '-';
+    }
+
+    if (typeof row.feature !== 'string')
+    {
+      row.feature = '-';
     }
 
     return res.render('historyEntry', {
-      historyEntry: JSON.parse(lines[id])
+      historyEntry: row
     });
   });
 });
 
 /**
+ * @private
  * @param {string} date
  * @return {Boolean}
  */
 function validateDate(date)
 {
-  return DATE_REG_EXP.test(date);
+  return (/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/).test(date);
 }
 
 /**
@@ -131,40 +153,37 @@ function exportHistoryEntries(entries, req, res)
 {
   switch (req.query.export)
   {
-    case 'json':
-      return res.json(entries);
+  case 'json':
+    return res.json(entries);
 
-    case 'csv':
-    {
-      //res.attachment('xitanium+' + req.params.date + '.csv');
+  case 'csv':
+    res.attachment('xitanium+' + req.params.date + '.csv');
 
-      return csv()
-        .from.array(entries)
-        .transform(function(entry)
-        {
-          return [
-            entry.program.nc,
-            entry.program.label,
-            entry.program.aoc,
-            entry.dateString,
-            entry.timeString,
-            entry.result ? '1': '0'
-          ];
-        })
-        .to(res, {
-          delimiter: config.csvOptions.delimiter,
-          quote: config.csvOptions.quote,
-          escape: config.csvOptions.escape,
-          lineBreaks: 'windows',
-          header: true,
-          columns: [].concat(config.csvOptions.columns, ['date', 'time', 'result'])
-        });
-    }
-
-    default:
-      return res.render('historyEntries', {
-        dates: req.params.date,
-        historyEntries: entries
+    return csv()
+      .from.array(entries)
+      .transform(function(entry)
+      {
+        return [
+          entry.nc,
+          entry.dateString,
+          entry.timeString,
+          entry.error ? '0': '1',
+          entry.error ? entry.error : ''
+        ];
+      })
+      .to(res, {
+        delimiter: config.csvOptions.delimiter,
+        quote: config.csvOptions.quote,
+        escape: config.csvOptions.escape,
+        rowDelimiter: 'windows',
+        header: true,
+        columns: ['nc', 'date', 'time', 'result', 'error']
       });
+
+  default:
+    return res.render('historyEntries', {
+      dates: req.params.date,
+      historyEntries: entries
+    });
   }
 }
