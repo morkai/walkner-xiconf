@@ -48,14 +48,14 @@ app.program = function(nc, done)
       return done(err);
     }
 
-    loadFeatureFile(nc, function(err, feature)
+    loadFeatureFile(nc, function(err, featureFile, featureContents)
     {
       if (err)
       {
         return done(err);
       }
 
-      doProgramming(nc, workflow, feature, done);
+      doProgramming(nc, workflow, featureFile, featureContents, done);
     });
   });
 };
@@ -63,25 +63,43 @@ app.program = function(nc, done)
 /**
  * @private
  * @param {string} nc
- * @param {function(Error|null, string|null)} done
+ * @param {function(Error|null, string|null, string|null)} done
  */
 function loadFeatureFile(nc, done)
 {
-  var featureFile = config.featureFilePattern.replace('${nc}', nc);
+  var featureFile =
+    config.featureFilePath.replace(/(\\|\/)$/, '') + '/' + nc + '.xml';
 
   fs.readFile(featureFile, 'utf8', function(err, contents)
   {
     if (err)
     {
-      switch (err.code)
-      {
-        case 'ENOENT':
-          err.message = EXIT_CODES[200];
-          break;
-      }
-    }
+      featureFile =
+        config.fallbackFilePath.replace(/(\\|\/)$/, '') + '/' + nc + '.xml';
 
-    done(err, contents);
+      fs.readFile(featureFile, 'utf8', function(err2, contents)
+      {
+        if (err2)
+        {
+          switch (err.code)
+          {
+            case 'ENOENT':
+              err.message = EXIT_CODES[200];
+              break;
+          }
+
+          done(err, null, null);
+        }
+        else
+        {
+          done(null, featureFile, contents);
+        }
+      });
+    }
+    else
+    {
+      done(null, featureFile, contents);
+    }
   });
 }
 
@@ -111,10 +129,11 @@ function loadWorkflowFile(done)
  * @private
  * @param {string} nc
  * @param {string} workflow
- * @param {string} feature
+ * @param {string} featureFile
+ * @param {string} featureContents
  * @param {function(Error|null)} done
  */
-function doProgramming(nc, workflow, feature, done)
+function doProgramming(nc, workflow, featureFile, featureContents, done)
 {
   var historyEntry = app.historyEntry = {
     startedAt: Date.now(),
@@ -124,7 +143,7 @@ function doProgramming(nc, workflow, feature, done)
     error: null,
     result: '?',
     workflow: workflow,
-    feature: feature
+    feature: featureContents
   };
 
   var query = "INSERT INTO history (startedAt, nc, workflow, feature) "
@@ -160,7 +179,7 @@ function doProgramming(nc, workflow, feature, done)
 
       app.log("Programming nc=%s...", nc);
 
-      tryToProgram(historyEntry.nc, function(err, exitCode, result)
+      tryToProgram(featureFile, function(err, exitCode, result)
       {
         if (err)
         {
@@ -194,13 +213,13 @@ function doProgramming(nc, workflow, feature, done)
 
 /**
  * @private
- * @param {string} nc
+ * @param {string} featureFile
  * @param {function(Error|null, number, string)} done
  */
-function tryToProgram(nc, done)
+function tryToProgram(featureFile, done)
 {
   var args = [
-    '/f', config.featureFilePattern.replace('${nc}', nc),
+    '/f', featureFile,
     '/w', config.workflowFile,
     '/i', config.interface,
     '/v', config.logVerbosity

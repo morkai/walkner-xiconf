@@ -1,5 +1,6 @@
 'use strict';
 
+var exec = require('child_process').exec;
 var http = require('http');
 var socketIo = require('socket.io');
 var express = require('express');
@@ -114,6 +115,34 @@ app.configure('production', function()
 require('./programmer');
 require('./routes');
 require('./sockets');
+
+if (config.syncDelay !== -1)
+{
+  setTimeout(
+    function()
+    {
+      app.log("Copying the feature files...");
+
+      var cmd = 'rmdir /S /Q "' + config.fallbackFilePath + '" & '
+        + 'xcopy /C /I /Q /Y '
+        + '"' + config.syncPath + '" '
+        + '"' + config.fallbackFilePath + '"';
+
+      exec(cmd, function(err)
+      {
+        if (err)
+        {
+          app.log("Failed to copy the feature files: %s", err.message);
+        }
+        else
+        {
+          app.log("Copied the feature files!");
+        }
+      });
+    },
+    config.syncDelay * 1000
+  );
+}
 
 /**
  * @private

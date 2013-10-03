@@ -15,13 +15,40 @@ exports.httpPort = 1337;
 exports.programmerFile = 'C:/Program Files (x86)/Philips MultiOne Workflow prototype 0.2/MultiOneWorkflow.exe';
 
 /**
- * Path to the feature configuration file.
- *
- * `${nc}` token will be replaced with the chosen 12NC code.
+ * Path to the feature configuration files.
  *
  * @type {string}
  */
-exports.featureFilePattern = 'C:/Features/${nc}.xml';
+exports.featureFilePath = '\\\\omghi2u\\features';
+
+/**
+ * Path to the feature configuration fallback files.
+ *
+ * Will be used only if the reading the file from `featureFilePath` fails.
+ *
+ * **WARNING**: This directory and everything in it will be deleted before
+ *
+ * @type {string}
+ */
+exports.fallbackFilePath = 'C:/features';
+
+/**
+ * Number of seconds after a start of the program before files from
+ * `syncPath` are copied to `fallbackFilePath`.
+ *
+ * `-1` disables this feature.
+ *
+ * @type {number}
+ */
+exports.syncDelay = 5 * 60;
+
+/**
+ * Path from which the feature files will be copied to `fallbackFilePath`
+ * after `syncDelay`.
+ *
+ * @type {string}
+ */
+exports.syncPath = exports.featureFilePath;
 
 /**
  * Path to the workflow configuration file.
