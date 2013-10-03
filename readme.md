@@ -40,9 +40,17 @@ Configuration settings can be changed in the `backend/config.js` file.
 
   * `programmerFile` - path to the programmer binary file.
 
-  * `featureFilePattern` - path to the feature configuration file.
+  * `featureFilePath` - path to the feature configuration files.
+
+  * `fallbackFilePath` - path to the feature configuration fallback files.
 
   * `workflowFile` - path to the workflow configuration file.
+
+  * `syncDelay` - number of seconds after a start of the program before files
+    from `syncPath` are copied to `fallbackFilePath`.
+
+  * `syncPath` - path from which the feature files will be copied
+    to `fallbackFilePath` after `syncDelay` seconds after start of the server.
 
   * `interface` - programming interface.
 
