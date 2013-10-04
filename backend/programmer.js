@@ -67,15 +67,13 @@ app.program = function(nc, done)
  */
 function loadFeatureFile(nc, done)
 {
-  var featureFile =
-    config.featureFilePath.replace(/(\\|\/)$/, '') + '/' + nc + '.xml';
+  var featureFile = config.featureFilePath + '\\' + nc + '.xml';
 
   fs.readFile(featureFile, 'utf8', function(err, contents)
   {
     if (err)
     {
-      featureFile =
-        config.fallbackFilePath.replace(/(\\|\/)$/, '') + '/' + nc + '.xml';
+      featureFile = config.fallbackFilePath + '\\' + nc + '.xml';
 
       fs.readFile(featureFile, 'utf8', function(err2, contents)
       {

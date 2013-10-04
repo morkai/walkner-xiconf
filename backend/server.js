@@ -112,6 +112,12 @@ app.configure('production', function()
   app.use(express.errorHandler());
 });
 
+config.programmerFile = preparePath(config.programmerFile);
+config.featureFilePath = preparePath(config.featureFilePath);
+config.fallbackFilePath = preparePath(config.fallbackFilePath);
+config.syncPath = preparePath(config.syncPath);
+config.workflowFile = preparePath(config.workflowFile);
+
 require('./programmer');
 require('./routes');
 require('./sockets');
@@ -161,4 +167,21 @@ function pad0(str, length)
   }
 
   return str;
+}
+
+/**
+ * @private
+ * @param {string} path
+ * @returns {string}
+ */
+function preparePath(path)
+{
+  path = path.replace(/\//g, '\\');
+  
+  if (path.charAt(path.length - 1) === '\\')
+  {
+    path = path.substr(0, path.length - 1);
+  }
+  
+  return path;
 }
