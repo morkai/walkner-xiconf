@@ -2,6 +2,7 @@
 
 var exec = require('child_process').exec;
 var http = require('http');
+var resolvePath = require('path').resolve;
 var socketIo = require('socket.io');
 var express = require('express');
 var config = require('./config');
@@ -176,9 +177,9 @@ function pad0(str, length)
  */
 function preparePath(path)
 {
-  path = path.replace(/\//g, '\\');
+  path = resolvePath(path).replace(/\\/g, '/');
   
-  if (path.charAt(path.length - 1) === '\\')
+  if (path.charAt(path.length - 1) === '/')
   {
     path = path.substr(0, path.length - 1);
   }

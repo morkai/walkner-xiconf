@@ -21,7 +21,8 @@
     "ejs"            : "~0.8.4",
     "csv"            : "~0.3.6",
     "socket.io"      : "~0.9.16",
-    "sqlite3"        : "~2.1.17"
+    "sqlite3"        : "~2.1.17",
+    "glob"           : "~3.2.6"
   },
   "scripts": {
     "start": "node ./backend/server.js"

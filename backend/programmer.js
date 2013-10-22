@@ -2,6 +2,7 @@
 
 var fs = require('fs');
 var spawn = require('child_process').spawn;
+var glob = require('glob');
 var config = require('./config');
 
 var EXIT_CODES = {
@@ -67,37 +68,59 @@ app.program = function(nc, done)
  */
 function loadFeatureFile(nc, done)
 {
-  var featureFile = config.featureFilePath + '\\' + nc + '.xml';
-
-  fs.readFile(featureFile, 'utf8', function(err, contents)
+  findFeatureFileName(nc, function(err, featureFile)
   {
     if (err)
     {
-      featureFile = config.fallbackFilePath + '\\' + nc + '.xml';
-
-      fs.readFile(featureFile, 'utf8', function(err2, contents)
-      {
-        if (err2)
-        {
-          switch (err.code)
-          {
-            case 'ENOENT':
-              err.message = EXIT_CODES[200];
-              break;
-          }
-
-          done(err, null, null);
-        }
-        else
-        {
-          done(null, featureFile, contents);
-        }
-      });
+      return done(err, null, null);
     }
-    else
+
+    if (featureFile == null)
     {
-      done(null, featureFile, contents);
+      return done(new Error({message: EXIT_CODES[10]}), null, null);
     }
+
+    fs.readFile(featureFile, 'utf8', function(err, contents)
+    {
+      done(err, featureFile, contents);
+    });
+  });
+}
+
+/**
+ * @private
+ * @param {string} nc
+ * @param {function(Error|null, string|null)} done
+ */
+function findFeatureFileName(nc, done)
+{
+  var pattern = config.featureFilePath + '/' + nc + '*.xml';
+  var options = {
+    nonegate: true,
+    nocomment: true,
+    nonull: false,
+    dot: true,
+    nocase: false
+  };
+
+  glob(pattern, options, function(err, files)
+  {
+    if (err)
+    {
+      return done(err, null);
+    }
+
+    if (files.length !== 0)
+    {
+      return done(null, files[0]);
+    }
+
+    pattern = config.fallbackFilePath + '/' + nc + '*.xml';
+
+    glob(pattern, options, function(err, files)
+    {
+      done(err, files && files.length ? files[0] : null);
+    });
   });
 }
 
@@ -175,7 +198,7 @@ function doProgramming(nc, workflow, featureFile, featureContents, done)
 
       app.changeState('program');
 
-      app.log("Programming nc=%s...", nc);
+      app.log("Programming nc=%s (%s)...", nc, featureFile);
 
       tryToProgram(featureFile, function(err, exitCode, result)
       {
