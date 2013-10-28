@@ -1,6 +1,6 @@
 {
   "name": "walkner-xiconf",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Overlay application for Xitanium Config Programmer.",
   "license": "NPOSL-3.0",
   "homepage": "https://github.com/morkai/walkner-xiconf",
