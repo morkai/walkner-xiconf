@@ -77,7 +77,7 @@ function loadFeatureFile(nc, done)
 
     if (featureFile == null)
     {
-      return done(new Error({message: EXIT_CODES[10]}), null, null);
+      return done(new Error(EXIT_CODES[200]), null, null);
     }
 
     fs.readFile(featureFile, 'utf8', function(err, contents)
