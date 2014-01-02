@@ -125,30 +125,7 @@ require('./sockets');
 
 if (config.syncDelay !== -1)
 {
-  setTimeout(
-    function()
-    {
-      app.log("Copying the feature files...");
-
-      var cmd = 'rmdir /S /Q "' + config.fallbackFilePath + '" & '
-        + 'xcopy /C /I /Q /Y '
-        + '"' + config.syncPath + '" '
-        + '"' + config.fallbackFilePath + '"';
-
-      exec(cmd, function(err)
-      {
-        if (err)
-        {
-          app.log("Failed to copy the feature files: %s", err.message);
-        }
-        else
-        {
-          app.log("Copied the feature files!");
-        }
-      });
-    },
-    config.syncDelay * 1000
-  );
+  setTimeout(trySyncFeatureFiles, config.syncDelay * 1000);
 }
 
 /**
@@ -177,12 +154,55 @@ function pad0(str, length)
  */
 function preparePath(path)
 {
-  path = resolvePath(path).replace(/\\/g, '/');
-  
-  if (path.charAt(path.length - 1) === '/')
+  path = resolvePath(path);
+
+  var lastChar = path.charAt(path.length - 1);
+
+  if (lastChar === '/' || lastChar === '\\')
   {
     path = path.substr(0, path.length - 1);
   }
   
   return path;
+}
+
+function trySyncFeatureFiles()
+{
+  app.log("Trying to sync the feature files...");
+
+  var tmpDir = config.fallbackFilePath + '-tmp';
+  var cmd = 'rmdir /S /Q "' + tmpDir + '" & '
+    + 'xcopy /C /I /Q /Y '
+    + '"' + config.syncPath + '" '
+    + '"' + tmpDir + '"';
+
+  exec(cmd, function(err)
+  {
+    if (err)
+    {
+      return app.log("Failed to copy the backup feature files to the tmp dir: %s", err.message);
+    }
+
+    var cmd = 'xcopy /C /I /Q /Y '
+      + '"' + tmpDir + '" '
+      + '"' + config.fallbackFilePath + '"';
+
+    exec(cmd, function(err)
+    {
+      if (err)
+      {
+        return app.log("Failed to copy the tmp dir: %s", err.message);
+      }
+
+      app.log("Synced the feature files!");
+
+      exec('rmdir /S /Q "' + tmpDir + '"', function(err)
+      {
+        if (err)
+        {
+          return app.log("Failed to remove the tmp dir: %s", err.message);
+        }
+      });
+    });
+  });
 }
