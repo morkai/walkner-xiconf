@@ -19,14 +19,15 @@ exports.programmerFile = 'C:/Program Files (x86)/Philips MultiOne Workflow proto
  *
  * @type {string}
  */
-exports.featureFilePath = '\\\\omghi2u\\features';
+exports.featureFilePath = __dirname + '/../data';
 
 /**
  * Path to the feature configuration fallback files.
  *
  * Will be used only if the reading the file from `featureFilePath` fails.
  *
- * **WARNING**: This directory and everything in it will be deleted before
+ * **WARNING**: This directory and everything in it will be deleted after
+ * `syncDelay` seconds after a start of the server.
  *
  * @type {string}
  */
@@ -55,7 +56,7 @@ exports.syncPath = exports.featureFilePath;
  *
  * @type {string}
  */
-exports.workflowFile = 'C:/workflow.xml';
+exports.workflowFile = __dirname + '/../data/workflow.xml';
 
 /**
  * The programming interface.
