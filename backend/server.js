@@ -166,43 +166,26 @@ function preparePath(path)
   return path;
 }
 
+/**
+ * @private
+ */
 function trySyncFeatureFiles()
 {
   app.log("Trying to sync the feature files...");
 
-  var tmpDir = config.fallbackFilePath + '-tmp';
-  var cmd = 'rmdir /S /Q "' + tmpDir + '" & '
-    + 'xcopy /C /I /Q /Y '
+  var cmd = 'xcopy /C /I /Q /Y '
     + '"' + config.syncPath + '" '
-    + '"' + tmpDir + '"';
+    + '"' + config.fallbackFilePath + '"';
 
   exec(cmd, function(err)
   {
     if (err)
     {
-      return app.log("Failed to copy the backup feature files to the tmp dir: %s", err.message);
+      app.log("Failed to sync the feature files: %s", err.message);
     }
-
-    var cmd = 'xcopy /C /I /Q /Y '
-      + '"' + tmpDir + '" '
-      + '"' + config.fallbackFilePath + '"';
-
-    exec(cmd, function(err)
+    else
     {
-      if (err)
-      {
-        return app.log("Failed to copy the tmp dir: %s", err.message);
-      }
-
       app.log("Synced the feature files!");
-
-      exec('rmdir /S /Q "' + tmpDir + '"', function(err)
-      {
-        if (err)
-        {
-          return app.log("Failed to remove the tmp dir: %s", err.message);
-        }
-      });
-    });
+    }
   });
 }
