@@ -27,7 +27,9 @@ var EXIT_CODES = {
   // system preparation
   700: 'nie podłączono interfejsu',
   // converting feature data
-  800: 'nie możliwa konwersja danych opcji drivera'
+  800: 'nie możliwa konwersja danych opcji drivera',
+  // other
+  ENOENT: 'nie znaleziono programatora'
 };
 
 app.program = function(nc, done)
@@ -260,6 +262,11 @@ function tryToProgram(featureFile, done)
 
   programmer.on('error', function(err)
   {
+    if (err.code === 'ENOENT')
+    {
+      return done(null, err.code, result);
+    }
+    
     error = err;
   });
 
