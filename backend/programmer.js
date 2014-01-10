@@ -2,7 +2,6 @@
 
 var fs = require('fs');
 var spawn = require('child_process').spawn;
-var glob = require('glob');
 var config = require('./config');
 
 var EXIT_CODES = {
@@ -96,16 +95,7 @@ function loadFeatureFile(nc, done)
  */
 function findFeatureFileName(nc, done)
 {
-  var pattern = config.featureFilePath + '/' + nc + '*.xml';
-  var options = {
-    nonegate: true,
-    nocomment: true,
-    nonull: false,
-    dot: true,
-    nocase: false
-  };
-
-  glob(pattern, options, function(err, files)
+  findFiles(config.featureFilePath, nc, function(err, files)
   {
     if (err)
     {
@@ -117,9 +107,7 @@ function findFeatureFileName(nc, done)
       return done(null, files[0]);
     }
 
-    pattern = config.fallbackFilePath + '/' + nc + '*.xml';
-
-    glob(pattern, options, function(err, files)
+    findFiles(config.fallbackFilePath, nc, function(err, files)
     {
       done(err, files && files.length ? files[0] : null);
     });
@@ -318,5 +306,30 @@ function saveCurrentHistoryEntry(done)
     }
 
     done && done(err);
+  });
+}
+
+function findFiles(path, nc, done)
+{
+  fs.readdir(path, function(err, files)
+  {
+    if (err)
+    {
+      return done(err);
+    }
+
+    var pattern = new RegExp('^' + nc + '.*?\\.xml$', 'i');
+
+    files = files
+      .filter(function(file)
+      {
+        return pattern.test(file);
+      })
+      .map(function(file)
+      {
+        return path + '/' + file;
+      });
+
+    done(null, files);
   });
 }
