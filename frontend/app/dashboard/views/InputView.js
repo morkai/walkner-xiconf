@@ -691,7 +691,10 @@ define([
       var dialogView = new DialogView({
         dialogClassName: 'dashboard-orderFinishedDialog',
         template: orderFinishedDialogTemplate,
-        model: this.model.get('order')
+        model: {
+          order: this.model.get('order'),
+          resetOrderHotkey: settings.get('hotkeys').resetOrder
+        }
       });
       var view = this;
 
