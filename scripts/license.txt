@@ -1,0 +1,92 @@
+﻿Licencja na komercyjne wykorzystanie oprogramowania Walkner Xiconf
+
+---
+OPROGRAMOWANIE (ZDEFINIOWANE PONIŻEJ) PODLEGA NINIEJSZEJ LICENCJI NA KOMERCYJNE WYKORZYSTANIE OPROGRAMOWANIA WALKNER XICONF ("LICENCJA"). OPROGRAMOWANIE PODLEGA OCHRONIE PRAWA AUTORSKIEGO LUB INNYCH STOSOWNYCH PRZEPISÓW PRAWA. KORZYSTANIE Z OPROGRAMOWANIA W SPOSÓB INNY NIŻ DOZWOLONY NA PODSTAWIE NINIEJSZEJ LICENCJI LUB PRZEPISÓW PRAWA JEST ZABRONIONE.
+
+WYKONANIE JAKIEGOKOLWIEK UPRAWNIENIA DO OPROGRAMOWANIA OKREŚLONEGO W NINIEJSZEJ LICENCJI OZNACZA PRZYJĘCIE I ZGODĘ NA ZWIĄZANIE POSTANOWIENIAMI NINIEJSZEJ LICENCJI.
+
+---
+1. Pojęcia
+
+Licencja oznacza niniejszy dokument opisujący prawa i ograniczenia Licencjobiorcy związane z Oprogramowaniem i/lub jego częściami.
+
+Licencjodawca oznacza osobę fizyczną, osoby fizyczne, jednostkę organizacyjną lub jednostki organizacyjne oferujące Oprogramowanie na zasadach określonych w niniejszej Licencji.
+
+Licencjobiorca oznacza osobę fizyczną lub jednostkę organizacyjną korzystającą z uprawnień określonych niniejszą Licencją, która nie naruszyła uprzednio warunków niniejszej Licencji w odniesieniu do Oprogramowania, lub która mimo uprzedniego naruszenia uzyskała wyraźną zgodę Licencjodawcy na wykonywanie uprawnień przyznanych Licencją.
+
+Oprogramowanie oznacza serwer aplikacji w formie kodu obiektowego i źródłowego o nazwie Walkner Xiconf dostarczany przez Licencjodawcę.
+
+Dokumentacja oznacza instrukcję instalacji, poradnik użytkownika i/lub inne dokumenty dostarczone przez Licencjodawce wraz z Oprogramowaniem.
+
+Klient oznacza osobę lub program komputerowy korzystający z uruchomionego Oprogramowania przez przeglądarkę internetową lub komputerowe API.
+
+Klucz licencyjny oznacza plik tekstowy, który Licencjobiorca otrzymuje od Licencjodawcy po uiszczeniu opłaty licencyjnej. Każdy Klucz licencyjny jest unikalny i zawiera informację o nazwie i wersji Oprogramowania, dla którego został przydzielony, dacie wygenerowania, nazwie Licencjobiorcy, numerze identyfikacyjnym oraz dodatkowych, odblokowanych opcjach Oprogramowania.
+
+---
+2. Licencja
+
+a. Udzielenie licencji
+
+Licencjodawca udziela Licencjobiorcy niewyłącznej, nieprzenośnej licencji na instalację i użytkowanie Oprogramowania w celach komercyjnych na czas nieokreślony, podlegające ograniczeniom przedstawionym w Paragrafie 3.
+
+b. Dokumentacja
+
+Licencjobiorca może tworzyć i używać nieograniczoną liczbę kopii Dokumentacji dostarczonej wraz z Oprogramowaniem w formie elektronicznej i/lub fizycznej.
+
+c. Kopie
+
+Licencjobiorca może tworzyć rozsądną ilość kopii zapasowych Oprogramowania, pod warunkiem że kopie te nie będą instalowane lub używane w celach innych niż archiwizowanie lub przywrócenie zainstalowanego Oprogramowania do stanu wcześniejszego.
+
+d. Użytek prywatny
+
+Licencjobiorca może instalować i używać nieograniczoną liczbę kopii Oprogramowania do celów testowych i edukacyjnych (niekomercyjnych) na warunkach licencji Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (warunki licencji dostępne na stronie WWW http://creativecommons.org/licenses/by-nc-sa/4.0/).
+
+---
+3. Ograniczenia
+
+Uprawnienia przyznane w Paragrafie 2 podlegają następującym ograniczeniom:
+
+a. Oprogramowanie może być zainstalowane i uruchomione w danym momencie tylko na liczbie komputerów równej liczbie posiadanych przez Licencjobiorcę Kluczy licencyjnych.
+
+---
+4. Własność
+
+Licencjodawca zastrzega wszelkie prawa nie udzielone Licencjobiorcy przez tę Licencję. Oprogramowanie jest chronione prawami autorskimi oraz innymi prawami lub umowami o własności intelektualnej. Licencjodawca lub jego dostawcy zachowują tytuł, prawa autorskie i inne prawa własności intelektualnej dotyczące Oprogramowania. Oprogramowanie jest licencjonowane, a nie sprzedawane.
+
+---
+5. Oświadczenia, Zapewnienia oraz Wyłączenie odpowiedzialności
+
+JEŻELI STRONY NIE POSTANOWIĄ INACZEJ W ODRĘBNYM POROZUMIENIU  SPORZĄDZONYM NA PIŚMIE POD RYGOREM NIEWAŻNOŚCI, LICENCJODAWCA UDOSTĘPNIA OPROGRAMOWANIE W TAKIEJ FORMIE W JAKIEJ ZAPOZNAŁ SIĘ Z NIM  LICENCJOBIORCA I W NAJDALEJ IDĄCYM STOPNIU NA JAKI POZWALA PRAWO WŁAŚCIWE NIE SKŁADA ŻADNYCH ZAPEWNIEŃ ORAZ NIE UDZIELA ŻADNYCH GWARANCJI A TAKŻE WYŁĄCZA RĘKOJMIĘ, CZY TO WYRAŹNĄ, DOROZUMIANĄ CZY INNĄ, W SZCZEGÓLNOŚCI DOTYCZĄCYCH TYTUŁU, MOŻLIWOŚCI KORZYSTANIA Z OPROGRAMOWANIA ZGODNIE Z JEGO PRZEZNACZENIEM, PRZEZNACZENIA OPROGRAMOWANIA DO KONKRETNEGO CELU, CO DO TEGO, ŻE NIE NARUSZA ON PRAW INNYCH OSÓB, BRAKU JAWNYCH LUB UKRYTYCH WAD, DOKŁADNOŚCI, WYSTĘPOWANIA LUB NIEWYSTĘPOWANIA WAD WIDOCZNYCH JAK I UKRYTYCH. PRAWO WŁAŚCIWE MOŻE NIE ZEZWALAĆ NA NIEKTÓRE SPOŚRÓD POWYŻSZYCH WYŁĄCZEŃ, WIĘC MOGĄ ONE NIE MIEĆ ZASTOSOWANIA.
+
+---
+6. Ograniczenie odpowiedzialności
+
+O ILE PRAWO WŁAŚCIWE NIE STANOWI INACZEJ, W ŻADNYM WYPADKU LICENCJODAWCA NIE ODPOWIADA WOBEC LICENCJOBIORCY NA ŻADNEJ PODSTAWIE PRAWNEJ ZA ŻADNE SZCZEGÓLNE, PRZYPADKOWE LUB NASTĘPCZE SZKODY WYNIKAJĄCE Z NINIEJSZEJ LICENCJI LUB WYKORZYSTANIA OPROGRAMOWANIA, NAWET JEŻELI LICENCJODAWCA ZOSTAŁ POWIADOMIONY O MOŻLIWOŚCI WYSTĄPIENIA TAKICH SZKÓD.
+
+---
+7. Wygaśnięcie
+
+a. Licencja automatycznie wygasa w przypadku jakiegokolwiek jej naruszenia przez Licencjobiorcę. Paragrafy 1, 4, 5, 6, 7, 8 oraz 10 pozostają w mocy po wygaśnięciu niniejszej Licencji.
+
+b. Zgodnie z powyższymi postanowieniami Licencja udzielana jest na czas nieokreślony. Niezależnie od tego Licencjodawca zachowuje prawo do udostępnienia Oprogramowania na innych warunkach, lub do zaprzestania udostępniania Oprogramowania, z tym jednak zastrzeżeniem, że taka decyzja Licencjodawcy nie będzie stanowiła wypowiedzenia lub innego rozwiązania niniejszej Licencji (lub też innej licencji udzielonej na podstawie niniejszej Licencji), która raz udzielona Licencjobiorcy w pełnym wymiarze obowiązuje dopóki nie nastąpi jej wygaśnięcie zgodnie z postanowieniem poprzedzającym.
+
+---
+8. Weryfikacja
+
+Licencjodawca lub certyfikowany audytor działający w imieniu Licencjodawcy, może, na wskutek sensownego żądania Licencjodawcy i na sensowny koszt Licencjodawcy, wykonać audyt w związku z użyciem Oprogramowania przez Licencjobiorcę. Audyt ten, może zostać przeprowadzony pocztą, drogą elektroniczną lub fizycznie przez wizytę w miejscu wykorzystywania Oprogramowania. Jakikolwiek audyt fizyczny powinien być wykonany podczas normalnych godzin pracy w miejscu wykorzystywania Oprogramowania przez Licencjobiorcę i nie powinien niepotrzebnie przeszkadzać w innych aktywnościach biznesowych Licencjobiorcy. Audytor nie powinien usuwać, kopiować ani rozpowszechniać żadnego elektronicznego materiału w czasie trwania audytu. Jeżeli audyt wyjawi, iż Licencjobiorca używa Oprogramowanie w sposób niezgodny z warunkami niniejszej Licencji, wtedy Licencjobiorca zobowiązuje się do zapłaty Licencjodawcy za koszty przeprowadzenia audytu powiększone o kwotę, jaką Licencjobiorca zostanie uznany winny w skutek nieautoryzowanego korzystania z Oprogramowania lub w skutek złamania warunków niniejszej Licencji.
+
+---
+9. Wsparcie i aktualizacje
+
+Licencjodawca nie ma obowiązku, na mocy niniejszej Licencji, dostarczenia jakiegokolwiek wsparcia, utrzymania lub innych usług związanych z Oprogramowaniem. Licencjobiorca może skontaktować się z Licencjodawcą, w celu określenia uzyskania wsparcia, utrzymania lub innych usług związanych z Oprogramowaniem. Usługi te mogą być objęte oddzielnymi kosztami oraz warunkami.
+
+---
+10. Postanowienia różne
+
+a. Jeśli jakiekolwiek postanowienie niniejszej Licencji jest nieważne lub bezskuteczne w świetle obowiązującego prawa, jego nieważność lub bezskuteczność nie wpływa na pozostałe postanowienia Licencji. W przypadku braku dodatkowego porozumienia między stronami, nieważne lub bezskuteczne postanowienie powinno być interpretowane tak, aby zachować jego ważność i skuteczność oraz brzmienie możliwe bliskie brzmieniu pierwotnemu.
+
+b. Żadnego z postanowień niniejszej Licencji nie uznaje się za uchylone, a żadnego naruszenia nie uznaje się za zaakceptowane, dopóki druga strona, pod rygorem nieważności, nie uzna pisemnie takiego uchylenia lub też nie wyrazi na piśmie następczego zezwolenia na naruszenie.
+
+c. Niniejsza Licencja zawiera całość postanowień pomiędzy stronami dotyczących udostępnianego na jej podstawie Oprogramowania. Wszystkie nie ujęte w tej Licencji postanowienia, porozumienia lub oświadczenia dotyczące Oprogramowania uznaje się za nieistniejące. Licencjodawcy nie wiążą żadne dodatkowe postanowienia podane mu do wiadomości przez Licencjobiorcę w jakikolwiek sposób. Wszelkie zmiany Licencji wymagają umowy pomiędzy Licencjodawcą a Licencjobiorcą wyrażonej na piśmie pod rygorem nieważności.
+
+d. Wyrażenia użyte w niniejszej Licencji należy rozumieć zgodnie z Ustawą z 4 lutego 1994 r. o prawie autorskim i prawach pokrewnych (Dz. U. z 2000 r. Nr 80, poz. 904 t. jedn. z późn. zm.) oraz zgodnie z Ustawą z 27 lipca 2001 o ochronie baz danych (Dz. U. z 2001 r. Nr 128 poz. 1402 z późn. zm.), o ile prawem właściwym jest prawo polskie. W żadnym przypadku zakres niniejszej Licencji nie może być szerszy niż zakres odpowiedniego prawa wyłącznego określony zgodnie z przepisami prawa właściwego.

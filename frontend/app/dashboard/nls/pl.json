@@ -1,0 +1,36 @@
+{
+  "msg:requiredOrder": "Wartości Nr zlecenia i Ilość są wymagane!",
+  "msg:resetOrder:success": "Zlecenie zostało zresetowane :)",
+  "msg:resetOrder:failure": "Nie udało się zresetować zlecenia :(",
+  "msg:repeatOrder:success": "Ostatnie zlecenie zostało wczytane :)",
+  "msg:repeatOrder:failure": "Nie udało się wczytać ostatniego zlecenia :(",
+  "msg:cancel:success": "Programowanie zostało anulowane :)",
+  "msg:cancel:failure": "Nie udało się anulować programowania :(",
+  "msg:program:failure": "Nie udało się rozpocząć programowania :(",
+
+  "focus:true": "Okno aktywne",
+  "focus:false": "Okno nieaktywne",
+  "license:error": "Błąd licencji",
+
+  "input:orderNo": "Nr zlecenia",
+  "input:quantity": "Ilość",
+  "input:nc12": "12NC",
+  "input:program": "Programuj",
+  "input:cancel": "Anuluj",
+  "input:mode:manual": "Tryb ręczny",
+  "input:mode:auto": "Tryb automatyczny",
+  "input:resetOrder:tooltip": "Resetuj zlecenie",
+  "input:repeatOrder:tooltip": "Wczytaj ostatnie zlecenie",
+
+  "history": "Historia",
+
+  "orderFinishedDialogTemplate:title": "Koniec zlecenia",
+  "orderFinishedDialog:yes": "Resetuj zlecenie",
+  "orderFinishedDialog:orderNo": "Nr zlecenia:",
+  "orderFinishedDialog:quantity": "Ilość:",
+  "orderFinishedDialog:successCounter": "Pomyślne:",
+  "orderFinishedDialog:failureCounter": "Niepomyślne:",
+  "orderFinishedDialog:startedAt": "Czas rozpoczęcia:",
+  "orderFinishedDialog:finishedAt": "Czas zakończenia:",
+  "orderFinishedDialog:duration": "Czas trwania:"
+}

@@ -1,7 +1,7 @@
 {
   "name": "walkner-xiconf",
-  "version": "1.2.3",
-  "description": "Overlay application for Xitanium Config Programmer.",
+  "version": "2.0.0",
+  "description": "Overlay application for Philips MultiOne Workflow.",
   "license": "CC BY-NC-SA 4.0",
   "homepage": "https://github.com/morkai/walkner-xiconf",
   "author": {
@@ -14,16 +14,37 @@
     "type": "git",
     "url": "http://github.com/morkai/walkner-xiconf.git"
   },
-  "engine": ["node >=0.10.18"],
-  "main": "./backend/server",
+  "engine": ["node ~0.10.28"],
+  "main": "./backend/main.js",
   "dependencies": {
-    "express"        : "~3.4.0",
-    "ejs"            : "~0.8.4",
-    "csv"            : "~0.3.6",
-    "socket.io"      : "~0.9.16",
-    "sqlite3"        : "~2.1.17"
+    "connect": "~2.14.2",
+    "express": "~3.4.8",
+    "ejs": "~0.8.8",
+    "ejs-amd": "~0.0.4",
+    "socket.io": "~0.9.16",
+    "lodash": "~2.4.1",
+    "messageformat": "~0.1.8",
+    "messageformat-amd": "git+http://github.com/morkai/messageformat-amd.git",
+    "csv": "~0.3.7",
+    "moment": "~2.6.0",
+    "h5.step": "~0.1.0",
+    "h5.pubsub": "git+http://github.com/morkai/h5.pubsub.git",
+    "h5.rql": "git+http://github.com/morkai/h5.rql.git",
+    "h5.main": "git+http://github.com/morkai/h5.main.git",
+    "sqlite3": "~2.2.2",
+    "ursa": "~0.8.0",
+    "semver": "~2.2.1",
+    "jszip": "~2.21",
+    "request": "~2.34.0"
   },
-  "scripts": {
-    "start": "node ./backend/server.js"
+  "devDependencies": {
+    "grunt": "~0.4.2",
+    "grunt-contrib-clean": "~0.5.0",
+    "grunt-contrib-copy": "~0.5.0",
+    "grunt-contrib-concat": "~0.4.0",
+    "grunt-contrib-jshint": "~0.9.2",
+    "grunt-contrib-requirejs": "~0.4.3",
+    "grunt-ejs-amd": "git+http://github.com/morkai/grunt-ejs-amd.git",
+    "grunt-messageformat-amd": "git+http://github.com/morkai/grunt-messageformat-amd.git"
   }
 }

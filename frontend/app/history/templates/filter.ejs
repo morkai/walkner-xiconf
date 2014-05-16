@@ -1,0 +1,38 @@
+<div class="well">
+  <form id="<%- idPrefix %>-form" class="filter-form history-filter">
+    <div class="form-group">
+      <label for="<%- idPrefix %>-from"><%- t('history', 'FILTER:from') %></label>
+      <input id="<%- idPrefix %>-from" class="form-control" name="from" type="datetime-local" placeholder="YYYY-MM-DD HH:mm">
+    </div><div
+      class="form-group">
+      <label for="<%- idPrefix %>-to"><%- t('history', 'FILTER:to') %></label>
+      <input id="<%- idPrefix %>-to" class="form-control" name="to" type="datetime-local" placeholder="YYYY-MM-DD HH:mm">
+    </div><div
+      class="form-group">
+      <label for="<%- idPrefix %>-no"><%- t('history', 'PROPERTY:no') %></label>
+      <input id="<%- idPrefix %>-no" class="form-control" name="no" type="text" maxlength="9" pattern="^[0-9]{9}$">
+    </div><div
+      class="form-group">
+      <label for="<%- idPrefix %>-nc12"><%- t('history', 'PROPERTY:nc12') %></label>
+      <input id="<%- idPrefix %>-nc12" class="form-control" name="nc12" type="text" maxlength="12" pattern="^[0-9]{12}$">
+    </div><div
+      class="form-group">
+      <label><%- t('history', 'PROPERTY:result') %></label>
+      <div class="btn-group filter-btn-group history-filter-result" data-toggle="buttons">
+        <label class="btn btn-default history-filter-success">
+          <input type="checkbox" name="result[]" value="success"> <%- t('history', 'FILTER:result:success') %>
+        </label>
+        <label class="btn btn-default history-filter-failure">
+          <input type="checkbox" name="result[]" value="failure"> <%- t('history', 'FILTER:result:failure') %>
+        </label>
+      </div>
+    </div><div
+      class="form-group">
+      <label for="<%- idPrefix %>-limit"><%- t('history', 'FILTER:limit') %></label>
+      <input id="<%- idPrefix %>-limit" class="form-control" name="limit" type="number" value="25" min="5" max="100" step="1">
+    </div><div
+      class="form-group filter-actions">
+      <input type="submit" class="btn btn-primary" value="<%= t('history', 'FILTER:submit') %>">
+    </div>
+  </form>
+</div>

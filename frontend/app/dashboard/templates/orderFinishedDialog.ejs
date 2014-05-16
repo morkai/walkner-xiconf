@@ -1,0 +1,33 @@
+<div>
+  <p class="dashboard-orderFinishedDialog-label is-first"><%- t('dashboard', 'orderFinishedDialog:orderNo') %></p>
+  <p class="dashboard-orderFinishedDialog-value"><%- no %></p>
+  <div class="row">
+    <div class="col-md-4">
+      <p class="dashboard-orderFinishedDialog-label"><%- t('dashboard', 'orderFinishedDialog:quantity') %></p>
+      <p class="dashboard-orderFinishedDialog-value"><%- quantity %></p>
+    </div>
+    <div class="col-md-4">
+      <p class="dashboard-orderFinishedDialog-label"><%- t('dashboard', 'orderFinishedDialog:successCounter') %></p>
+      <p class="dashboard-orderFinishedDialog-value"><%- successCounter %></p>
+    </div>
+    <div class="col-md-4">
+      <p class="dashboard-orderFinishedDialog-label"><%- t('dashboard', 'orderFinishedDialog:failureCounter') %></p>
+      <p class="dashboard-orderFinishedDialog-value"><%- failureCounter %></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-4">
+      <p class="dashboard-orderFinishedDialog-label"><%- t('dashboard', 'orderFinishedDialog:startedAt') %></p>
+      <p class="dashboard-orderFinishedDialog-value"><%- time.format(startedAt, 'HH:mm:ss') %></p>
+    </div>
+    <div class="col-md-4">
+      <p class="dashboard-orderFinishedDialog-label"><%- t('dashboard', 'orderFinishedDialog:finishedAt') %></p>
+      <p class="dashboard-orderFinishedDialog-value"><%- time.format(finishedAt, 'HH:mm:ss') %></p>
+    </div>
+    <div class="col-md-4">
+      <p class="dashboard-orderFinishedDialog-label"><%- t('dashboard', 'orderFinishedDialog:duration') %></p>
+      <p class="dashboard-orderFinishedDialog-value"><%- time.toString(duration / 1000) %></p>
+    </div>
+  </div>
+  <button class="btn btn-lg btn-block btn-primary dialog-answer" type="button" autofocus data-answer="yes"><%- t('dashboard', 'orderFinishedDialog:yes') %> <kbd>X</kbd></button>
+</div>

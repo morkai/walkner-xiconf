@@ -1,0 +1,57 @@
+{
+  "root": {
+    "TITLE": "Programmer",
+
+    "MSG:LOADING": "Loading...",
+    "MSG:LOADING_FAILURE": "Loading failed :(",
+    "MSG:LOG_OUT:FAILURE": "Logging out failed :(",
+    "MSG:LOG_OUT:SUCCESS": "You are now logged out!",
+
+    "PAGE_ACTION:filter": "Filter",
+
+    "LIST:COLUMN:actions": "Actions",
+    "LIST:NO_DATA": "No data.",
+    "LIST:NO_DATA:cell": "no data",
+    "LIST:ACTION:viewDetails": "View details",
+    "LIST:ACTION:edit": "Edit",
+    "LIST:ACTION:delete": "Delete",
+    "LIST:ACTION:print": "Print",
+
+    "BREADCRUMBS:edit": "Editing",
+    "BREADCRUMBS:delete": "Deleting",
+    "BREADCRUMBS:error": "Error {code}: {codeStr, select, e401{unauthorized access} e404{not found} other{bad request}}",
+
+    "ERROR:400": "The request cannot be fulfilled due to bad syntax :(",
+    "ERROR:401": "Unfortunately, you do not have the right privileges to perform the requested action :(",
+    "ERROR:404": "The requested resource could not be found :(",
+
+    "PAGINATION:FIRST_PAGE": "First page",
+    "PAGINATION:PREV_PAGE": "Previous page",
+    "PAGINATION:NEXT_PAGE": "Next page",
+    "PAGINATION:LAST_PAGE": "Last page",
+
+    "BOOL:true": "Yes",
+    "BOOL:false": "No",
+    "BOOL:null": "N/A",
+
+    "#": "No.",
+
+    "GUEST_USER_NAME": "Guest",
+
+    "navbar:toggle": "Toggle menu",
+    "navbar:dashboard": "Programming",
+    "navbar:history": "History",
+    "navbar:settings": "Settings",
+
+    "ACTION_FORM:BUTTON": "Perform action",
+    "ACTION_FORM:BUTTON:delete": "Delete",
+    "ACTION_FORM:BUTTON:cancel": "Cancel",
+    "ACTION_FORM:MESSAGE": "Are you sure you want to perform the requested action?",
+    "ACTION_FORM:MESSAGE:failure": "Action failed :(",
+
+    "featureSync:started": "Feature files sync started...",
+    "featureSync:failure": "Feature files sync failed :(",
+    "featureSync:success": "Feature files sync succeeded :)"
+  },
+  "pl": true
+}

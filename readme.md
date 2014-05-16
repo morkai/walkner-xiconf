@@ -1,4 +1,4 @@
-# Xitanium Config Programmer Overlay
+# Walkner Xiconf
 
 ## Requirements
 
@@ -23,60 +23,39 @@ git clone git://github.com/morkai/walkner-xiconf.git
 or [download](https://github.com/morkai/walkner-xiconf/zipball/master)
 and extract it.
 
-Go to the project's directory and install the dependencies:
+Go to the project directory and install the dependencies:
 
 ```
 cd walkner-xiconf/
 npm install
 ```
 
-Give write permissions to `walkner-xiconf/data/` directory.
+Create the `walkner-xiconf/data/` directory and give it write permissions.
 
 ## Configuration
 
-Configuration settings can be changed in the `backend/config.js` file.
-
-  * `httpPort` - port on which the HTTP server should listen for requests.
-
-  * `programmerFile` - path to the programmer binary file.
-
-  * `featureFilePath` - path to the feature configuration files.
-
-  * `fallbackFilePath` - path to the feature configuration fallback files.
-
-  * `workflowFile` - path to the workflow configuration file.
-
-  * `syncDelay` - number of seconds after a start of the program before files
-    from `syncPath` are copied to `fallbackFilePath`.
-
-  * `syncPath` - path from which the feature files will be copied
-    to `fallbackFilePath` after `syncDelay` seconds after start of the server.
-
-  * `interface` - programming interface.
-
-  * `logVerbosity` - log verbosity level of the programmer.
-
-  * `csvOptions` - CSV options used to parse the programs file.
+Configuration settings can be changed by going to http://127.0.0.1:1337/#settings
+(default password x!c0nf) and in the `config/frontend.js` file.
 
 ## Start
 
 Start the application server in `development` or `production` environment:
 
-  * under *nix:
+  * under Linux:
 
     ```
-    NODE_ENV=development node walkner-xiconf/backend/server.js
+    NODE_ENV=development node walkner-xiconf/backend/main.js ../config/frontend.js
     ```
 
   * under Windows:
 
     ```
     SET NODE_ENV=development
-    node walkner-xiconf/backend/server.js
+    node walkner-xiconf/backend/main.js ../config/frontend.js
     ```
 
-Application should be available on a port defined in `backend/server.js` file
-(`1337` by default). Point the Internet browser to http://127.0.0.1:1337/.
+Application should be available on a port defined in the `config/frontend.js` file
+(`1337` by default). Point your Internet browser to http://127.0.0.1:1337/.
 
 ## License
 

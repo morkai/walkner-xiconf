@@ -1,3 +1,7 @@
+.idea/
 node_modules/
 data/
-bin/
+build/
+scripts/*.exe
+frontend-build/
+config/license.ed.public.pem

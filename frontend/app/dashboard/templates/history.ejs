@@ -1,0 +1,8 @@
+<div class="dashboard-history">
+  <h3><%- t('dashboard', 'history') %> <em id="<%- idPrefix %>-title" class="dashboard-history-title"></em></h3>
+  <div class="list-group">
+    <% models.forEach(function(model) { %>
+    <%- renderHistoryEntry(model) %>
+    <% }) %>
+  </div>
+</div>

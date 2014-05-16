@@ -1,0 +1,31 @@
+.history-entry {
+  cursor: pointer;
+}
+.history-filter .form-control[name="no"] {
+  width: 100px;
+}
+.history-filter .form-control[name="nc12"] {
+  width: 120px;
+}
+.history-tabs .tab-pane > pre {
+  border-top: none;
+  border-color: #DDD;
+  background: #fff;
+  overflow: auto;
+}
+.history-log,
+.history-log > tbody > tr:first-child > td {
+  border-top: none;
+}
+.history-log > tbody > tr > td:first-child {
+  border-right: none;
+  width: 1%;
+  font-family: "Source Code Pro", monospace;
+  color: #666;
+}
+.history-log > tbody > tr > td:last-child {
+  border-left: none;
+}
+.history-log code {
+  white-space: pre-line;
+}

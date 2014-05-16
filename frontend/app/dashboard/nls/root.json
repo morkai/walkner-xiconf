@@ -1,0 +1,39 @@
+{
+  "root": {
+    "msg:requiredOrder": "Order no and Quantity are required!",
+    "msg:resetOrder:success": "Order was reset :)",
+    "msg:resetOrder:failure": "Failed to reset the order :(",
+    "msg:repeatOrder:success": "The last order was loaded :)",
+    "msg:repeatOrder:failure": "Failed to load the last order :(",
+    "msg:cancel:success": "Programming was cancelled :)",
+    "msg:cancel:failure": "Failed to cancel the programming :(",
+    "msg:program:failure": "Failed to start the programming :(",
+
+    "focus:true": "Window active",
+    "focus:false": "Window inactive",
+    "license:error": "License error",
+
+    "input:orderNo": "Order no",
+    "input:quantity": "Quantity",
+    "input:nc12": "12NC",
+    "input:program": "Program",
+    "input:cancel": "Cancel",
+    "input:mode:manual": "Manual mode",
+    "input:mode:auto": "Auto mode",
+    "input:resetOrder:tooltip": "Reset order",
+    "input:repeatOrder:tooltip": "Load last order",
+
+    "history": "History",
+
+    "orderFinishedDialogTemplate:title": "Order finished",
+    "orderFinishedDialog:yes": "Reset order",
+    "orderFinishedDialog:orderNo": "Order no:",
+    "orderFinishedDialog:quantity": "Quantity:",
+    "orderFinishedDialog:successCounter": "Successes:",
+    "orderFinishedDialog:failureCounter": "Failures:",
+    "orderFinishedDialog:startedAt": "Started at:",
+    "orderFinishedDialog:finishedAt": "Finished at:",
+    "orderFinishedDialog:duration": "Duration:"
+  },
+  "pl": true
+}

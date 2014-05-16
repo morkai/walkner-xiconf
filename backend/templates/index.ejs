@@ -1,54 +1,25 @@
 <!DOCTYPE html>
-<html>
+<html<% if (appCache) { %> manifest="manifest.appcache"<% } %>>
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Programator Xitanium</title>
-  <link rel="stylesheet" href="/css/main.css">
+  <meta name="mobile-web-app-capable" content="yes">
+  <base href="/">
+  <title>walkner-xiconf</title>
+  <link rel="stylesheet" href="assets/main.css">
+  <link rel="icon" href="assets/icon-success.png" type="image/png">
+  <script src="config.js"></script>
+  <script src="vendor/require/require.js"></script>
+  <script src="main.js"></script>
 </head>
 <body>
-<div id="container">
-  <h1 id="hd">Programator Xitanium</h1>
-  <hr>
-  <form id="programForm" class="input-append">
-    <input id="nc" class="span2" type="text" maxlength="12" autocomplete="off" autofocus>
-    <input id="program" class="btn btn-primary" type="submit" value="Programuj">
-  </form>
-  <hr>
-  <p id="state">
-    <span id="state-time">HH:MM:SS</span>
-    <span id="state-wait" class="state">
-      Czekam na programowanie...
-    </span>
-    <span id="state-program" class="state">
-      Programuję <span data-property="nc">?</span>...
-    </span>
-    <span id="state-success" class="state">
-      Zaprogramowano <span data-property="nc">?</span>!
-    </span>
-    <span id="state-failure" class="state">
-      Programowanie <span data-property="nc">?</span> nie powiodło się<span data-property="error">?</span>!
-    </span>
-  </p>
-  <ul id="result">
-    <li id="result-program"><img src="img/glassy-smiley-late.png" alt="Programming...">
-    <li id="result-success"><img src="img/glassy-smiley-good.png" alt="Success :)">
-    <li id="result-failure"><img src="img/glassy-smiley-bad.png" alt="Failure :(">
-  </ul>
-  <ul id="history">
-    <% historyEntries.forEach(function(historyEntry) { %>
-    <li><a href="/history/<%= historyEntry.dateString %>/<%= historyEntry.id %>" class="btn btn-<%= historyEntry.error ? 'danger' : 'success' %>"><%= historyEntry.nc %> @ <%= historyEntry.timeString %></a>
-    <% }) %>
-    <li><a href="/history" class="btn">Historia</a>
-  </ul>
-</div>
-<script src="/socket.io/socket.io.js"></script>
-<script src="/js/jquery.min.js"></script>
-<script src="/js/jquery.roundabout.min.js"></script>
+<div id="app-loading"><i class="fa fa-spinner fa-spin"></i></div>
+<div id="app-viewport"></div>
 <script>
-var CONFIG = <%- JSON.stringify(config) %>
+<% Object.keys(appData).forEach(function(key) { %>
+window.<%- key %> = <%- appData[key] %>;
+<% }) %>
 </script>
-<script src="/js/main.js"></script>
 </body>
 </html>

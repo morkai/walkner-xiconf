@@ -1,0 +1,251 @@
+<form class="settings-form" method="post" action="/settings" autocomplete="off">
+  <ul class="nav nav-tabs">
+    <li data-tab="settings" class="active"><a id="<%- idPrefix %>-tab-settings" href="#<%- idPrefix %>-settings" data-toggle="tab"><%- t('settings', 'form:settings') %></a></li>
+    <li data-tab="hotkeys"><a id="<%- idPrefix %>-tab-hotkeys" href="#<%- idPrefix %>-hotkeys" data-toggle="tab"><%- t('settings', 'form:hotkeys') %></a></li>
+    <li data-tab="license"><a id="<%- idPrefix %>-tab-license" href="#<%- idPrefix %>-license" data-toggle="tab"><%- t('settings', 'form:license') %></a></li>
+  </ul>
+  <div class="panel panel-default tab-content">
+    <div id="<%- idPrefix %>-settings" class="panel-body tab-pane active">
+      <div class="row">
+        <div class="form-group col-md-4">
+          <label for="<%- idPrefix %>-title" class="control-label"><%- t('settings', 'setting:title') %></label>
+          <input id="<%- idPrefix %>-title" class="form-control" name="title" type="text" maxlength="20">
+        </div>
+        <div class="form-group col-md-4">
+          <label for="<%- idPrefix %>-password1" class="control-label"><%- t('settings', 'setting:password1') %></label>
+          <input id="<%- idPrefix %>-password1" class="form-control" name="password1" type="password">
+        </div>
+        <div class="form-group col-md-4">
+          <label for="<%- idPrefix %>-password2" class="control-label"><%- t('settings', 'setting:password2') %></label>
+          <input id="<%- idPrefix %>-password2" class="form-control" name="password2" type="password">
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group col-md-4">
+          <label for="<%- idPrefix %>-programDelay" class="control-label"><%- t('settings', 'setting:programDelay') %></label>
+          <input id="<%- idPrefix %>-programDelay" class="form-control" name="programDelay" type="number" min="0" max="60">
+        </div>
+        <div class="form-group col-md-4">
+          <label for="<%- idPrefix %>-cancelDelay" class="control-label"><%- t('settings', 'setting:cancelDelay') %></label>
+          <input id="<%- idPrefix %>-cancelDelay" class="form-control" name="cancelDelay" type="number" min="0" max="60000">
+        </div>
+        <div class="form-group col-md-4">
+          <label for="<%- idPrefix %>-orders" class="control-label"><%- t('settings', 'setting:orders') %></label>
+          <div>
+            <label class="radio-inline">
+              <input id="<%- idPrefix %>-orders" name="orders" type="radio" value="disabled" required> <%- t('settings', 'setting:orders:disabled') %>
+            </label>
+            <label class="radio-inline">
+              <input name="orders" type="radio" value="optional" required> <%- t('settings', 'setting:orders:optional') %>
+            </label>
+            <label class="radio-inline">
+              <input name="orders" type="radio" value="required" required> <%- t('settings', 'setting:orders:required') %>
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="<%- idPrefix %>-workflowFile" class="control-label"><%- t('settings', 'setting:workflowFile') %></label>
+        <input id="<%- idPrefix %>-workflowFile" class="form-control" name="workflowFile" type="text" required>
+      </div>
+      <div class="row">
+        <div class="form-group col-md-8">
+          <label for="<%- idPrefix %>-featurePath1" class="control-label"><%- t('settings', 'setting:featurePath1') %></label>
+          <input id="<%- idPrefix %>-featurePath1" class="form-control" name="featurePath1" type="text" required>
+        </div>
+        <div class="form-group col-md-2">
+          <label for="<%- idPrefix %>-searchTimeout1" class="control-label"><%- t('settings', 'setting:searchTimeout1') %></label>
+          <input id="<%- idPrefix %>-searchTimeout1" class="form-control" name="searchTimeout1" type="number" required min="100">
+        </div>
+        <div class="form-group col-md-2">
+          <label for="<%- idPrefix %>-readTimeout1" class="control-label"><%- t('settings', 'setting:readTimeout1') %></label>
+          <input id="<%- idPrefix %>-readTimeout1" class="form-control" name="readTimeout1" type="number" required min="100">
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group col-md-8">
+          <label for="<%- idPrefix %>-featurePath2" class="control-label"><%- t('settings', 'setting:featurePath2') %></label>
+          <input id="<%- idPrefix %>-featurePath2" class="form-control" name="featurePath2" type="text">
+        </div>
+        <div class="form-group col-md-2">
+          <label for="<%- idPrefix %>-searchTimeout2" class="control-label"><%- t('settings', 'setting:searchTimeout2') %></label>
+          <input id="<%- idPrefix %>-searchTimeout2" class="form-control" name="searchTimeout2" type="number" required min="100">
+        </div>
+        <div class="form-group col-md-2">
+          <label for="<%- idPrefix %>-readTimeout2" class="control-label"><%- t('settings', 'setting:readTimeout2') %></label>
+          <input id="<%- idPrefix %>-readTimeout2" class="form-control" name="readTimeout2" type="number" required min="100">
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group col-md-4">
+          <label for="<%- idPrefix %>-backupDelay" class="control-label"><%- t('settings', 'setting:backupDelay') %></label>
+          <input id="<%- idPrefix %>-backupDelay" class="form-control" name="backupDelay" type="number" min="5" max="3600" step="1" required>
+        </div>
+        <div class="form-group col-md-8">
+          <div class="radio">
+            <label>
+              <input name="backupPath" type="radio" value="1"> <%- t('settings', 'setting:backupPath:1') %>
+            </label>
+          </div>
+          <div class="radio">
+            <label>
+              <input name="backupPath" type="radio" value="2"> <%- t('settings', 'setting:backupPath:2') %>
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group col-md-4">
+          <label for="<%- idPrefix %>-interface" class="control-label"><%- t('settings', 'setting:interface') %></label>
+          <select id="<%- idPrefix %>-interface" class="form-control" name="interface" required>
+            <option value="d"><%- t('settings', 'setting:interface:d') %></option>
+            <option value="z"><%- t('settings', 'setting:interface:z') %></option>
+            <option value="i"><%- t('settings', 'setting:interface:i') %></option>
+          </select>
+        </div>
+        <div class="form-group col-md-4">
+          <label for="<%- idPrefix %>-continueOnWarnings" class="control-label"><%- t('settings', 'setting:continueOnWarnings') %></label>
+          <select id="<%- idPrefix %>-continueOnWarnings" class="form-control" name="continueOnWarnings" required>
+            <option value="continue"><%- t('settings', 'setting:continueOnWarnings:continue') %></option>
+            <option value="halt"><%- t('settings', 'setting:continueOnWarnings:halt') %></option>
+          </select>
+        </div>
+        <div class="form-group col-md-4">
+          <label for="<%- idPrefix %>-logVerbosity" class="control-label"><%- t('settings', 'setting:logVerbosity') %></label>
+          <select id="<%- idPrefix %>-logVerbosity" class="form-control" name="logVerbosity" required>
+            <option value="info"><%- t('settings', 'setting:logVerbosity:info') %></option>
+            <option value="error"><%- t('settings', 'setting:logVerbosity:error') %></option>
+            <option value="fatal"><%- t('settings', 'setting:logVerbosity:fatal') %></option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="<%- idPrefix %>-programmerFile" class="control-label"><%- t('settings', 'setting:programmerFile') %></label>
+        <input id="<%- idPrefix %>-programmerFile" class="form-control" name="programmerFile" type="text" required>
+      </div>
+    </div>
+    <div id="<%- idPrefix %>-hotkeys" class="panel-body tab-pane settings-hotkeys">
+      <div class="row">
+        <div class="form-group col-md-4">
+          <label for="<%- idPrefix %>-showDashboardPage" class="control-label"><%- t('settings', 'hotkey:showDashboardPage') %></label>
+          <input id="<%- idPrefix %>-showDashboardPage" class="form-control" name="hotkeys.showDashboardPage" type="text" pattern="<%- hotkeyPattern %>">
+        </div>
+        <div class="form-group col-md-4">
+          <label for="<%- idPrefix %>-showHistoryPage" class="control-label"><%- t('settings', 'hotkey:showHistoryPage') %></label>
+          <input id="<%- idPrefix %>-showHistoryPage" class="form-control" name="hotkeys.showHistoryPage" type="text" pattern="<%- hotkeyPattern %>">
+        </div>
+        <div class="form-group col-md-4">
+          <label for="<%- idPrefix %>-showSettingsPage" class="control-label"><%- t('settings', 'hotkey:showSettingsPage') %></label>
+          <input id="<%- idPrefix %>-showSettingsPage" class="form-control" name="hotkeys.showSettingsPage" type="text" pattern="<%- hotkeyPattern %>">
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group col-md-4">
+          <label for="<%- idPrefix %>-focusOrderNo" class="control-label"><%- t('settings', 'hotkey:focusOrderNo') %></label>
+          <input id="<%- idPrefix %>-focusOrderNo" class="form-control" name="hotkeys.focusOrderNo" type="text" pattern="<%- hotkeyPattern %>">
+        </div>
+        <div class="form-group col-md-4">
+          <label for="<%- idPrefix %>-focusQuantity" class="control-label"><%- t('settings', 'hotkey:focusQuantity') %></label>
+          <input id="<%- idPrefix %>-focusQuantity" class="form-control" name="hotkeys.focusQuantity" type="text" pattern="<%- hotkeyPattern %>">
+        </div>
+        <div class="form-group col-md-4">
+          <label for="<%- idPrefix %>-focusNc12" class="control-label"><%- t('settings', 'hotkey:focusNc12') %></label>
+          <input id="<%- idPrefix %>-focusNc12" class="form-control" name="hotkeys.focusNc12" type="text" pattern="<%- hotkeyPattern %>">
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group col-md-4">
+          <label for="<%- idPrefix %>-focusLog" class="control-label"><%- t('settings', 'hotkey:focusLog') %></label>
+          <input id="<%- idPrefix %>-focusLog" class="form-control" name="hotkeys.focusLog" type="text" pattern="<%- hotkeyPattern %>">
+        </div>
+        <div class="form-group col-md-4">
+          <label for="<%- idPrefix %>-focusHistory" class="control-label"><%- t('settings', 'hotkey:focusHistory') %></label>
+          <input id="<%- idPrefix %>-focusHistory" class="form-control" name="hotkeys.focusHistory" type="text" pattern="<%- hotkeyPattern %>">
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group col-md-4">
+          <label for="<%- idPrefix %>-repeatOrder" class="control-label"><%- t('settings', 'hotkey:repeatOrder') %></label>
+          <input id="<%- idPrefix %>-repeatOrder" class="form-control" name="hotkeys.repeatOrder" type="text" pattern="<%- hotkeyPattern %>">
+        </div>
+        <div class="form-group col-md-4">
+          <label for="<%- idPrefix %>-resetOrder" class="control-label"><%- t('settings', 'hotkey:resetOrder') %></label>
+          <input id="<%- idPrefix %>-resetOrder" class="form-control" name="hotkeys.resetOrder" type="text" pattern="<%- hotkeyPattern %>">
+        </div>
+        <div class="form-group col-md-4">
+          <label for="<%- idPrefix %>-toggleMode" class="control-label"><%- t('settings', 'hotkey:toggleMode') %></label>
+          <input id="<%- idPrefix %>-toggleMode" class="form-control" name="hotkeys.toggleMode" type="text" pattern="<%- hotkeyPattern %>">
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group col-md-4">
+          <label for="<%- idPrefix %>-program" class="control-label"><%- t('settings', 'hotkey:program') %></label>
+          <input id="<%- idPrefix %>-program" class="form-control" name="hotkeys.program" type="text" pattern="<%- hotkeyPattern %>">
+        </div>
+        <div class="form-group col-md-4">
+          <label for="<%- idPrefix %>-cancel" class="control-label"><%- t('settings', 'hotkey:cancel') %></label>
+          <input id="<%- idPrefix %>-cancel" class="form-control" name="hotkeys.cancel" type="text" pattern="<%- hotkeyPattern %>">
+        </div>
+      </div>
+    </div>
+    <div id="<%- idPrefix %>-license" class="panel-body tab-pane">
+      <div class="form-group">
+        <label for="<%- idPrefix %>-id" class="control-label"><%- t('settings', 'setting:id') %></label>
+        <input id="<%- idPrefix %>-id" class="form-control" name="id" type="text" required pattern="^[a-zA-Z0-9-_]+$">
+      </div>
+      <div class="row">
+        <div class="form-group col-md-8">
+          <label for="<%- idPrefix %>-remoteServer" class="control-label"><%- t('settings', 'setting:remoteServer') %></label>
+          <input id="<%- idPrefix %>-remoteServer" class="form-control" name="remoteServer" type="url">
+        </div>
+        <div class="form-group col-md-4">
+          <label for="<%- idPrefix %>-syncInterval" class="control-label"><%- t('settings', 'setting:syncInterval') %></label>
+          <input id="<%- idPrefix %>-syncInterval" class="form-control" name="syncInterval" type="number" min="10" max="480" step="1">
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group col-md-8">
+          <label for="<%- idPrefix %>-licenseKey" class="control-label"><%- t('settings', 'setting:licenseKey') %></label>
+          <textarea id="<%- idPrefix %>-licenseKey" class="form-control" name="licenseKey" rows="8"></textarea>
+        </div>
+        <div class="col-md-4">
+          <div class="row">
+            <div class="form-group col-md-4">
+              <label for="<%- idPrefix %>-licenseInfo-appId" class="control-label"><%- t('settings', 'setting:licenseInfo:appId') %></label>
+              <input id="<%- idPrefix %>-licenseInfo-appId" class="form-control" name="licenseInfo.appId" type="text" readonly>
+            </div>
+            <div class="form-group col-md-4">
+              <label for="<%- idPrefix %>-licenseInfo-appVersion" class="control-label"><%- t('settings', 'setting:licenseInfo:appVersion') %></label>
+              <input id="<%- idPrefix %>-licenseInfo-appVersion" class="form-control" name="licenseInfo.appVersion" type="text" readonly>
+            </div>
+            <div class="form-group col-md-4">
+              <label for="<%- idPrefix %>-licenseInfo-date" class="control-label"><%- t('settings', 'setting:licenseInfo:date') %></label>
+              <input id="<%- idPrefix %>-licenseInfo-date" class="form-control" name="licenseInfo.date" type="text" readonly>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="<%- idPrefix %>-licenseInfo-licensee" class="control-label"><%- t('settings', 'setting:licenseInfo:licensee') %></label>
+            <input id="<%- idPrefix %>-licenseInfo-licensee" class="form-control" name="licenseInfo.licensee" type="text" readonly>
+          </div>
+          <div class="form-group">
+            <label for="<%- idPrefix %>-licenseInfo-uuid" class="control-label"><%- t('settings', 'setting:licenseInfo:uuid') %></label>
+            <input id="<%- idPrefix %>-licenseInfo-uuid" class="form-control" name="licenseInfo.uuid" type="text" readonly>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="<%- idPrefix %>-licenseError" class="control-label"><%- t('settings', 'setting:licenseError') %></label>
+        <input id="<%- idPrefix %>-licenseError" class="form-control" name="licenseError" type="text" disabled>
+      </div>
+    </div>
+    <div class="panel-footer">
+      <div class="input-group settings-submitGroup">
+        <input id="<%- idPrefix %>-password" class="form-control" name="password" type="password" required placeholder="<%- t('settings', 'form:password') %>">
+        <span class="input-group-btn">
+          <input type="submit" class="btn btn-primary settings-save" value="<%- t('settings', 'form:submit') %>">
+          <input type="button" class="btn btn-default settings-export" value="<%- t('settings', 'form:export') %>">
+        </span>
+      </div>
+    </div>
+  </div>
+</form>

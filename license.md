@@ -5,18 +5,19 @@ Copyright (c) 2014, Łukasz Walukiewicz (lukasz@walukiewicz.eu). Some Rights Res
 
 Third-party acknowledgements:
 
-  - Everything from `node_modules/` directory is licensed
-    under its own terms (compatible, open-source licenses).
-
-  - `frontend/js/bootstrap.min.js` and `frontend/css/bootstrap.min.css` files
-     are licenses under the Apache License v2.0.
-
-  - `frontend/js/jquery.min.js` file is licensed under the MIT License.
-
-  - `frontend/js/jquery.roundabout.min.js` file is licensed under the BSD License.
-
-  - `frontend/img/glassy-smiley-*.svg` and `frontend/img/glassy-smiley-*.png` files
-    are derived from
+  - `frontend/favicon.ico`, `frontend/assets/icon-*.png` and `frontend/app/dashboard/assets/smiley-*.png`
+    files are derived from
     http://openclipart.org/detail/78799/m-face-7-by-inky2010,
     http://openclipart.org/detail/78811/m-face-9-by-inky2010 and
     http://openclipart.org/detail/78787/m-face-5-by-inky2010
+
+  - The Source Code Pro font (`frontend/vendor/source-code-pro/`) is
+    Copyright 2010, 2012 Adobe Systems Incorporated (http://www.adobe.com/)
+    and licensed under the SIL Open Font License, Version 1.1.
+
+  - The Font Awesome font (`frontend/vendor/font-awesome/`) is
+    created by Dave Gandy (http://twitter.com/davegandy)
+    and licensed under the SIL Open Font License, Version 1.1.
+
+  - Everything from `node_modules/` and `frontend/vendor/` directories is licensed
+    under its own terms (compatible, open-source licenses).

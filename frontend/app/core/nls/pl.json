@@ -1,0 +1,54 @@
+{
+  "TITLE": "Programator",
+
+  "MSG:LOADING": "Ładowanie...",
+  "MSG:LOADING_FAILURE": "Ładowanie nie powiodło się :(",
+  "MSG:LOG_OUT:FAILURE": "Wylogowanie nie powiodło się :(",
+  "MSG:LOG_OUT:SUCCESS": "Zostałeś wylogowany!",
+
+  "PAGE_ACTION:filter": "Filtruj",
+
+  "LIST:COLUMN:actions": "Akcje",
+  "LIST:NO_DATA": "Brak danych.",
+  "LIST:NO_DATA:cell": "brak danych",
+  "LIST:ACTION:viewDetails": "Pokaż szczegóły",
+  "LIST:ACTION:edit": "Edytuj",
+  "LIST:ACTION:delete": "Usuń",
+  "LIST:ACTION:print": "Drukuj",
+
+  "BREADCRUMBS:edit": "Edycja",
+  "BREADCRUMBS:delete": "Usuwanie",
+  "BREADCRUMBS:error": "Błąd {code}: {codeStr, select, e401{nieautoryzowany dostęp} e404{nie znaleziono} other{nieprawidłowe zapytanie}}",
+
+  "ERROR:400": "Żądanie nie może być obsłużone z powodu błędnej składni zapytania :(",
+  "ERROR:401": "Niestety, ale nie masz wystarczających uprawnień do wykonania żądanej akcji :(",
+  "ERROR:404": "Wybrana strona nie istnieje :(",
+
+  "PAGINATION:FIRST_PAGE": "Pierwsza strona",
+  "PAGINATION:PREV_PAGE": "Poprzednia strona",
+  "PAGINATION:NEXT_PAGE": "Następna strona",
+  "PAGINATION:LAST_PAGE": "Ostatnia strona",
+
+  "BOOL:true": "Tak",
+  "BOOL:false": "Nie",
+  "BOOL:null": "Nie dotyczy",
+
+  "#": "Lp.",
+
+  "GUEST_USER_NAME": "Gość",
+
+  "navbar:toggle": "Pokaż menu",
+  "navbar:dashboard": "Programowanie",
+  "navbar:history": "Historia",
+  "navbar:settings": "Ustawienia",
+
+  "ACTION_FORM:BUTTON": "Wykonaj akcję",
+  "ACTION_FORM:BUTTON:delete": "Usuń",
+  "ACTION_FORM:BUTTON:cancel": "Anuluj",
+  "ACTION_FORM:MESSAGE": "Czy na pewno chcesz wykonać żądaną akcję?",
+  "ACTION_FORM:MESSAGE:failure": "Wykonywanie akcji nie powiodło się :(",
+
+  "featureSync:started": "Rozpoczęto kopiowanie konfiguracji driverów...",
+  "featureSync:failure": "Nie udało się skopiować konfiguracji driverów :(",
+  "featureSync:success": "Pomyślnie skopiowano konfiguracje driverów :)"
+}
