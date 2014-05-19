@@ -1,15 +1,15 @@
 // Copyright (c) 2014, Łukasz Walukiewicz <lukasz@walukiewicz.eu>. Some Rights Reserved.
 // Licensed under CC BY-NC-SA 4.0 <http://creativecommons.org/licenses/by-nc-sa/4.0/>.
-// Part of the walkner-wmes project <http://lukasz.walukiewicz.eu/p/walkner-wmes>
+// Part of the walkner-xiconf project <http://lukasz.walukiewicz.eu/p/walkner-xiconf>
 
 /*global module:false*/
+
+'use strict';
 
 var requirejsConfig = require('./config/require');
 
 module.exports = function(grunt)
 {
-  'use strict';
-
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     clean: {
