@@ -688,6 +688,8 @@ define([
         return;
       }
 
+      this.hideOrderFinishedDialog();
+
       var dialogView = new DialogView({
         dialogClassName: 'dashboard-orderFinishedDialog',
         template: orderFinishedDialogTemplate,
