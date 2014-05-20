@@ -1,15 +1,19 @@
-#NoTrayIcon
+﻿#NoTrayIcon
 
 #include <Constants.au3>
 #include <Misc.au3>
 #include <MsgBoxConstants.au3>
 
-Global Const $PRODUCT_GUID = "10EDA1CE-8D27-4B75-97E9-003B3ADD4BA0"
+Global Const $PRODUCT_GUID = "00000000-0000-0000-0000-000000000000"
 Global Const $PRODUCT_NAME = "Walkner Xiconf"
-Global Const $PRODUCT_VERSION = "2.0.0"
-Global Const $PRODUCT_PUBLISHER = "Walkner elektronika przemys�owa Zbigniew Walukiewicz"
+Global Const $PRODUCT_VERSION = "0.0.0"
+Global Const $PRODUCT_PUBLISHER = "Walkner elektronika przemysłowa Zbigniew Walukiewicz"
 Global Const $PRODUCT_URL = "http://walkner.pl/"
 Global Const $SERVICE_NAME = "walkner-xiconf"
+Global Const $SERVICE_USER = ""
+Global Const $SERVICE_PASS = ""
+Global Const $SERVER_ADDR = "127.0.0.1"
+Global Const $SERVER_PORT = 1337
 
 Func ExitWithError($error)
   SplashOff()

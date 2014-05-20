@@ -5,8 +5,8 @@ Copyright (c) 2014, Łukasz Walukiewicz (lukasz@walukiewicz.eu). Some Rights Res
 
 Third-party acknowledgements:
 
-  - `frontend/favicon.ico`, `frontend/assets/icon-*.png` and `frontend/app/dashboard/assets/smiley-*.png`
-    files are derived from
+  - `frontend/favicon.ico`, `frontend/assets/icon-*.png`, `frontend/app/dashboard/assets/smiley-*.png`
+    and `scripts/*.ico` files are derived from
     http://openclipart.org/detail/78799/m-face-7-by-inky2010,
     http://openclipart.org/detail/78811/m-face-9-by-inky2010 and
     http://openclipart.org/detail/78787/m-face-5-by-inky2010

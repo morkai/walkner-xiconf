@@ -1,18 +1,16 @@
-#Region ;**** Directives created by AutoIt3Wrapper_GUI ****
-#AutoIt3Wrapper_Icon=.\uninstaller.ico
+ï»¿#AutoIt3Wrapper_Icon=.\uninstall.ico
 #AutoIt3Wrapper_Outfile=.\walkner-xiconf-uninstall.exe
-#AutoIt3Wrapper_Res_Description=Odinstaluj aplikacjê Walkner Xiconf.
+#AutoIt3Wrapper_Res_Description=Odinstaluj aplikacjÄ™ Walkner Xiconf.
 #AutoIt3Wrapper_Res_Fileversion=1.0.0.0
-#AutoIt3Wrapper_Res_ProductVersion=2.0.0
-#AutoIt3Wrapper_Res_LegalCopyright=Copyright © 2014 walkner.pl
+#AutoIt3Wrapper_Res_ProductVersion=0.0.0
+#AutoIt3Wrapper_Res_LegalCopyright=Copyright Â© 2014 walkner.pl
 #AutoIt3Wrapper_Res_Language=1045
-#AutoIt3Wrapper_Res_Field=OriginalFilename|Walkner Xiconf.exe
-#AutoIt3Wrapper_Res_Field=FileDescription|Plik s³u¿¹cy do usuwania aplikacji Walkner Xiconf
+#AutoIt3Wrapper_Res_Field=OriginalFilename|walkner-xiconf-uninstall.exe
+#AutoIt3Wrapper_Res_Field=FileDescription|Plik usuwajÄ…cy aplikacjÄ™ Walkner Xiconf.
 #AutoIt3Wrapper_Res_Field=ProductName|Walkner Xiconf
-#AutoIt3Wrapper_Res_Field=CompanyName|Walkner elektronika przemys³owa Zbigniew Walukiewicz
+#AutoIt3Wrapper_Res_Field=CompanyName|Walkner elektronika przemysÅ‚owa Zbigniew Walukiewicz
 #AutoIt3Wrapper_Res_Field=HomePage|http://walkner.pl/
 #AutoIt3Wrapper_Res_Field=E-mail|walkner@walkner.pl
-#EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
 
 #RequireAdmin
 
@@ -41,26 +39,26 @@ If $CmdLine[0] == 2 Then
     DirRemove($ROOT_DIR & "\logs", 1)
   EndIf
 
-  RegDelete("HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{" & $PRODUCT_GUID & "}")
+  RegDelete("HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{" & $PRODUCT_GUID & "}")
 
   SplashOff()
-  MsgBox(BitOr($MB_OK, $MB_ICONINFORMATION), $PRODUCT_NAME & " - Usuwanie", "Zakoñczono usuwanie aplikacji " & $PRODUCT_NAME & "!")
+  MsgBox(BitOr($MB_OK, $MB_ICONINFORMATION), $PRODUCT_NAME & " - Usuwanie", "ZakoÅ„czono usuwanie aplikacji " & $PRODUCT_NAME & "!")
   Exit
 EndIf
 
 _Singleton($SERVICE_NAME)
 
-If MsgBox(BitOr($MB_YESNO, $MB_ICONWARNING), $PRODUCT_NAME & " - Usuwanie", "Czy na pewno chcesz usun¹æ aplikacjê " & $PRODUCT_NAME & "?") == $IDNO Then
+If MsgBox(BitOr($MB_YESNO, $MB_ICONWARNING), $PRODUCT_NAME & " - Usuwanie", "Czy na pewno chcesz usunÄ…Ä‡ aplikacjÄ™ " & $PRODUCT_NAME & "?") == $IDNO Then
   Exit 0
 EndIf
 
 SplashText("Zamykanie okna aplikacji...")
 WinClose("[REGEXPCLASS:(.*Chrome.*); REGEXPTITLE:(.*" & $PRODUCT_NAME & ".*)]")
 
-SplashText("Usuwanie us³ugi " & $SERVICE_NAME & "...")
+SplashText("Usuwanie usÅ‚ugi " & $SERVICE_NAME & "...")
 RunWait($ROOT_DIR & "\bin\" & $SERVICE_NAME & "\bin\service-remove.bat", $ROOT_DIR & "\bin", @SW_HIDE)
 
-SplashText("Usuwanie skrótów...")
+SplashText("Usuwanie skrÃ³tÃ³w...")
 FileDelete(@DesktopDir & "\" & $PRODUCT_NAME & ".lnk")
 FileDelete(@StartupDir & "\Walkner Xiconf.lnk")
 DirRemove(@ProgramsDir & "\Walkner\" & $PRODUCT_NAME & "", 1)
@@ -76,11 +74,12 @@ FileDelete($ROOT_DIR & "\docs\" & $SERVICE_NAME & "*.*")
 FileDelete($ROOT_DIR & "\logs\" & $SERVICE_NAME & "*.*")
 FileDelete($ROOT_DIR & "\" & $PRODUCT_NAME & ".exe")
 
-$removeData = MsgBox(BitOr($MB_YESNO, $MB_ICONWARNING), $PRODUCT_NAME & " - Usuwanie", "Usun¹æ zapisane przez aplikacjê dane?") == $IDYES
+$removeData = MsgBox(BitOr($MB_YESNO, $MB_ICONWARNING), $PRODUCT_NAME & " - Usuwanie", "UsunÄ…Ä‡ zapisane przez aplikacjÄ™ dane?") == $IDYES
 
 If $removeData Then
   FileDelete($ROOT_DIR & "\data\" & $SERVICE_NAME & ".json")
   FileDelete($ROOT_DIR & "\data\" & $SERVICE_NAME & ".sqlite3")
+  FileDelete($ROOT_DIR & "\data\" & $SERVICE_NAME & "-workflow.xml")
   DirRemove($ROOT_DIR & "\data\" & $SERVICE_NAME & "-features", 1)
 EndIf
 

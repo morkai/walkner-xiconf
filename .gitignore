@@ -1,7 +1,6 @@
 .idea/
 node_modules/
-data/
 build/
-scripts/*.exe
 frontend-build/
+config/installer.json
 config/license.ed.public.pem
