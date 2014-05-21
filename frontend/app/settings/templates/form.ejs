@@ -44,6 +44,16 @@
           </div>
         </div>
       </div>
+      <div class="row">
+        <div class="form-group col-md-4">
+          <label for="<%- idPrefix %>-blockageInterval" class="control-label"><%- t('settings', 'setting:blockageInterval') %></label>
+          <input id="<%- idPrefix %>-blockageInterval" class="form-control" name="blockageInterval" type="number" min="0" max="1000">
+        </div>
+        <div class="form-group col-md-4">
+          <label for="<%- idPrefix %>-blockageDuration" class="control-label"><%- t('settings', 'setting:blockageDuration') %></label>
+          <input id="<%- idPrefix %>-blockageDuration" class="form-control" name="blockageDuration" type="number" min="0" max="999">
+        </div>
+      </div>
       <div class="form-group">
         <label for="<%- idPrefix %>-workflowFile" class="control-label"><%- t('settings', 'setting:workflowFile') %></label>
         <input id="<%- idPrefix %>-workflowFile" class="form-control" name="workflowFile" type="text" required>

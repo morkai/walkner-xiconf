@@ -51,6 +51,8 @@
   "setting:backupPath:2": "Kopiuj konfiguracje driverów z drugiej ścieżki do pierwszej",
   "setting:programDelay": "Odliczanie do programowania [s]",
   "setting:cancelDelay": "Opóźnienie odblokowania akcji Anuluj [ms]",
+  "setting:blockageDuration": "Czas trwania blokady [s]",
+  "setting:blockageInterval": "Ilość programowań do blokady",
   "setting:remoteServer": "Zewnętrzny serwer",
   "setting:syncInterval": "Odstęp synchronizacji historii [min]",
   "setting:licenseKey": "Nowy klucz licencji",

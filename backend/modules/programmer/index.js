@@ -5,6 +5,7 @@
 'use strict';
 
 var setUpCommands = require('./commands');
+var setUpBlockage = require('./blockage');
 var program = require('./program');
 
 exports.DEFAULT_CONFIG = {
@@ -17,6 +18,13 @@ exports.DEFAULT_CONFIG = {
 
 exports.start = function startProgrammerModule(app, module)
 {
+  var settings = app[module.config.settingsId];
+
+  if (!settings)
+  {
+    throw new Error("settings module is required!");
+  }
+
   var sqlite3Module = app[module.config.sqlite3Id];
 
   if (!sqlite3Module)
@@ -108,9 +116,10 @@ exports.start = function startProgrammerModule(app, module)
     }
   };
 
+  setUpBlockage(app, module);
+
   app.onModuleReady(
     [
-      module.config.settingsId,
       module.config.sioId
     ],
     setUpCommands.bind(null, app, module)

@@ -148,6 +148,8 @@ exports.start = function startSettingsModule(app, module, done)
     validateNumericSetting(rawSettings, newSettings, 'backupDelay', 5);
     validateNumericSetting(rawSettings, newSettings, 'programDelay', 0);
     validateNumericSetting(rawSettings, newSettings, 'cancelDelay', 0);
+    validateNumericSetting(rawSettings, newSettings, 'blockageInterval', 0);
+    validateNumericSetting(rawSettings, newSettings, 'blockageDuration', 0);
     validateEnum(rawSettings, newSettings, 'backupPath', Number, [1, 2]);
     validateEnum(rawSettings, newSettings, 'orders', String, ['disabled', 'optional', 'required']);
     validateEnum(rawSettings, newSettings, 'interface', String, ['d', 'z', 'i']);

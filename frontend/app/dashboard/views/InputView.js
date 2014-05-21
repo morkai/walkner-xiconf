@@ -11,6 +11,7 @@ define([
   'app/core/View',
   'app/core/views/DialogView',
   'app/data/settings',
+  'app/data/currentState',
   'app/dashboard/templates/input',
   'app/dashboard/templates/orderFinishedDialog'
 ], function(
@@ -22,6 +23,7 @@ define([
   View,
   DialogView,
   settings,
+  currentState,
   inputTemplate,
   orderFinishedDialogTemplate
 ) {
@@ -194,27 +196,29 @@ define([
         var ordersDisabled = orders === 'disabled';
         var ordersRequired = orders === 'required';
         var hasOrder = this.model.hasOrder();
+        var orderFieldDisabled = isProgramming || isAutoMode || hasOrder || ordersDisabled;
+        var countdown = currentState.get('countdown') >= 0;
 
         this.$els.orderNo
-          .attr('disabled', isProgramming || isAutoMode || hasOrder || ordersDisabled)
+          .prop('disabled', orderFieldDisabled || countdown)
           .prop('required', ordersRequired);
         this.$els.quantity
-          .attr('disabled', isProgramming || isAutoMode || hasOrder || ordersDisabled)
+          .prop('disabled', orderFieldDisabled || countdown)
           .prop('required', ordersRequired);
-        this.$els.nc12.attr('disabled', isProgramming || isAutoMode);
-        this.$els.program.attr('disabled', isAutoMode);
+        this.$els.nc12.prop('disabled', isProgramming || isAutoMode || countdown);
+        this.$els.program.prop('disabled', isAutoMode || countdown);
         this.$els.mode.show();
-        this.$els.resetOrder.attr('disabled', isProgramming);
-        this.$els.repeatOrder.attr('disabled', isProgramming || hasOrder);
+        this.$els.resetOrder.prop('disabled', isProgramming || countdown);
+        this.$els.repeatOrder.prop('disabled', isProgramming || hasOrder || countdown);
       }
       else
       {
-        this.$els.inputs.attr('disabled', true);
-        this.$els.program.attr('disabled', true);
-        this.$els.cancel.attr('disabled', true);
+        this.$els.inputs.prop('disabled', true);
+        this.$els.program.prop('disabled', true);
+        this.$els.cancel.prop('disabled', true);
         this.$els.mode.hide();
-        this.$els.resetOrder.attr('disabled', true);
-        this.$els.repeatOrder.attr('disabled', true);
+        this.$els.resetOrder.prop('disabled', true);
+        this.$els.repeatOrder.prop('disabled', true);
       }
 
       this.$els.program.toggle(!isProgramming);
@@ -376,6 +380,11 @@ define([
         return this.cancel();
       }
 
+      if (currentState.get('countdown') >= 0)
+      {
+        return;
+      }
+
       var orderNo = this.commandBuffer.substr(0, 9);
       var quantity = +this.commandBuffer.substr(10);
       var orders = settings.get('orders');
@@ -426,6 +435,11 @@ define([
       if (this.model.isProgramming())
       {
         return this.cancel();
+      }
+
+      if (currentState.get('countdown') >= 0)
+      {
+        return;
       }
 
       var nc12 = this.commandBuffer;

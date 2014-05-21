@@ -52,6 +52,8 @@
     "setting:backupPath:2": "Copy driver configuration files from the second path to the first",
     "setting:programDelay": "Programming countdown [s]",
     "setting:cancelDelay": "Cancel action unlock delay [ms]",
+    "setting:blockageDuration": "Blockage duration [s]",
+    "setting:blockageInterval": "Blockage interval",
     "setting:remoteServer": "Remote server",
     "setting:syncInterval": "History synchronization interval [min]",
     "setting:licenseKey": "New license key",

@@ -64,6 +64,8 @@ exports.settings = {
     backupDelay: 15,
     cancelDelay: 0,
     programDelay: 0,
+    blockageDuration: 0,
+    blockageInterval: 0,
     programmerFile: 'C:/Program Files (x86)/Philips MultiOne Workflow prototype latest/MultiOneWorkflow.exe',
     hotkeys: {
       focusOrderNo: 'Q',

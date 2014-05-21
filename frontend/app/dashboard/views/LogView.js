@@ -88,6 +88,8 @@ define([
 
     showCountdown: function()
     {
+      this.el.scrollTop = 0;
+
       if (this.$countdown === null)
       {
         this.$countdown = $('<div class="dashboard-log-countdown"></div>')
@@ -111,6 +113,8 @@ define([
         $countdown.fadeOut('fast', function() { $countdown.remove(); });
 
         this.$countdown = null;
+
+        this.el.scrollTop = this.el.scrollHeight;
       }
     }
 
