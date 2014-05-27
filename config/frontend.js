@@ -2,6 +2,8 @@
 
 'use strict';
 
+var fs = require('fs');
+
 var DATA_PATH = __dirname + '/../data';
 
 exports.id = 'walkner-xiconf';
@@ -33,7 +35,9 @@ exports.history = {
 
 exports.settings = {
   settingsFile: DATA_PATH + '/settings.json',
-  licenseEdPem: null,
+  licenseEdPem: fs.existsSync(__dirname + '/license.ed.public.pem')
+    ? fs.readFileSync(__dirname + '/license.ed.public.pem', 'utf8')
+    : null,
   defaults: {
     password: 'x!c0nf',
     id: process.env.COMPUTERNAME || exports.id,
