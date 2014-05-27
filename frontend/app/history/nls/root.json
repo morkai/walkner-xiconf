@@ -15,7 +15,7 @@
     "PAGE_ACTION:download:feature": "Driver configuration",
 
     "PROPERTY:no": "Order no",
-    "PROPERTY:totalCounter": "Total programming attemps",
+    "PROPERTY:totalCounter": "Total programming attempts",
     "PROPERTY:successCounter": "Successful programming attempts",
     "PROPERTY:failureCounter": "Failed programming attempts",
     "PROPERTY:order": "Order",
@@ -73,8 +73,8 @@
     "log:FEATURE_FILE_READ": "Read <code>{length}B</code> of the driver configuration file.",
     "log:STARTING_PROGRAMMER": "Starting the programmer using the <code>{interface, select, d{DALI} z{ZigBee} i{IP} other{?}}</code> interface: <code>{programmerFile}</code>",
 
-    "error:WORKFLOW_FILE_ERROR": "Error during reading of the contents of the programmer configuration file.",
-    "error:FEATURE_FILE_ERROR": "Error during reading of the contents of the driver configuration file.",
+    "error:WORKFLOW_FILE_ERROR": "Error during the reading of the contents of the programmer configuration file.",
+    "error:FEATURE_FILE_ERROR": "Error during the reading of the contents of the driver configuration file.",
     "error:UNSET_WORKFLOW_FILE": "Path to the programmer configuration file was not set.",
     "error:UNSET_FEATURE_PATH_1": "First path to the driver configuration files was not set.",
     "error:UNSET_PROGRAMMER_FILE": "Path to the programmer executable file was not set.",

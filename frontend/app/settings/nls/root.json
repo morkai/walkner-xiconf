@@ -13,7 +13,7 @@
     "msg:failure": "Failed to save the settings :(",
     "msg:success": "Settings were changed successfully :)",
 
-    "form:settings": "Generak settings",
+    "form:settings": "General settings",
     "form:hotkeys": "Hotkeys",
     "form:license": "License settings",
     "form:submit": "Save settings",
@@ -60,7 +60,7 @@
     "setting:licenseInfo:appId": "Application",
     "setting:licenseInfo:appVersion": "Version",
     "setting:licenseInfo:date": "Date",
-    "setting:licenseInfo:uuid": "Identificator",
+    "setting:licenseInfo:uuid": "Identifier",
     "setting:licenseInfo:licensee": "Licensee",
     "setting:licenseInfo:features": "Features",
     "setting:licenseError": "License error",
