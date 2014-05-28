@@ -12,7 +12,7 @@ var step = require('h5.step');
 exports.DEFAULT_CONFIG = {
   settingsId: 'settings',
   rmdirCmd: 'rmdir /S /Q "{dir}"',
-  copyCmd: 'xcopy /C /I /Q /Y "{src}" "{dst}"'
+  copyCmd: 'xcopy /I /Q /Y "{src}" "{dst}"'
 };
 
 exports.start = function startFeatureSyncModule(app, module)
