@@ -2,7 +2,10 @@
   margin-top: 0;
 }
 .page[data-id="dashboard"] > .ft {
-  display: none;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  text-align: right;
 }
 .dashboard {
   padding-top: 5px;
