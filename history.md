@@ -1,3 +1,13 @@
+2.1.1 @ 2014-05-30
+==================
+
+  * Fixed some English translation messages.
+  * Removed the continue on error parameter passed to the `xcopy` during
+    the feature file synchronization.
+  * Added a page footer to the bottom right corner of the Programmer page.
+  * Added a default value for the `settings.licenseEdPem` configuration option
+    (contents of the `config/license.ed.public.pem` file, if it exists or `NULL`).
+
 2.1.0 @ 2014-05-21
 ==================
 
