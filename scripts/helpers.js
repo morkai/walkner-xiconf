@@ -159,6 +159,10 @@ exports.copy = {
         dest: DEST_INSTALLER + '/bin/vcredist_x86.exe'
       },
       {
+        src: installerConfig.libeay32,
+        dest: DEST_APP + '/node_modules/ursa/bin/libeay32.dll'
+      },
+      {
         src: DEST_SCRIPTS + '/Walkner Xiconf.exe',
         dest: DEST_INSTALLER + '/Walkner Xiconf.exe'
       },
@@ -236,7 +240,7 @@ exports.replace = {
       },
       {
         from: '$SERVICE_PASS = ""',
-        to: '$SERVICE_PASS = " ' + installerConfig.servicePass + '"'
+        to: '$SERVICE_PASS = "' + installerConfig.servicePass + '"'
       },
       {
         from: '$SERVER_PORT = 1337',
