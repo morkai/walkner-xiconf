@@ -1,3 +1,10 @@
+2.1.2 @ 2014-06-02
+==================
+
+  * Fixed the installer not adding the OpenSSL `libeay32.dll` file near
+    the `node_modules/bin/ursaNative.node` file.
+  * Fixed the installer adding an extra space to the beginning of the default service password.
+
 2.1.1 @ 2014-05-30
 ==================
 
