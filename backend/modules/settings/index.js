@@ -155,6 +155,7 @@ exports.start = function startSettingsModule(app, module, done)
     validateEnum(rawSettings, newSettings, 'interface', String, ['d', 'z', 'i']);
     validateEnum(rawSettings, newSettings, 'logVerbosity', String, ['info', 'error', 'fatal']);
     validateEnum(rawSettings, newSettings, 'continueOnWarnings', String, ['continue', 'halt']);
+    validateEnum(rawSettings, newSettings, 'imWorkin', Number, [0, 1]);
     validateHotkeys(rawSettings, newSettings);
 
     if (newSettings.password1)

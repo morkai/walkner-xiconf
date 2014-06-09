@@ -159,6 +159,10 @@ exports.copy = {
         dest: DEST_INSTALLER + '/bin/vcredist_x86.exe'
       },
       {
+        src: installerConfig.imWorkin,
+        dest: DEST_APP + '/bin/ImWorkin.exe'
+      },
+      {
         src: installerConfig.libeay32,
         dest: DEST_APP + '/node_modules/ursa/bin/libeay32.dll'
       },

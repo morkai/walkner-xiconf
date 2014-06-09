@@ -13,6 +13,7 @@ exports.vcredist_x86 = 'C:/Programs/vcredist_x86.exe';
 exports.libeay32 = fs.existsSync(path.join(process.env.SYSTEMROOT, 'System32', 'libeay32.dll'))
   ? path.join(process.env.SYSTEMROOT, 'system32', 'libeay32.dll')
   : 'C:/OpenSSL-Win32/libeay32.dll';
+exports.imWorkin = 'C:/Programs/ImWorkin.exe';
 exports.serviceUser = '';
 exports.servicePass = '';
 exports.serverPort = 1337;

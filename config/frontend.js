@@ -14,6 +14,7 @@ exports.modules = [
   'history',
   'programmer',
   'featureSync',
+  'imWorkin',
   'pubsub',
   'express',
   'httpServer',
@@ -71,6 +72,7 @@ exports.settings = {
     blockageDuration: 0,
     blockageInterval: 0,
     programmerFile: 'C:/Program Files (x86)/Philips MultiOne Workflow prototype latest/MultiOneWorkflow.exe',
+    imWorkin: 0,
     hotkeys: {
       focusOrderNo: 'Q',
       focusQuantity: 'W',
