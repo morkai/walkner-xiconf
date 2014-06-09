@@ -49,4 +49,28 @@ module.exports = function setSettingsRoutes(app, settingsModule)
     res.attachment('XICONF_SETTINGS_' + settings.id + '.txt');
     res.send(JSON.stringify(settings, null, 2));
   });
+
+  express.post('/settings;restart', function(req, res, next)
+  {
+    if (settingsModule.get('password') !== req.body.password)
+    {
+      res.statusCode = 400;
+
+      return next(new Error('AUTH'));
+    }
+
+    var programmer = app[settingsModule.config.programmerId];
+
+    if (programmer
+      && (programmer.currentState.order !== null || programmer.currentState.isProgramming()))
+    {
+      res.statusCode = 400;
+
+      return next(new Error('LOCKED'));
+    }
+
+    res.send();
+
+    setImmediate(function() { process.exit(); });
+  });
 };

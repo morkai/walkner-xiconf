@@ -12,12 +12,16 @@
     "msg:INVALID_CHANGES": "No changes were detected :(",
     "msg:failure": "Failed to save the settings :(",
     "msg:success": "Settings were changed successfully :)",
+    "msg:restart:failure": "Failed to restart the server :(",
+    "msg:restart:AUTH": "Cannot restart the server: invalid password!",
+    "msg:restart:LOCKED": "Cannot restart the server while programming is in progress!",
 
     "form:settings": "General settings",
     "form:hotkeys": "Hotkeys",
     "form:license": "License settings",
     "form:submit": "Save settings",
     "form:export": "Export settings",
+    "form:restart": "Restart server",
     "form:password": "Password",
 
     "setting:id": "Installation ID",

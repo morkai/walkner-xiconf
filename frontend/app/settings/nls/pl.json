@@ -11,12 +11,16 @@
   "msg:INVALID_CHANGES": "Nie wykryto żadnych zmian :(",
   "msg:failure": "Nie udało się zapisać ustawień :(",
   "msg:success": "Ustawienia zostały zmienione :)",
+  "msg:restart:failure": "Nie udało się zrestartować serwera :(",
+  "msg:restart:AUTH": "Nie można zrestartować serwera: nieprawidłowe hasło!",
+  "msg:restart:LOCKED": "Nie można zrestartować serwera w trakcie programowania!",
 
   "form:settings": "Podstawowe ustawienia",
   "form:hotkeys": "Skróty klawiszowe",
   "form:license": "Ustawienia licencji",
   "form:submit": "Zapisz ustawienia",
   "form:export": "Eksportuj ustawienia",
+  "form:restart": "Restartuj serwer",
   "form:password": "Hasło",
 
   "setting:id": "Identyfikator instalacji",

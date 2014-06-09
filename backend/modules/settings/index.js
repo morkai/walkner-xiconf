@@ -11,6 +11,7 @@ var validateLicense = require('./validateLicense');
 
 exports.DEFAULT_CONFIG = {
   expressId: 'express',
+  programmerId: 'programmer',
   settingsFile: 'settings.json',
   defaults: {}
 };
@@ -99,7 +100,12 @@ exports.start = function startSettingsModule(app, module, done)
     );
   };
 
-  app.onModuleReady([module.config.expressId], setUpRoutes.bind(null, app, module));
+  app.onModuleReady(
+    [
+      module.config.expressId
+    ],
+    setUpRoutes.bind(null, app, module)
+  );
 
   fs.readFile(module.config.settingsFile, {encoding: 'utf8'}, function(err, contents)
   {

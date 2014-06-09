@@ -4,16 +4,15 @@
 .settings-hotkeys {
   padding-bottom: 0;
 }
-.settings-submitGroup {
-  width: 410px;
-}
-.settings-submitGroup .btn {
-  width: 155px;
-}
 .settings-form textarea[name="licenseKey"] {
   font-family: "Source Code Pro", monospace;
   height: 182px;
 }
 .settings-form input[readonly] {
   cursor: default;
+}
+.settings-form input[name="password"] {
+  width: 100px;
+  display: inline-block;
+  vertical-align: top;
 }

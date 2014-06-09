@@ -57,6 +57,7 @@ define([
         window.location.href = '/settings;export?password=' + password;
       },
       'click .settings-save': 'onSaveClick',
+      'click .settings-restart': 'onRestartClick',
       'submit': 'onSubmit'
     },
 
@@ -115,6 +116,43 @@ define([
     onSettingsChange: function()
     {
       this.importSettings(settings.toJSON());
+    },
+
+    onRestartClick: function()
+    {
+      var $inputs = this.$('.panel-footer > input').attr('disabled', true);
+      var req = this.ajax({
+        type: 'POST',
+        url: '/settings;restart',
+        data: JSON.stringify({
+          password: this.$id('password').val()
+        })
+      });
+
+      this.$id('password').val('');
+
+      req.fail(function(xhr)
+      {
+        if (!xhr || !xhr.responseJSON || !xhr.responseJSON.error)
+        {
+          return;
+        }
+
+        var error = xhr.responseJSON.error.message;
+
+        viewport.msg.show({
+          type: 'error',
+          time: 2000,
+          text: t.has('settings', 'msg:restart:' + error)
+            ? t('settings', 'msg:restart:' + error)
+            : t('settings', 'msg:restart:failure')
+        });
+      });
+
+      req.always(function()
+      {
+        $inputs.attr('disabled', false);
+      });
     },
 
     onSaveClick: function()
