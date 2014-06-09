@@ -1,3 +1,10 @@
+2.2.0 @ 2014-06-10
+==================
+
+  * Added a new module: imWorkin - if enabled in the settings, spawns a small utility that keeps
+    the computer in active state without user activity (no screen saver or locking).
+  * Added an ability to restart the application server through the Settings page.
+
 2.1.2 @ 2014-06-02
 ==================
 
