@@ -54,6 +54,18 @@ exports.start = function startImWorkinModule(app, module)
 
     var respawn = true;
 
+    imWorkinProcess.stdout.setEncoding('utf8');
+    imWorkinProcess.stdout.on('data', function(data)
+    {
+      module.debug("[stdout]", data);
+    });
+
+    imWorkinProcess.stderr.setEncoding('utf8');
+    imWorkinProcess.stderr.on('data', function(data)
+    {
+      module.debug("[stderr]", data);
+    });
+
     imWorkinProcess.on('error', function(err)
     {
       if (err.code === 'ENOENT')
@@ -64,9 +76,9 @@ exports.start = function startImWorkinModule(app, module)
       module.error(err.message);
     });
 
-    imWorkinProcess.on('close', function()
+    imWorkinProcess.on('close', function(code)
     {
-      module.debug("Stopped!");
+      module.debug("Stopped with code %d!", code);
 
       imWorkinProcess = null;
 
