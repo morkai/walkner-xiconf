@@ -146,6 +146,8 @@ exports.start = function startSettingsModule(app, module, done)
     validateStringSetting(rawSettings, newSettings, 'featurePath2', 0);
     validateStringSetting(rawSettings, newSettings, 'programmerFile');
     validateStringSetting(rawSettings, newSettings, 'remoteServer', 0);
+    validateStringSetting(rawSettings, newSettings, 'solComPattern', 1);
+    validateStringSetting(rawSettings, newSettings, 'solFilePattern', 1);
     validateNumericSetting(rawSettings, newSettings, 'syncInterval', 10);
     validateNumericSetting(rawSettings, newSettings, 'searchTimeout1', 100);
     validateNumericSetting(rawSettings, newSettings, 'searchTimeout2', 100);
@@ -156,6 +158,7 @@ exports.start = function startSettingsModule(app, module, done)
     validateNumericSetting(rawSettings, newSettings, 'cancelDelay', 0);
     validateNumericSetting(rawSettings, newSettings, 'blockageInterval', 0);
     validateNumericSetting(rawSettings, newSettings, 'blockageDuration', 0);
+    validateEnum(rawSettings, newSettings, 'solReset', Number, [0, 1]);
     validateEnum(rawSettings, newSettings, 'backupPath', Number, [1, 2]);
     validateEnum(rawSettings, newSettings, 'orders', String, ['disabled', 'optional', 'required']);
     validateEnum(rawSettings, newSettings, 'interface', String, ['d', 'z', 'i']);

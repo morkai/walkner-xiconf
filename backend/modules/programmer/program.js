@@ -9,6 +9,7 @@ var fs = require('fs');
 var step = require('h5.step');
 var findFeatureFile = require('./findFeatureFile');
 var readFeatureFile = require('./readFeatureFile');
+var programSolDriver = require('./programSolDriver');
 
 module.exports = function program(app, programmerModule, data, done)
 {
@@ -33,8 +34,6 @@ module.exports = function program(app, programmerModule, data, done)
 
   step(
     countdownStep,
-    readWorkflowFileStep,
-    handleReadWorkflowFileResultStep,
     findFeatureFile1Step,
     handleFindFeatureFile1ResultStep,
     readFeatureFile1Step,
@@ -43,6 +42,9 @@ module.exports = function program(app, programmerModule, data, done)
     handleFindFeatureFile2ResultStep,
     readFeatureFile2Step,
     handleReadFeatureFile2ResultStep,
+    checkSolProgramStep,
+    readWorkflowFileStep,
+    handleReadWorkflowFileResultStep,
     tryToProgramStep,
     finalizeStep
   );
@@ -88,39 +90,6 @@ module.exports = function program(app, programmerModule, data, done)
     });
   }
 
-  function readWorkflowFileStep()
-  {
-    /*jshint validthis:true*/
-
-    if (this.sub)
-    {
-      this.sub.cancel();
-      this.sub = null;
-    }
-
-    if (programmerModule.cancelled)
-    {
-      return this.skip('CANCELLED');
-    }
-
-    var workflowFile = settings.get('workflowFile');
-
-    if (typeof workflowFile !== 'string' || workflowFile.length === 0)
-    {
-      return this.skip('UNSET_WORKFLOW_FILE');
-    }
-
-    programmerModule.log('READING_WORKFLOW_FILE', {
-      workflowFile: workflowFile
-    });
-
-    programmerModule.changeState({
-      workflowFile: workflowFile
-    });
-
-    fs.readFile(workflowFile, {encoding: 'utf8'}, this.next());
-  }
-
   function handleReadWorkflowFileResultStep(err, workflow)
   {
     /*jshint validthis:true*/
@@ -128,6 +97,11 @@ module.exports = function program(app, programmerModule, data, done)
     if (programmerModule.cancelled)
     {
       return this.skip('CANCELLED');
+    }
+
+    if (this.isSolProgram)
+    {
+      return;
     }
 
     if (err)
@@ -158,6 +132,12 @@ module.exports = function program(app, programmerModule, data, done)
   function findFeatureFile1Step()
   {
     /*jshint validthis:true*/
+
+    if (this.sub)
+    {
+      this.sub.cancel();
+      this.sub = null;
+    }
 
     if (programmerModule.cancelled)
     {
@@ -467,6 +447,53 @@ module.exports = function program(app, programmerModule, data, done)
     setImmediate(this.next());
   }
 
+  function checkSolProgramStep()
+  {
+    /*jshint validthis:true*/
+
+    if (programmerModule.cancelled)
+    {
+      return this.skip('CANCELLED');
+    }
+
+    var solFilePattern = settings.get('solFilePattern') || '';
+    var featureFile = currentState.featureFile;
+
+    this.isSolProgram = solFilePattern.length && featureFile.indexOf(solFilePattern) !== -1;
+  }
+
+  function readWorkflowFileStep()
+  {
+    /*jshint validthis:true*/
+
+    if (programmerModule.cancelled)
+    {
+      return this.skip('CANCELLED');
+    }
+
+    if (this.isSolProgram)
+    {
+      return;
+    }
+
+    var workflowFile = settings.get('workflowFile');
+
+    if (typeof workflowFile !== 'string' || workflowFile.length === 0)
+    {
+      return this.skip('UNSET_WORKFLOW_FILE');
+    }
+
+    programmerModule.log('READING_WORKFLOW_FILE', {
+      workflowFile: workflowFile
+    });
+
+    programmerModule.changeState({
+      workflowFile: workflowFile
+    });
+
+    fs.readFile(workflowFile, {encoding: 'utf8'}, this.next());
+  }
+
   function tryToProgramStep()
   {
     /*jshint validthis:true*/
@@ -474,6 +501,11 @@ module.exports = function program(app, programmerModule, data, done)
     if (programmerModule.cancelled)
     {
       return this.skip('CANCELLED');
+    }
+
+    if (this.isSolProgram)
+    {
+      return programSolDriver(app, programmerModule, this.next());
     }
 
     var programmerFile = settings.get('programmerFile');

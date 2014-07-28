@@ -83,13 +83,14 @@ define([
 
       var nc12 = this.get('nc12');
 
+      featureFileName = featureFileName.replace(/\.([a-z]+)$/i, '');
+
       if (typeof nc12 !== 'string')
       {
-        return featureFileName.replace('.xml', '');
+        return featureFileName;
       }
 
       featureFileName = featureFileName
-        .replace('.xml', '')
         .replace(nc12, '')
         .trim()
         .replace(/^[-_ ]+/g, '')

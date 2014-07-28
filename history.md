@@ -1,3 +1,8 @@
+2.3.0 @ 2014-07-28
+==================
+
+  * Added a new feature: programming a Fortimo Solar device through a serial port connection.
+
 2.2.0 @ 2014-06-10
 ==================
 

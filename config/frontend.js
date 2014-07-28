@@ -72,6 +72,9 @@ exports.settings = {
     blockageDuration: 0,
     blockageInterval: 0,
     programmerFile: 'C:/Program Files (x86)/Philips MultiOne Workflow prototype latest/MultiOneWorkflow.exe',
+    solComPattern: 'FTDI',
+    solFilePattern: 'SOL',
+    solReset: 1,
     imWorkin: 0,
     hotkeys: {
       focusOrderNo: 'Q',

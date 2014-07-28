@@ -47,7 +47,7 @@ module.exports = function findFeatureFile(featureFilePath, nc12, timeout, done)
       return done(err, null);
     }
 
-    var pattern = new RegExp(nc12 + '.*?\\.xml$', 'i');
+    var pattern = new RegExp(nc12 + '.*?\\.(xml|txt)$', 'i');
 
     files = files.filter(function(file) { return pattern.test(file); });
 
