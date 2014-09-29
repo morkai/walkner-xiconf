@@ -24,5 +24,5 @@ config.settings.defaults.featurePath1 = '\\\\code1\\plrketchr8-box1\\Dokumentacj
 config.settings.defaults.featurePath2 = 'C:\\Programy_Multione';
 config.settings.defaults.programmerFile = path.join(
   process.env['ProgramFiles(x86)'] || process.env['ProgramFiles'],
-  'Philips MultiOne Workflow prototype latest\\MultiOneWorkflow.exe'
+  'Philips MultiOne Workflow\\MultiOneWorkflow.exe'
 );

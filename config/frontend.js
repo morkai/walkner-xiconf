@@ -74,7 +74,7 @@ exports.settings = {
     programDelay: 0,
     blockageDuration: 0,
     blockageInterval: 0,
-    programmerFile: 'C:/Program Files (x86)/Philips MultiOne Workflow prototype latest/MultiOneWorkflow.exe',
+    programmerFile: 'C:/Program Files (x86)/Philips MultiOne Workflow/MultiOneWorkflow.exe',
     solComPattern: 'FTDI',
     solFilePattern: 'SOL',
     solReset: 1,
