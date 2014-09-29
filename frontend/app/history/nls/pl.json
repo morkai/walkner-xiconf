@@ -28,7 +28,6 @@
   "PROPERTY:result": "Wynik",
   "PROPERTY:errorCode": "Błąd",
   "PROPERTY:exception": "Szczegóły błędu",
-  "PROPERTY:output": "Odpowiedź MultiOneWorkflow.exe",
   "PROPERTY:featureFile": "Plik konfiguracyjny drivera",
   "PROPERTY:featureFileName": "Nazwa pliku konfiguracyjnego drivera",
   "PROPERTY:feature": "Zawartość pliku konfiguracyjego drivera",

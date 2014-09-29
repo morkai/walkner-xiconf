@@ -29,7 +29,6 @@
     "PROPERTY:result": "Result",
     "PROPERTY:errorCode": "Error",
     "PROPERTY:exception": "Exception",
-    "PROPERTY:output": "MultiOne Workflow output",
     "PROPERTY:featureFile": "Driver configuration file",
     "PROPERTY:featureFileName": "Driver configuration file name",
     "PROPERTY:feature": "Driver configuration file contents",
