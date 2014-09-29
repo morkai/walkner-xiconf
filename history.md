@@ -1,3 +1,11 @@
+2.4.0 @ 2014-09-29
+==================
+
+  * Removed the `workflowFile` configuration option.
+  * Added three now configuration options: `workflowVerify`, `workflowIdentifyAlways`
+    and `workflowMultiDevice` (used to create a workflow configuration file).
+  * Changed a default value of the `programmerFile` setting.
+
 2.3.0 @ 2014-07-28
 ==================
 
