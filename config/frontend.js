@@ -26,7 +26,8 @@ exports.sqlite3 = {
 };
 
 exports.programmer = {
-  featureDbPath: DATA_PATH + '/features'
+  featureDbPath: DATA_PATH + '/features',
+  workflowFile: DATA_PATH + '/workflow.txt'
 };
 
 exports.history = {
@@ -55,7 +56,9 @@ exports.settings = {
     orders: 'disabled',
     remoteServer: '',
     syncInterval: 30,
-    workflowFile: DATA_PATH + '/workflow.xml',
+    workflowVerify: 0,
+    workflowIdentifyAlways: 0,
+    workflowMultiDevice: 0,
     featurePath1: DATA_PATH + '/_features1',
     featurePath2: DATA_PATH + '/_features2',
     searchTimeout1: 5000,

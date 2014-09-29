@@ -1,0 +1,3 @@
+verify=true
+identifyalways=false
+multidevice=true

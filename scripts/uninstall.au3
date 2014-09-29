@@ -79,7 +79,7 @@ $removeData = MsgBox(BitOr($MB_YESNO, $MB_ICONWARNING), $PRODUCT_NAME & " - Usuw
 If $removeData Then
   FileDelete($ROOT_DIR & "\data\" & $SERVICE_NAME & ".json")
   FileDelete($ROOT_DIR & "\data\" & $SERVICE_NAME & ".sqlite3")
-  FileDelete($ROOT_DIR & "\data\" & $SERVICE_NAME & "-workflow.xml")
+  FileDelete($ROOT_DIR & "\data\" & $SERVICE_NAME & "-workflow.txt")
   DirRemove($ROOT_DIR & "\data\" & $SERVICE_NAME & "-features", 1)
 EndIf
 

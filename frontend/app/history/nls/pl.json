@@ -53,6 +53,8 @@
   "log:COUNTDOWN_STARTED": "Odliczanie <code>{delay}</code> {delay, plural, one{sekundy} other{sekund}}...",
   "log:READING_WORKFLOW_FILE": "Odczytywanie pliku konfiguracyjnego programatora: <code>{workflowFile}</code>",
   "log:WORKFLOW_FILE_READ": "Odczytano <code>{length}B</code> pliku konfiguracyjnego programatora.",
+  "log:WRITING_WORKFLOW_FILE": "Zapisywanie pliku konfiguracyjnego programatora: <code>{workflowFile}</code> (<code>{workflowOptions}</code>)",
+  "log:WORKFLOW_FILE_WRITTEN": "Zapisano <code>{length}B</code> pliku konfiguracyjnego programatora.",
   "log:SEARCHING_FEATURE_FILE": "Wyszukiwanie pliku konfiguracyjnego drivera w ścieżce: <code>{featurePath}</code>",
   "log:SEARCHING_FEATURE_FILE_FAILURE": "Nieudane wyszukiwanie pliku: <code>{error}</code>",
   "log:SEARCHING_FEATURE_FILE_TIMEOUT": "Upłynął limit czasu wyszukiwania pliku konfiguracyjnego drivera.",
@@ -80,6 +82,7 @@
   "log:SOL_INVALID_OPTION": "Odczytana wartość parametru <code>{option}</code> różni się od wartości zaprogramowanej (oczekiwano <code>{expected}</code>; otrzymano <code>{actual}</code>).",
 
   "error:WORKFLOW_FILE_ERROR": "Błąd podczas odczytywania pliku konfiguracyjnego programatora.",
+  "error:WORKFLOW_FILE_WRITE_ERROR": "Błąd podczas zapisywania pliku konfiguracyjnego programatora.",
   "error:FEATURE_FILE_ERROR": "Błąd podczas odczytywania pliku konfiguracyjnego drivera.",
   "error:UNSET_WORKFLOW_FILE": "Nie ustawiono ścieżki do pliku konfiguracyjnego programatora.",
   "error:UNSET_FEATURE_PATH_1": "Nie ustawiono pierwszej ścieżki do plików konfiguracyjnych driverów.",

@@ -197,9 +197,14 @@ define([
         });
       }
 
+      this.$('input[type=checkbox]').each(function()
+      {
+        formData[this.name] = formData[this.name] === this.value ? 1 : 0;
+      });
+
       var $inputs = this.$('.panel-footer input').attr('disabled', true);
-      var view = this;
       var newSettings = new Settings();
+      var view = this;
       var req = this.promised(newSettings.save(formData, {wait: true}));
 
       req.done(function()

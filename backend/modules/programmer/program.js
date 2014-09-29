@@ -43,8 +43,8 @@ module.exports = function program(app, programmerModule, data, done)
     readFeatureFile2Step,
     handleReadFeatureFile2ResultStep,
     checkSolProgramStep,
-    readWorkflowFileStep,
-    handleReadWorkflowFileResultStep,
+    writeWorkflowFileStep,
+    handleWriteWorkflowFileResultStep,
     tryToProgramStep,
     finalizeStep
   );
@@ -88,45 +88,6 @@ module.exports = function program(app, programmerModule, data, done)
       clearInterval(timer);
       next();
     });
-  }
-
-  function handleReadWorkflowFileResultStep(err, workflow)
-  {
-    /*jshint validthis:true*/
-
-    if (programmerModule.cancelled)
-    {
-      return this.skip('CANCELLED');
-    }
-
-    if (this.isSolProgram)
-    {
-      return;
-    }
-
-    if (err)
-    {
-      if (err.code === 'ENOENT')
-      {
-        return this.skip('MISSING_WORKFLOW_FILE');
-      }
-      else
-      {
-        err.code = 'WORKFLOW_FILE_ERROR';
-
-        return this.skip(err);
-      }
-    }
-
-    programmerModule.changeState({
-      workflow: workflow
-    });
-
-    programmerModule.log('WORKFLOW_FILE_READ', {
-      length: Buffer.byteLength(workflow, 'utf8')
-    });
-
-    setImmediate(this.next());
   }
 
   function findFeatureFile1Step()
@@ -462,7 +423,7 @@ module.exports = function program(app, programmerModule, data, done)
     this.isSolProgram = solFilePattern.length && featureFile.indexOf(solFilePattern) !== -1;
   }
 
-  function readWorkflowFileStep()
+  function writeWorkflowFileStep()
   {
     /*jshint validthis:true*/
 
@@ -476,22 +437,85 @@ module.exports = function program(app, programmerModule, data, done)
       return;
     }
 
-    var workflowFile = settings.get('workflowFile');
+    var workflowFile = programmerModule.config.workflowFile;
 
     if (typeof workflowFile !== 'string' || workflowFile.length === 0)
     {
       return this.skip('UNSET_WORKFLOW_FILE');
     }
 
-    programmerModule.log('READING_WORKFLOW_FILE', {
-      workflowFile: workflowFile
+    var workflow = '';
+    var workflowOptions = [];
+
+    if (settings.get('workflowVerify'))
+    {
+      workflow += 'verify=true\r\n';
+      workflowOptions.push('verify');
+    }
+    else
+    {
+      workflow += 'verify=false\r\n';
+    }
+
+    if (settings.get('workflowIdentifyAlways'))
+    {
+      workflow += 'identifyalways=true\r\n';
+      workflowOptions.push('identifyalways');
+    }
+    else
+    {
+      workflow += 'identifyalways=false\r\n';
+    }
+
+    if (settings.get('workflowMultiDevice'))
+    {
+      workflow += 'multidevice=true\r\n';
+      workflowOptions.push('multidevice');
+    }
+    else
+    {
+      workflow += 'multidevice=false\r\n';
+    }
+
+    programmerModule.log('WRITING_WORKFLOW_FILE', {
+      workflowFile: workflowFile,
+      workflowOptions: workflowOptions
     });
 
     programmerModule.changeState({
-      workflowFile: workflowFile
+      workflowFile: workflowFile,
+      workflow: workflow.trim()
     });
 
-    fs.readFile(workflowFile, {encoding: 'utf8'}, this.next());
+    fs.writeFile(workflowFile, workflow, this.next());
+  }
+
+  function handleWriteWorkflowFileResultStep(err)
+  {
+    /*jshint validthis:true*/
+
+    if (programmerModule.cancelled)
+    {
+      return this.skip('CANCELLED');
+    }
+
+    if (this.isSolProgram)
+    {
+      return;
+    }
+
+    if (err)
+    {
+      err.code = 'WORKFLOW_FILE_WRITE_ERROR';
+
+      return this.skip(err);
+    }
+
+    programmerModule.log('WORKFLOW_FILE_WRITTEN', {
+      length: Buffer.byteLength(programmerModule.currentState.workflow, 'utf8')
+    });
+
+    setImmediate(this.next());
   }
 
   function tryToProgramStep()

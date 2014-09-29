@@ -108,8 +108,8 @@ exports.copy = {
         dest: DEST_INSTALLER + '/data/walkner-xiconf-features/.keep'
       },
       {
-        src: './data/workflow.xml',
-        dest: DEST_INSTALLER + '/data/walkner-xiconf-workflow.xml'
+        src: './data/workflow.txt',
+        dest: DEST_INSTALLER + '/data/walkner-xiconf-workflow.txt'
       },
       {
         src: './data/.keep',

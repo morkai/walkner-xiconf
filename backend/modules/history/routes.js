@@ -250,10 +250,14 @@ module.exports = function setUpHistoryRoutes(app, historyModule)
 
       suffix += '.xml';
 
+      var type;
       var filename;
 
       if (file === 'feature')
       {
+        type = 'xml';
+        suffix += '.xml';
+
         if (typeof row.featureFileName === 'string')
         {
           filename = 'FEATURE_' + row.featureFileName.replace(/\.xml$/i, suffix);
@@ -265,10 +269,12 @@ module.exports = function setUpHistoryRoutes(app, historyModule)
       }
       else
       {
+        type = 'txt';
+        suffix += '.txt';
         filename = 'WORKFLOW_' + suffix;
       }
 
-      res.type('xml');
+      res.type(type);
       res.attachment(filename);
 
       if (file === 'workflow')

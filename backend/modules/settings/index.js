@@ -141,7 +141,6 @@ exports.start = function startSettingsModule(app, module, done)
     validateStringSetting(rawSettings, newSettings, 'password1');
     validateStringSetting(rawSettings, newSettings, 'id', 1, /^[a-zA-Z0-9-_]+$/);
     validateStringSetting(rawSettings, newSettings, 'title', 0);
-    validateStringSetting(rawSettings, newSettings, 'workflowFile');
     validateStringSetting(rawSettings, newSettings, 'featurePath1');
     validateStringSetting(rawSettings, newSettings, 'featurePath2', 0);
     validateStringSetting(rawSettings, newSettings, 'programmerFile');
@@ -165,6 +164,9 @@ exports.start = function startSettingsModule(app, module, done)
     validateEnum(rawSettings, newSettings, 'logVerbosity', String, ['info', 'error', 'fatal']);
     validateEnum(rawSettings, newSettings, 'continueOnWarnings', String, ['continue', 'halt']);
     validateEnum(rawSettings, newSettings, 'imWorkin', Number, [0, 1]);
+    validateEnum(rawSettings, newSettings, 'workflowVerify', Number, [0, 1]);
+    validateEnum(rawSettings, newSettings, 'workflowIdentifyAlways', Number, [0, 1]);
+    validateEnum(rawSettings, newSettings, 'workflowMultiDevice', Number, [0, 1]);
     validateHotkeys(rawSettings, newSettings);
 
     if (newSettings.password1)
