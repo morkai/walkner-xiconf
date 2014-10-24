@@ -2,6 +2,7 @@
   <ul class="nav nav-tabs">
     <li data-tab="settings" class="active"><a id="<%- idPrefix %>-tab-settings" href="#<%- idPrefix %>-settings" data-toggle="tab"><%- t('settings', 'form:settings') %></a></li>
     <li data-tab="sol"><a id="<%- idPrefix %>-tab-sol" href="#<%- idPrefix %>-sol" data-toggle="tab"><%- t('settings', 'form:sol') %></a></li>
+    <li data-tab="lpt"><a id="<%- idPrefix %>-tab-lpt" href="#<%- idPrefix %>-lpt" data-toggle="tab"><%- t('settings', 'form:lpt') %></a></li>
     <li data-tab="hotkeys"><a id="<%- idPrefix %>-tab-hotkeys" href="#<%- idPrefix %>-hotkeys" data-toggle="tab"><%- t('settings', 'form:hotkeys') %></a></li>
     <li data-tab="license"><a id="<%- idPrefix %>-tab-license" href="#<%- idPrefix %>-license" data-toggle="tab"><%- t('settings', 'form:license') %></a></li>
   </ul>
@@ -174,6 +175,58 @@
           <label class="radio-inline">
             <input name="solReset" type="radio" value="0" required> <%- t('settings', 'setting:solReset:off') %>
           </label>
+        </div>
+      </div>
+    </div>
+    <div id="<%- idPrefix %>-lpt" class="panel-body tab-pane settings-lpt">
+      <div class="form-group">
+        <label for="<%- idPrefix %>-lptEnabled" class="control-label"><%- t('settings', 'setting:lptEnabled') %></label>
+        <div>
+          <label class="radio-inline">
+            <input id="<%- idPrefix %>-lptEnabled" name="lptEnabled" type="radio" value="1" required> <%- t('settings', 'setting:lptEnabled:on') %>
+          </label>
+          <label class="radio-inline">
+            <input name="lptEnabled" type="radio" value="0" required> <%- t('settings', 'setting:lptEnabled:off') %>
+          </label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="<%- idPrefix %>-lptFilePattern" class="control-label"><%- t('settings', 'setting:lptFilePattern') %></label>
+        <input id="<%- idPrefix %>-lptFilePattern" class="form-control" name="lptFilePattern" type="text">
+      </div>
+      <div class="form-group">
+        <label for="<%- idPrefix %>-lptStartTimeout" class="control-label"><%- t('settings', 'setting:lptStartTimeout') %></label>
+        <input id="<%- idPrefix %>-lptStartTimeout" class="form-control" name="lptStartTimeout" type="number" required min="1000">
+      </div>
+      <div class="row">
+        <div class="form-group col-md-4">
+          <label for="<%- idPrefix %>-lptReadPort" class="control-label"><%- t('settings', 'setting:lptReadPort') %></label>
+          <input id="<%- idPrefix %>-lptReadPort" class="form-control" name="lptReadPort" type="number" required min="0" max="32767">
+        </div>
+        <div class="form-group col-md-4">
+          <label for="<%- idPrefix %>-lptReadBit" class="control-label"><%- t('settings', 'setting:lptReadBit') %></label>
+          <input id="<%- idPrefix %>-lptReadBit" class="form-control" name="lptReadBit" type="number" required min="0" max="15">
+        </div>
+        <div class="form-group col-md-4">
+          <label for="<%- idPrefix %>-lptReadInverted" class="control-label"><%- t('settings', 'setting:lptReadInverted') %></label>
+          <div>
+            <label class="radio-inline">
+              <input id="<%- idPrefix %>-lptReadInverted" name="lptReadInverted" type="radio" value="1" required> <%- t('settings', 'setting:lptReadInverted:on') %>
+            </label>
+            <label class="radio-inline">
+              <input name="lptReadInverted" type="radio" value="0" required> <%- t('settings', 'setting:lptReadInverted:off') %>
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group col-md-4">
+          <label for="<%- idPrefix %>-lptWritePort" class="control-label"><%- t('settings', 'setting:lptWritePort') %></label>
+          <input id="<%- idPrefix %>-lptWritePort" class="form-control" name="lptWritePort" type="number" required min="0" max="32767">
+        </div>
+        <div class="form-group col-md-4">
+          <label for="<%- idPrefix %>-lptWriteBit" class="control-label"><%- t('settings', 'setting:lptWriteBit') %></label>
+          <input id="<%- idPrefix %>-lptWriteBit" class="form-control" name="lptWriteBit" type="number" required min="0" max="15">
         </div>
       </div>
     </div>

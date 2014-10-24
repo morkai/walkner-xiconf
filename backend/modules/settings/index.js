@@ -147,6 +147,7 @@ exports.start = function startSettingsModule(app, module, done)
     validateStringSetting(rawSettings, newSettings, 'remoteServer', 0);
     validateStringSetting(rawSettings, newSettings, 'solComPattern', 1);
     validateStringSetting(rawSettings, newSettings, 'solFilePattern', 1);
+    validateStringSetting(rawSettings, newSettings, 'lptFilePattern', 0);
     validateNumericSetting(rawSettings, newSettings, 'syncInterval', 10);
     validateNumericSetting(rawSettings, newSettings, 'searchTimeout1', 100);
     validateNumericSetting(rawSettings, newSettings, 'searchTimeout2', 100);
@@ -157,6 +158,11 @@ exports.start = function startSettingsModule(app, module, done)
     validateNumericSetting(rawSettings, newSettings, 'cancelDelay', 0);
     validateNumericSetting(rawSettings, newSettings, 'blockageInterval', 0);
     validateNumericSetting(rawSettings, newSettings, 'blockageDuration', 0);
+    validateNumericSetting(rawSettings, newSettings, 'lptStartTimeout', 1000);
+    validateNumericSetting(rawSettings, newSettings, 'lptReadPort', 0);
+    validateNumericSetting(rawSettings, newSettings, 'lptReadBit', 0);
+    validateNumericSetting(rawSettings, newSettings, 'lptWritePort', 0);
+    validateNumericSetting(rawSettings, newSettings, 'lptWriteBit', 0);
     validateEnum(rawSettings, newSettings, 'solReset', Number, [0, 1]);
     validateEnum(rawSettings, newSettings, 'backupPath', Number, [1, 2]);
     validateEnum(rawSettings, newSettings, 'orders', String, ['disabled', 'optional', 'required']);
@@ -167,6 +173,8 @@ exports.start = function startSettingsModule(app, module, done)
     validateEnum(rawSettings, newSettings, 'workflowVerify', Number, [0, 1]);
     validateEnum(rawSettings, newSettings, 'workflowIdentifyAlways', Number, [0, 1]);
     validateEnum(rawSettings, newSettings, 'workflowMultiDevice', Number, [0, 1]);
+    validateEnum(rawSettings, newSettings, 'lptEnabled', Number, [0, 1]);
+    validateEnum(rawSettings, newSettings, 'lptReadInverted', Number, [0, 1]);
     validateHotkeys(rawSettings, newSettings);
 
     if (newSettings.password1)

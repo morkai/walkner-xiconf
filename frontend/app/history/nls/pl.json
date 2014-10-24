@@ -80,6 +80,8 @@
   "log:SOL_RESETTING": "Resetowanie urządzenia...",
   "log:SOL_EXECUTING_GET_COMMANDS": "Porównywanie zaprogramowanych wartości parametrów...",
   "log:SOL_INVALID_OPTION": "Odczytana wartość parametru <code>{option}</code> różni się od wartości zaprogramowanej (oczekiwano <code>{expected}</code>; otrzymano <code>{actual}</code>).",
+  "log:LPT_STARTING": "(LPT) Oczekiwanie na sygnał uruchomienia programatora...",
+  "log:LPT_FINISHING": "(LPT) Ustawianie wartości wynikowej...",
 
   "error:WORKFLOW_FILE_ERROR": "Błąd podczas odczytywania pliku konfiguracyjnego programatora.",
   "error:WORKFLOW_FILE_WRITE_ERROR": "Błąd podczas zapisywania pliku konfiguracyjnego programatora.",
@@ -119,5 +121,7 @@
   "error:SOL_SERIAL_PORT_FAILURE": "SOL: Błąd portu szeregowego.",
   "error:SOL_INVALID_OPTION": "SOL: Odczytana wartość różni się od wartości zaprogramowanej.",
   "error:SOL_NO_CONNECTION": "SOL: Brak odpowiedzi od urządzenia. Sprawdź połączenie portu szeregowego.",
-  "error:SOL_FEATURE_DISABLED": "Ustawiona licencja nie ma opcji programowania Fortimo Solar."
+  "error:SOL_FEATURE_DISABLED": "Ustawiona licencja nie ma opcji programowania Fortimo Solar.",
+  "error:LPT_FILE_ERROR": "Błąd podczas komunikacji LPT.",
+  "error:LPT_START_TIMEOUT": "Upłynięcie limitu czasu oczekiwania na sygnał uruchomienia programatora."
 }

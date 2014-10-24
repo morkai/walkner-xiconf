@@ -13,7 +13,9 @@ exports.DEFAULT_CONFIG = {
   historyId: 'history',
   sqlite3Id: 'sqlite3',
   sioId: 'sio',
-  featureDbPath: './'
+  featureDbPath: './',
+  workflowFile: 'workflow.txt',
+  lptIoFile: 'LptIo.exe'
 };
 
 exports.start = function startProgrammerModule(app, module)

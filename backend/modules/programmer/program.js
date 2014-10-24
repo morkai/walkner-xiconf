@@ -10,6 +10,7 @@ var step = require('h5.step');
 var findFeatureFile = require('./findFeatureFile');
 var readFeatureFile = require('./readFeatureFile');
 var programSolDriver = require('./programSolDriver');
+var LptIo = require('./LptIo');
 
 module.exports = function program(app, programmerModule, data, done)
 {
@@ -45,6 +46,7 @@ module.exports = function program(app, programmerModule, data, done)
     checkSolProgramStep,
     writeWorkflowFileStep,
     handleWriteWorkflowFileResultStep,
+    tryToProgramLptStep,
     tryToProgramStep,
     finalizeStep
   );
@@ -518,7 +520,51 @@ module.exports = function program(app, programmerModule, data, done)
     setImmediate(this.next());
   }
 
-  function tryToProgramStep()
+  function tryToProgramLptStep()
+  {
+    /*jshint validthis:true*/
+
+    if (programmerModule.cancelled)
+    {
+      return this.skip('CANCELLED');
+    }
+
+    if (this.isSolProgram || !settings.get('lptEnabled'))
+    {
+      return;
+    }
+
+    var lptFilePattern = settings.get('lptFilePattern') || '';
+    var featureFile = currentState.featureFile;
+
+    if (lptFilePattern !== '' && featureFile.indexOf(lptFilePattern) === -1)
+    {
+      return;
+    }
+
+    this.lptIo = new LptIo({
+      lptIoFile: programmerModule.config.lptIoFile,
+      startTimeout: settings.get('lptStartTimeout'),
+      readPort: settings.get('lptReadPort'),
+      readBit: settings.get('lptReadBit'),
+      readInverted: settings.get('lptReadInverted'),
+      writePort: settings.get('lptWritePort'),
+      writeBit: settings.get('lptWriteBit'),
+      done: this.next()
+    });
+
+    this.sub = app.broker.subscribe('programmer.cancelled', this.lptIo.cancel.bind(this.lptIo));
+
+    programmerModule.log('LPT_STARTING', {
+      port: this.lptIo.options.readPort,
+      bit: this.lptIo.options.readBit,
+      inverted: this.lptIo.options.readInverted
+    });
+
+    this.lptIo.start();
+  }
+
+  function tryToProgramStep(err)
   {
     /*jshint validthis:true*/
 
@@ -530,6 +576,17 @@ module.exports = function program(app, programmerModule, data, done)
     if (this.isSolProgram)
     {
       return programSolDriver(app, programmerModule, this.next());
+    }
+
+    if (err)
+    {
+      return this.skip(err);
+    }
+
+    if (this.sub)
+    {
+      this.sub.cancel();
+      this.sub = null;
     }
 
     var programmerFile = settings.get('programmerFile');
@@ -620,6 +677,17 @@ module.exports = function program(app, programmerModule, data, done)
     {
       this.sub.cancel();
       this.sub = null;
+    }
+
+    if (this.lptIo)
+    {
+      programmerModule.log('LPT_FINISHING', {
+        port: this.lptIo.options.writePort,
+        bit: this.lptIo.options.writeBit
+      });
+
+      this.lptIo.finish(err ? false : true);
+      this.lptIo = null;
     }
 
     var finishedAt = Date.now();

@@ -81,6 +81,8 @@
     "log:SOL_RESETTING": "Resetting the device...",
     "log:SOL_EXECUTING_GET_COMMANDS": "Comparing the programmed parameter values...",
     "log:SOL_INVALID_OPTION": "Read parameter value of option <code>{option}</code> differs from the programmed value (expected <code>{expected}</code>; got <code>{actual}</code>).",
+    "log:LPT_STARTING": "(LPT) Waiting for a signal to start the programmer...",
+    "log:LPT_FINISHING": "(LPT) Setting the result value...",
 
     "error:WORKFLOW_FILE_ERROR": "Error during the reading of the programmer configuration file contents.",
     "error:WORKFLOW_FILE_WRITE_ERROR": "Error during the writing of the programmer configuration file contents.",
@@ -119,7 +121,9 @@
     "error:SOL_OPENING_COM_FAILURE": "SOL: Error while opening the serial port.",
     "error:SOL_SERIAL_PORT_FAILURE": "SOL: Serial port error.",
     "error:SOL_NO_CONNECTION": "SOL: No response from the device. Check the serial port connection.",
-    "error:SOL_INVALID_OPTION": "SOL: Read value differs from the programmed one."
+    "error:SOL_INVALID_OPTION": "SOL: Read value differs from the programmed one.",
+    "error:LPT_FILE_ERROR": "Error during LPT communication.",
+    "error:LPT_START_TIMEOUT": "Waiting for a signal to start the programmer timed out."
   },
   "pl": true
 }

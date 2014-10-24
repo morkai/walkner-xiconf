@@ -163,6 +163,18 @@ exports.copy = {
         dest: DEST_APP + '/bin/ImWorkin.exe'
       },
       {
+        src: path.join(installerConfig.lptIo, 'LptIo.exe'),
+        dest: DEST_APP + '/bin/LptIo/LptIo.exe'
+      },
+      {
+        src: path.join(installerConfig.lptIo, 'inpout32.dll'),
+        dest: DEST_APP + '/bin/LptIo/inpout32.dll'
+      },
+      {
+        src: path.join(installerConfig.lptIo, 'inpoutx64.dll'),
+        dest: DEST_APP + '/bin/LptIo/inpoutx64.dll'
+      },
+      {
         src: installerConfig.libeay32,
         dest: DEST_APP + '/node_modules/ursa/bin/libeay32.dll'
       },

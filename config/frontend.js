@@ -5,6 +5,7 @@
 var fs = require('fs');
 
 var DATA_PATH = __dirname + '/../data';
+var BIN_PATH = __dirname + '/../bin';
 
 exports.id = 'walkner-xiconf';
 
@@ -27,7 +28,8 @@ exports.sqlite3 = {
 
 exports.programmer = {
   featureDbPath: DATA_PATH + '/features',
-  workflowFile: DATA_PATH + '/workflow.txt'
+  workflowFile: DATA_PATH + '/workflow.txt',
+  lptIoFile: BIN_PATH + '/LptIo/LptIo.exe'
 };
 
 exports.history = {
@@ -78,6 +80,14 @@ exports.settings = {
     solComPattern: 'FTDI',
     solFilePattern: 'SOL',
     solReset: 1,
+    lptEnabled: 0,
+    lptStartTimeout: 30000,
+    lptFilePattern: '',
+    lptReadPort: 0x378,
+    lptReadBit: 15,
+    lptReadInverted: 0,
+    lptWritePort: 0x378,
+    lptWriteBit: 5,
     imWorkin: 0,
     hotkeys: {
       focusOrderNo: 'Q',
