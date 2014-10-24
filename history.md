@@ -1,3 +1,8 @@
+2.5.0 @ 2014-10-24
+
+  * Added a new feature: programmer can be started after receiving a signal on a parallel port.
+  * Added error messages from MultiOne v1.1.
+
 2.4.0 @ 2014-09-29
 ==================
 
