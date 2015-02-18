@@ -38,7 +38,7 @@
 
   "FORM:ACTION:add": "Dodaj program",
   "FORM:ACTION:edit": "Edytuj program",
-  "FORM:ERROR:addFailure": "Nie udało się dodać prograu :-(",
+  "FORM:ERROR:addFailure": "Nie udało się dodać programu :-(",
   "FORM:ERROR:editFailure": "Nie udało się zmodyfikować programu :-(",
   "FORM:ERROR:minDuration": "Wartość nie może być mniejsza niż 1s.",
   "FORM:ERROR:requiredStep": "Wybierz przynajmniej jeden krok.",
