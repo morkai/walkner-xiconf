@@ -266,8 +266,6 @@ module.exports = function setUpHistoryRoutes(app, historyModule)
         suffix += '_III';
       }
 
-      suffix += '.xml';
-
       var type;
       var filename;
 
