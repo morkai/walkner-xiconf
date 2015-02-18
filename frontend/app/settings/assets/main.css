@@ -1,9 +1,7 @@
 .settings-form .panel {
   border-top: none;
 }
-.settings-hotkeys,
-.settings-lpt,
-.settings-testing {
+.settings-hasRowLast {
   padding-bottom: 0;
 }
 .settings-form textarea[name="licenseKey"] {

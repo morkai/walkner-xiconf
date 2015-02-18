@@ -1,0 +1,45 @@
+<div id="<%- idPrefix %>-mow" class="panel-body tab-pane active">
+  <div class="form-group">
+    <label for="<%- idPrefix %>-workflow" class="control-label"><%- t('settings', 'setting:workflow') %></label>
+    <div>
+      <label class="checkbox-inline">
+        <input id="<%- idPrefix %>-workflow" name="workflowVerify" type="checkbox" value="1"> <%- t('settings', 'setting:workflowVerify') %>
+      </label>
+      <label class="checkbox-inline">
+        <input name="workflowIdentifyAlways" type="checkbox" value="1"> <%- t('settings', 'setting:workflowIdentifyAlways') %>
+      </label>
+      <label class="checkbox-inline">
+        <input name="workflowMultiDevice" type="checkbox" value="1"> <%- t('settings', 'setting:workflowMultiDevice') %>
+      </label>
+    </div>
+  </div>
+  <div class="row">
+    <div class="form-group col-md-4">
+      <label for="<%- idPrefix %>-interface" class="control-label"><%- t('settings', 'setting:interface') %></label>
+      <select id="<%- idPrefix %>-interface" class="form-control" name="interface" required>
+        <option value="d"><%- t('settings', 'setting:interface:d') %></option>
+        <option value="z"><%- t('settings', 'setting:interface:z') %></option>
+        <option value="i"><%- t('settings', 'setting:interface:i') %></option>
+      </select>
+    </div>
+    <div class="form-group col-md-4">
+      <label for="<%- idPrefix %>-continueOnWarnings" class="control-label"><%- t('settings', 'setting:continueOnWarnings') %></label>
+      <select id="<%- idPrefix %>-continueOnWarnings" class="form-control" name="continueOnWarnings" required>
+        <option value="continue"><%- t('settings', 'setting:continueOnWarnings:continue') %></option>
+        <option value="halt"><%- t('settings', 'setting:continueOnWarnings:halt') %></option>
+      </select>
+    </div>
+    <div class="form-group col-md-4">
+      <label for="<%- idPrefix %>-logVerbosity" class="control-label"><%- t('settings', 'setting:logVerbosity') %></label>
+      <select id="<%- idPrefix %>-logVerbosity" class="form-control" name="logVerbosity" required>
+        <option value="info"><%- t('settings', 'setting:logVerbosity:info') %></option>
+        <option value="error"><%- t('settings', 'setting:logVerbosity:error') %></option>
+        <option value="fatal"><%- t('settings', 'setting:logVerbosity:fatal') %></option>
+      </select>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="<%- idPrefix %>-programmerFile" class="control-label"><%- t('settings', 'setting:programmerFile') %></label>
+    <input id="<%- idPrefix %>-programmerFile" class="form-control" name="programmerFile" type="text" required>
+  </div>
+</div>

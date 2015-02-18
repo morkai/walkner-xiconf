@@ -16,6 +16,7 @@
   "msg:restart:LOCKED": "Nie można zrestartować serwera w trakcie programowania!",
 
   "form:settings": "Podstawowe ustawienia",
+  "form:mow": "MultiOne Workflow",
   "form:sol": "Fortimo Solar",
   "form:lpt": "Petrol Station",
   "form:testing": "Tester 24V DC",

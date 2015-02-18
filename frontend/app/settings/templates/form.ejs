@@ -1,6 +1,7 @@
 <form class="settings-form" method="post" action="/settings" autocomplete="off">
   <ul class="nav nav-tabs">
     <li data-tab="settings" class="active"><a id="<%- idPrefix %>-tab-settings" href="#<%- idPrefix %>-settings" data-toggle="tab"><%- t('settings', 'form:settings') %></a></li>
+    <li data-tab="mow"><a id="<%- idPrefix %>-tab-mow" href="#<%- idPrefix %>-mow" data-toggle="tab"><%- t('settings', 'form:mow') %></a></li>
     <li data-tab="lpt"><a id="<%- idPrefix %>-tab-lpt" href="#<%- idPrefix %>-lpt" data-toggle="tab"><%- t('settings', 'form:lpt') %></a></li>
     <li data-tab="sol"><a id="<%- idPrefix %>-tab-sol" href="#<%- idPrefix %>-sol" data-toggle="tab"><%- t('settings', 'form:sol') %></a></li>
     <li data-tab="testing"><a id="<%- idPrefix %>-tab-testing" href="#<%- idPrefix %>-testing" data-toggle="tab"><%- t('settings', 'form:testing') %></a></li>
@@ -9,6 +10,7 @@
   </ul>
   <div class="panel panel-default tab-content">
     <% include _settings.ejs %>
+    <% include _mow.ejs %>
     <% include _lpt.ejs %>
     <% include _sol.ejs %>
     <% include _testing.ejs %>
