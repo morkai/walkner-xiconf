@@ -251,6 +251,7 @@ HistoryEntry.prototype.save = function(featureDbPath, done)
       $featureFileName: historyEntry.featureFileName,
       $featureFileHash: historyEntry.featureFileHash,
       $workflowFile: historyEntry.workflowFile,
+      $workflow: historyEntry.workflow,
       $program: historyEntry.program ? JSON.stringify(historyEntry.program) : null,
       $steps: historyEntry.steps ? JSON.stringify(historyEntry.steps) : null,
       $metrics: historyEntry.metrics ? JSON.stringify(historyEntry.metrics) : null
