@@ -13,21 +13,38 @@ var CSV_ROW_SEPARATOR = '\r\n';
 var CSV_FORMATTERS = {
   '"': function(value)
   {
-    if (value === null || value === 'undefined' || value === '')
+    if (value === null || value === undefined || value === '')
     {
       return '""';
     }
 
-    return '"' + value.replace(/"/g, '""') + '"';
+    return '"' + String(value).replace(/"/g, '""') + '"';
   },
   '#': function(value)
   {
+    if (value === null || value === undefined || value === '')
+    {
+      return '';
+    }
+
     return parseFloat(Number(value).toFixed(3)).toString().replace('.', ',');
   }
 };
 
-exports.browseRoute = function(app, Model, req, res, next)
+exports.browseRoute = function(app, options, req, res, next)
 {
+  var Model;
+
+  if (options.model && options.model.model)
+  {
+    Model = options.model;
+  }
+  else
+  {
+    Model = options;
+    options = {};
+  }
+
   var queryOptions = mongoSerializer.fromQuery(req.rql);
 
   if (queryOptions.limit === 0)
@@ -82,27 +99,51 @@ exports.browseRoute = function(app, Model, req, res, next)
         });
       }
 
-      res.format({
-        json: function()
-        {
-          res.json({
-            totalCount: totalCount,
-            collection: models
-          });
-        }
-      });
+      if (typeof options.prepareResult === 'function')
+      {
+        options.prepareResult(totalCount, models, formatResult);
+      }
+      else
+      {
+        formatResult(null, {
+          totalCount: totalCount,
+          collection: models
+        });
+      }
     }
   );
+
+  function formatResult(err, result)
+  {
+    if (err)
+    {
+      return next(err);
+    }
+
+    res.format({
+      json: function()
+      {
+        res.json(result);
+      }
+    });
+  }
 };
 
 exports.addRoute = function(app, Model, req, res, next)
 {
-  var model = new Model(req.body);
+  var model = req.model || new Model(req.body);
 
   model.save(function(err)
   {
+    req.model = null;
+
     if (err)
     {
+      if (err.name === 'ValidationError')
+      {
+        res.statusCode = 400;
+      }
+
       return next(err);
     }
 
@@ -114,14 +155,26 @@ exports.addRoute = function(app, Model, req, res, next)
     });
 
     app.broker.publish((Model.TOPIC_PREFIX || Model.collection.name) + '.added', {
-      model: model.toJSON(),
+      model: model,
       user: req.session.user
     });
   });
 };
 
-exports.readRoute = function(app, Model, req, res, next)
+exports.readRoute = function(app, options, req, res, next)
 {
+  var Model;
+
+  if (options.model && options.model.model)
+  {
+    Model = options.model;
+  }
+  else
+  {
+    Model = options;
+    options = {};
+  }
+
   var query = Model.findById(req.params.id);
 
   try
@@ -145,12 +198,29 @@ exports.readRoute = function(app, Model, req, res, next)
       return res.send(404);
     }
 
+    if (typeof options.prepareResult === 'function')
+    {
+      options.prepareResult(model, formatResult);
+    }
+    else
+    {
+      formatResult(null, model);
+    }
+  });
+
+  function formatResult(err, result)
+  {
+    if (err)
+    {
+      return next(err);
+    }
+
     res.format({
       json: function()
       {
         try
         {
-          res.send(model);
+          res.send(result);
         }
         catch (err)
         {
@@ -158,7 +228,7 @@ exports.readRoute = function(app, Model, req, res, next)
         }
       }
     });
-  });
+  }
 };
 
 exports.editRoute = function(app, Model, req, res, next)
@@ -178,6 +248,8 @@ exports.editRoute = function(app, Model, req, res, next)
 
   function edit(err, model)
   {
+    req.model = null;
+
     if (err)
     {
       return next(err);
@@ -199,13 +271,18 @@ exports.editRoute = function(app, Model, req, res, next)
     {
       if (err)
       {
+        if (err.name === 'ValidationError')
+        {
+          res.statusCode = 400;
+        }
+
         return next(err);
       }
 
       sendResponse(res, model);
 
       app.broker.publish((Model.TOPIC_PREFIX || Model.collection.name) + '.edited', {
-        model: model.toJSON(),
+        model: model,
         user: req.session.user
       });
     });
@@ -239,6 +316,8 @@ exports.deleteRoute = function(app, Model, req, res, next)
 
   function del(err, model)
   {
+    req.model = null;
+
     if (err)
     {
       return next(err);
@@ -264,7 +343,7 @@ exports.deleteRoute = function(app, Model, req, res, next)
       });
 
       app.broker.publish((Model.TOPIC_PREFIX || Model.collection.name) + '.deleted', {
-        model: model.toJSON(),
+        model: model,
         user: req.session.user
       });
     });
@@ -281,6 +360,15 @@ exports.exportRoute = function(options, req, res, next)
     .find(queryOptions.selector, queryOptions.fields)
     .sort(queryOptions.sort)
     .lean();
+
+  try
+  {
+    populateQuery(query, req.rql);
+  }
+  catch (err)
+  {
+    return next(err);
+  }
 
   if (options.serializeStream)
   {

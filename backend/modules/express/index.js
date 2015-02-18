@@ -7,6 +7,7 @@
 var path = require('path');
 var lodash = require('lodash');
 var express = require('express');
+var bodyParser = require('body-parser');
 var ejsAmd = require('ejs-amd');
 var messageFormatAmd = require('messageformat-amd');
 var MongoStore = require('./MongoStore')(express.session.Store);
@@ -27,7 +28,10 @@ exports.DEFAULT_CONFIG = {
   },
   cookieSecret: null,
   ejsAmdHelpers: {},
-  title: 'express'
+  title: 'express',
+  jsonBody: {},
+  textBody: {},
+  urlencodedBody: {}
 };
 
 exports.start = function startExpressModule(app, module, done)
@@ -36,11 +40,20 @@ exports.start = function startExpressModule(app, module, done)
 
   module = app[module.name] = lodash.merge(express(), module);
 
+  module.createHttpError = function(message, statusCode)
+  {
+    var httpError = new Error(message);
+    httpError.status = statusCode || 400;
+
+    return httpError;
+  };
+
   module.crud = crud;
 
   var production = app.options.env === 'production';
   var staticPath = module.config[production ? 'staticBuildPath' : 'staticPath'];
 
+  module.set('trust proxy', true);
   module.set('views', app.pathTo('templates'));
   module.set('view engine', 'ejs');
   module.set('static path', staticPath);
@@ -49,8 +62,6 @@ exports.start = function startExpressModule(app, module, done)
     module: module,
     express: express
   });
-
-  module.use(express.static(staticPath));
 
   if (!production)
   {
@@ -69,15 +80,23 @@ exports.start = function startExpressModule(app, module, done)
     module.use(express.session({
       store: module.sessionStore,
       key: module.config.sessionCookieKey,
-      cookie: module.config.sessionCookie
+      cookie: module.config.sessionCookie,
+      secret: module.config.cookieSecret
     }));
   }
 
-  module.use(express.json());
-  module.use(express.urlencoded());
-  module.use(express.methodOverride());
+  module.use(bodyParser.json(module.config.jsonBody));
+  module.use(bodyParser.urlencoded(lodash.extend({extended: false}, module.config.urlencodedBody)));
+  module.use(bodyParser.text(lodash.defaults({type: 'text/*'}, module.config.textBody)));
   module.use(rqlMiddleware());
+
+  app.broker.publish('express.beforeRouter', {
+    module: module,
+    express: express
+  });
+
   module.use(module.router);
+  module.use(express.static(staticPath));
 
   var errorHandlerOptions = {
     title: module.config.title,
