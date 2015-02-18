@@ -43,7 +43,7 @@
   "FILTER:submit": "Filtruj historię",
 
   "tab:log": "Przebieg programowania",
-  "tab:output": "Odpowiedź programatora",
+  "tab:output": "Przebieg komunikacji",
   "tab:workflow": "Konfiguracja programatora",
   "tab:feature": "Konfiguracja drivera",
   "tab:program": "Program",

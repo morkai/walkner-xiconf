@@ -44,7 +44,7 @@
     "FILTER:submit": "Filter results",
 
     "tab:log": "Programming log",
-    "tab:output": "Programmer output",
+    "tab:output": "Communication log",
     "tab:workflow": "Programmer configuration",
     "tab:feature": "Driver configuration",
     "tab:program": "Program",
