@@ -71,6 +71,7 @@ define([
 
       this.listenTo(this.model, 'change:programming change:mode', this.toggleControls);
       this.listenTo(this.model, 'change:program', this.onProgramChange);
+      this.listenTo(this.programStepsView, 'afterRender', this.toggleLastStepsBorder);
     },
 
     destroy: function()
