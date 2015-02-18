@@ -98,7 +98,7 @@ module.exports = function setProgramsRoutes(app, programsModule)
 
   function addProgramRoute(req, res, next)
   {
-    var program = _.pick(req.body, ['name', 'steps']);
+    var program = _.pick(req.body, ['type', 'name', 'steps']);
 
     if (!validateProgram(program))
     {
@@ -162,7 +162,7 @@ module.exports = function setProgramsRoutes(app, programsModule)
 
   function editProgramRoute(req, res, next)
   {
-    var program = _.pick(req.body, ['name', 'steps']);
+    var program = _.pick(req.body, ['type', 'name', 'steps']);
 
     if (!validateProgram(program))
     {
@@ -270,7 +270,8 @@ module.exports = function setProgramsRoutes(app, programsModule)
 
   function validateProgram(program)
   {
-    return _.isString(program.name)
+    return program.type === 't24vdc'
+      && _.isString(program.name)
       && !_.isEmpty(program.name)
       && _.isArray(program.steps)
       && !_.isEmpty(program.steps)
