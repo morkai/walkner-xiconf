@@ -582,9 +582,12 @@ module.exports = function program(app, programmerModule, data, done)
     var schedulerFile = settings.get('schedulerFile');
     var supportedDevicesFile = settings.get('supportedDevicesFile');
     var args = [];
+    var comInterface;
 
     if (schedulerFile.length && supportedDevicesFile.length)
     {
+      comInterface = 'd';
+
       args.push(
         '/s', schedulerFile,
         '/d', supportedDevicesFile
@@ -592,10 +595,12 @@ module.exports = function program(app, programmerModule, data, done)
     }
     else
     {
+      comInterface = settings.get('interface') || 'd';
+
       args.push(
         '/f', currentState.featureFile,
         '/w', currentState.workflowFile,
-        '/i', settings.get('interface') || 'd',
+        '/i', comInterface,
         '/v', settings.get('logVerbosity') || 'fatal',
         '/c', settings.get('continueOnWarnings') || 'halt'
       );
@@ -603,7 +608,7 @@ module.exports = function program(app, programmerModule, data, done)
 
     programmerModule.log('STARTING_PROGRAMMER', {
       programmerFile: programmerFile,
-      interface: args[5]
+      interface: comInterface
     });
 
     var programmer = spawn(programmerFile, args);
