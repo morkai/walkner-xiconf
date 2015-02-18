@@ -14,6 +14,7 @@ Global Const $SERVICE_USER = ""
 Global Const $SERVICE_PASS = ""
 Global Const $SERVER_ADDR = "127.0.0.1"
 Global Const $SERVER_PORT = 1337
+Global Const $DEFAULT_LANG = "en"
 
 Func ExitWithError($error)
   SplashOff()
@@ -52,4 +53,8 @@ Func CountFilesInDir($dir)
   $dirSize = DirGetSize($dir, 1)
 
   Return IsArray($dirSize) ? ($dirSize[1] + $dirSize[2]) : 0
+EndFunc
+
+Func ReadLang()
+  Return FileRead(@ScriptDir & "\data\" & $SERVICE_NAME & ".lang", 2)
 EndFunc

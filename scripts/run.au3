@@ -21,23 +21,68 @@ Global const $CHROME_WAIT_TIME = 60
 
 _Singleton($SERVICE_NAME)
 
-SplashText("Uruchamianie usługi " & $SERVICE_NAME & "...")
+$lang = ReadLang()
+
+Switch $lang
+  Case "pl"
+    $LANG_SERVICE_STARTING = "Uruchamianie usługi " & $SERVICE_NAME & "..."
+    $LANG_SERVICE_CREATING = "Tworzenie usługi " & $SERVICE_NAME & "... "
+    $LANG_SERVICE_RESTARTING = "Ponowne uruchamianie usługi..."
+    $LANG_SERVICE_START_FAILURE = "Nie udało się uruchomić usługi " & $SERVICE_NAME & " :("
+    $LANG_CONFIGURING = "Konfiguracja..."
+    $LANG_CONNECTING = "Łączenie z serwerem"
+    $LANG_CONNECTING_FAILURE = "Nie udało się połączyć z serwerem :("
+    $LANG_WINDOW_SEARCHING = "Wyszukiwanie okna aplikacji..."
+    $LANG_WINDOW_OPENING = "Uruchamianie okna aplikacji... "
+    $LANG_WINDOW_OPENING_FAILURE = "Nie udało się uruchomić okna aplikacji :("
+    $LANG_LNK_RUN = "Uruchom"
+    $LANG_LNK_UNINSTALL = "Odinstaluj"
+    $LANG_LNK_DOCS = "Dokumentacja"
+    $LANG_AUTOSTART_TITLE = "Automatyczne uruchamianie"
+    $LANG_AUTOSTART_MESSAGE = "Dodać skrót aplikacji do autostartu?"
+    $LANG_INPUT_USER_TITLE = "Podaj nazwę konta dla usługi"
+    $LANG_INPUT_USER_LABEL = "Nazwa konta usługi:"
+    $LANG_INPUT_PASS_TITLE = "Podaj hasło konta dla usługi"
+    $LANG_INPUT_PASS_LABEL = "Hasło konta usługi:"
+  Case Else
+    $LANG_SERVICE_STARTING = "Starting the " & $SERVICE_NAME & " service..."
+    $LANG_SERVICE_CREATING = "Creating the " & $SERVICE_NAME & " service... "
+    $LANG_SERVICE_RESTARTING = "Starting the service... again..."
+    $LANG_SERVICE_START_FAILURE = "Failed to start the " & $SERVICE_NAME & " service :("
+    $LANG_CONFIGURING = "Configuring..."
+    $LANG_CONNECTING = "Connecting to the server"
+    $LANG_CONNECTING_FAILURE = "Failed to connect to the server :("
+    $LANG_WINDOW_SEARCHING = "Searching the application window..."
+    $LANG_WINDOW_OPENING = "Starting the application window... "
+    $LANG_WINDOW_OPENING_FAILURE = "Failed to start the application window :("
+    $LANG_LNK_RUN = "Run"
+    $LANG_LNK_UNINSTALL = "Uninstall"
+    $LANG_LNK_DOCS = "Documentation"
+    $LANG_AUTOSTART_TITLE = "Autostart"
+    $LANG_AUTOSTART_MESSAGE = "Add the application shortcut to the startup?"
+    $LANG_INPUT_USER_TITLE = "Specify the service username"
+    $LANG_INPUT_USER_LABEL = "Service username:"
+    $LANG_INPUT_PASS_TITLE = "Specify the service password"
+    $LANG_INPUT_PASS_LABEL = "Service password:"
+EndSwitch
+
+SplashText($LANG_SERVICE_STARTING)
 $stdout = RunGetStdout("sc start " & $SERVICE_NAME)
 
 If StringInStr($stdout, "1060") Then
-  SplashText("Konfiguracja...", True)
+  SplashText($LANG_CONFIGURING, True)
   CreateShortcuts()
   InstallVcRedist()
   CreateService()
-  SplashText("Ponowne uruchamianie usługi...")
+  SplashText($LANG_SERVICE_RESTARTING)
   $stdout = RunGetStdout("sc start " & $SERVICE_NAME)
 EndIf
 
 If Not StringInStr($stdout, "1056") And Not StringInStr($stdout, "SERVICE_NAME: " & $SERVICE_NAME) Then
-  ExitWithError("Nie udało się uruchomić usługi " & $SERVICE_NAME & " :(")
+  ExitWithError($LANG_SERVICE_START_FAILURE)
 EndIf
 
-SplashText("Łączenie z serwerem 1/" & $MAX_CONNECT_TRIES & "...")
+SplashText($LANG_CONNECTING & " 1/" & $MAX_CONNECT_TRIES & "...")
 
 $connectCounter = 1
 
@@ -45,19 +90,19 @@ While TryToConnect() <> 0
   $connectCounter = $connectCounter + 1
 
   If $connectCounter = ($MAX_CONNECT_TRIES + 1) Then
-    ExitWithError("Nie udało się połączyć z serwerem :(")
+    ExitWithError($LANG_CONNECTING_FAILURE)
   EndIf
 
-  SplashText("Łączenie z serwerem " & $connectCounter & "/" & $MAX_CONNECT_TRIES & "...")
+  SplashText($LANG_CONNECTING & " " & $connectCounter & "/" & $MAX_CONNECT_TRIES & "...")
   Sleep(1000)
 WEnd
 
-SplashText("Wyszukiwanie okna aplikacji...")
+SplashText($LANG_WINDOW_SEARCHING)
 
 $browser = WinGetHandle("[REGEXPCLASS:(.*Chrome.*); REGEXPTITLE:(.*" & $PRODUCT_NAME & ".*)]")
 
 If @error Then
-  SplashText("Uruchamianie okna aplikacji... ")
+  SplashText($LANG_WINDOW_OPENING)
 
   $app = "http://" & $SERVER_ADDR & ":" & $SERVER_PORT & "/"
   $dataDir = @ScriptDir & "\data\google-chrome-profile"
@@ -69,13 +114,13 @@ If @error Then
     $app = $app & "#settings?tab=license"
   EndIf
 
-  Run(@ScriptDir & '\bin\google-chrome\App\Chrome-bin\chrome.exe --user-data-dir="' & $dataDir & '" --app="' & $app & '"', @ScriptDir & "\bin\google-chrome\App\Chrome-bin")
+  Run(@ScriptDir & '\bin\google-chrome\App\Chrome-bin\chrome.exe --lang=' & $lang & ' --user-data-dir="' & $dataDir & '" --app="' & $app & '"', @ScriptDir & "\bin\google-chrome\App\Chrome-bin")
 
   $browser = WinWait("[REGEXPCLASS:(.*Chrome.*); REGEXPTITLE:(.*" & $PRODUCT_NAME & ".*)]", "", $CHROME_WAIT_TIME)
 EndIf
 
 If Not IsHWnd($browser) Then
-  ExitWithError("Nie udało się uruchomić okna aplikacji :(")
+  ExitWithError($LANG_WINDOW_OPENING_FAILURE)
 EndIf
 
 SplashOff()
@@ -113,12 +158,12 @@ Func CreateShortcuts()
   $startMenu = @ProgramsDir & "\Walkner\" & $PRODUCT_NAME
 
   DirCreate($startMenu)
-  FileCreateShortcut(@ScriptFullPath, $startMenu & "\Uruchom.lnk")
-  FileCreateShortcut(@ScriptDir & "\docs\" & $SERVICE_NAME & "-user-guide.pl.pdf", $startMenu & "\Dokumentacja.lnk")
-  FileCreateShortcut(@ScriptDir & "\bin\" & $SERVICE_NAME & "-uninstall.exe", $startMenu & "\Odinstaluj.lnk")
+  FileCreateShortcut(@ScriptFullPath, $startMenu & "\" & $LANG_LNK_RUN & ".lnk")
+  FileCreateShortcut(@ScriptDir & "\docs\" & $SERVICE_NAME & "-user-guide.pl.pdf", $startMenu & "\" & $LANG_LNK_DOCS & ".lnk")
+  FileCreateShortcut(@ScriptDir & "\bin\" & $SERVICE_NAME & "-uninstall.exe", $startMenu & "\" & $LANG_LNK_UNINSTALL & ".lnk")
   FileCreateShortcut(@ScriptFullPath, @DesktopDir & "\" & $PRODUCT_NAME & ".lnk")
 
-  If MsgBox(BitOr($MB_YESNO, $MB_ICONQUESTION), "Automatyczne uruchamianie", "Dodać skrót aplikacji do autostartu?") == $IDYES Then
+  If MsgBox(BitOr($MB_YESNO, $MB_ICONQUESTION), $LANG_AUTOSTART_TITLE, $LANG_AUTOSTART_MESSAGE) == $IDYES Then
     FileCreateShortcut(@ScriptFullPath, @StartupDir & "\" & $PRODUCT_NAME & ".lnk")
   EndIf
 EndFunc
@@ -136,10 +181,10 @@ Func InstallVcRedist()
 EndFunc
 
 Func CreateService()
-  SplashText("Tworzenie usługi " & $SERVICE_NAME & "... ", True)
+  SplashText($LANG_SERVICE_CREATING, True)
 
-  $username = InputBox("Podaj nazwę konta dla usługi", "Nazwa konta usługi:", $SERVICE_USER, "", 325, 125)
-  $password = InputBox("Podaj hasło konta dla usługi", "Hasło konta usługi:", $SERVICE_PASS, "", 325, 125)
+  $username = InputBox($LANG_INPUT_USER_TITLE, $LANG_INPUT_USER_LABEL, $SERVICE_USER, "", 325, 125)
+  $password = InputBox($LANG_INPUT_PASS_TITLE, $LANG_INPUT_PASS_LABEL, $SERVICE_PASS, "", 325, 125)
 
   RunWait(@ScriptDir & "\bin\" & $SERVICE_NAME & '\bin\service-create.bat "' & @ScriptDir & "\config\" & $SERVICE_NAME & ".js" & '" "' & $username & '" "' & $password & '"', @ScriptDir & "\bin", @SW_HIDE)
 EndFunc

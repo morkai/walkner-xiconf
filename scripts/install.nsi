@@ -10,11 +10,15 @@ RequestExecutionLevel admin
 
 !define REG_UNINST_KEY "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{${PRODUCT_GUID}}"
 
+!define MUI_CUSTOMFUNCTION_GUIINIT onGuiInit
 !define MUI_ABORTWARNING
+
+!define MUI_LANGDLL_ALLLANGUAGES
+!define MUI_LANGDLL_ALWAYSSHOW
 
 !define MUI_FINISHPAGE_NOREBOOTSUPPORT
 !define MUI_FINISHPAGE_RUN "$INSTDIR\Walkner Xiconf.exe"
-!define MUI_FINISHPAGE_RUN_TEXT "Uruchom aplikację"
+!define MUI_FINISHPAGE_RUN_TEXT "$(RUN_TEXT)"
 
 !insertmacro MUI_PAGE_WELCOME
 !insertmacro MUI_PAGE_LICENSE "${__FILEDIR__}\license.txt"
@@ -22,9 +26,33 @@ RequestExecutionLevel admin
 !insertmacro MUI_PAGE_INSTFILES
 !insertmacro MUI_PAGE_FINISH
 
+!insertmacro MUI_LANGUAGE "English"
 !insertmacro MUI_LANGUAGE "Polish"
 
+LangString ALREADY_INSTALLED ${LANG_ENGLISH} "The appliaction is already installed.$\r$\n$\r$\nBefore continuing, you must uninstall the currently installed version!"
+LangString RUN_TEXT ${LANG_ENGLISH} "Run the application"
+
+LangString ALREADY_INSTALLED ${LANG_POLISH} "Aplikacja jest już zainstalowana.$\r$\n$\r$\nPrzed kontynuacją musisz usunąć aktualnie zainstalowaną wersję!"
+LangString RUN_TEXT ${LANG_POLISH} "Uruchom aplikację"
+
+!insertmacro MUI_RESERVEFILE_LANGDLL
+
 Function .onInit
+  !insertmacro MUI_LANGDLL_DISPLAY
+FunctionEnd
+
+Function .onInstSuccess
+  FileOpen $0 "$INSTDIR\data\walkner-xiconf.lang" w
+
+  StrCmp $LANGUAGE ${LANG_ENGLISH} 0 +2
+    FileWrite $0 "en"
+  StrCmp $LANGUAGE ${LANG_POLISH} 0 +2
+    FileWrite $0 "pl"
+
+  FileClose $0
+FunctionEnd
+
+Function onGuiInit
   SetRegView 64
   ReadRegStr $0 HKLM "${REG_UNINST_KEY}" "DisplayVersion"
   SetRegView 32
@@ -32,10 +60,7 @@ Function .onInit
 
   ${If} "$0" != ""
   ${OrIf} "$1" != ""
-    MessageBox MB_OK|MB_ICONSTOP \
-      "Aplikacja jest już zainstalowana.$\r$\n$\r$\n\
-      Przed kontynuacją musisz usunąć aktualnie zainstalowaną wersję ($0$1)!" \
-      /SD IDOK
+    MessageBox MB_OK|MB_ICONSTOP "$(ALREADY_INSTALLED)" /SD IDOK
     Abort
   ${EndIf}
 FunctionEnd
