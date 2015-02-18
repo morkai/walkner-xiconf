@@ -1,4 +1,8 @@
-<div id="<%- idPrefix %>-mow" class="panel-body tab-pane active">
+<div id="<%- idPrefix %>-mow" class="panel-body tab-pane">
+  <div class="form-group">
+    <label class="control-label"><%- t('settings', 'mowVersion') %></label>
+    <p class="form-control-static">2.0</p>
+  </div>
   <div class="form-group">
     <label for="<%- idPrefix %>-workflow" class="control-label"><%- t('settings', 'setting:workflow') %></label>
     <div>
@@ -11,6 +15,12 @@
       <label class="checkbox-inline">
         <input name="workflowMultiDevice" type="checkbox" value="1"> <%- t('settings', 'setting:workflowMultiDevice') %>
       </label>
+      <label class="checkbox-inline">
+        <input name="workflowCheckDeviceModel" type="checkbox" value="1"> <%- t('settings', 'setting:workflowCheckDeviceModel') %>
+      </label>
+      <label class="checkbox-inline">
+        <input name="workflowCommissionAll" type="checkbox" value="1"> <%- t('settings', 'setting:workflowCommissionAll') %>
+      </label>
     </div>
   </div>
   <div class="row">
@@ -18,8 +28,7 @@
       <label for="<%- idPrefix %>-interface" class="control-label"><%- t('settings', 'setting:interface') %></label>
       <select id="<%- idPrefix %>-interface" class="form-control" name="interface" required>
         <option value="d"><%- t('settings', 'setting:interface:d') %></option>
-        <option value="z"><%- t('settings', 'setting:interface:z') %></option>
-        <option value="i"><%- t('settings', 'setting:interface:i') %></option>
+        <option value="s"><%- t('settings', 'setting:interface:s') %></option>
       </select>
     </div>
     <div class="form-group col-md-4">
@@ -41,5 +50,13 @@
   <div class="form-group">
     <label for="<%- idPrefix %>-programmerFile" class="control-label"><%- t('settings', 'setting:programmerFile') %></label>
     <input id="<%- idPrefix %>-programmerFile" class="form-control" name="programmerFile" type="text" required>
+  </div>
+  <div class="form-group">
+    <label for="<%- idPrefix %>-schedulerFile" class="control-label"><%- t('settings', 'setting:schedulerFile') %></label>
+    <input id="<%- idPrefix %>-schedulerFile" class="form-control" name="schedulerFile" type="text">
+  </div>
+  <div class="form-group">
+    <label for="<%- idPrefix %>-supportedDevicesFile" class="control-label"><%- t('settings', 'setting:supportedDevicesFile') %></label>
+    <input id="<%- idPrefix %>-supportedDevicesFile" class="form-control" name="supportedDevicesFile" type="text">
   </div>
 </div>

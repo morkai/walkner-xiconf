@@ -454,38 +454,8 @@ module.exports = function program(app, programmerModule, data, done)
       return this.skip('UNSET_WORKFLOW_FILE');
     }
 
-    var workflow = '';
     var workflowOptions = [];
-
-    if (settings.get('workflowVerify'))
-    {
-      workflow += 'verify=true\r\n';
-      workflowOptions.push('verify');
-    }
-    else
-    {
-      workflow += 'verify=false\r\n';
-    }
-
-    if (settings.get('workflowIdentifyAlways'))
-    {
-      workflow += 'identifyalways=true\r\n';
-      workflowOptions.push('identifyalways');
-    }
-    else
-    {
-      workflow += 'identifyalways=false\r\n';
-    }
-
-    if (settings.get('workflowMultiDevice'))
-    {
-      workflow += 'multidevice=true\r\n';
-      workflowOptions.push('multidevice');
-    }
-    else
-    {
-      workflow += 'multidevice=false\r\n';
-    }
+    var workflow = buildWorkflowFile(settings, workflowOptions);
 
     programmerModule.log('WRITING_WORKFLOW_FILE', {
       workflowFile: workflowFile,
@@ -609,13 +579,27 @@ module.exports = function program(app, programmerModule, data, done)
       return this.skip('UNSET_PROGRAMMER_FILE');
     }
 
-    var args = [
-      '/f', currentState.featureFile,
-      '/w', currentState.workflowFile,
-      '/i', settings.get('interface') || 'd',
-      '/v', settings.get('logVerbosity') || 'fatal',
-      '/c', settings.get('continueOnWarnings') || 'halt'
-    ];
+    var schedulerFile = settings.get('schedulerFile');
+    var supportedDevicesFile = settings.get('supportedDevicesFile');
+    var args = [];
+
+    if (schedulerFile.length && supportedDevicesFile.length)
+    {
+      args.push(
+        '/s', schedulerFile,
+        '/d', supportedDevicesFile
+      );
+    }
+    else
+    {
+      args.push(
+        '/f', currentState.featureFile,
+        '/w', currentState.workflowFile,
+        '/i', settings.get('interface') || 'd',
+        '/v', settings.get('logVerbosity') || 'fatal',
+        '/c', settings.get('continueOnWarnings') || 'halt'
+      );
+    }
 
     programmerModule.log('STARTING_PROGRAMMER', {
       programmerFile: programmerFile,
@@ -768,4 +752,26 @@ module.exports = function program(app, programmerModule, data, done)
     });
   }
 
+  function buildWorkflowFile(settings, workflowOptions)
+  {
+    return buildWorkflowFileOption(settings, workflowOptions, 'Verify')
+      + buildWorkflowFileOption(settings, workflowOptions, 'IdentifyAlways')
+      + buildWorkflowFileOption(settings, workflowOptions, 'MultiDevice')
+      + buildWorkflowFileOption(settings, workflowOptions, 'CheckDeviceModel')
+      + buildWorkflowFileOption(settings, workflowOptions, 'CommissionAll');
+  }
+
+  function buildWorkflowFileOption(settings, workflowOptions, configOption)
+  {
+    var fileOption = configOption.toLowerCase();
+
+    if (settings.get('workflow' + configOption))
+    {
+      workflowOptions.push(fileOption);
+
+      return fileOption + '=true\r\n';
+    }
+
+    return fileOption + '=false\r\n';
+  }
 };

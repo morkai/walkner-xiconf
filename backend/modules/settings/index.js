@@ -143,6 +143,8 @@ exports.start = function startSettingsModule(app, module, done)
     validateStringSetting(rawSettings, newSettings, 'title', 0);
     validateStringSetting(rawSettings, newSettings, 'featurePath1');
     validateStringSetting(rawSettings, newSettings, 'featurePath2', 0);
+    validateStringSetting(rawSettings, newSettings, 'schedulerFile', 0);
+    validateStringSetting(rawSettings, newSettings, 'supportedDevicesFile', 0);
     validateStringSetting(rawSettings, newSettings, 'programmerFile');
     validateStringSetting(rawSettings, newSettings, 'remoteServer', 0);
     validateStringSetting(rawSettings, newSettings, 'solComPattern', 1);
@@ -173,13 +175,15 @@ exports.start = function startSettingsModule(app, module, done)
     validateEnum(rawSettings, newSettings, 'solReset', Number, [0, 1]);
     validateEnum(rawSettings, newSettings, 'backupPath', Number, [1, 2]);
     validateEnum(rawSettings, newSettings, 'orders', String, ['disabled', 'optional', 'required']);
-    validateEnum(rawSettings, newSettings, 'interface', String, ['d', 'z', 'i']);
+    validateEnum(rawSettings, newSettings, 'interface', String, ['d', 's']);
     validateEnum(rawSettings, newSettings, 'logVerbosity', String, ['info', 'error', 'fatal']);
     validateEnum(rawSettings, newSettings, 'continueOnWarnings', String, ['continue', 'halt']);
     validateEnum(rawSettings, newSettings, 'imWorkin', Number, [0, 1]);
     validateEnum(rawSettings, newSettings, 'workflowVerify', Number, [0, 1]);
     validateEnum(rawSettings, newSettings, 'workflowIdentifyAlways', Number, [0, 1]);
     validateEnum(rawSettings, newSettings, 'workflowMultiDevice', Number, [0, 1]);
+    validateEnum(rawSettings, newSettings, 'workflowCheckDeviceModel', Number, [0, 1]);
+    validateEnum(rawSettings, newSettings, 'workflowCommissionAll', Number, [0, 1]);
     validateEnum(rawSettings, newSettings, 'lptEnabled', Number, [0, 1]);
     validateEnum(rawSettings, newSettings, 'lptReadInverted', Number, [0, 1]);
     validateEnum(rawSettings, newSettings, 'testingEnabled', Number, [0, 1]);
