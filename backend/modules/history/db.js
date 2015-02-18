@@ -4,9 +4,11 @@
 
 'use strict';
 
-module.exports = function setUpHistoryDb(db, done)
+var step = require('h5.step');
+
+module.exports = function setUpHistoryDb(sqlite3Module, done)
 {
-  var sql = 'BEGIN TRANSACTION;\
+  var baseSchemaSql = 'BEGIN TRANSACTION;\
 CREATE TABLE IF NOT EXISTS orders (\
   _id TEXT PRIMARY KEY NOT NULL,\
   no TEXT NOT NULL,\
@@ -42,7 +44,62 @@ CREATE INDEX IF NOT EXISTS _order_D ON historyEntries(_order DESC);\
 CREATE INDEX IF NOT EXISTS startedAt_D ON historyEntries(startedAt DESC);\
 CREATE INDEX IF NOT EXISTS nc12_A_startedAt_D ON historyEntries(nc12 ASC, startedAt DESC);\
 CREATE INDEX IF NOT EXISTS result_A_startedAt_D ON historyEntries(result ASC, startedAt DESC);\
+CREATE TABLE IF NOT EXISTS programs (\
+  _id TEXT PRIMARY KEY NOT NULL,\
+  createdAt INT NOT NULL,\
+  updatedAt INT NOT NULL,\
+  deleted INT NOT NULL,\
+  type TEXT NOT NULL,\
+  name TEXT NOT NULL,\
+  steps TEXT NOT NULL\
+) WITHOUT ROWID;\
 COMMIT TRANSACTION;';
 
-  db.exec(sql, done);
+  step(
+    function()
+    {
+      sqlite3Module.db.exec(baseSchemaSql, this.next());
+    },
+    function(err)
+    {
+      if (err)
+      {
+        return this.skip(err);
+      }
+
+      sqlite3Module.db.get('PRAGMA user_version', this.next());
+    },
+    function(err, row)
+    {
+      if (err)
+      {
+        return this.skip(err);
+      }
+
+      var sql = '';
+      var userVersion = row.user_version;
+
+      if (row.user_version < 1)
+      {
+        userVersion = 1;
+
+        sql += 'ALTER TABLE historyEntries ADD COLUMN program TEXT;\n';
+        sql += 'ALTER TABLE historyEntries ADD COLUMN steps TEXT;\n';
+        sql += 'ALTER TABLE historyEntries ADD COLUMN metrics TEXT;\n';
+      }
+
+      if (sql === '')
+      {
+        return sqlite3Module.info("Database user version: %d", userVersion);
+      }
+
+      sqlite3Module.info("Updating database from user version [%d] to [%d]...", row.user_version, userVersion);
+
+      sql = 'BEGIN TRANSACTION;\n' + sql + 'PRAGMA user_version=' + userVersion + ';\nCOMMIT TRANSACTION;';
+
+      sqlite3Module.db.exec(sql, this.next());
+    },
+    done
+  );
+
 };

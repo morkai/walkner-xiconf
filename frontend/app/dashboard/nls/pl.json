@@ -7,6 +7,7 @@
   "msg:cancel:success": "Programowanie zostało anulowane :)",
   "msg:cancel:failure": "Nie udało się anulować programowania :(",
   "msg:program:failure": "Nie udało się rozpocząć programowania :(",
+  "msg:switchMode:failure": "Nie udało się przełączyć trybu :(",
 
   "focus:true": "Okno aktywne",
   "focus:false": "Okno nieaktywne",
@@ -15,6 +16,7 @@
   "input:orderNo": "Nr zlecenia",
   "input:quantity": "Ilość",
   "input:nc12": "12NC",
+  "input:assign": "Rozpocznij",
   "input:program": "Programuj",
   "input:cancel": "Anuluj",
   "input:mode:manual": "Tryb ręczny",
@@ -23,6 +25,11 @@
   "input:repeatOrder:tooltip": "Wczytaj ostatnie zlecenie",
 
   "history": "Historia",
+
+  "program:pick": "Wybierz<br>program",
+  "program:pick:title": "Zmień program",
+  "program:picker:title": "Wybór programu",
+  "program:picker:filter": "Filtruj listę programów...",
 
   "orderFinishedDialogTemplate:title": "Koniec zlecenia",
   "orderFinishedDialog:yes": "Resetuj zlecenie",

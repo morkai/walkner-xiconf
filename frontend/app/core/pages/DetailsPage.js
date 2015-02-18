@@ -37,8 +37,8 @@ define([
     actions: function()
     {
       return [
-        pageActions.edit(this.model, this.model.privilegePrefix + ':MANAGE'),
-        pageActions.delete(this.model, this.model.privilegePrefix + ':MANAGE')
+        pageActions.edit(this.model),
+        pageActions.delete(this.model)
       ];
     },
 

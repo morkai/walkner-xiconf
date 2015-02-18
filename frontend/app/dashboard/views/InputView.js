@@ -40,7 +40,8 @@ define([
     events: {
       'submit': 'onFormSubmit',
       'click .dashboard-input-resetOrder': 'resetOrder',
-      'click .dashboard-input-repeatOrder': 'repeatOrder'
+      'click .dashboard-input-repeatOrder': 'repeatOrder',
+      'click .dashboard-input-switchMode': 'switchMode'
     },
 
     localTopics: {
@@ -51,7 +52,8 @@ define([
       'hotkeys.program': function() { this.clickElement('program'); },
       'hotkeys.cancel': function() { this.clickElement('cancel'); },
       'hotkeys.resetOrder': function() { this.clickElement('resetOrder'); },
-      'hotkeys.repeatOrder': function() { this.clickElement('repeatOrder'); }
+      'hotkeys.repeatOrder': function() { this.clickElement('repeatOrder'); },
+      'hotkeys.switchMode': function() { this.clickElement('switchMode'); }
     },
 
     initialize: function()
@@ -65,6 +67,7 @@ define([
         mode: null,
         program: null,
         cancel: null,
+        switchMode: null,
         resetOrder: null,
         repeatOrder: null,
         inputs: null,
@@ -118,15 +121,18 @@ define([
 
     afterRender: function()
     {
-      this.$els.inputs = this.$('input');
-      this.$els.orderNo = this.$els.inputs.filter('[name=orderNo]');
-      this.$els.quantity = this.$els.inputs.filter('[name=quantity]');
-      this.$els.nc12 = this.$els.inputs.filter('[name=nc12]');
-      this.$els.program = this.$('.dashboard-input-program');
-      this.$els.cancel = this.$('.dashboard-input-cancel');
-      this.$els.resetOrder = this.$('.dashboard-input-resetOrder');
-      this.$els.repeatOrder = this.$('.dashboard-input-repeatOrder');
-      this.$els.mode = this.$('.dashboard-input-mode')
+      var $els = this.$els;
+      
+      $els.inputs = this.$('input');
+      $els.orderNo = $els.inputs.filter('[name=orderNo]');
+      $els.quantity = $els.inputs.filter('[name=quantity]');
+      $els.nc12 = $els.inputs.filter('[name=nc12]');
+      $els.program = this.$('.dashboard-input-program');
+      $els.cancel = this.$('.dashboard-input-cancel');
+      $els.switchMode = this.$('.dashboard-input-switchMode');
+      $els.resetOrder = this.$('.dashboard-input-resetOrder');
+      $els.repeatOrder = this.$('.dashboard-input-repeatOrder');
+      $els.mode = this.$('.dashboard-input-mode')
         .appendTo('body')
         .click(this.onModeClick.bind(this))
         .focus(this.onModeFocus.bind(this));
@@ -208,6 +214,7 @@ define([
         this.$els.nc12.prop('disabled', isProgramming || isAutoMode || countdown);
         this.$els.program.prop('disabled', isAutoMode || countdown);
         this.$els.mode.show();
+        this.$els.switchMode.prop('disabled', isProgramming || countdown);
         this.$els.resetOrder.prop('disabled', isProgramming || countdown);
         this.$els.repeatOrder.prop('disabled', isProgramming || hasOrder || countdown);
       }
@@ -217,12 +224,13 @@ define([
         this.$els.program.prop('disabled', true);
         this.$els.cancel.prop('disabled', true);
         this.$els.mode.hide();
+        this.$els.switchMode.prop('disabled', true);
         this.$els.resetOrder.prop('disabled', true);
         this.$els.repeatOrder.prop('disabled', true);
       }
 
-      this.$els.program.toggle(!isProgramming);
       this.$els.cancel.toggle(isProgramming);
+      this.$els.program.toggle(!isProgramming);
 
       if (!this.$els.orderNo.prop('disabled'))
       {
@@ -307,6 +315,8 @@ define([
     onFormSubmit: function(e)
     {
       e.preventDefault();
+
+      this.$(':focus').blur();
 
       if (this.model.isProgramming())
       {
@@ -483,9 +493,10 @@ define([
           return;
         }
 
+        $cancel.attr('disabled', false);
+
         if (err)
         {
-          $cancel.attr('disabled', false);
           view.showMessage(false, 'cancel:failure');
         }
         else
@@ -618,15 +629,6 @@ define([
         return done(new Error('IN_PROGRESS'));
       }
 
-      if (!this.model.hasOrder())
-      {
-        this.$els.orderNo.val('').focus();
-        this.$els.quantity.val('').removeClass('is-overflow');
-        this.$els.nc12.val('');
-
-        return done();
-      }
-
       this.$els.resetOrder.attr('disabled', true);
 
       var view = this;
@@ -650,6 +652,7 @@ define([
           view.showMessage(true, 'resetOrder:success');
         }
 
+        view.updateValues();
         view.toggleControls();
 
         return done(err);
@@ -678,11 +681,10 @@ define([
 
         if (err)
         {
-          return view.showMessage(true, 'repeatOrder:false');
+          return view.showMessage(true, 'repeatOrder:failure');
         }
 
-        if (lastOrder
-          && (view.$els.orderNo.val() !== lastOrder.no && view.$els.quantity.val() !== '1'))
+        if (lastOrder && (view.$els.orderNo.val() !== lastOrder.no && view.$els.quantity.val() !== '1'))
         {
           view.$els.orderNo.val(lastOrder.no);
           view.$els.quantity.val(1);
@@ -692,6 +694,34 @@ define([
         }
 
         view.$els.nc12.focus();
+      });
+    },
+
+    switchMode: function()
+    {
+      if (this.model.isProgramming())
+      {
+        return;
+      }
+
+      this.$els.switchMode.attr('disabled', true);
+
+      var view = this;
+      var newMode = this.model.get('mode') === 'programming' ? 'testing' : 'programming';
+
+      this.socket.emit('programmer.switchMode', newMode, function(err)
+      {
+        if (!view.$els)
+        {
+          return;
+        }
+
+        view.toggleControls();
+
+        if (err)
+        {
+          view.showMessage(false, 'switchMode:failure');
+        }
       });
     },
 

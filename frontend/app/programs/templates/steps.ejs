@@ -1,0 +1,46 @@
+<div class="programs-steps">
+  <% steps.forEach(function(step) { %>
+  <div class="programs-step <%- step.stepClassName %>" data-type="<%- step.type %>" data-index="<%- step.index %>">
+    <div class="programs-step-status">
+      <% if (step.unit !== null) { %>
+      <div class="programs-step-unit programs-step-cornerBox"><%- step.unit %></div>
+      <% } %>
+      <% if (step.minValue !== null) { %>
+      <div class="programs-step-minValue programs-step-cornerBox"><%- step.minValue %></div>
+      <% } %>
+      <% if (step.maxValue !== null) { %>
+      <div class="programs-step-maxValue programs-step-cornerBox"><%- step.maxValue %></div>
+      <% } %>
+      <% if (step.value !== null) { %>
+      <div class="programs-step-value"><%- step.value %></div>
+      <% } %>
+    </div>
+    <div class="programs-step-nameAndProgress">
+      <h3 class="programs-step-name"><%- t('programs', 'step:' + step.type) %></h3>
+      <div class="programs-step-details">
+        <% if (step.totalTime) { %>
+        <span class="programs-step-details-prop">T=<%- step.totalTime %></span>
+        <% } %>
+        <% if (step.voltage) { %>
+        <span class="programs-step-details-prop">U=<%- step.voltage %>V</span>
+        <% } %>
+        <% if (step.resistanceMax) { %>
+        <span class="programs-step-details-prop">R<sub>max</sub>=<%- step.resistanceMax %>Ω</span>
+        <% } %>
+        <% if (step.powerReq) { %>
+        <span class="programs-step-details-prop">P<sub>req</sub>=<%- step.powerReq %>W</span>
+        <% } %>
+        <% if (step.powerMin) { %>
+        <span class="programs-step-details-prop">P<sub>min</sub>=<%- step.powerMin %>W</span>
+        <% } %>
+        <% if (step.powerMax) { %>
+        <span class="programs-step-details-prop">P<sub>max</sub>=<%- step.powerMax %>W</span>
+        <% } %>
+      </div>
+      <div class="progress">
+        <div class="progress-bar <%- step.progressBarClassName %>" style="width: <%- step.progressBarWidth %>"></div>
+      </div>
+    </div>
+  </div>
+  <% }) %>
+</div>

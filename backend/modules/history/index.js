@@ -39,7 +39,7 @@ exports.start = function startProgrammerModule(app, module, done)
 
   app.broker.subscribe('programmer.finished', saveRecentEntry);
 
-  setUpDb(sqlite3Module.db, done);
+  setUpDb(sqlite3Module, done);
 
   function saveRecentEntry(historyEntry)
   {

@@ -51,6 +51,10 @@ define([
       {
         e.preventDefault();
       },
+      'mouseup a': function(e)
+      {
+        e.currentTarget.blur();
+      },
       'click .navbar-account-locale': function onLocaleClick(e)
       {
         e.preventDefault();
@@ -144,11 +148,16 @@ define([
     this.setConnectionStatus(this.socket.isConnected() ? 'online' : 'offline');
     this.hideNotAllowedEntries();
     this.hideEmptyEntries();
+
+    this.broker.publish('navbar.afterRender', {view: this});
   };
 
   NavbarView.prototype.serialize = function()
   {
-    return {user: user};
+    return {
+      idPrefix: this.idPrefix,
+      user: user
+    };
   };
 
   /**

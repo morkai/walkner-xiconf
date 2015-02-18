@@ -18,8 +18,6 @@ function(
   broker,
   socket,
   viewport,
-  divisions,
-  subdivisions,
   ErrorPage
 ) {
   'use strict';
@@ -180,15 +178,6 @@ function(
     }
 
     return matches === privileges.length;
-  };
-
-  user.hasAccessToAor = function(aorId)
-  {
-    return !aorId
-      || user.data.super
-      || !user.data.aors
-      || !user.data.aors.length
-      || user.data.aors.indexOf(aorId) !== -1;
   };
 
   /**

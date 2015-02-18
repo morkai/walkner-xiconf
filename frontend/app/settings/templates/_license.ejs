@@ -1,0 +1,50 @@
+<div id="<%- idPrefix %>-license" class="panel-body tab-pane">
+  <div class="form-group">
+    <label for="<%- idPrefix %>-id" class="control-label"><%- t('settings', 'setting:id') %></label>
+    <input id="<%- idPrefix %>-id" class="form-control" name="id" type="text" required pattern="^[a-zA-Z0-9-_]+$">
+  </div>
+  <div class="row">
+    <div class="form-group col-md-8">
+      <label for="<%- idPrefix %>-remoteServer" class="control-label"><%- t('settings', 'setting:remoteServer') %></label>
+      <input id="<%- idPrefix %>-remoteServer" class="form-control" name="remoteServer" type="url">
+    </div>
+    <div class="form-group col-md-4">
+      <label for="<%- idPrefix %>-syncInterval" class="control-label"><%- t('settings', 'setting:syncInterval') %></label>
+      <input id="<%- idPrefix %>-syncInterval" class="form-control" name="syncInterval" type="number" min="10" max="480" step="1">
+    </div>
+  </div>
+  <div class="row">
+    <div class="form-group col-md-8">
+      <label for="<%- idPrefix %>-licenseKey" class="control-label"><%- t('settings', 'setting:licenseKey') %></label>
+      <textarea id="<%- idPrefix %>-licenseKey" class="form-control" name="licenseKey" rows="8"></textarea>
+    </div>
+    <div class="col-md-4">
+      <div class="row">
+        <div class="form-group col-md-4">
+          <label for="<%- idPrefix %>-licenseInfo-appId" class="control-label"><%- t('settings', 'setting:licenseInfo:appId') %></label>
+          <input id="<%- idPrefix %>-licenseInfo-appId" class="form-control" name="licenseInfo.appId" type="text" readonly>
+        </div>
+        <div class="form-group col-md-4">
+          <label for="<%- idPrefix %>-licenseInfo-appVersion" class="control-label"><%- t('settings', 'setting:licenseInfo:appVersion') %></label>
+          <input id="<%- idPrefix %>-licenseInfo-appVersion" class="form-control" name="licenseInfo.appVersion" type="text" readonly>
+        </div>
+        <div class="form-group col-md-4">
+          <label for="<%- idPrefix %>-licenseInfo-date" class="control-label"><%- t('settings', 'setting:licenseInfo:date') %></label>
+          <input id="<%- idPrefix %>-licenseInfo-date" class="form-control" name="licenseInfo.date" type="text" readonly>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="<%- idPrefix %>-licenseInfo-licensee" class="control-label"><%- t('settings', 'setting:licenseInfo:licensee') %></label>
+        <input id="<%- idPrefix %>-licenseInfo-licensee" class="form-control" name="licenseInfo.licensee" type="text" readonly>
+      </div>
+      <div class="form-group">
+        <label for="<%- idPrefix %>-licenseInfo-uuid" class="control-label"><%- t('settings', 'setting:licenseInfo:uuid') %></label>
+        <input id="<%- idPrefix %>-licenseInfo-uuid" class="form-control" name="licenseInfo.uuid" type="text" readonly>
+      </div>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="<%- idPrefix %>-licenseError" class="control-label"><%- t('settings', 'setting:licenseError') %></label>
+    <input id="<%- idPrefix %>-licenseError" class="form-control" name="licenseError" type="text" disabled>
+  </div>
+</div>

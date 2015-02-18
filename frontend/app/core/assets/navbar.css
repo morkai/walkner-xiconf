@@ -1,15 +1,24 @@
+.navbar {
+  margin-bottom: 0;
+  border-top: 0;
+  border-left: 0;
+  border-right: 0;
+}
 .navbar-brand {
-  padding-top: 14px;
-  font-size: 28px;
-  font-variant: small-caps;
+  padding-top: 16px;
+  font-size: 20px;
   font-weight: bold;
   text-shadow: 1px 1px 1px #fff;
+  text-transform: uppercase;
 }
 .navbar-brand-company {
   color: #000;
 }
 .navbar-brand-product {
-  color: #0B5ED7;
+  color: #0b5ed7;
+}
+.navbar-default {
+  box-shadow: none;
 }
 .navbar-default .navbar-brand,
 .navbar-default .navbar-brand:hover,
@@ -45,14 +54,21 @@
 .navbar-default .dropdown-header {
   font-weight: bold;
 }
-.navbar-feedback {
-  font-variant: small-caps;
-  text-transform: uppercase;
-  line-height: 1;
-  font-size: 1.4em;
-  text-shadow: 1px 1px 1px #333;
-  margin-right: 14px;
-}
-.navbar-feedback:active {
-  text-shadow: 1px 1px 3px #333;
+@media (min-width: 768px) {
+  .navbar {
+    min-height: 0;
+  }
+  .navbar-default {
+    background: linear-gradient(to bottom, #f8f8f8 70%, #f0f0f0);
+  }
+  .navbar-default .navbar-nav > li > a {
+    color: #333;
+  }
+  .navbar-default .navbar-nav > li > a:hover,
+  .navbar-default .navbar-nav > li > a:focus,
+  .navbar-default .navbar-nav > .open > a,
+  .navbar-default .navbar-nav > .open > a:hover,
+  .navbar-default .navbar-nav > .open > a:focus {
+    background: linear-gradient(to bottom, #e8e8e8 70%, #e0e0e0);
+  }
 }

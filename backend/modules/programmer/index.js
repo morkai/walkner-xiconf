@@ -4,6 +4,8 @@
 
 'use strict';
 
+var fs = require('fs');
+var lodash = require('lodash');
 var setUpCommands = require('./commands');
 var setUpBlockage = require('./blockage');
 var program = require('./program');
@@ -15,7 +17,8 @@ exports.DEFAULT_CONFIG = {
   sioId: 'sio',
   featureDbPath: './',
   workflowFile: 'workflow.txt',
-  lptIoFile: 'LptIo.exe'
+  lptIoFile: 'LptIo.exe',
+  lastModeFile: 'lastMode.txt'
 };
 
 exports.start = function startProgrammerModule(app, module)
@@ -43,7 +46,82 @@ exports.start = function startProgrammerModule(app, module)
 
   module.currentState = historyModule.createEntry();
 
+  module.newProgram = null;
+
   module.program = program.bind(null, app, module);
+
+  module.updateCurrentProgram = function()
+  {
+    if (!module.newProgram)
+    {
+      return;
+    }
+
+    var newProgram = module.newProgram;
+    module.newProgram = null;
+
+    if (module.currentState.program && module.currentState.program._id === newProgram._id)
+    {
+      module.currentState.program = newProgram;
+    }
+  };
+
+  module.switchMode = function(mode, done)
+  {
+    if (module.currentState.isProgramming())
+    {
+      return done(new Error('PROGRAMMING'));
+    }
+
+    if (module.currentState.mode === mode)
+    {
+      return done();
+    }
+
+    if (mode !== 'programming' && mode !== 'testing')
+    {
+      return done(new Error('INPUT'));
+    }
+
+    if (mode === 'testing' && !settings.get('testingEnabled'))
+    {
+      return done(new Error('TESTING_DISABLED'));
+    }
+
+    module.currentState.clear();
+    module.currentState.mode = mode;
+    done();
+    module.changeState();
+  };
+
+  module.pickProgram = function(programId, done)
+  {
+    if (module.currentState.isProgramming())
+    {
+      return done(new Error('PROGRAMMING'));
+    }
+
+    if (module.currentState.mode !== 'testing')
+    {
+      return done(new Error('INVALID_MODE'));
+    }
+
+    sqlite3Module.db.get("SELECT * FROM programs WHERE _id=?", [programId], function(err, program)
+    {
+      if (err)
+      {
+        return done(err);
+      }
+
+      done(null);
+
+      program.steps = JSON.parse(program.steps);
+
+      module.currentState.clear(false);
+      module.currentState.program = program;
+      module.changeState();
+    });
+  };
 
   module.resetOrder = function(done)
   {
@@ -118,6 +196,23 @@ exports.start = function startProgrammerModule(app, module)
     }
   };
 
+  module.updateStepProgress = function(stepIndex, stepProgress)
+  {
+    var steps = module.currentState.steps;
+
+    if (!steps || !steps[stepIndex])
+    {
+      return;
+    }
+
+    lodash.merge(steps[stepIndex], stepProgress);
+
+    app.broker.publish('programmer.stepProgressed', {
+      stepIndex: stepIndex,
+      stepProgress: stepProgress
+    });
+  };
+
   setUpBlockage(app, module);
 
   app.onModuleReady(
@@ -126,4 +221,83 @@ exports.start = function startProgrammerModule(app, module)
     ],
     setUpCommands.bind(null, app, module)
   );
+
+  app.broker.subscribe('app.started', readLastMode);
+
+  app.broker.subscribe('settings.changed', function(changes)
+  {
+    if (changes.testingEnabled === 0)
+    {
+      module.switchMode('programming', function(err)
+      {
+        if (err)
+        {
+          module.error("Failed to switch mode to programming after testing was disabled: %s", err.message);
+        }
+      });
+    }
+  });
+
+  app.broker.subscribe('programmer.stateChanged', function(message)
+  {
+    if (message.program !== undefined)
+    {
+      module.newProgram = null;
+    }
+
+    if (message.mode !== undefined)
+    {
+      saveLastMode();
+    }
+  });
+
+  app.broker.subscribe('programs.edited', function(message)
+  {
+    var newProgram = message.model;
+    var currentProgram = module.currentState.program;
+
+    if (!currentProgram || currentProgram._id !== newProgram._id)
+    {
+      return;
+    }
+
+    if (module.currentState.isProgramming() || module.currentState.isFinished())
+    {
+      module.newProgram = newProgram;
+    }
+    else
+    {
+      module.changeState({program: newProgram});
+    }
+  });
+
+  function readLastMode()
+  {
+    fs.readFile(module.config.lastModeFile, {encoding: 'utf8'}, function(err, lastMode)
+    {
+      if (err)
+      {
+        return module.warn("Failed to read the last mode file: %s", err.message);
+      }
+
+      module.switchMode(lastMode, function(err)
+      {
+        if (err)
+        {
+          return module.error("Failed to switch to the last mode [%s]: %s", lastMode, err.message);
+        }
+      });
+    });
+  }
+
+  function saveLastMode()
+  {
+    fs.writeFile(module.config.lastModeFile, module.currentState.mode, function(err)
+    {
+      if (err)
+      {
+        return module.error("Failed to save the last mode: %s", err.message);
+      }
+    });
+  }
 };

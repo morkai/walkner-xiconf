@@ -1,0 +1,21 @@
+<div id="<%- idPrefix %>-sol" class="panel-body tab-pane">
+  <div class="form-group">
+    <label for="<%- idPrefix %>-solComPattern" class="control-label"><%- t('settings', 'setting:solComPattern') %></label>
+    <input id="<%- idPrefix %>-solComPattern" class="form-control" name="solComPattern" type="text" required>
+  </div>
+  <div class="form-group">
+    <label for="<%- idPrefix %>-solFilePattern" class="control-label"><%- t('settings', 'setting:solFilePattern') %></label>
+    <input id="<%- idPrefix %>-solFilePattern" class="form-control" name="solFilePattern" type="text" required>
+  </div>
+  <div class="form-group">
+    <label for="<%- idPrefix %>-solReset" class="control-label"><%- t('settings', 'setting:solReset') %></label>
+    <div>
+      <label class="radio-inline">
+        <input id="<%- idPrefix %>-solReset" name="solReset" type="radio" value="1" required> <%- t('settings', 'setting:solReset:on') %>
+      </label>
+      <label class="radio-inline">
+        <input name="solReset" type="radio" value="0" required> <%- t('settings', 'setting:solReset:off') %>
+      </label>
+    </div>
+  </div>
+</div>

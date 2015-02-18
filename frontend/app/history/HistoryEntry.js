@@ -24,22 +24,7 @@ define([
     nlsDomain: 'history',
 
     defaults: {
-      order: null,
-      nc12: null,
-      counter: null,
-      startedAt: null,
-      finishedAt: null,
-      duration: null,
-      log: null,
-      result: null,
-      errorCode: null,
-      exception: null,
-      output: null,
-      featureFile: null,
-      featureFileName: null,
-      feature: null,
-      workflowFile: null,
-      workflow: null
+
     },
 
     initialize: function()
@@ -102,7 +87,12 @@ define([
 
     isProgramming: function()
     {
-      return this.get('_id') !== null && this.get('finishedAt') === null;
+      return this.get('programming');
+    },
+
+    isTesting: function()
+    {
+      return this.get('mode') === 'testing';
     },
 
     hasOrder: function()

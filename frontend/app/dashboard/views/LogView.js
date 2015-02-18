@@ -21,7 +21,7 @@ define([
 
   return View.extend({
 
-    className: 'form-control dashboard-log hidden',
+    className: 'form-control dashboard-log is-scrollable hidden',
 
     localTopics: {
       'hotkeys.focusLog': function()
@@ -52,7 +52,7 @@ define([
 
       (this.model.get('log') || []).forEach(this.renderLogEntry.bind(this));
 
-      this.$el.removeClass('hidden').attr('tabindex', '-1');
+      this.$el.removeClass('hidden').attr('tabindex', '0');
 
       if (this.model.get('countdown') === -1)
       {

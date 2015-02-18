@@ -5,12 +5,18 @@
 define([
   'underscore',
   'highlight',
+  'app/i18n',
+  'app/highcharts',
   'app/core/View',
+  'app/programs/views/ProgramStepsView',
   'app/history/templates/details'
 ], function(
   _,
   hljs,
+  t,
+  Highcharts,
   View,
+  ProgramStepsView,
   detailsTemplate
 ) {
   'use strict';
@@ -34,19 +40,34 @@ define([
       },
       'shown.bs.tab': function(e)
       {
-        if (e.target.parentNode.dataset.tab === 'feature')
+        var tab = e.target.parentNode.dataset.tab;
+
+        if (tab === 'feature')
         {
           this.highlightFeature();
+        }
+        else if (tab === 'program')
+        {
+          this.renderMetrics();
         }
       }
     },
 
     initialize: function()
     {
-      this.idPrefix = _.uniqueId('historyEntry');
       this.featureHighlighted = false;
+      this.metricsChart = null;
 
-      this.listenTo(this.model, 'change', _.after(2, this.render.bind(this)));
+      this.setView('.history-details-steps', new ProgramStepsView({model: this.model}));
+    },
+
+    destroy: function()
+    {
+      if (this.metricsChart !== null)
+      {
+        this.metricsChart.destroy();
+        this.metricsChart = null;
+      }
     },
 
     serialize: function()
@@ -63,11 +84,26 @@ define([
     beforeRender: function()
     {
       this.featureHighlighted = false;
+
+      if (this.metricsChart !== null)
+      {
+        this.metricsChart.destroy();
+        this.metricsChart = null;
+      }
+
+      this.stopListening(this.model, 'change', this.render);
     },
 
     afterRender: function()
     {
-      this.$('.nav-tabs > li[data-tab="' + (this.options.tab || 'log') + '"] > a').tab('show');
+      this.listenTo(this.model, 'change', this.render);
+
+      this.activateTab(this.options.tab || 'log');
+    },
+
+    activateTab: function(tab)
+    {
+      this.$('.nav-tabs > li[data-tab="' + tab + '"] > a').tab('show');
     },
 
     highlightFeature: function()
@@ -83,6 +119,158 @@ define([
       }
 
       this.featureHighlighted = true;
+    },
+
+    renderMetrics: function()
+    {
+      if (this.metricsChart !== null)
+      {
+        this.metricsChart.reflow();
+
+        return;
+      }
+
+      var metrics = this.model.get('metrics') || {
+        uSet: [],
+        uGet: [],
+        i: []
+      };
+      var chartData = {
+        uSet: metrics.uSet,
+        uGet: metrics.uGet,
+        i: metrics.i,
+        r: metrics.uGet.map(function(U, i) { return metrics.i[i] ? U / metrics.i[i] : 0; }),
+        p: metrics.uGet.map(function(U, i) { return metrics.i[i] ? U * metrics.i[i] : 0; })
+      };
+
+      this.metricsChart = new Highcharts.Chart({
+        chart: {
+          renderTo: this.el.querySelector('.history-details-metrics'),
+          zoomType: 'x',
+          height: 400
+        },
+        title: {
+          text: t('history', 'metrics:title')
+        },
+        noData: {},
+        xAxis: {
+          type: 'category'
+        },
+        yAxis: [
+          {
+            title: {
+              text: t('history', 'metrics:u')
+            },
+            tickAmount: 6
+          },
+          {
+            title: {
+              text: t('history', 'metrics:i')
+            },
+            tickAmount: 6
+          },
+          {
+            title: {
+              text: t('history', 'metrics:r')
+            },
+            opposite: true,
+            tickAmount: 6
+          },
+          {
+            title: {
+              text: t('history', 'metrics:p')
+            },
+            opposite: true,
+            tickAmount: 6
+          }
+        ],
+        tooltip: {
+          shared: true,
+          valueDecimals: 2
+        },
+        legend: {
+          enabled: true
+        },
+        plotOptions: {
+          line: {
+            lineWidth: 1.5,
+            pointInterval: 1,
+            pointStart: 0,
+            marker: {
+              radius: 0,
+              symbol: 'circle',
+              lineWidth: 0,
+              states: {
+                hover: {
+                  radius: 4
+                }
+              }
+            }
+          }
+        },
+        series: [
+          {
+            id: 'uSet',
+            name: t.bound('history', 'metrics:uSet'),
+            type: 'line',
+            yAxis: 0,
+            data: chartData.uSet,
+            min: 0,
+            tooltip: {
+              valueSuffix: 'V'
+            },
+            zIndex: 1
+          },
+          {
+            id: 'uGet',
+            name: t.bound('history', 'metrics:uGet'),
+            type: 'line',
+            yAxis: 0,
+            data: chartData.uGet,
+            min: 0,
+            tooltip: {
+              valueSuffix: 'V'
+            },
+            zIndex: 2
+          },
+          {
+            id: 'i',
+            name: t.bound('history', 'metrics:i'),
+            type: 'line',
+            yAxis: 1,
+            data: chartData.i,
+            min: 0,
+            tooltip: {
+              valueSuffix: 'A'
+            },
+            zIndex: 3
+          },
+          {
+            id: 'r',
+            name: t.bound('history', 'metrics:r'),
+            type: 'line',
+            yAxis: 2,
+            data: chartData.r,
+            min: 0,
+            tooltip: {
+              valueSuffix: 'Ω'
+            },
+            zIndex: 4
+          },
+          {
+            id: 'p',
+            name: t.bound('history', 'metrics:p'),
+            type: 'line',
+            yAxis: 3,
+            data: chartData.p,
+            min: 0,
+            tooltip: {
+              valueSuffix: 'W'
+            },
+            zIndex: 5
+          }
+        ]
+      });
     }
 
   });

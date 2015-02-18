@@ -185,6 +185,11 @@ define([
       {
         page.render();
       }
+
+      if (!viewport.$(':focus').length)
+      {
+        viewport.$('[autofocus]').first().focus();
+      }
     }
 
     function onPageLoadFailure()

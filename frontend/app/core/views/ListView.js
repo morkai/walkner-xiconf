@@ -30,9 +30,12 @@ define([
       var topics = {};
       var topicPrefix = this.collection.getTopicPrefix();
 
-      topics[topicPrefix + '.added'] = 'refreshCollection';
-      topics[topicPrefix + '.edited'] = 'refreshCollection';
-      topics[topicPrefix + '.deleted'] = 'onModelDeleted';
+      if (topicPrefix)
+      {
+        topics[topicPrefix + '.added'] = 'refreshCollection';
+        topics[topicPrefix + '.edited'] = 'refreshCollection';
+        topics[topicPrefix + '.deleted'] = 'onModelDeleted';
+      }
 
       return topics;
     },
@@ -50,28 +53,40 @@ define([
     {
       this.lastRefreshAt = 0;
 
+      this.listenTo(this.collection, 'sync', function()
+      {
+        this.lastRefreshAt = Date.now();
+      });
+
       if (this.collection.paginationData)
       {
-        this.setView('.pagination-container', new PaginationView({
+        this.paginationView = new PaginationView({
           model: this.collection.paginationData
-        }));
+        });
+
+        this.setView('.pagination-container', this.paginationView);
 
         this.listenTo(this.collection.paginationData, 'change:page', this.scrollTop);
       }
     },
 
+    destroy: function()
+    {
+      this.paginationView = null;
+    },
+
     serialize: function()
     {
       return {
-        columns: this.serializeColumns(),
+        columns: this.decorateColumns(this.serializeColumns()),
         actions: this.serializeActions(),
-        rows: this.serializeRows()
+        rows: this.serializeRows(),
+        className: this.className
       };
     },
 
     serializeColumns: function()
     {
-      var nlsDomain = this.collection.getNlsDomain();
       var columns;
 
       if (Array.isArray(this.options.columns))
@@ -87,9 +102,26 @@ define([
         columns = [];
       }
 
-      return columns.map(function(propertyName)
+      return columns;
+    },
+
+    decorateColumns: function(columns)
+    {
+      var nlsDomain = this.collection.getNlsDomain();
+
+      return columns.map(function(column)
       {
-        return {id: propertyName, label: t(nlsDomain, 'PROPERTY:' + propertyName)};
+        if (typeof column === 'string')
+        {
+          column = {id: column, label: t(nlsDomain, 'PROPERTY:' + column)};
+        }
+
+        if (!column.label)
+        {
+          column.label = t(nlsDomain, 'PROPERTY:' + column.id);
+        }
+
+        return column;
       });
     },
 
@@ -105,6 +137,16 @@ define([
 
     serializeRow: function(model)
     {
+      if (typeof model.serializeRow === 'function')
+      {
+        return model.serializeRow();
+      }
+
+      if (typeof model.serialize === 'function')
+      {
+        return model.serialize();
+      }
+
       return model.toJSON();
     },
 
@@ -137,17 +179,17 @@ define([
         return;
       }
 
-      if (message)
-      {
-        this.timers.refreshCollection = setTimeout(this.refreshCollectionNow.bind(this), 2000);
-      }
-      else
+      if (Date.now() - this.lastRefreshAt > 3000)
       {
         this.refreshCollectionNow();
       }
+      else
+      {
+        this.timers.refreshCollection = setTimeout(this.refreshCollectionNow.bind(this), 3000);
+      }
     },
 
-    refreshCollectionNow: function()
+    refreshCollectionNow: function(options)
     {
       if (this.timers.refreshCollection)
       {
@@ -156,7 +198,7 @@ define([
 
       delete this.timers.refreshCollection;
 
-      this.promised(this.collection.fetch({reset: true}));
+      this.promised(this.collection.fetch(options || {reset: true}));
     },
 
     scrollTop: function()
@@ -232,7 +274,12 @@ define([
         var model = collection.get(row._id);
         var actions = [ListView.actions.viewDetails(model, nlsDomain)];
 
-        if (user.isAllowedTo((privilegePrefix || model.getPrivilegePrefix()) + ':MANAGE'))
+        if (!privilegePrefix)
+        {
+          privilegePrefix = model.getPrivilegePrefix();
+        }
+
+        if (!privilegePrefix || user.isAllowedTo(privilegePrefix + ':MANAGE'))
         {
           actions.push(
             ListView.actions.edit(model, nlsDomain),

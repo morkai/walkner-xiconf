@@ -19,7 +19,8 @@ exports.paths = {
   'jquery.flipster': 'vendor/flipster/jquery.flipster',
   'form2js': 'vendor/form2js',
   'js2form': 'vendor/js2form',
-  'highlight': 'vendor/highlight/highlight.pack'
+  'highlight': 'vendor/highlight/highlight.pack',
+  'highcharts': 'vendor/highcharts-custom'
 };
 
 exports.shim = {
@@ -34,6 +35,10 @@ exports.shim = {
   'jquery.flipster': ['jquery'],
   'highlight': {
     exports: 'hljs'
+  },
+  'highcharts': {
+    deps: ['jquery'],
+    exports: 'Highcharts'
   }
 };
 

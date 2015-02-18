@@ -9,6 +9,7 @@ var fs = require('fs');
 var step = require('h5.step');
 var findFeatureFile = require('./findFeatureFile');
 var readFeatureFile = require('./readFeatureFile');
+var programAndTest = require('./programAndTest');
 var programSolDriver = require('./programSolDriver');
 var LptIo = require('./LptIo');
 
@@ -28,6 +29,8 @@ module.exports = function program(app, programmerModule, data, done)
   var settings = app[programmerModule.config.settingsId];
 
   programmerModule.cancelled = false;
+
+  programmerModule.updateCurrentProgram();
 
   currentState.reset(data.orderNo, data.quantity, data.nc12);
 
@@ -423,6 +426,11 @@ module.exports = function program(app, programmerModule, data, done)
     var featureFile = currentState.featureFile;
 
     this.isSolProgram = solFilePattern.length && featureFile.indexOf(solFilePattern) !== -1;
+
+    if (!this.isSolProgram && currentState.mode === 'testing')
+    {
+      return this.skip('TESTING_NOT_SOL');
+    }
   }
 
   function writeWorkflowFileStep()
@@ -573,9 +581,14 @@ module.exports = function program(app, programmerModule, data, done)
       return this.skip('CANCELLED');
     }
 
+    if (currentState.program)
+    {
+      return programAndTest(app, programmerModule, this.next());
+    }
+
     if (this.isSolProgram)
     {
-      return programSolDriver(app, programmerModule, this.next());
+      return programSolDriver(app, programmerModule, null, null, this.next());
     }
 
     if (err)
@@ -697,7 +710,8 @@ module.exports = function program(app, programmerModule, data, done)
       errorCode: 0,
       exception: null,
       result: 'success',
-      order: currentState.order
+      order: currentState.order,
+      programming: false
     };
 
     if (err)

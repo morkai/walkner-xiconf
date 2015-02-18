@@ -21,7 +21,7 @@ var PROPERTY_PARSERS = {
   'fadetime': createSingleNumberParser('fadetime', 0, 536)
 };
 
-module.exports = function programSolDriver(app, programmerModule, done)
+module.exports = function programSolDriver(app, programmerModule, output, onProgress, done)
 {
   var settings = app[programmerModule.config.settingsId];
   var currentState = programmerModule.currentState;
@@ -50,6 +50,19 @@ module.exports = function programSolDriver(app, programmerModule, done)
   if (commands.length === 0)
   {
     return done('SOL_NO_COMMANDS');
+  }
+
+  var allCommandCount = 4 + commands.length * 4 + (settings.get('solReset') ? 2 : 0);
+  var completedCommandCount = 0;
+
+  function progress()
+  {
+    ++completedCommandCount;
+
+    if (typeof onProgress === 'function')
+    {
+      onProgress(Math.round(completedCommandCount * 100 / allCommandCount));
+    }
   }
 
   step(
@@ -148,11 +161,11 @@ module.exports = function programSolDriver(app, programmerModule, done)
         return this.skip(err);
       }
 
-      this.output = [];
+      this.output = output || [];
 
       var next = this.next();
 
-      execCommand(programmerModule, this.serialPort, this.output, 'set base 10', function(err, result)
+      execCommand(programmerModule, this.serialPort, this.output, 'set base 10', progress, function(err, result)
       {
         return next(result === '10' ? null : 'SOL_NO_CONNECTION');
       });
@@ -180,7 +193,7 @@ module.exports = function programSolDriver(app, programmerModule, done)
 
       for (var i = 0, l = commands.length; i < l; ++i)
       {
-        steps.push(createExecSetCommandStep(programmerModule, this.serialPort, this.output, commands[i]));
+        steps.push(createExecSetCommandStep(programmerModule, this.serialPort, this.output, commands[i], progress));
       }
 
       steps.push(this.next());
@@ -208,7 +221,14 @@ module.exports = function programSolDriver(app, programmerModule, done)
 
       var next = this.next();
 
-      execCommand(programmerModule, this.serialPort, this.output, 'do reset', setTimeout.bind(null, next, 1000));
+      execCommand(
+        programmerModule,
+        this.serialPort,
+        this.output,
+        'do reset',
+        progress,
+        setTimeout.bind(null, next, 1000)
+      );
     },
     function execGetCommandsStep()
     {
@@ -230,12 +250,12 @@ module.exports = function programSolDriver(app, programmerModule, done)
           setCmd: null,
           getCmd: 'get version',
           result: null
-        })
+        }, progress)
       ];
 
       for (var i = 0, l = commands.length; i < l; ++i)
       {
-        steps.push(createExecGetCommandStep(programmerModule, this.serialPort, this.output, commands[i]));
+        steps.push(createExecGetCommandStep(programmerModule, this.serialPort, this.output, commands[i], progress));
       }
 
       steps.push(this.next());
@@ -244,7 +264,7 @@ module.exports = function programSolDriver(app, programmerModule, done)
     },
     function closeComPortStep(err)
     {
-      if (Array.isArray(this.output))
+      if (!output && Array.isArray(this.output))
       {
         programmerModule.changeState({
           output: this.output.join('\n')
@@ -277,7 +297,7 @@ module.exports = function programSolDriver(app, programmerModule, done)
   );
 };
 
-function createExecSetCommandStep(programmerModule, serialPort, output, command)
+function createExecSetCommandStep(programmerModule, serialPort, output, command, progress)
 {
   return function execSetCommandStep()
   {
@@ -291,11 +311,11 @@ function createExecSetCommandStep(programmerModule, serialPort, output, command)
       return this.skip();
     }
 
-    execCommand(programmerModule, serialPort, output, command.setCmd, this.next());
+    execCommand(programmerModule, serialPort, output, command.setCmd, progress, this.next());
   };
 }
 
-function createExecGetCommandStep(programmerModule, serialPort, output, command)
+function createExecGetCommandStep(programmerModule, serialPort, output, command, progress)
 {
   return function execGetCommandStep(err)
   {
@@ -311,7 +331,7 @@ function createExecGetCommandStep(programmerModule, serialPort, output, command)
 
     var next = this.next();
 
-    execCommand(programmerModule, serialPort, output, command.getCmd, function(err, result)
+    execCommand(programmerModule, serialPort, output, command.getCmd, progress, function(err, result)
     {
       if (command.result !== null && String(command.result) !== result)
       {
@@ -329,9 +349,9 @@ function createExecGetCommandStep(programmerModule, serialPort, output, command)
   };
 }
 
-function execCommand(programmerModule, serialPort, output, cmd, done)
+function execCommand(programmerModule, serialPort, output, cmd, progress, done)
 {
-  output.push('TX: ' + cmd);
+  output.push('[SOL] TX: ' + cmd);
 
   var buffers = [];
   var totalLength = 0;
@@ -354,6 +374,7 @@ function execCommand(programmerModule, serialPort, output, cmd, done)
 
   serialPort.write(new Buffer(cmd + '\r', 'ascii'));
 
+  progress();
   restartEofTimer();
 
   function restartEofTimer()
@@ -379,10 +400,11 @@ function execCommand(programmerModule, serialPort, output, cmd, done)
       {
         result += line + '\n';
 
-        output.push('RX: ' + line);
+        output.push('[SOL] RX: ' + line);
       }
     });
 
+    progress();
     done(null, result.trim());
   }
 }

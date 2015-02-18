@@ -82,6 +82,28 @@ define([
     return false;
   }
 
+  function prepareManagePrivilege(modelOrCollection, privilege)
+  {
+    if (privilege)
+    {
+      return privilege;
+    }
+
+    if (privilege === false)
+    {
+      return null;
+    }
+
+    var privilegePrefix = modelOrCollection.getPrivilegePrefix();
+
+    if (!privilegePrefix)
+    {
+      return null;
+    }
+
+    return privilegePrefix + ':MANAGE';
+  }
+
   return {
     add: function(collection, privilege)
     {
@@ -89,7 +111,7 @@ define([
         label: t.bound(collection.getNlsDomain(), 'PAGE_ACTION:add'),
         icon: 'plus',
         href: collection.genClientUrl('add'),
-        privileges: privilege || (collection.getPrivilegePrefix() + ':MANAGE')
+        privileges: prepareManagePrivilege(collection, privilege)
       };
     },
     edit: function(model, privilege)
@@ -98,7 +120,7 @@ define([
         label: t.bound(model.getNlsDomain(), 'PAGE_ACTION:edit'),
         icon: 'edit',
         href: model.genClientUrl('edit'),
-        privileges: privilege || (model.getPrivilegePrefix() + ':MANAGE')
+        privileges: prepareManagePrivilege(model, privilege)
       };
     },
     delete: function(model, privilege)
@@ -107,7 +129,7 @@ define([
         label: t.bound(model.getNlsDomain(), 'PAGE_ACTION:delete'),
         icon: 'times',
         href: model.genClientUrl('delete'),
-        privileges: privilege || (model.getPrivilegePrefix() + ':MANAGE'),
+        privileges: prepareManagePrivilege(model, privilege),
         callback: function(e)
         {
           if (e.button === 0)

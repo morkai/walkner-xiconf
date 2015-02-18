@@ -23,8 +23,15 @@ define([
     events: {
       'click tr': function(e)
       {
+        var model = this.collection.get(e.currentTarget.dataset.id);
+
+        if (!model)
+        {
+          return;
+        }
+
         this.broker.publish('router.navigate', {
-          url: this.collection.get(e.currentTarget.dataset.id).genClientUrl(),
+          url: model.genClientUrl(),
           trigger: true,
           replace: false
         });

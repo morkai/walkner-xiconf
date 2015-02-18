@@ -3,13 +3,9 @@
 // Part of the walkner-xiconf project <http://lukasz.walukiewicz.eu/p/walkner-xiconf>
 
 define([
-  'app/viewport',
-  'app/i18n',
   '../View',
   '../util/onModelDeleted'
 ], function(
-  viewport,
-  t,
   View,
   onModelDeleted
 ) {
@@ -31,12 +27,23 @@ define([
     serialize: function()
     {
       return {
+        idPrefix: this.idPrefix,
         model: this.serializeDetails(this.model)
       };
     },
 
     serializeDetails: function(model)
     {
+      if (typeof model.serializeDetails === 'function')
+      {
+        return model.serializeDetails();
+      }
+
+      if (typeof model.serialize === 'function')
+      {
+        return model.serialize();
+      }
+
       return model.toJSON();
     },
 

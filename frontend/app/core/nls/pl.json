@@ -39,6 +39,7 @@
 
   "navbar:toggle": "Pokaż menu",
   "navbar:dashboard": "Programowanie",
+  "navbar:programs": "Programy",
   "navbar:history": "Historia",
   "navbar:settings": "Ustawienia",
 
@@ -50,5 +51,24 @@
 
   "featureSync:started": "Rozpoczęto kopiowanie konfiguracji driverów...",
   "featureSync:failure": "Nie udało się skopiować konfiguracji driverów :(",
-  "featureSync:success": "Pomyślnie skopiowano konfiguracje driverów :)"
+  "featureSync:success": "Pomyślnie skopiowano konfiguracje driverów :)",
+
+  "filter:limit": "Limit",
+
+  "highcharts:contextButtonTitle": "Menu kontekstowe wykresu",
+  "highcharts:downloadJPEG": "Zapisz jako JPEG",
+  "highcharts:downloadPDF": "Zapisz jako PDF",
+  "highcharts:downloadPNG": "Zapisz jako PNG",
+  "highcharts:downloadSVG": "Zapisz jako SVG",
+  "highcharts:downloadCSV": "Zapisz jako CSV",
+  "highcharts:printChart": "Drukuj wykres",
+  "highcharts:decimalPoint": ",",
+  "highcharts:thousandsSep": " ",
+  "highcharts:noData": "Brak danych :(",
+  "highcharts:resetZoom": "1:1",
+  "highcharts:resetZoomTitle": "Zresetuj przybliżenie",
+  "highcharts:loading": "Ładowanie...",
+  "highcharts:months": "Styczeń_Luty_Marzec_Kwiecień_Maj_Czerwiec_Lipiec_Sierpień_Wrzesień_Październik_Listopad_Grudzień",
+  "highcharts:shortMonths": "Sty_Lut_Mar_Kwi_Maj_Cze_Lip_Sie_Wrz_Paź_Lis_Gru",
+  "highcharts:weekdays": "Niedziela_Poniedziałek_Wtorek_Środa_Czwartek_Piątek_Sobota"
 }

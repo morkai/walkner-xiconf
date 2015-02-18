@@ -16,7 +16,7 @@
     "url": "http://github.com/morkai/walkner-xiconf.git"
   },
   "engine": [
-    "node ~0.10.32"
+    "node ~0.10.35"
   ],
   "main": "./backend/main.js",
   "dependencies": {
@@ -26,14 +26,16 @@
     "ejs-amd": "~0.0.4",
     "socket.io": "~0.9.16",
     "lodash": "~2.4.1",
-    "messageformat": "~0.1.8",
-    "messageformat-amd": "git+http://github.com/morkai/messageformat-amd.git",
+    "messageformat": "~0.2.1",
+    "messageformat-amd": "git+http://github.com/morkai/messageformat-amd.git#d41fd5caba",
     "csv": "~0.3.7",
     "moment": "~2.6.0",
     "h5.step": "~0.1.0",
-    "h5.pubsub": "git+http://github.com/morkai/h5.pubsub.git",
-    "h5.rql": "git+http://github.com/morkai/h5.rql.git",
-    "h5.main": "git+http://github.com/morkai/h5.main.git",
+    "h5.pubsub": "git+http://github.com/morkai/h5.pubsub.git#c1a899cb7e",
+    "h5.rql": "git+http://github.com/morkai/h5.rql.git#56221896655",
+    "h5.main": "git+http://github.com/morkai/h5.main.git#7fb51e2571",
+    "h5.buffers": "~0.1.1",
+    "h5.modbus": "git+http://github.com/morkai/h5.modbus.git#0993906e41",
     "sqlite3": "~2.2.2",
     "ursa": "~0.8.0",
     "semver": "~2.2.1",
@@ -46,8 +48,8 @@
     "grunt-contrib-copy": "~0.5.0",
     "grunt-contrib-jshint": "~0.10.0",
     "grunt-contrib-requirejs": "~0.4.4",
-    "grunt-ejs-amd": "git+http://github.com/morkai/grunt-ejs-amd.git",
-    "grunt-messageformat-amd": "git+http://github.com/morkai/grunt-messageformat-amd.git",
+    "grunt-ejs-amd": "git+http://github.com/morkai/grunt-ejs-amd.git#a09723eabe",
+    "grunt-messageformat-amd": "git+http://github.com/morkai/grunt-messageformat-amd.git#7c47f564a5",
     "grunt-run": "~0.2.2",
     "grunt-text-replace": "~0.3.11"
   }

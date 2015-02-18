@@ -1,21 +1,31 @@
 <form class="dashboard-input <%- className %>" autocomplete="off">
-  <div class="dashboard-input-orderAndQuantity">
-    <div class="form-group">
+  <div class="dashboard-input-orderAndQuantity kbd-container">
+    <div class="form-group dashboard-input-order">
       <button id="<%- idPrefix %>-resetOrder" class="btn btn-link dashboard-input-resetOrder" type="button" title="<%- t('dashboard', 'input:resetOrder:tooltip') %>"><i class="fa fa-eraser"></i></button>
       <button id="<%- idPrefix %>-repeatOrder" class="btn btn-link dashboard-input-repeatOrder" type="button" title="<%- t('dashboard', 'input:repeatOrder:tooltip') %>"><i class="fa fa-repeat"></i></button>
       <label for="<%- idPrefix %>-orderNo"><%- t('dashboard', 'input:orderNo') %></label>
       <input id="<%- idPrefix %>-orderNo" class="form-control" name="orderNo" type="text" required maxlength="9" pattern="^[0-9]{9}$">
     </div><!--
-    //--><div class="form-group">
+    //--><div class="form-group dashboard-input-quantity">
       <label for="<%- idPrefix %>-quantity"><%- t('dashboard', 'input:quantity') %></label>
       <input id="<%- idPrefix %>-quantity" class="form-control" name="quantity" type="text" required maxlength="3" pattern="^[0-9]{1,3}$">
     </div>
+    <kbd class="is-inside" data-hotkey="focusOrderNo">Q</kbd>
+    <kbd class="is-inside" data-hotkey="focusQuantity">W</kbd>
+    <kbd data-hotkey="resetOrder">S</kbd>
+    <kbd data-hotkey="repeatOrder">D</kbd>
   </div>
-  <div class="form-group dashboard-input-nc12">
+  <div class="form-group dashboard-input-nc12 kbd-container">
     <label for="<%- idPrefix %>-nc12"><%- t('dashboard', 'input:nc12') %></label>
     <input id="<%- idPrefix %>-nc12" class="form-control" name="nc12" type="text" required maxlength="12" pattern="^[0-9]{12}$">
+    <kbd class="is-inside" data-hotkey="focusNc12">E</kbd>
   </div>
-  <button class="btn btn-block btn-primary dashboard-input-program" type="submit"><span><%- t('dashboard', 'input:program') %></span></button>
-  <button class="btn btn-block btn-danger dashboard-input-cancel"><span><%- t('dashboard', 'input:cancel') %></span></button>
+  <button class="btn btn-primary dashboard-input-program kbd-container" type="submit"><span><%- t('dashboard', 'input:program') %></span><kbd class="is-inside" data-hotkey="program">_</kbd></button><!--
+  //--><button class="btn btn-danger dashboard-input-cancel kbd-container" type="submit"><span><%- t('dashboard', 'input:cancel') %></span><kbd class="is-inside" data-hotkey="cancel">_</kbd></button><!--
+  //--><button class="btn btn-warning dashboard-input-switchMode kbd-container" type="button">
+    <i class="fa fa-list-ol"></i>
+    <i class="fa fa-smile-o"></i>
+    <kbd class="is-inside" data-hotkey="switchMode">F</kbd>
+  </button>
   <button class="btn <%- modeClassName %> dashboard-input-mode"><%- modeLabel %></button>
 </form>

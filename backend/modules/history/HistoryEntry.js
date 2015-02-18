@@ -15,6 +15,8 @@ function HistoryEntry(db, broker)
 {
   this.db = db;
   this.broker = broker;
+  this.mode = 'programming';
+  this.programming = false;
 
   this.clear();
 }
@@ -40,21 +42,35 @@ HistoryEntry.prototype.toJSON = function()
     feature: this.feature,
     workflowFile: this.workflowFile,
     workflow: this.workflow,
-    countdown: this.countdown
+    countdown: this.countdown,
+    program: this.program,
+    steps: this.steps,
+    mode: this.mode,
+    programming: this.programming
   };
 };
 
 HistoryEntry.prototype.isProgramming = function()
 {
-  return this._id !== null && this.finishedAt === null;
+  return this.programming;
 };
 
-HistoryEntry.prototype.clear = function()
+HistoryEntry.prototype.isFinished = function()
+{
+  return this.finishedAt !== null;
+};
+
+HistoryEntry.prototype.clear = function(clearOrder)
 {
   this._id = null;
-  this.order = null;
+
+  if (clearOrder !== false)
+  {
+    this.order = null;
+    this.counter = null;
+  }
+
   this.nc12 = null;
-  this.counter = null;
   this.startedAt = null;
   this.finishedAt = null;
   this.duration = null;
@@ -70,6 +86,9 @@ HistoryEntry.prototype.clear = function()
   this.workflowFile = null;
   this.workflow = null;
   this.countdown = -1;
+  this.program = null;
+  this.steps = null;
+  this.metrics = null;
 };
 
 HistoryEntry.prototype.reset = function(orderNo, quantity, nc12)
@@ -126,6 +145,27 @@ HistoryEntry.prototype.reset = function(orderNo, quantity, nc12)
   this.workflowFile = null;
   this.workflow = null;
   this.countdown = -1;
+  this.steps = null;
+  this.metrics = null;
+
+  if (this.program)
+  {
+    this.steps = this.program.steps.map(function()
+    {
+      return {
+        status: 'idle',
+        progress: 0,
+        value: 0
+      };
+    });
+    this.metrics = {
+      uSet: [],
+      uGet: [],
+      i: []
+    };
+  }
+
+  this.programming = true;
 };
 
 HistoryEntry.prototype.hashFeatureFile = function()
@@ -185,12 +225,14 @@ HistoryEntry.prototype.save = function(featureDbPath, done)
     var sql = "\
       REPLACE INTO historyEntries (\
         _id, _order, nc12, counter, startedAt, finishedAt, duration,\
-        log, result, errorCode, exception, output, featureFile, \
-        featureFileName, featureFileHash, workflowFile, workflow\
+        log, result, errorCode, exception, output, featureFile,\
+        featureFileName, featureFileHash, workflowFile, workflow,\
+        program, steps, metrics\
       ) VALUES (\
         $_id, $_order, $nc12, $counter, $startedAt, $finishedAt, $duration,\
-        $log, $result, $errorCode, $exception, $output, $featureFile, \
-        $featureFileName, $featureFileHash, $workflowFile, $workflow\
+        $log, $result, $errorCode, $exception, $output, $featureFile,\
+        $featureFileName, $featureFileHash, $workflowFile, $workflow,\
+        $program, $steps, $metrics\
       )";
     var params = {
       $_id: historyEntry._id,
@@ -209,7 +251,9 @@ HistoryEntry.prototype.save = function(featureDbPath, done)
       $featureFileName: historyEntry.featureFileName,
       $featureFileHash: historyEntry.featureFileHash,
       $workflowFile: historyEntry.workflowFile,
-      $workflow: historyEntry.workflow
+      $program: historyEntry.program ? JSON.stringify(historyEntry.program) : null,
+      $steps: historyEntry.steps ? JSON.stringify(historyEntry.steps) : null,
+      $metrics: historyEntry.metrics ? JSON.stringify(historyEntry.metrics) : null
     };
 
     historyEntry.db.run(sql, params, done);

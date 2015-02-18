@@ -40,6 +40,7 @@
 
     "navbar:toggle": "Toggle menu",
     "navbar:dashboard": "Programming",
+    "navbar:programs": "Programs",
     "navbar:history": "History",
     "navbar:settings": "Settings",
 
@@ -51,7 +52,26 @@
 
     "featureSync:started": "Feature files sync started...",
     "featureSync:failure": "Feature files sync failed :(",
-    "featureSync:success": "Feature files sync succeeded :)"
+    "featureSync:success": "Feature files sync succeeded :)",
+
+    "filter:limit": "Limit",
+
+    "highcharts:contextButtonTitle": "Chart's context menu",
+    "highcharts:downloadJPEG": "Save as JPEG",
+    "highcharts:downloadPDF": "Save as PDF",
+    "highcharts:downloadPNG": "Save as PNG",
+    "highcharts:downloadSVG": "Save as SVG",
+    "highcharts:downloadCSV": "Save as CSV",
+    "highcharts:printChart": "Print the chart",
+    "highcharts:decimalPoint": ".",
+    "highcharts:thousandsSep": ",",
+    "highcharts:noData": "No data :(",
+    "highcharts:resetZoom": "1:1",
+    "highcharts:resetZoomTitle": "Reset the zoom level to 1:1",
+    "highcharts:loading": "Loading...",
+    "highcharts:months": "January_February_March_April_May_June_July_August_September_October_November_December",
+    "highcharts:shortMonths": "Jan_Feb_Mar_Apr_May_Jun_Jul_Aug_Sep_Oct_Nov_Dec",
+    "highcharts:weekdays": "Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday"
   },
   "pl": true
 }

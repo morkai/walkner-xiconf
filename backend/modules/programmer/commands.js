@@ -16,6 +16,8 @@ module.exports = function setUpProgrammerCommands(app, programmerModule)
 
     if (socket.handshake.address.address === '127.0.0.1')
     {
+      socket.on('programmer.switchMode', switchMode);
+      socket.on('programmer.pickProgram', pickProgram);
       socket.on('programmer.program', program);
       socket.on('programmer.cancel', cancel);
       socket.on('programmer.resetOrder', resetOrder);
@@ -25,12 +27,26 @@ module.exports = function setUpProgrammerCommands(app, programmerModule)
 
   function getCurrentState(reply)
   {
-    if (!lodash.isFunction(reply))
+    if (lodash.isFunction(reply))
     {
-      return;
+      reply(programmerModule.currentState.toJSON());
     }
+  }
 
-    reply(programmerModule.currentState.toJSON());
+  function switchMode(mode, reply)
+  {
+    if (lodash.isFunction(reply))
+    {
+      programmerModule.switchMode(mode, reply);
+    }
+  }
+
+  function pickProgram(programId, reply)
+  {
+    if (lodash.isFunction(reply))
+    {
+      programmerModule.pickProgram(programId, reply);
+    }
   }
 
   function program(data, reply)
@@ -97,22 +113,18 @@ module.exports = function setUpProgrammerCommands(app, programmerModule)
 
   function resetOrder(reply)
   {
-    if (!lodash.isFunction(reply))
+    if (lodash.isFunction(reply))
     {
-      return;
+      programmerModule.resetOrder(reply);
     }
-
-    programmerModule.resetOrder(reply);
   }
 
   function repeatOrder(reply)
   {
-    if (!lodash.isFunction(reply))
+    if (lodash.isFunction(reply))
     {
-      return;
+      programmerModule.repeatOrder(reply);
     }
-
-    programmerModule.repeatOrder(reply);
   }
 
   function validateOrder(data)

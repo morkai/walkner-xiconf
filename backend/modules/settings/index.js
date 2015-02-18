@@ -148,6 +148,8 @@ exports.start = function startSettingsModule(app, module, done)
     validateStringSetting(rawSettings, newSettings, 'solComPattern', 1);
     validateStringSetting(rawSettings, newSettings, 'solFilePattern', 1);
     validateStringSetting(rawSettings, newSettings, 'lptFilePattern', 0);
+    validateStringSetting(rawSettings, newSettings, 'testingComPattern', 1);
+    validateStringSetting(rawSettings, newSettings, 'testingModbusHost', 1, /^([0-9]{1,3}\.){3}[0-9]{1,3}$/);
     validateNumericSetting(rawSettings, newSettings, 'syncInterval', 10);
     validateNumericSetting(rawSettings, newSettings, 'searchTimeout1', 100);
     validateNumericSetting(rawSettings, newSettings, 'searchTimeout2', 100);
@@ -163,6 +165,11 @@ exports.start = function startSettingsModule(app, module, done)
     validateNumericSetting(rawSettings, newSettings, 'lptReadBit', 0);
     validateNumericSetting(rawSettings, newSettings, 'lptWritePort', 0);
     validateNumericSetting(rawSettings, newSettings, 'lptWriteBit', 0);
+    validateNumericSetting(rawSettings, newSettings, 'testingComAddress', 0, 255);
+    validateNumericSetting(rawSettings, newSettings, 'testingComTimeout', 100, 5000);
+    validateNumericSetting(rawSettings, newSettings, 'testingMaxVoltage', 0.1, 99.9);
+    validateNumericSetting(rawSettings, newSettings, 'testingCurrent', 0.01, 10);
+    validateNumericSetting(rawSettings, newSettings, 'testingModbusPort', 1, 65535);
     validateEnum(rawSettings, newSettings, 'solReset', Number, [0, 1]);
     validateEnum(rawSettings, newSettings, 'backupPath', Number, [1, 2]);
     validateEnum(rawSettings, newSettings, 'orders', String, ['disabled', 'optional', 'required']);
@@ -175,6 +182,7 @@ exports.start = function startSettingsModule(app, module, done)
     validateEnum(rawSettings, newSettings, 'workflowMultiDevice', Number, [0, 1]);
     validateEnum(rawSettings, newSettings, 'lptEnabled', Number, [0, 1]);
     validateEnum(rawSettings, newSettings, 'lptReadInverted', Number, [0, 1]);
+    validateEnum(rawSettings, newSettings, 'testingEnabled', Number, [0, 1]);
     validateHotkeys(rawSettings, newSettings);
 
     if (newSettings.password1)
@@ -210,16 +218,21 @@ exports.start = function startSettingsModule(app, module, done)
     }
   }
 
-  function validateNumericSetting(rawSettings, newSettings, setting, min)
+  function validateNumericSetting(rawSettings, newSettings, setting, min, max)
   {
     if (!lodash.isNumber(min))
     {
       min = 1;
     }
 
+    if (!lodash.isNumber(max))
+    {
+      max = Number.MAX_VALUE;
+    }
+
     var value = parseInt(rawSettings[setting], 10);
 
-    if (!isNaN(value) && value >= min && value !== settings[setting])
+    if (!isNaN(value) && value >= min && value <= max && value !== settings[setting])
     {
       newSettings[setting] = value;
     }

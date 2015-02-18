@@ -29,3 +29,6 @@
 .history-log code {
   white-space: pre-line;
 }
+.history-details-metrics {
+  margin-top: 14px;
+}

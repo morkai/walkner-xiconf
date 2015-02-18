@@ -6,7 +6,7 @@
 {
   'use strict';
 
-  var locale = localStorage.getItem('LOCALE') || navigator.language || 'pl';
+  var locale = localStorage.getItem('LOCALE') || navigator.language || 'en';
 
   if (locale !== 'pl')
   {

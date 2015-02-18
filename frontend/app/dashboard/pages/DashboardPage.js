@@ -16,6 +16,7 @@ define([
   '../views/LogView',
   '../views/HistoryView',
   '../views/CarouselView',
+  '../views/ProgramView',
   'app/dashboard/templates/page'
 ], function(
   _,
@@ -31,6 +32,7 @@ define([
   LogView,
   HistoryView,
   CarouselView,
+  ProgramView,
   pageTemplate
 ) {
   'use strict';
@@ -42,6 +44,14 @@ define([
     pageId: 'dashboard',
 
     template: pageTemplate,
+
+    localTopics: {
+      'viewport.dialog.shown': function()
+      {
+        clearTimeout(this.timers.blur);
+        this.timers.blur = null;
+      }
+    },
 
     events: {
       'focus .form-control, .btn, a': 'scheduleBlur',
@@ -58,7 +68,8 @@ define([
         focus: null,
         license: null,
         body: $(window.document.body),
-        window: $(window)
+        window: $(window),
+        hotkeys: null
       };
 
       this.defineViews();
@@ -67,30 +78,28 @@ define([
       this.insertView('.dashboard-left', this.logView);
       this.insertView('.dashboard-right', this.historyView);
       this.insertView('.dashboard-right', this.carouselView);
+      this.insertView('.dashboard-right', this.programView);
 
-      this.$els.window.on('resize', this.onWindowResize);
+      this.$els.window.on('wheel.dashboard', this.onWindowWheel);
+      this.$els.window.on('resize.dashboard', this.onWindowResize);
 
       if (user.isLocal())
       {
         this.$els.window
-          .on('focus', this.toggleFocusInfo)
-          .on('blur', this.toggleFocusInfo);
+          .on('focus.dashboard', this.toggleFocusInfo)
+          .on('blur.dashboard', this.toggleFocusInfo);
       }
 
       this.listenTo(settings, 'change:licenseInfo', this.toggleLicenseInfo);
+      this.listenTo(settings, 'change:testingEnabled', this.toggleTestingEnabled);
+      this.listenTo(settings, 'change:hotkeys', this.updateHotkeys);
+      this.listenTo(currentState, 'change:mode', this.toggleMode);
     },
 
     destroy: function()
     {
       this.$els.body.css('overflow', 'auto');
-      this.$els.window.off('resize', this.onWindowResize);
-
-      if (user.isLocal())
-      {
-        this.$els.window
-          .off('focus', this.toggleFocusInfo)
-          .off('blur', this.toggleFocusInfo);
-      }
+      this.$els.window.off('.dashboard');
 
       this.$els = null;
     },
@@ -99,10 +108,9 @@ define([
     {
       this.inputView = new InputView({model: currentState});
       this.logView = new LogView({model: currentState});
-      this.historyView = new HistoryView({
-        collection: new HistoryEntryCollection()
-      });
+      this.historyView = new HistoryView({collection: new HistoryEntryCollection()});
       this.carouselView = new CarouselView({model: currentState});
+      this.programView = new ProgramView({model: currentState});
     },
 
     beforeRender: function()
@@ -110,11 +118,13 @@ define([
       this.$els.body.css('overflow', 'hidden');
 
       clearInterval(this.timers.license);
+
+      this.$els.hotkeys = null;
     },
 
     afterRender: function()
     {
-      this.$els.navbar = $('.navbar-fixed-top');
+      this.$els.navbar = $('.navbar');
       this.$els.license = this.$('.dashboard-license');
 
       if (user.isLocal())
@@ -123,8 +133,11 @@ define([
         this.toggleFocusInfo();
       }
 
+      this.toggleMode();
       this.toggleLicenseInfo();
+      this.toggleTestingEnabled();
       this.animateLicenseInfo();
+      this.updateHotkeys();
 
       this.timers.license = setInterval(this.animateLicenseInfo.bind(this), 10000);
       this.timers.resize = setTimeout(this.resize.bind(this), 1);
@@ -142,7 +155,7 @@ define([
 
     resize: function()
     {
-      var height = this.$els.window[0].innerHeight - this.inputView.$el.outerHeight(true) - 27;
+      var height = this.$els.window[0].innerHeight - this.inputView.$el.outerHeight(true) - 47;
       var width = this.historyView.$el.outerWidth(true);
 
       if (this.$els.navbar.length)
@@ -152,6 +165,7 @@ define([
 
       this.logView.resize(height);
       this.carouselView.resize(width, height);
+      this.programView.resize(width, height);
     },
 
     blur: function()
@@ -182,6 +196,16 @@ define([
       this.$els.license.toggle(!licenseInfo || !!licenseInfo.error);
     },
 
+    toggleTestingEnabled: function()
+    {
+      this.$el.toggleClass('is-testing-enabled', !!settings.get('testingEnabled'));
+    },
+
+    toggleMode: function()
+    {
+      this.$els.body.toggleClass('is-testing', currentState.get('mode') === 'testing');
+    },
+
     animateLicenseInfo: function()
     {
       var $license = this.$els.license.removeClass('dashboard-license-animate');
@@ -191,8 +215,52 @@ define([
         return;
       }
 
-      this.timers.licenseAdd =
-        setTimeout(function() { $license.addClass('dashboard-license-animate'); }, 1000);
+      this.timers.licenseAdd = setTimeout(function() { $license.addClass('dashboard-license-animate'); }, 1000);
+    },
+
+    updateHotkeys: function()
+    {
+      if (this.$els.hotkeys === null)
+      {
+        var page = this;
+
+        this.$els.hotkeys = {};
+
+        this.$('kbd[data-hotkey]').each(function()
+        {
+          var hotkey = this.dataset.hotkey;
+
+          page.$els.hotkeys[hotkey] = page.$els.hotkeys[hotkey]
+            ? page.$([this].concat(page.$els.hotkeys[hotkey][0]))
+            : page.$(this);
+        });
+      }
+
+      var hotkeys = settings.get('hotkeys');
+
+      _.forEach(this.$els.hotkeys, function($hotkey, key)
+      {
+        var hotkey = hotkeys[key];
+
+        if (hotkey === 'Space')
+        {
+          hotkey = '_';
+        }
+
+        if (!hotkey)
+        {
+          $hotkey.hide();
+        }
+        else
+        {
+          $hotkey.text(hotkey).show();
+        }
+      });
+    },
+
+    onWindowWheel: function(e)
+    {
+      return this.$(e.target).closest('.is-scrollable').length === 1;
     }
 
   });

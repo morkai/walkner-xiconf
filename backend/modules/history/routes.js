@@ -35,6 +35,9 @@ module.exports = function setUpHistoryRoutes(app, historyModule)
     exception: 'e.exception',
     featureFileName: 'e.featureFileName',
     featureFileHash: 'e.featureFileHash',
+    program: 'e.program',
+    steps: 'e.steps',
+    metrics: 'e.metrics',
     quantity: 'o.quantity',
     no: 'o.no',
     successCounter: 'o.successCounter',
@@ -197,6 +200,21 @@ module.exports = function setUpHistoryRoutes(app, historyModule)
         else
         {
           row.feature = feature;
+        }
+
+        if (row.program)
+        {
+          row.program = JSON.parse(row.program);
+        }
+
+        if (row.steps)
+        {
+          row.steps = JSON.parse(row.steps);
+        }
+
+        if (row.metrics)
+        {
+          row.metrics = JSON.parse(row.metrics);
         }
 
         return res.send(row);

@@ -1,0 +1,96 @@
+.programs-form-fn {
+  margin-bottom: 0;
+}
+.programs-form .panel-default .panel-body {
+  padding-bottom: 0;
+}
+.programs-form .checkbox + .panel {
+  margin-top: 5px;
+}
+.programs-step {
+  display: flex;
+  padding: 7px;
+  border: 1px solid #ccc;
+  border-top: 0;
+  background-color: #fff;
+}
+.programs-step-status {
+  position: relative;
+  display: inline-block;
+  margin-right: 7px;
+  width: 90px;
+  height: 90px;
+  vertical-align: top;
+  background-color: #ccc;
+  box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+}
+.programs-step-cornerBox {
+  position: absolute;
+  padding: 2px 4px 1px 4px;
+  font-size: 16px;
+  font-weight: bold;
+  line-height: 1;
+  background: #fff;
+  box-shadow: 0 1px 2px #555;
+}
+.programs-step-unit {
+  left: -2px;
+  top: -2px;
+}
+.programs-step-minValue {
+  right: -2px;
+  bottom: -2px;
+}
+.programs-step-maxValue {
+  right: -2px;
+  top: -2px;
+}
+.programs-step-value {
+  display: none;
+  line-height: 90px;
+  text-align: center;
+  font-size: 40px;
+  color: #fff;
+}
+.is-active .programs-step-value {
+  display: block;
+}
+.programs-step-nameAndProgress {
+  flex: 1 1 auto;
+}
+.programs-step .progress {
+  margin-top: 7px;
+  margin-bottom: 0;
+  height: 36px;
+}
+.programs-step .progress-bar {
+  font-size: 18px;
+  line-height: 36px;
+}
+.is-active.programs-step {
+  background-color: #ffffd6;
+}
+.is-active .programs-step-status {
+  background-color: #337ab7;
+}
+.is-failure .programs-step-status {
+  background-color: #d9534f;
+}
+.is-success .programs-step-status {
+  background-color: #5cb85c;
+}
+.programs-step-name {
+  display: inline-block;
+  margin: 0 !important;
+  vertical-align: top;
+  white-space: nowrap;
+}
+.programs-step-details {
+  display: flex;
+  margin-top: 7px;
+  line-height: 1;
+  font-size: 16px;
+}
+.programs-step-details-prop {
+  margin-right: 14px;
+}

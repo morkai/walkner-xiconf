@@ -13,6 +13,7 @@ exports.modules = [
   'sqlite3',
   'settings',
   'history',
+  'programs',
   'programmer',
   'featureSync',
   'imWorkin',
@@ -29,7 +30,8 @@ exports.sqlite3 = {
 exports.programmer = {
   featureDbPath: DATA_PATH + '/features',
   workflowFile: DATA_PATH + '/workflow.txt',
-  lptIoFile: BIN_PATH + '/LptIo/LptIo.exe'
+  lptIoFile: BIN_PATH + '/LptIo/LptIo.exe',
+  lastModeFile: DATA_PATH + '/lastMode.txt'
 };
 
 exports.history = {
@@ -89,6 +91,14 @@ exports.settings = {
     lptWritePort: 0x378,
     lptWriteBit: 5,
     imWorkin: 0,
+    testingEnabled: 0,
+    testingComPattern: 'COM2',
+    testingComAddress: 0x00,
+    testingComTimeout: 500,
+    testingMaxVoltage: 24,
+    testingCurrent: 10,
+    testingModbusHost: '127.0.0.1',
+    testingModbusPort: 502,
     hotkeys: {
       focusOrderNo: 'Q',
       focusQuantity: 'W',
@@ -98,11 +108,14 @@ exports.settings = {
       toggleMode: 'A',
       resetOrder: 'S',
       repeatOrder: 'D',
+      switchMode: 'F',
       program: 'Space',
       cancel: 'Space',
+      pickProgram: 'G',
       showDashboardPage: 'Z',
       showHistoryPage: 'X',
-      showSettingsPage: 'C'
+      showSettingsPage: 'C',
+      showProgramsPage: 'V'
     }
   }
 };
@@ -118,9 +131,11 @@ exports.pubsub = {
     'featureSync.*',
     'settings.changed',
     'programmer.stateChanged',
+    'programmer.stepProgressed',
     'programmer.logged',
     'programmer.finished',
-    'history.orderUpdated'
+    'history.orderUpdated',
+    'programs.*'
   ]
 };
 

@@ -4,6 +4,7 @@
 
 define([
   './dashboard/routes',
+  './programs/routes',
   './history/routes',
   './settings/routes'
 ], function()

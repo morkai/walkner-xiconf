@@ -8,6 +8,7 @@
     "msg:cancel:success": "Programming was cancelled :)",
     "msg:cancel:failure": "Failed to cancel the programming :(",
     "msg:program:failure": "Failed to start the programming :(",
+    "msg:switchMode:failure": "Failed to switch the mode :(",
 
     "focus:true": "Window active",
     "focus:false": "Window inactive",
@@ -24,6 +25,11 @@
     "input:repeatOrder:tooltip": "Load last order",
 
     "history": "History",
+
+    "program:pick": "Select<br>program",
+    "program:pick:title": "Change the selected program",
+    "program:picker:title": "Program selection",
+    "program:picker:filter": "Filter the program list...",
 
     "orderFinishedDialogTemplate:title": "Order finished",
     "orderFinishedDialog:yes": "Reset order",
