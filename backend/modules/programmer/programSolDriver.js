@@ -29,9 +29,7 @@ module.exports = function programSolDriver(app, programmerModule, output, onProg
 
   programmerModule.log('SOL_STARTED');
 
-  var licenseInfo = settings.get('licenseInfo');
-
-  if (!licenseInfo || !(licenseInfo.features & 2))
+  if (!settings.supportsFeature('sol'))
   {
     return done('SOL_FEATURE_DISABLED');
   }

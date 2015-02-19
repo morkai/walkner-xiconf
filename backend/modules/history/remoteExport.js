@@ -24,19 +24,14 @@ module.exports = function setUpRemoteExport(app, historyModule)
 
   function isValidLicense()
   {
-    var licenseInfo = settings.get('licenseInfo');
-
-    if (!licenseInfo || !(licenseInfo.features & 1))
+    if (!settings.supportsFeature('wmes'))
     {
       return false;
     }
 
-    if (!licenseInfo.error)
-    {
-      return true;
-    }
+    var licenseInfo = settings.get('licenseInfo');
 
-    return licenseInfo.error === 'UNKNOWN_LICENSE' || licenseInfo.error === 'DUPLICATE_LICENSE';
+    return !licenseInfo.error || licenseInfo.error === 'UNKNOWN_LICENSE' || licenseInfo.error === 'DUPLICATE_LICENSE';
   }
 
   function scheduleNextSync(halve)

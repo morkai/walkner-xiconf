@@ -100,6 +100,33 @@ exports.start = function startSettingsModule(app, module, done)
     );
   };
 
+  module.supportsFeature = function(feature)
+  {
+    var licenseInfo = module.get('licenseInfo');
+
+    if (!licenseInfo)
+    {
+      return false;
+    }
+
+    var supportedFeatures = licenseInfo.features;
+
+    switch (feature)
+    {
+      case 'wmes':
+        return supportedFeatures & 1;
+
+      case 'sol':
+        return supportedFeatures & 2;
+
+      case 't24vdc':
+        return supportedFeatures & 4;
+
+      default:
+        return false;
+    }
+  };
+
   app.onModuleReady(
     [
       module.config.expressId

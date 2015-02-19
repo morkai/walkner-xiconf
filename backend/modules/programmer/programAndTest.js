@@ -21,11 +21,9 @@ module.exports = function programAndTest(app, programmerModule, done)
 
   programmerModule.log('TESTING_STARTED', {program: currentState.program.name});
 
-  var licenseInfo = settings.get('licenseInfo');
-
-  if (!licenseInfo || !(licenseInfo.features & 2))
+  if (!settings.supportsFeature('t24vdc'))
   {
-    return done('SOL_FEATURE_DISABLED');
+    return done('T24VDC_FEATURE_DISABLED');
   }
 
   var serialPortError = null;
