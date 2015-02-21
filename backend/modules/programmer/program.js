@@ -581,29 +581,23 @@ module.exports = function program(app, programmerModule, data, done)
 
     var schedulerFile = settings.get('schedulerFile');
     var supportedDevicesFile = settings.get('supportedDevicesFile');
-    var args = [];
-    var comInterface;
+    var comInterface = settings.get('interface') || 'd';
+    var args = [
+      '/f', currentState.featureFile,
+      '/w', currentState.workflowFile,
+      '/i', comInterface,
+      '/v', settings.get('logVerbosity') || 'fatal',
+      '/c', settings.get('continueOnWarnings') || 'halt'
+    ];
 
-    if (schedulerFile.length && supportedDevicesFile.length)
+    if (settings.get('schedulerEnabled') && schedulerFile.length)
     {
-      comInterface = 'd';
-
-      args.push(
-        '/s', schedulerFile,
-        '/d', supportedDevicesFile
-      );
+      args.push('/s', schedulerFile);
     }
-    else
-    {
-      comInterface = settings.get('interface') || 'd';
 
-      args.push(
-        '/f', currentState.featureFile,
-        '/w', currentState.workflowFile,
-        '/i', comInterface,
-        '/v', settings.get('logVerbosity') || 'fatal',
-        '/c', settings.get('continueOnWarnings') || 'halt'
-      );
+    if (settings.get('supportedDevicesEnabled') && supportedDevicesFile.length)
+    {
+      args.push('/d', supportedDevicesFile);
     }
 
     programmerModule.log('STARTING_PROGRAMMER', {

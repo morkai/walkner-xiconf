@@ -52,11 +52,11 @@
     <input id="<%- idPrefix %>-programmerFile" class="form-control" name="programmerFile" type="text" required>
   </div>
   <div class="form-group">
-    <label for="<%- idPrefix %>-schedulerFile" class="control-label"><%- t('settings', 'setting:schedulerFile') %></label>
+    <label class="control-label"><input type="checkbox" name="schedulerEnabled" value="1"> <%- t('settings', 'setting:schedulerFile') %></label>
     <input id="<%- idPrefix %>-schedulerFile" class="form-control" name="schedulerFile" type="text">
   </div>
   <div class="form-group">
-    <label for="<%- idPrefix %>-supportedDevicesFile" class="control-label"><%- t('settings', 'setting:supportedDevicesFile') %></label>
+    <label class="control-label"><input type="checkbox" name="supportedDevicesEnabled" value="1"> <%- t('settings', 'setting:supportedDevicesFile') %></label>
     <input id="<%- idPrefix %>-supportedDevicesFile" class="form-control" name="supportedDevicesFile" type="text">
   </div>
 </div>

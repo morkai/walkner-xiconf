@@ -205,6 +205,8 @@ exports.start = function startSettingsModule(app, module, done)
     validateEnum(rawSettings, newSettings, 'interface', String, ['d', 's']);
     validateEnum(rawSettings, newSettings, 'logVerbosity', String, ['info', 'error', 'fatal']);
     validateEnum(rawSettings, newSettings, 'continueOnWarnings', String, ['continue', 'halt']);
+    validateEnum(rawSettings, newSettings, 'schedulerEnabled', Number, [0, 1]);
+    validateEnum(rawSettings, newSettings, 'supportedDevicesEnabled', Number, [0, 1]);
     validateEnum(rawSettings, newSettings, 'imWorkin', Number, [0, 1]);
     validateEnum(rawSettings, newSettings, 'workflowVerify', Number, [0, 1]);
     validateEnum(rawSettings, newSettings, 'workflowIdentifyAlways', Number, [0, 1]);
