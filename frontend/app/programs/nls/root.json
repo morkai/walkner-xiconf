@@ -12,6 +12,7 @@
     "PAGE_ACTION:add": "Add program",
     "PAGE_ACTION:edit": "Edit program",
     "PAGE_ACTION:delete": "Delete program",
+    "PAGE_ACTION:sync": "Synchronize programs",
 
     "PANEL:TITLE:details": "Program details",
     "PANEL:TITLE:addForm": "Program add form",
@@ -48,7 +49,11 @@
     "ACTION_FORM:BUTTON:delete": "Delete program",
     "ACTION_FORM:MESSAGE:delete": "Are you sure you want to delete the selected program?",
     "ACTION_FORM:MESSAGE_SPECIFIC:delete": "Are you sure you want to delete the <em>{label}</em> program?",
-    "ACTION_FORM:MESSAGE_FAILURE:delete": "Failed to delete the program :-("
+    "ACTION_FORM:MESSAGE_FAILURE:delete": "Failed to delete the program :-(",
+
+    "sync:started": "Initiated the programs synchronization...",
+    "sync:inProgress": "Programs synchronization is in progress...",
+    "sync:failure": "Failed to initiate the programs synchronization :("
   },
   "pl": true
 }

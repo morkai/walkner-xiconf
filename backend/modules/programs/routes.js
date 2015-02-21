@@ -6,6 +6,7 @@
 
 var _ = require('lodash');
 var step = require('h5.step');
+var syncPrograms = require('./syncPrograms');
 
 module.exports = function setProgramsRoutes(app, programsModule)
 {
@@ -15,6 +16,8 @@ module.exports = function setProgramsRoutes(app, programsModule)
   express.get('/programs', browseProgramsRoute);
 
   express.post('/programs', addProgramRoute);
+
+  express.post('/programs;sync', syncProgramsRoute);
 
   express.get('/programs/:id', readProgramRoute);
 
@@ -218,6 +221,19 @@ module.exports = function setProgramsRoutes(app, programsModule)
         });
       }
     );
+  }
+
+  function syncProgramsRoute(req, res, next)
+  {
+    syncPrograms(app, programsModule, function(err, result)
+    {
+      if (err)
+      {
+        return next(err);
+      }
+
+      res.json(result);
+    });
   }
 
   function deleteProgramRoute(req, res, next)
