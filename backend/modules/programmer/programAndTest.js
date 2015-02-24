@@ -178,6 +178,11 @@ module.exports = function programAndTest(app, programmerModule, done)
         return this.skip(err);
       }
 
+      if (!settings.get('testingModbusEnabled'))
+      {
+        return;
+      }
+
       var output = this.output;
       var modbusMaster = this.modbusMaster = modbus.createMaster({
         transport: {
@@ -442,6 +447,11 @@ module.exports = function programAndTest(app, programmerModule, done)
 
   function switchCoils(modbusMaster, peCoil, fnCoil, done)
   {
+    if (!modbusMaster)
+    {
+      return setImmediate(done);
+    }
+
     var states = [peCoil, fnCoil];
     var options = {
       unit: MODBUS_UNIT,
