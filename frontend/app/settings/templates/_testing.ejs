@@ -30,6 +30,17 @@
   </div>
   <div class="row">
     <div class="form-group col-md-3">
+      <label for="<%- idPrefix %>-testingModbusEnabled" class="control-label"><%- t('settings', 'setting:testingModbusEnabled') %></label>
+      <div>
+        <label class="radio-inline">
+          <input id="<%- idPrefix %>-testingModbusEnabled" name="testingModbusEnabled" type="radio" value="1" required> <%- t('settings', 'setting:testingModbusEnabled:on') %>
+        </label>
+        <label class="radio-inline">
+          <input name="testingModbusEnabled" type="radio" value="0" required> <%- t('settings', 'setting:testingModbusEnabled:off') %>
+        </label>
+      </div>
+    </div>
+    <div class="form-group col-md-3">
       <label for="<%- idPrefix %>-testingModbusHost" class="control-label"><%- t('settings', 'setting:testingModbusHost') %></label>
       <input id="<%- idPrefix %>-testingModbusHost" class="form-control" name="testingModbusHost" type="text" required pattern="[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}">
     </div>

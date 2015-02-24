@@ -216,6 +216,7 @@ exports.start = function startSettingsModule(app, module, done)
     validateEnum(rawSettings, newSettings, 'lptEnabled', Number, [0, 1]);
     validateEnum(rawSettings, newSettings, 'lptReadInverted', Number, [0, 1]);
     validateEnum(rawSettings, newSettings, 'testingEnabled', Number, [0, 1]);
+    validateEnum(rawSettings, newSettings, 'testingModbusEnabled', Number, [0, 1]);
     validateHotkeys(rawSettings, newSettings);
 
     if (newSettings.password1)

@@ -103,6 +103,7 @@ exports.settings = {
     testingComTimeout: 500,
     testingMaxVoltage: 24,
     testingCurrent: 10,
+    testingModbusEnabled: false,
     testingModbusHost: '127.0.0.1',
     testingModbusPort: 502,
     hotkeys: {
