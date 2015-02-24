@@ -184,6 +184,21 @@ module.exports = function setUpHistoryRoutes(app, historyModule)
         return res.send(404);
       }
 
+      if (row.program)
+      {
+        row.program = JSON.parse(row.program);
+      }
+
+      if (row.steps)
+      {
+        row.steps = JSON.parse(row.steps);
+      }
+
+      if (row.metrics)
+      {
+        row.metrics = JSON.parse(row.metrics);
+      }
+
       if (row.featureFileHash === null)
       {
         return res.send(row);
@@ -200,21 +215,6 @@ module.exports = function setUpHistoryRoutes(app, historyModule)
         else
         {
           row.feature = feature;
-        }
-
-        if (row.program)
-        {
-          row.program = JSON.parse(row.program);
-        }
-
-        if (row.steps)
-        {
-          row.steps = JSON.parse(row.steps);
-        }
-
-        if (row.metrics)
-        {
-          row.metrics = JSON.parse(row.metrics);
         }
 
         return res.send(row);
