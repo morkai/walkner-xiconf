@@ -179,7 +179,17 @@ define([
     }
   });
 
-  setDateLangOptions();
+  if (t.has('core', 'highcharts:decimalPoint'))
+  {
+    setDateLangOptions();
+  }
+  else
+  {
+    broker
+      .subscribe('i18n.registered', setDateLangOptions)
+      .setLimit(1)
+      .setFilter(function(message) { return message.domain === 'core'; });
+  }
 
   broker.subscribe('i18n.reloaded', setDateLangOptions);
 
