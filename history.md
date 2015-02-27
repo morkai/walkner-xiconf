@@ -1,4 +1,13 @@
+2.6.1 @ 2015-02-27
+==================
+
+  * Fixed the history entry details page not rendering if it doesn't have a feature file.
+  * Fixed Highcharts language data being set before the core i18n domain is registered.
+  * Added a new setting: `testingModbusEnabled` - if disabled, then no outputs will be switched through Modbus before
+    executing a program step.
+
 2.6.0 @ 2015-02-22
+==================
 
   * Fixed a disabled configuration file download link redirecting to the dashboard.
   * Added a language selection to the installer (English or Polish).
@@ -10,6 +19,7 @@
   * Moved the MultiOne Workflow settings from the 'General settings' tab to a new 'MultiOne Workflow' tab.
 
 2.5.0 @ 2014-10-24
+==================
 
   * Added a new feature: programmer can be started after receiving a signal on a parallel port.
   * Added error messages from MultiOne v1.1.
