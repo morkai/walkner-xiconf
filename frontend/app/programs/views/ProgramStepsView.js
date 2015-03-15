@@ -107,7 +107,7 @@ define([
     {
       var progressBarClassName = status === 'success'
         ? 'progress-bar-success'
-        : status === 'failure' ? 'progress-bar-danger' : '';
+        : status === 'failure' ? 'progress-bar-danger' : 'progress-bar-warning';
 
       if (status === 'active')
       {

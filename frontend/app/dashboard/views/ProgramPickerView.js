@@ -28,14 +28,22 @@ define([
     events: {
       'click .list-group-item': function(e)
       {
-        this.socket.emit('programmer.pickProgram', e.target.dataset.id, function(err)
+        this.socket.emit('programmer.setProgram', e.target.dataset.id, function(err)
         {
           if (err)
           {
             viewport.msg.show({
               type: 'error',
-              time: 3000,
+              time: 2500,
               text: t('dashboard', 'program:picker:failure')
+            });
+          }
+          else
+          {
+            viewport.msg.show({
+              type: 'success',
+              time: 1500,
+              text: t('dashboard', 'program:picker:success')
             });
           }
         });
@@ -58,7 +66,7 @@ define([
     initialize: function()
     {
       this.$els = null;
-      this.onResize = _.debounce(this.resize.bind(this), 125);
+      this.onResize = _.debounce(this.resize.bind(this), 33);
 
       this.listenTo(this.collection, 'reset', this.render);
 

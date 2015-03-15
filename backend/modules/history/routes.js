@@ -25,6 +25,7 @@ module.exports = function setUpHistoryRoutes(app, historyModule)
   var PROPERTY_TO_FIELD = {
     _id: 'e._id',
     _order: 'e._order',
+    serviceTag: 'e.serviceTag',
     nc12: 'e.nc12',
     counter: 'e.counter',
     startedAt: 'e.startedAt',
@@ -310,6 +311,7 @@ module.exports = function setUpHistoryRoutes(app, historyModule)
   function setExportFields(req, res, next)
   {
     req.rql.fields = {
+      serviceTag: 1,
       no: 1,
       nc12: 1,
       counter: 1,

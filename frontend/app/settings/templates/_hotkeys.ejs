@@ -9,12 +9,12 @@
       <input id="<%- idPrefix %>-showHistoryPage" class="form-control" name="hotkeys.showHistoryPage" type="text" pattern="<%- hotkeyPattern %>">
     </div>
     <div class="form-group col-md-3">
-      <label for="<%- idPrefix %>-showSettingsPage" class="control-label"><%- t('settings', 'hotkey:showSettingsPage') %></label>
-      <input id="<%- idPrefix %>-showSettingsPage" class="form-control" name="hotkeys.showSettingsPage" type="text" pattern="<%- hotkeyPattern %>">
-    </div>
-    <div class="form-group col-md-3">
       <label for="<%- idPrefix %>-showProgramsPage" class="control-label"><%- t('settings', 'hotkey:showProgramsPage') %></label>
       <input id="<%- idPrefix %>-showProgramsPage" class="form-control" name="hotkeys.showProgramsPage" type="text" pattern="<%- hotkeyPattern %>">
+    </div>
+    <div class="form-group col-md-3">
+      <label for="<%- idPrefix %>-showSettingsPage" class="control-label"><%- t('settings', 'hotkey:showSettingsPage') %></label>
+      <input id="<%- idPrefix %>-showSettingsPage" class="form-control" name="hotkeys.showSettingsPage" type="text" pattern="<%- hotkeyPattern %>">
     </div>
   </div>
   <div class="row">
@@ -41,36 +41,40 @@
       <input id="<%- idPrefix %>-focusHistory" class="form-control" name="hotkeys.focusHistory" type="text" pattern="<%- hotkeyPattern %>">
     </div>
     <div class="form-group col-md-3">
-      <label for="<%- idPrefix %>-toggleMode" class="control-label"><%- t('settings', 'hotkey:toggleMode') %></label>
-      <input id="<%- idPrefix %>-toggleMode" class="form-control" name="hotkeys.toggleMode" type="text" pattern="<%- hotkeyPattern %>">
+      <label for="<%- idPrefix %>-toggleInputMode" class="control-label"><%- t('settings', 'hotkey:toggleInputMode') %></label>
+      <input id="<%- idPrefix %>-toggleInputMode" class="form-control" name="hotkeys.toggleInputMode" type="text" pattern="<%- hotkeyPattern %>">
     </div>
   </div>
   <div class="row">
     <div class="form-group col-md-3">
-      <label for="<%- idPrefix %>-repeatOrder" class="control-label"><%- t('settings', 'hotkey:repeatOrder') %></label>
-      <input id="<%- idPrefix %>-repeatOrder" class="form-control" name="hotkeys.repeatOrder" type="text" pattern="<%- hotkeyPattern %>">
+      <label for="<%- idPrefix %>-reload" class="control-label"><%- t('settings', 'hotkey:reload') %></label>
+      <input id="<%- idPrefix %>-reload" class="form-control" name="hotkeys.reload" type="text" pattern="<%- hotkeyPattern %>">
     </div>
     <div class="form-group col-md-3">
-      <label for="<%- idPrefix %>-resetOrder" class="control-label"><%- t('settings', 'hotkey:resetOrder') %></label>
-      <input id="<%- idPrefix %>-resetOrder" class="form-control" name="hotkeys.resetOrder" type="text" pattern="<%- hotkeyPattern %>">
+      <label for="<%- idPrefix %>-reset" class="control-label"><%- t('settings', 'hotkey:reset') %></label>
+      <input id="<%- idPrefix %>-reset" class="form-control" name="hotkeys.reset" type="text" pattern="<%- hotkeyPattern %>">
     </div>
     <div class="form-group col-md-3">
-      <label for="<%- idPrefix %>-switchMode" class="control-label"><%- t('settings', 'hotkey:switchMode') %></label>
-      <input id="<%- idPrefix %>-switchMode" class="form-control" name="hotkeys.switchMode" type="text" pattern="<%- hotkeyPattern %>">
+      <label for="<%- idPrefix %>-setProgram" class="control-label"><%- t('settings', 'hotkey:setProgram') %></label>
+      <input id="<%- idPrefix %>-setProgram" class="form-control" name="hotkeys.setProgram" type="text" pattern="<%- hotkeyPattern %>">
     </div>
     <div class="form-group col-md-3">
-      <label for="<%- idPrefix %>-pickProgram" class="control-label"><%- t('settings', 'hotkey:pickProgram') %></label>
-      <input id="<%- idPrefix %>-pickProgram" class="form-control" name="hotkeys.pickProgram" type="text" pattern="<%- hotkeyPattern %>">
+      <label for="<%- idPrefix %>-printServiceTag" class="control-label"><%- t('settings', 'hotkey:printServiceTag') %></label>
+      <input id="<%- idPrefix %>-printServiceTag" class="form-control" name="hotkeys.printServiceTag" type="text" pattern="<%- hotkeyPattern %>">
     </div>
   </div>
   <div class="row">
     <div class="form-group col-md-3">
-      <label for="<%- idPrefix %>-program" class="control-label"><%- t('settings', 'hotkey:program') %></label>
-      <input id="<%- idPrefix %>-program" class="form-control" name="hotkeys.program" type="text" pattern="<%- hotkeyPattern %>">
+      <label for="<%- idPrefix %>-start" class="control-label"><%- t('settings', 'hotkey:start') %></label>
+      <input id="<%- idPrefix %>-start" class="form-control" name="hotkeys.start" type="text" pattern="<%- hotkeyPattern %>">
     </div>
     <div class="form-group col-md-3">
       <label for="<%- idPrefix %>-cancel" class="control-label"><%- t('settings', 'hotkey:cancel') %></label>
       <input id="<%- idPrefix %>-cancel" class="form-control" name="hotkeys.cancel" type="text" pattern="<%- hotkeyPattern %>">
+    </div>
+    <div class="form-group col-md-3">
+      <label for="<%- idPrefix %>-toggleWorkMode" class="control-label"><%- t('settings', 'hotkey:toggleWorkMode') %></label>
+      <input id="<%- idPrefix %>-toggleWorkMode" class="form-control" name="hotkeys.toggleWorkMode" type="text" pattern="<%- hotkeyPattern %>">
     </div>
   </div>
 </div>

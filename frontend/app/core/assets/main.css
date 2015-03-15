@@ -110,7 +110,7 @@ kbd {
   border-color: #F8ACAC;
 }
 .bd {
-  margin: 1em;
+  margin: 14px;
 }
 .bd > :last-child {
   margin-bottom: 0;
@@ -118,7 +118,7 @@ kbd {
 .ft {
   color: gray;
   text-align: center;
-  margin: 1em;
+  margin: 14px;
 }
 .ft p {
   font-size: .9em;

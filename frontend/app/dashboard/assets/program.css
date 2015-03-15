@@ -1,0 +1,93 @@
+.dashboard-program {
+  display: none;
+  margin-top: 14px;
+}
+.dashboard[data-work-mode="testing"] .dashboard-program {
+  display: block;
+}
+.dashboard-program > .form-control {
+  padding: 0;
+  text-align: center;
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+.dashboard-program-pick {
+  text-align: center;
+  display: block;
+  width: 100%;
+  height: 100%;
+  line-height: .8;
+  font-size: 64px;
+  font-variant: small-caps;
+  text-transform: lowercase;
+}
+.dashboard-program-pick > kbd[data-hotkey="setProgram"] {
+  top: 50%;
+  margin-top: -5px;
+  margin-left: 5px;
+}
+.dashboard-program-pick:focus,
+.dashboard-program-pick:hover {
+  text-decoration: none;
+}
+.dashboard-program-name > .btn {
+  margin-right: 19px;
+  padding: 0;
+  line-height: 1;
+  font-size: 24px;
+  float: right;
+}
+.dashboard-program-name > .btn > kbd[data-hotkey="setProgram"] {
+  margin: 2px 0 0 4px;
+  font-size: 11px;
+}
+.dashboard-program-steps {
+  text-align: left;
+}
+.dashboard-program-steps .programs-step {
+  border-top: 0;
+  border-left: 0;
+  border-bottom-width: 1px;
+  border-right-width: 1px;
+}
+.dashboard-program-steps .progress .progress-bar {
+  -webkit-transition-duration: 0.3s;
+  -moz-transition-duration: 0.3s;
+  -o-transition-duration: 0.3s;
+  transition-duration: 0.3s;
+}
+.modal-open .dashboard-programPicker-dialog {
+  overflow-y: hidden;
+}
+.dashboard-programPicker-dialog .modal-header {
+  border: 0;
+}
+.dashboard-programPicker-dialog .modal-body {
+  padding: 0;
+}
+.dashboard-programPicker .form-control {
+  padding: 10px 15px;
+  height: auto;
+  font-size: 1.6em;
+  border-left: 0;
+  border-right: 0;
+}
+.dashboard-programPicker-list {
+  display: block;
+  margin: 0;
+  padding: 0;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  font-size: 1.6em;
+}
+.dashboard-programPicker-list > .list-group-item {
+  margin-bottom: 0;
+  border-top: 0;
+  border-bottom: 1px solid #ddd;
+}
+.dashboard-programPicker-list > .list-group-item:hover,
+.dashboard-programPicker-list > .list-group-item:focus {
+  background: #ffffd6;
+  outline: none;
+  cursor: pointer;
+}

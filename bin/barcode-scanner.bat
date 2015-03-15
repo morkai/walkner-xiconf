@@ -1,0 +1,12 @@
+@echo off
+sleep 1s
+echo 111111111-001
+sleep 1s
+echo 111111111-002
+sleep 1s
+echo 111111111-003
+sleep 1s
+echo 111111111-004
+sleep 1s
+echo 888888888888
+sleep 20s

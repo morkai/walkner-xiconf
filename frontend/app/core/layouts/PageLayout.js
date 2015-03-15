@@ -27,7 +27,6 @@ define([
 
   PageLayout.prototype.initialize = function()
   {
-    this.idPrefix = _.uniqueId('pageLayout');
     this.model = {
       id: null,
       actions: [],
@@ -57,11 +56,6 @@ define([
 
   PageLayout.prototype.destroy = function()
   {
-    if (this.el.ownerDocument)
-    {
-      this.el.ownerDocument.body.classList.remove('page');
-    }
-
     this.$breadcrumbs = null;
     this.$actions = null;
   };
@@ -76,11 +70,6 @@ define([
 
   PageLayout.prototype.afterRender = function()
   {
-    if (this.el.ownerDocument)
-    {
-      this.el.ownerDocument.body.classList.add('page');
-    }
-
     this.$header = this.$('.page-header').first();
     this.$breadcrumbs = this.$('.page-breadcrumbs').first();
     this.$actions = this.$('.page-actions').first();

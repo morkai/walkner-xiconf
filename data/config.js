@@ -4,9 +4,10 @@
 
 var path = require('path');
 
+var BIN_PATH = path.join(__dirname, '..', 'bin');
 var DATA_PATH = path.join(__dirname, '..', 'data');
 
-var config = module.exports = require('../bin/walkner-xiconf/config/frontend.js');
+var config = module.exports = require(path.join(BIN_PATH, 'walkner-xiconf/config/frontend.js'));
 
 config.httpServer.port = 1337;
 

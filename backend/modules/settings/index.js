@@ -13,7 +13,9 @@ exports.DEFAULT_CONFIG = {
   expressId: 'express',
   programmerId: 'programmer',
   settingsFile: 'settings.json',
-  defaults: {}
+  defaults: {
+    hotkeys: {}
+  }
 };
 
 exports.start = function startSettingsModule(app, module, done)
@@ -179,6 +181,9 @@ exports.start = function startSettingsModule(app, module, done)
     validateStringSetting(rawSettings, newSettings, 'lptFilePattern', 0);
     validateStringSetting(rawSettings, newSettings, 'testingComPattern', 1);
     validateStringSetting(rawSettings, newSettings, 'testingModbusHost', 1, /^([0-9]{1,3}\.){3}[0-9]{1,3}$/);
+    validateStringSetting(rawSettings, newSettings, 'prodLine', 0);
+    validateStringSetting(rawSettings, newSettings, 'serviceTagPrinter', 0);
+    validateStringSetting(rawSettings, newSettings, 'serviceTagLabelCode', 0);
     validateNumericSetting(rawSettings, newSettings, 'syncInterval', 10);
     validateNumericSetting(rawSettings, newSettings, 'searchTimeout1', 100);
     validateNumericSetting(rawSettings, newSettings, 'searchTimeout2', 100);
@@ -217,6 +222,10 @@ exports.start = function startSettingsModule(app, module, done)
     validateEnum(rawSettings, newSettings, 'lptReadInverted', Number, [0, 1]);
     validateEnum(rawSettings, newSettings, 'testingEnabled', Number, [0, 1]);
     validateEnum(rawSettings, newSettings, 'testingModbusEnabled', Number, [0, 1]);
+    validateEnum(rawSettings, newSettings, 'serviceTagPrint', Number, [0, 1]);
+    validateEnum(rawSettings, newSettings, 'serviceTagLabelType', String, ['zpl', 'dpl']);
+    validateEnum(rawSettings, newSettings, 'protectInputMode', Number, [0, 1]);
+    validateEnum(rawSettings, newSettings, 'bgScanner', Number, [0, 1]);
     validateHotkeys(rawSettings, newSettings);
 
     if (newSettings.password1)
@@ -289,6 +298,7 @@ exports.start = function startSettingsModule(app, module, done)
       return;
     }
 
+    var validHotkeys = module.config.defaults.hotkeys;
     var hotkeys = {};
     var changes = 0;
 
@@ -296,7 +306,8 @@ exports.start = function startSettingsModule(app, module, done)
     {
       var hotkey = rawSettings.hotkeys[action];
 
-      if (/^[a-zA-Z0-9]+$/.test(action)
+      if (lodash.isString(validHotkeys[action])
+        && /^[a-zA-Z0-9]+$/.test(action)
         && lodash.isString(hotkey)
         && (hotkey.length <= 1 || hotkey === 'Space'))
       {

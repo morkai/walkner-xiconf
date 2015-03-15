@@ -1,0 +1,244 @@
+.page[data-id="dashboard"] > .ft {
+  display: none;
+}
+
+.dashboard {
+  display: flex;
+  margin-top: 37px;
+}
+
+.dashboard-indicators {
+  position: absolute;
+  top: 9px;
+  right: 14px;
+  display: flex;
+}
+.dashboard-indicator {
+  display: inline-block;
+  margin-left: 9px;
+  min-width: 165px;
+  line-height: 1;
+  font-variant: small-caps;
+  font-weight: bold;
+  font-size: 18px;
+  text-transform: lowercase;
+  text-align: center;
+  text-shadow: 1px 1px 2px #444;
+  color: #fff;
+  border: 1px solid rgba(0, 0, 0, .1);
+}
+.dashboard-indicator > span {
+  padding: 6px 6px;
+}
+.dashboard-indicator-connection {
+  margin-top: 3px;
+  font-size: 28px;
+  line-height: 28px;
+  color: #d9534f;
+}
+.is-connected-local .dashboard-indicator-connection {
+  color: #f0ad4e;
+}
+.is-connected-remote .dashboard-indicator-connection {
+  color: #5cb85c;
+}
+.dashboard-indicator-licenseError {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+.dashboard-indicator-licenseError > span {
+  display: block;
+  background: #d9534f;
+}
+.is-localUser .dashboard-indicator-inputMode {
+  cursor: pointer;
+}
+.is-localUser.is-inProgress .dashboard-indicator-inputMode {
+  cursor: default;
+}
+.dashboard-indicator-inputMode > kbd {
+  bottom: 1px;
+  right: 1px;
+  text-shadow: none;
+}
+.dashboard-indicator-inputMode-local {
+  background: #f0ad4e;
+}
+.dashboard-indicator-inputMode-remote {
+  background: #5cb85c;
+}
+.dashboard-indicator-windowFocus-active {
+  background: #5bc0de;
+}
+.dashboard-indicator-windowFocus-inactive {
+  background: #d9534f;
+}
+.dashboard[data-input-mode="local"] .dashboard-indicator-inputMode-local,
+.dashboard[data-input-mode="remote"] .dashboard-indicator-inputMode-remote,
+.dashboard-indicator-windowFocus-inactive,
+.dashboard.has-windowFocus .dashboard-indicator-windowFocus-active {
+  display: block;
+}
+.dashboard[data-input-mode="remote"] .dashboard-indicator-inputMode-local,
+.dashboard[data-input-mode="local"] .dashboard-indicator-inputMode-remote,
+.dashboard-indicator-windowFocus-active,
+.has-windowFocus .dashboard-indicator-windowFocus-inactive {
+  display: none;
+}
+.dashboard-inputModeForm {
+  display: table;
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 165px;
+  z-index: 1;
+}
+
+.dashboard-progress {
+  position: absolute;
+  top: 50px;
+  left: 0;
+  margin: 0;
+  width: 100%;
+  height: 25px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1), inset 0 -1px 0 rgba(0, 0, 0, 0.05);
+}
+/* Overall progress bar in the middle of the screen */
+.dashboard {
+  margin-top: 0;
+}
+.dashboard-progress {
+  height: 40px;
+  width: auto;
+  top: 375px;
+  right: 0;
+  margin: 0 14px;
+}
+.dashboard-log,
+.dashboard-program,
+.dashboard-carousel {
+  margin-top: 68px!important;
+}
+
+.dashboard-leftColumn {
+  position: relative;
+  width: 480px;
+  flex-grow: 0;
+  flex-shrink: 0;
+}
+.dashboard-rightColumn {
+  flex-grow: 1;
+  flex-shrink: 1;
+  margin-left: 14px;
+}
+.dashboard-header {
+  margin: 0 0 5px 0;
+  padding: 0;
+  line-height: 1;
+  font-size: 24px;
+  font-weight: normal;
+}
+
+.dashboard .kbd-container {
+  position: relative;
+}
+.dashboard kbd.is-inside {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.dashboard kbd {
+  position: absolute;
+  font-size: 11px;
+  font-weight: bold;
+  line-height: 1.4;
+  font-variant: normal;
+  text-transform: uppercase;
+}
+kbd[data-hotkey="focusLog"] {
+  bottom: 0;
+  right: 0;
+  padding: 0;
+  width: 18px;
+  height: 18px;
+  text-align: center;
+  line-height: 14px;
+  border-radius: 0;
+}
+
+.dashboard-indicator-licenseError.is-animating {
+  animation: licenseErrorAnimation linear 1s;
+  animation-iteration-count: 1;
+  -webkit-animation: licenseErrorAnimation linear 1s;
+  -webkit-animation-iteration-count: 1;
+}
+@keyframes licenseErrorAnimation {
+  0% {
+    transform: rotate(0deg) scaleX(1) scaleY(1);
+  }
+  10% {
+    transform: rotate(-3deg) scaleX(0.8) scaleY(0.8);
+  }
+  20% {
+    transform: rotate(-3deg) scaleX(0.8) scaleY(0.8);
+  }
+  30% {
+    transform: rotate(3deg) scaleX(1.1) scaleY(1.1);
+  }
+  40% {
+    transform: rotate(-3deg) scaleX(1.1) scaleY(1.1);
+  }
+  50% {
+    transform: rotate(3deg) scaleX(1.1) scaleY(1.1);
+  }
+  60% {
+    transform: rotate(-3deg) scaleX(1.1) scaleY(1.1);
+  }
+  70% {
+    transform: rotate(3deg) scaleX(1.1) scaleY(1.1);
+  }
+  80% {
+    transform: rotate(-3deg) scaleX(1.1) scaleY(1.1);
+  }
+  90% {
+    transform: rotate(3deg) scaleX(1.1) scaleY(1.1);
+  }
+  100% {
+    transform: rotate(0deg) scaleX(1.1) scaleY(1.1);
+  }
+}
+@-webkit-keyframes licenseErrorAnimation {
+  0% {
+    -webkit-transform: rotate(0deg) scale(1);
+  }
+  10% {
+    -webkit-transform: rotate(-3deg) scale(0.8);
+  }
+  20% {
+    -webkit-transform: rotate(-3deg) scale(0.8);
+  }
+  30% {
+    -webkit-transform: rotate(3deg) scale(1.1);
+  }
+  40% {
+    -webkit-transform: rotate(-3deg) scale(1.1);
+  }
+  50% {
+    -webkit-transform: rotate(3deg) scale(1.1);
+  }
+  60% {
+    -webkit-transform: rotate(-3deg) scale(1.1);
+  }
+  70% {
+    -webkit-transform: rotate(3deg) scale(1.1);
+  }
+  80% {
+    -webkit-transform: rotate(-3deg) scale(1.1);
+  }
+  90% {
+    -webkit-transform: rotate(3deg) scale(1.1);
+  }
+  100% {
+    -webkit-transform: rotate(0deg) scale(1.1);
+  }
+}

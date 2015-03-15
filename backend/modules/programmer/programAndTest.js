@@ -16,6 +16,7 @@ module.exports = function programAndTest(app, programmerModule, done)
   var MODBUS_COILS_STARTING_ADDRESS = 0x0500;
   var CURRENT_READINGS_INTERVAL = 200;
 
+  var fake = app.options.env !== 'production';
   var settings = app[programmerModule.config.settingsId];
   var currentState = programmerModule.currentState;
 
@@ -95,9 +96,12 @@ module.exports = function programAndTest(app, programmerModule, done)
         parity: 'none'
       }, false);
 
-      serialPort.once('error', function(err)
+      serialPort.on('error', function(err)
       {
-        serialPortError = err;
+        if (!serialPortError)
+        {
+          serialPortError = err;
+        }
       });
 
       serialPort.open(this.next());
@@ -225,7 +229,7 @@ module.exports = function programAndTest(app, programmerModule, done)
       {
         cleanUpConnection();
 
-        modbusMaster.once('error', function(err)
+        modbusMaster.on('error', function(err)
         {
           modbusError = err;
         });
@@ -364,13 +368,10 @@ module.exports = function programAndTest(app, programmerModule, done)
       return tearDown(output, metrics, err, done);
     }
 
-    serialPort.close(function()
-    {
-      serialPort.removeAllListeners();
-      serialPort = null;
-
-      tearDown(output, metrics, err, done);
-    });
+    serialPort.removeAllListeners();
+    serialPort.on('error', function() {});
+    serialPort.close(function() { tearDown(output, metrics, err, done); });
+    serialPort = null;
   }
 
   function tearDown(output, rawMetrics, err, done)
@@ -515,7 +516,16 @@ module.exports = function programAndTest(app, programmerModule, done)
         return this.skip(err);
       }
 
-      commandArgs.push(this.next());
+      var next = this.next();
+
+      if (fake)
+      {
+        var nextStep = next;
+
+        next = function() { nextStep(); };
+      }
+
+      commandArgs.push(next);
 
       sdpMaster[command].apply(sdpMaster, commandArgs);
     };
@@ -803,7 +813,7 @@ module.exports = function programAndTest(app, programmerModule, done)
         return done();
       }
 
-      if (err)
+      if (err && !fake)
       {
         return done(err);
       }
@@ -837,6 +847,14 @@ module.exports = function programAndTest(app, programmerModule, done)
 
   function createMetrics(uSet, res)
   {
+    if (!res)
+    {
+      res = {
+        voltage: uSet,
+        current: settings.get('testingCurrent')
+      };
+    }
+
     var currentTime = Date.now();
 
     return {

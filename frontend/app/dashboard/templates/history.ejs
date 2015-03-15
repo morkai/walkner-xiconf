@@ -1,7 +1,7 @@
 <div class="dashboard-history kbd-container">
   <kbd class="is-inside" data-hotkey="focusHistory">T</kbd>
-  <h3><%- t('dashboard', 'history') %> <em id="<%- idPrefix %>-title" class="dashboard-history-title"></em></h3>
-  <div class="list-group is-scrollable">
+  <h3 class="dashboard-header"><%- t('dashboard', 'history') %> <em id="<%- idPrefix %>-title" class="dashboard-history-title"></em></h3>
+  <div class="list-group form-control is-scrollable">
     <% models.forEach(function(model) { %>
     <%- renderHistoryEntry(model) %>
     <% }) %>

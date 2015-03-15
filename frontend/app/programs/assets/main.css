@@ -1,3 +1,16 @@
+.programs-list .label {
+  font-size: 100%;
+  text-transform: uppercase;
+}
+.programs-list .label-pe {
+  background-color: #0af;
+}
+.programs-list .label-sol {
+  background-color: #fa0;
+}
+.programs-list .label-fn {
+  background-color: #00af00;
+}
 .programs-form-fn {
   margin-bottom: 0;
 }
@@ -61,17 +74,17 @@
 .programs-step .progress {
   margin-top: 7px;
   margin-bottom: 0;
-  height: 36px;
+  height: 34px;
 }
 .programs-step .progress-bar {
   font-size: 18px;
-  line-height: 36px;
+  line-height: 34px;
 }
 .is-active.programs-step {
   background-color: #ffffd6;
 }
 .is-active .programs-step-status {
-  background-color: #337ab7;
+  background-color: #f0ad4e;
 }
 .is-failure .programs-step-status {
   background-color: #d9534f;

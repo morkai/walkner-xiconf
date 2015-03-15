@@ -6,136 +6,136 @@ define([
   'underscore',
   'jquery',
   'app/i18n',
-  'app/user',
   'app/viewport',
+  'app/user',
+  'app/time',
+  'app/data/settings',
+  'app/data/hotkeys',
   'app/core/View',
   'app/core/views/DialogView',
-  'app/data/settings',
-  'app/data/currentState',
+  './PrintServiceTagDialogView',
   'app/dashboard/templates/input',
-  'app/dashboard/templates/orderFinishedDialog'
+  'app/dashboard/templates/orderFinishedDialog',
+  'app/dashboard/templates/nc12Picker'
 ], function(
   _,
   $,
   t,
-  user,
   viewport,
+  user,
+  time,
+  settings,
+  hotkeys,
   View,
   DialogView,
-  settings,
-  currentState,
+  PrintServiceTagDialogView,
   inputTemplate,
-  orderFinishedDialogTemplate
+  orderFinishedDialogTemplate,
+  nc12PickerTemplate
 ) {
   'use strict';
-
-  var MODE_STORAGE_KEY = 'INPUT:MODE';
-  var FAILURE_MSG_TIME = 3000;
-  var SUCCESS_MSG_TIME = 1500;
 
   return View.extend({
 
     template: inputTemplate,
 
-    events: {
-      'submit': 'onFormSubmit',
-      'click .dashboard-input-resetOrder': 'resetOrder',
-      'click .dashboard-input-repeatOrder': 'repeatOrder',
-      'click .dashboard-input-switchMode': 'switchMode'
-    },
-
     localTopics: {
       'hotkeys.focusOrderNo': function() { this.focusElement('orderNo'); },
       'hotkeys.focusQuantity': function() { this.focusElement('quantity'); },
-      'hotkeys.focusNc12': function() { this.focusElement('nc12'); },
-      'hotkeys.toggleMode': function(){ this.clickElement('mode'); },
-      'hotkeys.program': function() { this.clickElement('program'); },
+      'hotkeys.focusNc12': function()
+      {
+        if (this.$id('nc12').parent().hasClass('is-multi'))
+        {
+          this.toggleNc12Picker();
+        }
+        else
+        {
+          this.focusElement('nc12');
+        }
+      },
+      'hotkeys.toggleWorkMode': function() { this.clickElement('toggleWorkMode'); },
+      'hotkeys.start': function() { this.clickElement('start'); },
       'hotkeys.cancel': function() { this.clickElement('cancel'); },
-      'hotkeys.resetOrder': function() { this.clickElement('resetOrder'); },
-      'hotkeys.repeatOrder': function() { this.clickElement('repeatOrder'); },
-      'hotkeys.switchMode': function() { this.clickElement('switchMode'); }
+      'hotkeys.reset': function() { this.clickElement('reset'); },
+      'hotkeys.reload': function() { this.clickElement('reload'); },
+      'hotkeys.printServiceTag': function() { this.clickElement('printServiceTag'); },
+      'programmer.barcodeScanned': 'onBarcodeScanned'
+    },
+
+    events: {
+      'submit': 'startOrCancel',
+      'click #-reload': 'reload',
+      'click #-reset': 'reset',
+      'click #-printServiceTag': 'printServiceTag',
+      'click #-toggleWorkMode': 'toggleWorkMode',
+      'click .dashboard-input-nc12.is-multi': function(e)
+      {
+        if (e.target.classList.contains('form-control'))
+        {
+          this.toggleNc12Picker();
+        }
+      },
+      'click .dashboard-nc12Picker-item': function(e)
+      {
+        this.selectNc12(e.currentTarget.dataset.nc12);
+      }
     },
 
     initialize: function()
     {
-      this.onKeyDown = this.onKeyDown.bind(this);
-      this.onKeyPress = this.onKeyPress.bind(this);
-      this.clearCommandBuffer = this.clearCommandBuffer.bind(this);
-      this.commandBuffer = '';
-      this.idPrefix = _.uniqueId('input');
       this.$els = {
-        mode: null,
-        program: null,
-        cancel: null,
-        switchMode: null,
-        resetOrder: null,
-        repeatOrder: null,
-        inputs: null,
+        window: $(window),
+        msg: null,
         orderNo: null,
         quantity: null,
         nc12: null,
-        window: $(window)
+        reload: null,
+        reset: null,
+        printServiceTag: null,
+        start: null,
+        cancel: null,
+        toggleWorkMode: null,
+        inputs: null
       };
-      this.mode = localStorage.getItem(MODE_STORAGE_KEY) || 'manual';
 
-      this.listenTo(this.model, 'change', _.debounce(this.onModelChange.bind(this), 50));
+      this.listenTo(this.model, 'change', _.debounce(this.onModelChange.bind(this), 25));
+      this.listenTo(this.model, 'change:remoteData', this.onRemoteDataChange);
       this.listenTo(settings, 'change:orders', this.toggleControls);
 
       if (user.isLocal())
       {
         this.listenTo(this.model, 'change:result', this.onResultChange);
-        this.$els.window.on('keydown', this.onKeyDown);
-        this.$els.window.on('keypress', this.onKeyPress);
+        this.$els.window
+          .on('keydown.inputView', this.onKeyDown.bind(this))
+          .on('keypress.inputView', this.onKeyPress.bind(this));
       }
     },
 
     destroy: function()
     {
-      if (user.isLocal())
+      this.$els.window.off('.inputView');
+
+      if (this.$els.msg)
       {
-        this.$els.window.off('keydown', this.onKeyDown);
-        this.$els.window.off('keypress', this.onKeyPress);
+        viewport.msg.hide(this.$els.msg, true);
       }
 
-      this.$els.mode.remove();
       this.$els = null;
-    },
-
-    serialize: function()
-    {
-      return {
-        idPrefix: this.idPrefix,
-        className: 'is-' + this.mode,
-        modeClassName: this.mode === 'auto' ? 'btn-success' : 'btn-warning',
-        modeLabel: t('dashboard', 'input:mode:' + this.mode)
-      };
-    },
-
-    beforeRender: function()
-    {
-      if (this.$els.mode)
-      {
-        this.$els.mode.remove();
-      }
     },
 
     afterRender: function()
     {
-      var $els = this.$els;
-      
-      $els.inputs = this.$('input');
-      $els.orderNo = $els.inputs.filter('[name=orderNo]');
-      $els.quantity = $els.inputs.filter('[name=quantity]');
-      $els.nc12 = $els.inputs.filter('[name=nc12]');
-      $els.program = this.$('.dashboard-input-program');
-      $els.cancel = this.$('.dashboard-input-cancel');
-      $els.switchMode = this.$('.dashboard-input-switchMode');
-      $els.resetOrder = this.$('.dashboard-input-resetOrder');
-      $els.repeatOrder = this.$('.dashboard-input-repeatOrder');
-      $els.mode = this.$('.dashboard-input-mode')
-        .appendTo('body')
-        .click(this.onModeClick.bind(this))
-        .focus(this.onModeFocus.bind(this));
+      Object.keys(this.$els).forEach(function(k)
+      {
+        var $el = this.$id(k);
+
+        if ($el.length)
+        {
+          this.$els[k] = $el;
+        }
+      }, this);
+
+      this.$els.inputs = this.$('input');
 
       this.updateValues();
       this.toggleControls();
@@ -154,36 +154,309 @@ define([
 
     clickElement: function(elId)
     {
-      var $el = this.$els[elId];
-
-      if ($el && !$el.prop('disabled') && $el.is(':visible'))
+      if (this.isElementEnabled(elId))
       {
-        $el.click();
+        this.$els[elId].click();
       }
     },
 
-    toggleMode: function()
+    isElementEnabled: function(elId)
     {
-      this.$el.removeClass('is-' + this.mode);
+      var $el = this.$els[elId];
 
-      if (this.mode === 'auto')
+      return $el && !$el.prop('disabled') && $el.is(':visible');
+    },
+
+    startOrCancel: function()
+    {
+      if (this.model.isInProgress())
       {
-        this.$els.mode.removeClass('btn-success').addClass('btn-warning');
-
-        this.mode = 'manual';
+        this.cancel();
       }
       else
       {
-        this.$el.removeClass('is-auto');
-        this.$els.mode.removeClass('btn-warning').addClass('btn-success');
-
-        this.mode = 'auto';
+        this.start();
       }
 
-      this.$els.mode.text(t('dashboard', 'input:mode:' + this.mode));
-      this.$el.addClass('is-' + this.mode);
+      return false;
+    },
 
-      localStorage.setItem(MODE_STORAGE_KEY, this.mode);
+    start: function()
+    {
+      if (!this.isElementEnabled('start'))
+      {
+        return;
+      }
+
+      var startData = this.getStartData();
+
+      if (startData === null)
+      {
+        return;
+      }
+
+      if (!this.model.isRemoteInput() && this.model.isOrderFinished())
+      {
+        return this.showOrderFinishedDialog();
+      }
+
+      var view = this;
+
+      this.$els.start.prop('disabled', true);
+
+      this.socket.emit('programmer.start', startData, function(err)
+      {
+        if (!view.$els)
+        {
+          return;
+        }
+
+        if (err)
+        {
+          var text = t.has('dashboard', 'msg:start:' + err.message) ? ('start:' + err.message) : 'start:failure';
+
+          view.showMessage('error', text, {
+            workMode: view.model.get('workMode')
+          });
+
+          view.toggleControls();
+        }
+      });
+    },
+
+    cancel: function()
+    {
+      if (!this.isElementEnabled('cancel'))
+      {
+        return;
+      }
+
+      var view = this;
+      var $cancel = this.$els.cancel.prop('disabled', true);
+
+      this.socket.emit('programmer.cancel', function(err)
+      {
+        if (!view.$els)
+        {
+          return;
+        }
+
+        if (err)
+        {
+          view.showMessage('error', 'cancel:failure');
+        }
+
+        $cancel.prop('disabled', false);
+      });
+    },
+
+    reload: function()
+    {
+      if (!this.isElementEnabled('reload'))
+      {
+        return;
+      }
+
+      var view = this;
+
+      this.$els.reload.prop('disabled', true);
+
+      this.socket.emit('programmer.reload', function(err, lastOrder)
+      {
+        if (!view.$els)
+        {
+          return;
+        }
+
+        if (err)
+        {
+          view.showMessage('error', 'reload:failure');
+        }
+        else if (!lastOrder)
+        {
+          view.showMessage('warning', 'reload:noOrders');
+        }
+        else
+        {
+          view.showMessage('success', 'reload:success');
+
+          view.$els.orderNo.val(lastOrder.no);
+          view.$els.quantity.val('1');
+          view.$els.nc12.select();
+        }
+
+        view.$els.reload.prop('disabled', false);
+      });
+    },
+
+    reset: function(done)
+    {
+      if (!_.isFunction(done))
+      {
+        done = function() {};
+      }
+
+      if (!this.isElementEnabled('reset'))
+      {
+        return done(new Error('UNAVAILABLE'));
+      }
+
+      var view = this;
+
+      this.$els.reset.prop('disabled', true);
+
+      this.socket.emit('programmer.reset', function(err)
+      {
+        if (!view.$els)
+        {
+          return;
+        }
+
+        if (err)
+        {
+          view.showMessage('error', 'reset:failure');
+        }
+        else
+        {
+          view.hideOrderFinishedDialog();
+          view.showMessage('success', 'reset:success');
+
+          view.$els.orderNo.val('');
+          view.$els.quantity.val('');
+          view.$els.nc12.val('');
+        }
+
+        view.updateValues();
+        view.toggleControls();
+
+        return done(err);
+      });
+    },
+
+    printServiceTag: function()
+    {
+      if (!user.isLocal() || this.printServiceTagDialogView)
+      {
+        return;
+      }
+
+      var view = this;
+      var serviceTag = this.model.get('serviceTag');
+      var orderNo = this.$els.orderNo.val();
+      var counter = '';
+
+      if (serviceTag !== null)
+      {
+        orderNo = parseInt(serviceTag.substr(1, 13), 10).toString();
+        counter = parseInt(serviceTag.substr(-4), 10).toString();
+      }
+
+      this.printServiceTagDialogView = new PrintServiceTagDialogView({
+        model: {
+          orderNo: orderNo,
+          counter: counter
+        }
+      });
+
+      this.broker.subscribe('viewport.dialog.shown')
+        .setFilter(function(dialogView) { return dialogView === view.printServiceTagDialogView; })
+        .on('message', function() { hotkeys.stop(); });
+
+      this.broker.subscribe('viewport.dialog.hidden')
+        .setFilter(function(dialogView) { return dialogView === view.printServiceTagDialogView; })
+        .on('message', function()
+        {
+          view.printServiceTagDialogView = null;
+
+          hotkeys.start();
+        });
+
+      viewport.showDialog(this.printServiceTagDialogView, t('dashboard', 'printServiceTagDialog:title'));
+    },
+
+    toggleWorkMode: function()
+    {
+      if (!this.isElementEnabled('toggleWorkMode'))
+      {
+        return;
+      }
+
+      var view = this;
+      var newWorkMode = this.model.isProgrammingMode() ? 'testing' : 'programming';
+
+      this.$els.toggleWorkMode.prop('disabled', true);
+
+      this.socket.emit('programmer.setWorkMode', newWorkMode, function(err)
+      {
+        if (!view.$els)
+        {
+          return;
+        }
+
+        if (err)
+        {
+          view.showMessage('error', 'setWorkMode:failure');
+        }
+        else
+        {
+          view.showMessage('success', 'setWorkMode:success');
+        }
+
+        view.$els.toggleWorkMode.prop('disabled', false);
+      });
+    },
+
+    selectNc12: function(nc12, done)
+    {
+      var view = this;
+      var $nc12 = this.$('.dashboard-input-nc12');
+
+      if ($nc12.hasClass('is-selecting'))
+      {
+        return;
+      }
+
+      $nc12.addClass('is-selecting');
+
+      this.socket.emit('programmer.selectNc12', nc12, function(err)
+      {
+        if (!view.$els)
+        {
+          return;
+        }
+
+        $nc12.removeClass('is-selecting');
+
+        if (done)
+        {
+          return done(err);
+        }
+
+        if (err)
+        {
+          view.showMessage('error', 'selectNc12:failure');
+        }
+        else
+        {
+          view.showMessage('success', 'selectNc12:success');
+        }
+
+        view.hideNc12Picker();
+      });
+    },
+
+    showMessage: function(type, text, data)
+    {
+      if (this.$els.msg)
+      {
+        viewport.msg.hide(this.$els.msg, true);
+      }
+
+      this.$els.msg = viewport.msg.show({
+        type: type,
+        time: type === 'success' ? 1500 : type === 'warning' ? 2000 : 2500,
+        text: t('dashboard', 'msg:' + text, data)
+      });
     },
 
     toggleControls: function()
@@ -193,96 +466,251 @@ define([
         return;
       }
 
-      var isProgramming = this.model.isProgramming();
+      var model = this.model;
+      var isInProgress = model.isInProgress();
+      var $els = this.$els;
 
       if (user.isLocal())
       {
-        var isAutoMode = this.mode === 'auto';
+        var isRemoteInput = model.isRemoteInput();
         var orders = settings.get('orders');
         var ordersDisabled = orders === 'disabled';
         var ordersRequired = orders === 'required';
-        var hasOrder = this.model.hasOrder();
-        var orderFieldDisabled = isProgramming || isAutoMode || hasOrder || ordersDisabled;
-        var countdown = currentState.get('countdown') >= 0;
+        var hasOrder = model.hasOrder();
+        var orderFieldDisabled = isInProgress || isRemoteInput || hasOrder || ordersDisabled;
+        var countdown = model.get('countdown') >= 0;
 
-        this.$els.orderNo
+        $els.orderNo
           .prop('disabled', orderFieldDisabled || countdown)
           .prop('required', ordersRequired);
-        this.$els.quantity
+        $els.quantity
           .prop('disabled', orderFieldDisabled || countdown)
           .prop('required', ordersRequired);
-        this.$els.nc12.prop('disabled', isProgramming || isAutoMode || countdown);
-        this.$els.program.prop('disabled', isAutoMode || countdown);
-        this.$els.mode.show();
-        this.$els.switchMode.prop('disabled', isProgramming || countdown);
-        this.$els.resetOrder.prop('disabled', isProgramming || countdown);
-        this.$els.repeatOrder.prop('disabled', isProgramming || hasOrder || countdown);
+        $els.nc12.prop('disabled', isInProgress || isRemoteInput || countdown);
+        $els.start.prop('disabled', countdown);
+        $els.toggleWorkMode.prop('disabled', isInProgress || countdown);
+        $els.reset.prop('disabled', isInProgress || countdown);
+        $els.reload.prop('disabled', isInProgress || hasOrder || countdown);
       }
       else
       {
-        this.$els.inputs.prop('disabled', true);
-        this.$els.program.prop('disabled', true);
-        this.$els.cancel.prop('disabled', true);
-        this.$els.mode.hide();
-        this.$els.switchMode.prop('disabled', true);
-        this.$els.resetOrder.prop('disabled', true);
-        this.$els.repeatOrder.prop('disabled', true);
+        $els.inputs.prop('disabled', true);
+        $els.start.prop('disabled', true);
+        $els.cancel.prop('disabled', true);
+        $els.toggleWorkMode.prop('disabled', true);
+        $els.reset.prop('disabled', true);
+        $els.reload.prop('disabled', true);
+        $els.printServiceTag.prop('disabled', true);
       }
 
-      this.$els.cancel.toggle(isProgramming);
-      this.$els.program.toggle(!isProgramming);
-
-      if (!this.$els.orderNo.prop('disabled'))
+      if (!$els.orderNo.prop('disabled'))
       {
-        this.$els.orderNo.focus().select();
+        $els.orderNo.focus().select();
       }
-      else if (!this.$els.nc12.prop('disabled'))
+      else if (!$els.nc12.prop('disabled'))
       {
-        this.$els.nc12.focus().select();
+        $els.nc12.focus().select();
       }
     },
 
     updateValues: function()
     {
-      if (!this.$els || !this.$els.inputs)
+      var $els = this.$els;
+
+      if (!$els || !$els.inputs)
       {
         return;
       }
 
-      this.$els.nc12.val(this.model.get('result') === null ? (this.model.get('nc12') || '') : '');
+      var data;
 
-      var order = this.model.get('order');
-
-      if (order)
+      if (this.model.isRemoteInput())
       {
-        this.$els.orderNo.val(order.no);
-
-        var quantity = order.quantity - order.successCounter;
-
-        this.$els.quantity.val(Math.abs(quantity)).toggleClass('is-overflow', quantity < 0);
+        data = this.model.get('remoteData') || {
+          orderNo: null,
+          nc12: [],
+          quantityTodo: null,
+          quantityDone: null
+        };
       }
       else
       {
-        this.$els.orderNo.val('');
-        this.$els.quantity.val('').removeClass('is-overflow');
+        var localOrder = this.model.get('order');
+        var localNc12 = this.model.get('result') === null ? (this.model.get('nc12') || null) : null;
+
+        if (localOrder)
+        {
+          data = {
+            orderNo: localOrder.no,
+            nc12: [],
+            quantityTodo: localOrder.quantity,
+            quantityDone: localOrder.successCounter
+          };
+        }
+        else
+        {
+          data = {
+            orderNo: null,
+            nc12: [],
+            quantityTodo: null,
+            quantityDone: null
+          };
+        }
+
+        if (localNc12)
+        {
+          data.nc12.push({_id: localNc12});
+        }
+      }
+
+      $els.orderNo.val(data.orderNo || '');
+
+      var nc12;
+      var selectedNc12 = _.findWhere(data.nc12, {_id: this.model.get('selectedNc12')});
+      var multi = data.nc12.length > 1;
+      var quantityTodo = data.quantityTodo;
+      var quantityDone = data.quantityDone;
+
+      if (data.nc12.length)
+      {
+        if (data.nc12.length === 1)
+        {
+          nc12 = data.nc12[0]._id;
+        }
+        else if (selectedNc12)
+        {
+          nc12 = selectedNc12._id;
+          quantityTodo = selectedNc12.quantityTodo;
+          quantityDone = selectedNc12.quantityDone;
+        }
+        else
+        {
+          var completed = 0;
+
+          _.forEach(data.nc12, function(nc12)
+          {
+            if (nc12.quantityDone >= nc12.quantityTodo)
+            {
+              completed += 1;
+            }
+          });
+
+          if (completed !== data.nc12.length)
+          {
+            quantityDone = 0;
+
+            _.forEach(data.nc12, function(nc12)
+            {
+              quantityDone += nc12.quantityDone > nc12.quantityTodo ? nc12.quantityTodo : nc12.quantityDone;
+            });
+          }
+
+          nc12 = '????????????';
+        }
+      }
+
+      $els.nc12.val(nc12).closest('div').toggleClass('is-multi', user.isLocal() && !this.model.isInProgress() && multi);
+
+      var quantity = quantityTodo - quantityDone;
+
+      if (!data.orderNo || isNaN(quantity))
+      {
+        $els.quantity.val('').removeClass('is-overflow');
+      }
+      else
+      {
+        $els.quantity.val(Math.abs(quantity)).toggleClass('is-overflow', quantity < 0);
       }
     },
 
-    onModeClick: function()
+    getStartData: function()
     {
-      this.toggleMode();
-      this.toggleControls();
-    },
+      var remoteData = this.model.isRemoteInput() ? this.model.get('remoteData') : null;
+      var nc12 = this.$els.nc12.val().trim();
 
-    onModeFocus: function()
-    {
-      this.$els.mode.blur();
+      if (!/^[0-9]{12}$/.test(nc12))
+      {
+        this.showMessage('warning', 'start:requiredNc12');
+        this.$els.nc12.select();
+
+        return null;
+      }
+
+      var orders = settings.get('orders');
+
+      if (orders === 'disabled')
+      {
+        return {
+          orderNo: null,
+          quantity: null,
+          nc12: nc12
+        };
+      }
+
+      var ordersRequired = orders === 'required';
+      var orderNo = this.$els.orderNo.val().trim();
+
+      if (!/^[0-9]{9}$/.test(orderNo))
+      {
+        if (ordersRequired)
+        {
+          this.showMessage('warning', 'start:requiredOrderNo');
+          this.$els.orderNo.select();
+
+          return null;
+        }
+        else
+        {
+          orderNo = null;
+        }
+      }
+
+      var quantity;
+
+      if (remoteData)
+      {
+        quantity = remoteData.quantityTodo;
+      }
+      else
+      {
+        var order = this.model.get('order');
+
+        quantity = order && order.no === orderNo ? order.quantity : parseInt(this.$els.quantity.val(), 10);
+      }
+
+      if (isNaN(quantity) || quantity < 1 || quantity > 999)
+      {
+        if (ordersRequired)
+        {
+          this.showMessage('warning', 'start:requiredQuantity');
+          this.$els.quantity.select();
+
+          return null;
+        }
+        else
+        {
+          quantity = null;
+        }
+      }
+
+      return {
+        orderNo: orderNo,
+        quantity: quantity,
+        nc12: nc12
+      };
     },
 
     onModelChange: function()
     {
+      var changed = this.model.changedAttributes();
+
       this.updateValues();
       this.toggleControls();
+
+      if (changed.selectedNc12 === undefined)
+      {
+        this.hideNc12Picker();
+      }
     },
 
     onResultChange: function()
@@ -295,14 +723,21 @@ define([
         this.timers.cancelDelay = null;
       }
 
-      if (cancelDelay > 0 && this.model.isProgramming())
+      if (cancelDelay > 0 && this.model.isInProgress())
       {
         this.$els.cancel.attr('disabled', true);
 
         this.timers.cancelDelay = setTimeout(enableCancelAction, cancelDelay, this);
       }
 
-      this.showOrderFinishedDialog();
+      if (this.model.get('result') === null)
+      {
+        this.hideOrderFinishedDialog();
+      }
+      else
+      {
+        this.showOrderFinishedDialog();
+      }
 
       function enableCancelAction(view)
       {
@@ -312,103 +747,84 @@ define([
       }
     },
 
-    onFormSubmit: function(e)
+    onRemoteDataChange: function()
     {
-      e.preventDefault();
-
-      this.$(':focus').blur();
-
-      if (this.model.isProgramming())
-      {
-        this.cancel();
-      }
-      else
-      {
-        this.program();
-      }
+      this.updateOrderFinishedDialog();
     },
 
     onKeyDown: function(e)
     {
-      if (e.keyCode === 13 && this.commandBuffer.length)
+      if (e.keyCode === 27 && this.$id('nc12Picker').length)
       {
-        this.handleCommandBuffer(e);
+        this.hideNc12Picker();
       }
-
-      this.scheduleClearCommandBuffer();
     },
 
     onKeyPress: function(e)
     {
-      if (e.charCode === 45 || (e.charCode >= 48 && e.charCode <= 57))
-      {
-        this.commandBuffer += String.fromCharCode(e.charCode);
-      }
-
-      this.scheduleClearCommandBuffer();
-    },
-
-    scheduleClearCommandBuffer: function()
-    {
-      if (this.timers.clearCommandBuffer)
-      {
-        clearTimeout(this.timers.clearCommandBuffer);
-      }
-
-      this.timers.clearCommandBuffer = setTimeout(this.clearCommandBuffer, 150);
-    },
-
-    clearCommandBuffer: function()
-    {
-      this.commandBuffer = '';
-
-      clearTimeout(this.timers.clearCommandBuffer);
-      this.timers.clearCommandBuffer = null;
-    },
-
-    handleCommandBuffer: function(e)
-    {
-      if (!this.$(e.target).length)
-      {
-        e.preventDefault();
-      }
-
-      if (/^[0-9]{9}-[0-9]{3}$/.test(this.commandBuffer))
-      {
-        this.handleOrderAndQuantityCommand();
-      }
-      else if (/^[0-9]{12}$/.test(this.commandBuffer))
-      {
-        this.handleNc12Command(e);
-      }
-    },
-
-    handleOrderAndQuantityCommand: function()
-    {
-      if (this.model.isProgramming())
-      {
-        return this.cancel();
-      }
-
-      if (currentState.get('countdown') >= 0)
+      if (e.charCode < 48 || e.charCode > 57)
       {
         return;
       }
 
-      var orderNo = this.commandBuffer.substr(0, 9);
-      var quantity = +this.commandBuffer.substr(10);
+      var $selectedNc12 = this.$id('nc12Picker').children().eq(+String.fromCharCode(e.charCode) - 1);
+
+      if ($selectedNc12.length)
+      {
+        $selectedNc12.click();
+      }
+    },
+
+    onBarcodeScanned: function(message)
+    {
+      if (this.model.isRemoteInput())
+      {
+        return;
+      }
+
+      if (message.event && !this.$(message.event.target).length)
+      {
+        message.event.preventDefault();
+      }
+
+      if (/^[0-9]{9}-[0-9]{3}$/.test(message.value))
+      {
+        this.handleOrderNoAndQuantityCommand(message.value);
+      }
+      else if (/^[0-9]{12}$/.test(message.value))
+      {
+        this.handleNc12Command(message.value, message.event ? message.event.target : null);
+      }
+    },
+
+    handleOrderNoAndQuantityCommand: function(orderNoAndQuantity)
+    {
+      if (this.model.isInProgress())
+      {
+        return this.cancel();
+      }
+
+      if (this.model.get('countdown') >= 0)
+      {
+        return;
+      }
+
+      var orderNo = orderNoAndQuantity.substr(0, 9);
+      var quantity = +orderNoAndQuantity.substr(10);
       var orders = settings.get('orders');
       var view = this;
 
       if (orders !== 'disabled')
       {
-        if (this.model.isOrderFinished())
+        var order = this.model.get('order');
+
+        if (this.model.isOrderFinished() || (order && (order.no !== orderNo || order.quantity !== quantity)))
         {
-          this.resetOrder(function(err)
+          this.reset(function(err)
           {
             if (!err)
             {
-              view.listenToOnce(view.model, 'change', _.debounce(setValues, 75));
+              view.listenToOnce(view.model, 'change', _.debounce(setValues, 50));
             }
           });
         }
@@ -440,289 +856,31 @@ define([
       }
     },
 
-    handleNc12Command: function(e)
+    handleNc12Command: function(nc12, target)
     {
-      if (this.model.isProgramming())
+      if (this.model.isInProgress())
       {
         return this.cancel();
       }
 
-      if (currentState.get('countdown') >= 0)
+      if (this.model.get('countdown') >= 0)
       {
         return;
       }
 
-      var nc12 = this.commandBuffer;
-
       this.$els.nc12.val(typeof nc12 === 'string' && nc12.length === 12 ? nc12 : '');
 
-      if (this.$(e.target).length)
+      if (target && this.$(target).length)
       {
-        if (e.target !== this.$els.nc12[0])
+        if (target !== this.$els.nc12[0])
         {
-          e.target.value = '';
+          target.value = '';
         }
       }
       else
       {
-        if (this.$els.program.prop('disabled'))
-        {
-          this.program();
-        }
-        else
-        {
-          this.$els.program.click();
-        }
+        this.$els.start.click();
       }
-    },
-
-    cancel: function()
-    {
-      if (this.$els.cancel.prop('disabled'))
-      {
-        return;
-      }
-
-      var $cancel = this.$els.cancel.attr('disabled', true);
-      var view = this;
-
-      this.socket.emit('programmer.cancel', function(err)
-      {
-        if (!view.$els)
-        {
-          return;
-        }
-
-        $cancel.attr('disabled', false);
-
-        if (err)
-        {
-          view.showMessage(false, 'cancel:failure');
-        }
-        else
-        {
-          view.showMessage(true, 'cancel:success');
-        }
-      });
-    },
-
-    program: function()
-    {
-      var data = this.prepareProgramData();
-
-      if (data === null)
-      {
-        return this.updateValues();
-      }
-
-      if (this.model.isOrderFinished())
-      {
-        return this.showOrderFinishedDialog();
-      }
-
-      this.$els.inputs.attr('disabled', true);
-      this.$els.program.attr('disabled', true);
-
-      var view = this;
-
-      this.socket.emit('programmer.program', data, function(err)
-      {
-        if (!view.$els)
-        {
-          return;
-        }
-
-        if (err)
-        {
-          view.toggleControls();
-          view.showMessage(false, 'program:failure');
-        }
-      });
-    },
-
-    prepareProgramData: function()
-    {
-      var nc12 = this.$els.nc12.val().trim();
-
-      if (!/^[0-9]{12}$/.test(nc12))
-      {
-        return null;
-      }
-
-      var orders = settings.get('orders');
-
-      if (orders === 'disabled')
-      {
-        return {
-          orderNo: null,
-          quantity: null,
-          nc12: nc12
-        };
-      }
-
-      var ordersRequired = orders === 'required';
-      var orderNo = this.$els.orderNo.val().trim();
-
-      if (!/^[0-9]{9}$/.test(orderNo))
-      {
-        if (ordersRequired)
-        {
-          this.showMessage(false, 'requiredOrder');
-
-          return null;
-        }
-        else
-        {
-          orderNo = null;
-        }
-      }
-
-      var order = this.model.get('order');
-      var quantity = order && order.no === orderNo
-        ? order.quantity
-        : parseInt(this.$els.quantity.val(), 10);
-
-      if (isNaN(quantity) || quantity < 1 || quantity > 999)
-      {
-        if (ordersRequired)
-        {
-          this.showMessage(false, 'requiredOrder');
-
-          return null;
-        }
-        else
-        {
-          quantity = null;
-        }
-      }
-
-      return {
-        orderNo: orderNo,
-        quantity: quantity,
-        nc12: nc12
-      };
-    },
-
-    showMessage: function(success, text)
-    {
-      if (this.$msg)
-      {
-        viewport.msg.hide(this.$msg, true);
-      }
-
-      this.$msg = viewport.msg.show({
-        type: success ? 'success' : 'error',
-        time: success ? SUCCESS_MSG_TIME : FAILURE_MSG_TIME,
-        text: t('dashboard', 'msg:' + text)
-      });
-    },
-
-    resetOrder: function(done)
-    {
-      if (typeof done !== 'function')
-      {
-        done = function() {};
-      }
-
-      if (this.model.isProgramming())
-      {
-        return done(new Error('IN_PROGRESS'));
-      }
-
-      this.$els.resetOrder.attr('disabled', true);
-
-      var view = this;
-
-      this.socket.emit('programmer.resetOrder', function(err)
-      {
-        if (!view.$els)
-        {
-          return;
-        }
-
-        if (err)
-        {
-          console.error(err);
-
-          view.showMessage(false, 'resetOrder:failure');
-        }
-        else
-        {
-          view.hideOrderFinishedDialog();
-          view.showMessage(true, 'resetOrder:success');
-        }
-
-        view.updateValues();
-        view.toggleControls();
-
-        return done(err);
-      });
-    },
-
-    repeatOrder: function()
-    {
-      if (this.model.isProgramming() || this.model.hasOrder())
-      {
-        return;
-      }
-
-      this.$els.repeatOrder.attr('disabled', true);
-
-      var view = this;
-
-      this.socket.emit('programmer.repeatOrder', function(err, lastOrder)
-      {
-        if (!view.$els)
-        {
-          return;
-        }
-
-        view.toggleControls();
-
-        if (err)
-        {
-          return view.showMessage(true, 'repeatOrder:failure');
-        }
-
-        if (lastOrder && (view.$els.orderNo.val() !== lastOrder.no && view.$els.quantity.val() !== '1'))
-        {
-          view.$els.orderNo.val(lastOrder.no);
-          view.$els.quantity.val(1);
-          view.$els.nc12.val('');
-
-          view.showMessage(true, 'repeatOrder:success');
-        }
-
-        view.$els.nc12.focus();
-      });
-    },
-
-    switchMode: function()
-    {
-      if (this.model.isProgramming())
-      {
-        return;
-      }
-
-      this.$els.switchMode.attr('disabled', true);
-
-      var view = this;
-      var newMode = this.model.get('mode') === 'programming' ? 'testing' : 'programming';
-
-      this.socket.emit('programmer.switchMode', newMode, function(err)
-      {
-        if (!view.$els)
-        {
-          return;
-        }
-
-        view.toggleControls();
-
-        if (err)
-        {
-          view.showMessage(false, 'switchMode:failure');
-        }
-      });
     },
 
     showOrderFinishedDialog: function()
@@ -737,10 +895,7 @@ define([
       var dialogView = new DialogView({
         dialogClassName: 'dashboard-orderFinishedDialog',
         template: orderFinishedDialogTemplate,
-        model: {
-          order: this.model.get('order'),
-          resetOrderHotkey: settings.get('hotkeys').resetOrder
-        }
+        model: this.serializeOrderFinishedDialogModel()
       });
       var view = this;
 
@@ -748,19 +903,173 @@ define([
       {
         if (answer === 'yes')
         {
-          view.clickElement('resetOrder');
+          view.clickElement('reset');
         }
       });
 
-      viewport.showDialog(dialogView, t('dashboard', 'orderFinishedDialogTemplate:title'));
+      viewport.showDialog(dialogView, t('dashboard', 'orderFinishedDialog:title'));
     },
 
     hideOrderFinishedDialog: function()
     {
-      if (viewport.currentDialog
-        && viewport.currentDialog.dialogClassName === 'dashboard-orderFinishedDialog')
+      if (viewport.currentDialog && viewport.currentDialog.dialogClassName === 'dashboard-orderFinishedDialog')
       {
         viewport.closeDialog();
+      }
+    },
+
+    updateOrderFinishedDialog: function()
+    {
+      var dialogView = viewport.currentDialog;
+
+      if (!dialogView || dialogView.dialogClassName !== 'dashboard-orderFinishedDialog')
+      {
+        if (!this.model.isInProgress() && this.model.isOrderFinished())
+        {
+          this.showOrderFinishedDialog();
+        }
+
+        return;
+      }
+
+      var newModel = this.serializeOrderFinishedDialogModel();
+
+      if (!newModel)
+      {
+        return this.hideOrderFinishedDialog();
+      }
+
+      dialogView.model = newModel;
+      dialogView.render();
+    },
+
+    serializeOrderFinishedDialogModel: function()
+    {
+      var orderData = this.model.get('order');
+      var failureCounter = orderData ? orderData.failureCounter : 0;
+      var order;
+
+      if (this.model.isRemoteInput())
+      {
+        var remoteData = this.model.get('remoteData');
+
+        if (!remoteData || !remoteData.orderNo)
+        {
+          return null;
+        }
+
+        order = {
+          no: remoteData.orderNo,
+          quantity: remoteData.quantityTodo.toLocaleString(),
+          successCounter: remoteData.quantityDone.toLocaleString(),
+          failureCounter: failureCounter ? ('~' + failureCounter.toLocaleString()) : '?',
+          startedAt: remoteData.startedAt,
+          finishedAt: remoteData.finishedAt,
+          duration: '?'
+        };
+      }
+      else if (!orderData)
+      {
+        return null;
+      }
+      else
+      {
+        order = {
+          no: orderData.no,
+          quantity: orderData.quantity.toLocaleString(),
+          successCounter: orderData.successCounter.toLocaleString(),
+          failureCounter: failureCounter.toLocaleString(),
+          startedAt: orderData.startedAt,
+          finishedAt: orderData.finishedAt,
+          duration: '?'
+        };
+      }
+
+      if (order.startedAt && order.finishedAt)
+      {
+        order.duration = time.toString((order.finishedAt - order.startedAt) / 1000);
+      }
+
+      order.startedAt = this.formatTimeOrDateTime(order.startedAt);
+      order.finishedAt = this.formatTimeOrDateTime(order.finishedAt);
+
+      return {
+        remote: this.model.isRemoteInput(),
+        order: order,
+        resetOrderHotkey: settings.get('hotkeys').reset
+      };
+    },
+
+    formatTimeOrDateTime: function(ts)
+    {
+      if (!ts)
+      {
+        return '?';
+      }
+
+      var currentMoment = time.getMoment();
+      var tsMoment = time.getMoment(ts);
+
+      return tsMoment.format('YYMMDD') === currentMoment.format('YYMMDD')
+        ? tsMoment.format('HH:mm:ss')
+        : tsMoment.format('YYYY-MM-DD, HH:mm:ss');
+    },
+
+    isSelectingNc12: function()
+    {
+      return this.$('.dashboard-input-nc12.is-selecting').length === 1;
+    },
+
+    toggleNc12Picker: function()
+    {
+      if (!user.isLocal() || this.model.isInProgress())
+      {
+        return;
+      }
+
+      var visible = this.$id('nc12Picker').length === 1;
+
+      if (visible)
+      {
+        this.selectNc12(null, this.hideNc12Picker.bind(this));
+      }
+      else
+      {
+        this.selectNc12(null, this.showNc12Picker.bind(this));
+      }
+    },
+
+    showNc12Picker: function()
+    {
+      if (this.isSelectingNc12())
+      {
+        return;
+      }
+
+      var templateData = {
+        idPrefix: this.idPrefix,
+        nc12s: this.model.get('remoteData').nc12
+      };
+
+      $(nc12PickerTemplate(templateData))
+        .hide()
+        .appendTo(this.$els.nc12.parent())
+        .stop()
+        .slideDown('fast');
+    },
+
+    hideNc12Picker: function()
+    {
+      if (this.isSelectingNc12())
+      {
+        return;
+      }
+
+      var $picker = this.$id('nc12Picker');
+
+      if ($picker.length)
+      {
+        $picker.stop().slideUp('fast', function() { $picker.remove(); });
       }
     }
 

@@ -54,7 +54,7 @@ module.exports = function syncPrograms(app, programsModule, done)
         return this.skip(err);
       }
 
-      remoteServerUrl.pathname = '/xiconfPrograms;sync';
+      remoteServerUrl.pathname = '/xiconf/programs;sync';
 
       var options = {
         url: url.format(remoteServerUrl),

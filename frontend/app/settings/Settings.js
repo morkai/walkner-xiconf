@@ -49,6 +49,13 @@ define([
           hotkeyToActions[hotkey].push(action);
         }
       });
+    },
+
+    isValidLicense: function()
+    {
+      var licenseInfo = this.get('licenseInfo');
+
+      return licenseInfo && !licenseInfo.error;
     }
 
   });

@@ -9,6 +9,10 @@
       <input id="<%- idPrefix %>-to" class="form-control" name="to" type="datetime-local" placeholder="YYYY-MM-DD HH:mm">
     </div><div
       class="form-group">
+      <label for="<%- idPrefix %>-serviceTag"><%- t('history', 'PROPERTY:serviceTag') %></label>
+      <input id="<%- idPrefix %>-serviceTag" class="form-control" name="serviceTag" type="text" pattern="^(P|p)[0-9]+$">
+    </div><div
+      class="form-group">
       <label for="<%- idPrefix %>-no"><%- t('history', 'PROPERTY:no') %></label>
       <input id="<%- idPrefix %>-no" class="form-control" name="no" type="text" maxlength="9" pattern="^[0-9]{9}$">
     </div><div

@@ -8,7 +8,10 @@ var fs = require('fs');
 var lodash = require('lodash');
 var setUpCommands = require('./commands');
 var setUpBlockage = require('./blockage');
+var setUpBarcodeScanner = require('./barcodeScanner');
 var program = require('./program');
+var printServiceTag = require('./printServiceTag');
+var RemoteCoordinator = require('./RemoteCoordinator');
 
 exports.DEFAULT_CONFIG = {
   settingsId: 'settings',
@@ -18,7 +21,9 @@ exports.DEFAULT_CONFIG = {
   featureDbPath: './',
   workflowFile: 'workflow.txt',
   lptIoFile: 'LptIo.exe',
-  lastModeFile: 'lastMode.txt'
+  lastModeFile: 'lastMode.txt',
+  spoolFile: 'spool.exe',
+  motoBarScanFile: 'MotoBarScan.exe'
 };
 
 exports.start = function startProgrammerModule(app, module)
@@ -44,66 +49,97 @@ exports.start = function startProgrammerModule(app, module)
     throw new Error("history module is required!");
   }
 
+  module.OVERALL_SETUP_PROGRESS = 20;
+  module.OVERALL_PROGRAMMING_PROGRESS = 100;
+
   module.currentState = historyModule.createEntry();
+
+  module.remoteCoordinator = new RemoteCoordinator(app, module);
 
   module.newProgram = null;
 
-  module.program = program.bind(null, app, module);
+  module.start = program.bind(null, app, module);
 
-  module.updateCurrentProgram = function()
+  module.setInputMode = function(inputMode, done)
   {
-    if (!module.newProgram)
+    if (module.currentState.isInProgress())
     {
-      return;
+      return done(new Error('IN_PROGRESS'));
     }
 
-    var newProgram = module.newProgram;
-    module.newProgram = null;
-
-    if (module.currentState.program && module.currentState.program._id === newProgram._id)
-    {
-      module.currentState.program = newProgram;
-    }
-  };
-
-  module.switchMode = function(mode, done)
-  {
-    if (module.currentState.isProgramming())
-    {
-      return done(new Error('PROGRAMMING'));
-    }
-
-    if (module.currentState.mode === mode)
+    if (module.currentState.inputMode === inputMode)
     {
       return done();
     }
 
-    if (mode !== 'programming' && mode !== 'testing')
+    if (inputMode !== 'local' && inputMode !== 'remote')
     {
       return done(new Error('INPUT'));
     }
 
-    if (mode === 'testing' && !settings.get('testingEnabled'))
-    {
-      return done(new Error('TESTING_DISABLED'));
-    }
-
     module.currentState.clear();
-    module.currentState.mode = mode;
+    module.currentState.inputMode = inputMode;
     done();
     module.changeState();
   };
 
-  module.pickProgram = function(programId, done)
+  module.setWorkMode = function(workMode, done)
   {
-    if (module.currentState.isProgramming())
+    if (module.currentState.isInProgress())
     {
-      return done(new Error('PROGRAMMING'));
+      return done(new Error('IN_PROGRESS'));
     }
 
-    if (module.currentState.mode !== 'testing')
+    if (module.currentState.workMode === workMode)
     {
-      return done(new Error('INVALID_MODE'));
+      return done();
+    }
+
+    if (workMode !== 'programming' && workMode !== 'testing')
+    {
+      return done(new Error('INPUT'));
+    }
+
+    if (workMode === 'testing' && !settings.get('testingEnabled'))
+    {
+      return done(new Error('TESTING_DISABLED'));
+    }
+
+    module.currentState.clear(false);
+    module.currentState.workMode = workMode;
+    done();
+    module.changeState();
+  };
+
+  module.selectNc12 = function(nc12, done)
+  {
+    if (module.currentState.isInProgress())
+    {
+      return done(new Error('IN_PROGRESS'));
+    }
+
+    if (module.currentState.inputMode !== 'remote')
+    {
+      return done(new Error('INVALID_INPUT_MODE'));
+    }
+
+    done(null);
+
+    module.currentState.clear(false, false);
+    module.currentState.selectedNc12 = nc12;
+    module.changeState();
+  };
+
+  module.setProgram = function(programId, done)
+  {
+    if (module.currentState.isInProgress())
+    {
+      return done(new Error('IN_PROGRESS'));
+    }
+
+    if (module.currentState.workMode !== 'testing')
+    {
+      return done(new Error('INVALID_WORK_MODE'));
     }
 
     sqlite3Module.db.get("SELECT * FROM programs WHERE _id=?", [programId], function(err, program)
@@ -123,11 +159,11 @@ exports.start = function startProgrammerModule(app, module)
     });
   };
 
-  module.resetOrder = function(done)
+  module.reset = function(done)
   {
-    if (module.currentState.isProgramming())
+    if (module.currentState.isInProgress())
     {
-      return done(new Error('PROGRAMMING'));
+      return done(new Error('IN_PROGRESS'));
     }
 
     module.currentState.clear();
@@ -135,7 +171,7 @@ exports.start = function startProgrammerModule(app, module)
     module.changeState();
   };
 
-  module.repeatOrder = function(done)
+  module.reload = function(done)
   {
     var sql = "SELECT * FROM orders ORDER BY startedAt DESC LIMIT 1";
 
@@ -211,9 +247,59 @@ exports.start = function startProgrammerModule(app, module)
       stepIndex: stepIndex,
       stepProgress: stepProgress
     });
+
+    var stepsProgress = [];
+
+    module.currentState.program.steps.forEach(function(step, i)
+    {
+      if (step.enabled)
+      {
+        stepsProgress.push(steps[i].progress);
+      }
+    });
+
+    var stepCount = stepsProgress.length;
+    var percentPerStep = 100 / stepCount;
+    var programmingProgress = 0;
+
+    stepsProgress.forEach(function(stepProgress)
+    {
+      programmingProgress += percentPerStep * (stepProgress / 100);
+    });
+
+    module.updateOverallProgress(programmingProgress, true);
+  };
+
+  module.updateOverallProgress = function(progress, programming)
+  {
+    if (programming)
+    {
+      var setupProgress = module.OVERALL_SETUP_PROGRESS;
+      var programmingProgress = module.OVERALL_PROGRAMMING_PROGRESS;
+
+      progress = Math.round(setupProgress + ((programmingProgress - setupProgress) * (progress / 100)));
+    }
+
+    if (progress > module.currentState.overallProgress)
+    {
+      module.changeState({overallProgress: progress});
+    }
+  };
+
+  module.printServiceTag = function(serviceTag, done)
+  {
+    return printServiceTag(
+      module.config.spoolFile,
+      settings.get('serviceTagPrinter'),
+      settings.get('serviceTagLabelType'),
+      settings.get('serviceTagLabelCode'),
+      serviceTag,
+      done
+    );
   };
 
   setUpBlockage(app, module);
+  setUpBarcodeScanner(app, module);
 
   app.onModuleReady(
     [
@@ -228,24 +314,24 @@ exports.start = function startProgrammerModule(app, module)
   {
     if (changes.testingEnabled === 0)
     {
-      module.switchMode('programming', function(err)
+      module.setWorkMode('programming', function(err)
       {
         if (err)
         {
-          module.error("Failed to switch mode to programming after testing was disabled: %s", err.message);
+          module.error("Failed to switch the work mode to programming after testing was disabled: %s", err.message);
         }
       });
     }
   });
 
-  app.broker.subscribe('programmer.stateChanged', function(message)
+  app.broker.subscribe('programmer.stateChanged', function(changes)
   {
-    if (message.program !== undefined)
+    if (changes.program !== undefined)
     {
       module.newProgram = null;
     }
 
-    if (message.mode !== undefined)
+    if (changes.inputMode !== undefined || changes.workMode !== undefined)
     {
       saveLastMode();
     }
@@ -261,7 +347,7 @@ exports.start = function startProgrammerModule(app, module)
       return;
     }
 
-    if (module.currentState.isProgramming() || module.currentState.isFinished())
+    if (module.currentState.isInProgress() || module.currentState.isFinished())
     {
       module.newProgram = newProgram;
     }
@@ -280,11 +366,28 @@ exports.start = function startProgrammerModule(app, module)
         return module.warn("Failed to read the last mode file: %s", err.message);
       }
 
-      module.switchMode(lastMode, function(err)
+      try
+      {
+        lastMode = JSON.parse(lastMode);
+      }
+      catch (err)
+      {
+        return module.warn("Failed to parse the last mode file: %s", err.message);
+      }
+
+      module.setInputMode(lastMode.input, function(err)
       {
         if (err)
         {
-          return module.error("Failed to switch to the last mode [%s]: %s", lastMode, err.message);
+          return module.error("Failed to set the last input mode [%s]: %s", lastMode.input, err.message);
+        }
+      });
+
+      module.setWorkMode(lastMode.work, function(err)
+      {
+        if (err)
+        {
+          return module.error("Failed to set the last work mode [%s]: %s", lastMode.work, err.message);
         }
       });
     });
@@ -292,7 +395,12 @@ exports.start = function startProgrammerModule(app, module)
 
   function saveLastMode()
   {
-    fs.writeFile(module.config.lastModeFile, module.currentState.mode, function(err)
+    var lastMode = {
+      input: module.currentState.inputMode,
+      work: module.currentState.workMode
+    };
+
+    fs.writeFile(module.config.lastModeFile, JSON.stringify(lastMode), function(err)
     {
       if (err)
       {

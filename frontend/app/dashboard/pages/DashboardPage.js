@@ -5,12 +5,14 @@
 define([
   'underscore',
   'jquery',
-  'app/i18n',
   'app/user',
-  'app/core/View',
-  'app/data/currentState',
+  'app/i18n',
+  'app/viewport',
   'app/data/settings',
-  'app/history/HistoryEntry',
+  'app/data/currentState',
+  'app/data/hotkeys',
+  'app/data/barcodeScanner',
+  'app/core/View',
   'app/history/HistoryEntryCollection',
   '../views/InputView',
   '../views/LogView',
@@ -21,19 +23,21 @@ define([
 ], function(
   _,
   $,
-  t,
   user,
-  View,
-  currentState,
+  t,
+  viewport,
   settings,
-  HistoryEntry,
+  currentState,
+  hotkeys,
+  barcodeScanner,
+  View,
   HistoryEntryCollection,
   InputView,
   LogView,
   HistoryView,
   CarouselView,
   ProgramView,
-  pageTemplate
+  template
 ) {
   'use strict';
 
@@ -43,63 +47,96 @@ define([
 
     pageId: 'dashboard',
 
-    template: pageTemplate,
+    template: template,
 
     localTopics: {
-      'viewport.dialog.shown': function()
-      {
-        clearTimeout(this.timers.blur);
-        this.timers.blur = null;
-      }
+      'socket.connected': 'toggleConnectionIndicator',
+      'socket.disconnected': 'toggleConnectionIndicator',
+      'hotkeys.toggleInputMode': function() { this.toggleInputMode(); }
     },
 
     events: {
-      'focus .form-control, .btn, a': 'scheduleBlur',
-      'keydown': 'scheduleBlur'
+      'click #-toggleInputMode': function() { this.toggleInputMode(); },
+      'submit #-inputModeForm': function()
+      {
+        var $password = this.$id('password');
+        var password = $password.val();
+
+        $password.val('');
+
+        if (password === '')
+        {
+          this.hideInputModeForm();
+        }
+        else
+        {
+          this.toggleInputMode(password);
+        }
+
+        return false;
+      },
+      'focus #-password': function()
+      {
+        hotkeys.stop();
+      },
+      'blur #-password': function()
+      {
+        hotkeys.start();
+        this.hideInputModeForm();
+      }
     },
 
     initialize: function()
     {
-      this.onWindowResize = _.debounce(this.resize.bind(this), 125);
-      this.toggleFocusInfo = _.debounce(this.toggleFocusInfo.bind(this), 1);
-      this.blur = this.blur.bind(this);
+      this.onWindowResize = _.debounce(this.resize.bind(this), 33);
+      this.toggleWindowFocus = _.debounce(this.toggleWindowFocus.bind(this), 1);
       this.$els = {
-        navbar: null,
-        focus: null,
-        license: null,
-        body: $(window.document.body),
         window: $(window),
+        body: $(window.document.body),
+        msg: null,
+        navbar: null,
+        progressBar: null,
         hotkeys: null
       };
 
       this.defineViews();
+      this.insertView('.dashboard-leftColumn', this.inputView);
+      this.insertView('.dashboard-leftColumn', this.logView);
+      this.insertView('.dashboard-rightColumn', this.historyView);
+      this.insertView('.dashboard-rightColumn', this.carouselView);
+      this.insertView('.dashboard-rightColumn', this.programView);
 
-      this.insertView('.dashboard-left', this.inputView);
-      this.insertView('.dashboard-left', this.logView);
-      this.insertView('.dashboard-right', this.historyView);
-      this.insertView('.dashboard-right', this.carouselView);
-      this.insertView('.dashboard-right', this.programView);
+      this.$els.window
+        .on('resize.dashboard', this.onWindowResize)
+        .on('wheel.dashboard', this.onWindowWheel)
+        .on('focus.dashboard', this.toggleWindowFocus)
+        .on('blur.dashboard', this.toggleWindowFocus)
+        .on('keydown.dashboard', this.onKeyDown.bind(this));
 
-      this.$els.window.on('wheel.dashboard', this.onWindowWheel);
-      this.$els.window.on('resize.dashboard', this.onWindowResize);
-
-      if (user.isLocal())
-      {
-        this.$els.window
-          .on('focus.dashboard', this.toggleFocusInfo)
-          .on('blur.dashboard', this.toggleFocusInfo);
-      }
-
-      this.listenTo(settings, 'change:licenseInfo', this.toggleLicenseInfo);
-      this.listenTo(settings, 'change:testingEnabled', this.toggleTestingEnabled);
+      this.listenTo(currentState, 'change:inputMode', this.onInputModeChange);
+      this.listenTo(currentState, 'change:workMode', this.onWorkModeChange);
+      this.listenTo(currentState, 'change:inProgress', this.onInProgressChange);
+      this.listenTo(currentState, 'change:overallProgress', this.onOverallProgressChange);
+      this.listenTo(currentState, 'change:result', this.onResultChange);
+      this.listenTo(currentState, 'change:remoteConnected', this.toggleConnectionIndicator);
+      this.listenTo(settings, 'change:licenseInfo', this.onLicenseInfoChange);
+      this.listenTo(settings, 'change:testingEnabled', this.onTestingEnabledChange);
       this.listenTo(settings, 'change:hotkeys', this.updateHotkeys);
-      this.listenTo(currentState, 'change:mode', this.toggleMode);
+
+      barcodeScanner.start();
     },
 
     destroy: function()
     {
-      this.$els.body.css('overflow', 'auto');
+      barcodeScanner.stop();
+
+      this.$els.body.css('overflow', '');
       this.$els.window.off('.dashboard');
+
+      if (this.$els.msg)
+      {
+        viewport.msg.hide(this.$els.msg, true);
+      }
 
       this.$els = null;
     },
@@ -113,109 +150,186 @@ define([
       this.programView = new ProgramView({model: currentState});
     },
 
+    serialize: function()
+    {
+      return {
+        idPrefix: this.idPrefix,
+        localUser: user.isLocal(),
+        windowFocused: document.hasFocus(),
+        inProgress: currentState.isInProgress(),
+        licenseError: !settings.isValidLicense(),
+        workMode: currentState.get('workMode'),
+        inputMode: currentState.get('inputMode'),
+        workModeChangeEnabled: !!settings.get('testingEnabled'),
+        progressBarClassName: this.getProgressBarClassName(),
+        progressBarWidth: this.getProgressBarWidth()
+      };
+    },
+
     beforeRender: function()
     {
       this.$els.body.css('overflow', 'hidden');
-
-      clearInterval(this.timers.license);
-
-      this.$els.hotkeys = null;
     },
 
     afterRender: function()
     {
       this.$els.navbar = $('.navbar');
-      this.$els.license = this.$('.dashboard-license');
+      this.$els.progressBar = this.$id('progressBar');
 
-      if (user.isLocal())
-      {
-        this.$els.focus = $('<span class="btn active dashboard-focus"></span>').appendTo(this.el);
-        this.toggleFocusInfo();
-      }
+      this.$('.dashboard-leftColumn').append('<kbd class="is-inside" data-hotkey="focusLog">?</kbd>');
 
-      this.toggleMode();
-      this.toggleLicenseInfo();
-      this.toggleTestingEnabled();
-      this.animateLicenseInfo();
+      this.toggleConnectionIndicator();
+      this.animateLicenseError();
       this.updateHotkeys();
 
-      this.timers.license = setInterval(this.animateLicenseInfo.bind(this), 10000);
+      this.timers.license = setInterval(this.animateLicenseError.bind(this), 10000);
       this.timers.resize = setTimeout(this.resize.bind(this), 1);
-    },
-
-    scheduleBlur: function()
-    {
-      if (this.timers.blur)
-      {
-        clearTimeout(this.timers.blur);
-      }
-
-      this.timers.blur = setTimeout(this.blur, 5000);
     },
 
     resize: function()
     {
-      var height = this.$els.window[0].innerHeight - this.inputView.$el.outerHeight(true) - 47;
+      var height = this.getRemainingHeight();
       var width = this.historyView.$el.outerWidth(true);
-
-      if (this.$els.navbar.length)
-      {
-        height -= this.$els.navbar.outerHeight(true);
-      }
 
       this.logView.resize(height);
       this.carouselView.resize(width, height);
       this.programView.resize(width, height);
     },
 
-    blur: function()
+    toggleConnectionIndicator: function()
     {
-      this.logView.$el.focus().blur();
+      var local = this.socket.isConnected();
+      var remote = currentState.get('remoteConnected');
+      var title = t('dashboard', 'connection:' + (remote ? 'remote' : local ? 'local' : 'no'));
 
-      clearTimeout(this.timers.blur);
-      this.timers.blur = null;
+      this.$el.toggleClass('is-connected-local', local);
+      this.$el.toggleClass('is-connected-remote', remote);
+      this.$id('connection').attr('title', title);
     },
 
-    toggleFocusInfo: function()
+    toggleWindowFocus: function()
     {
-      if (!this.$els)
+      this.$el.toggleClass('has-windowFocus', document.hasFocus());
+    },
+
+    toggleInputMode: function(password)
+    {
+      if (!user.isLocal() || currentState.isInProgress())
       {
         return;
       }
 
-      this.$els.focus
-        .removeClass('btn-info btn-danger')
-        .addClass(document.hasFocus() ? 'btn-info' : 'btn-danger')
-        .text(t('dashboard', 'focus:' + document.hasFocus()));
-    },
-
-    toggleLicenseInfo: function()
-    {
-      var licenseInfo = settings.get('licenseInfo');
-
-      this.$els.license.toggle(!licenseInfo || !!licenseInfo.error);
-    },
-
-    toggleTestingEnabled: function()
-    {
-      this.$el.toggleClass('is-testing-enabled', !!settings.get('testingEnabled'));
-    },
-
-    toggleMode: function()
-    {
-      this.$els.body.toggleClass('is-testing', currentState.get('mode') === 'testing');
-    },
-
-    animateLicenseInfo: function()
-    {
-      var $license = this.$els.license.removeClass('dashboard-license-animate');
-
-      if (!$license.is(':visible'))
+      if (password === undefined && settings.get('protectInputMode'))
       {
-        return;
+        return this.toggleInputModeForm();
       }
 
-      this.timers.licenseAdd = setTimeout(function() { $license.addClass('dashboard-license-animate'); }, 1000);
+      var view = this;
+      var newInputMode = currentState.isRemoteInput() ? 'local' : 'remote';
+
+      this.socket.emit('programmer.setInputMode', newInputMode, password, function(err)
+      {
+        if (view.$els.msg !== null)
+        {
+          viewport.msg.hide(view.$els.msg, true);
+        }
+
+        if (err)
+        {
+          view.$els.msg = viewport.msg.show({
+            type: 'error',
+            time: 2000,
+            text: t.has('dashboard', 'msg:setInputMode:' + err.message)
+              ? t('dashboard', 'msg:setInputMode:' + err.message)
+              : t('dashboard', 'msg:setInputMode:failure')
+          });
+        }
+        else
+        {
+          view.$els.msg = viewport.msg.show({
+            type: 'success',
+            time: 2000,
+            text: t('dashboard', 'msg:setInputMode:success')
+          });
+          view.hideInputModeForm();
+        }
+      });
+    },
+
+    toggleInputModeForm: function()
+    {
+      if (this.$id('inputModeForm').hasClass('is-hiding'))
+      {
+        this.showInputModeForm();
+      }
+      else
+      {
+        this.hideInputModeForm();
+      }
+    },
+
+    hideInputModeForm: function()
+    {
+      this.$id('inputModeForm').addClass('is-hiding').stop(false).fadeOut('fast');
+    },
+
+    showInputModeForm: function()
+    {
+      var $form = this.$id('inputModeForm');
+      var $toggleInputMode = this.$id('toggleInputMode');
+      var $password = this.$id('password').val('');
+      var offset = $toggleInputMode.offset();
+      var height = $toggleInputMode.outerHeight();
+
+      $form
+        .css({
+          top: (offset.top + height) + 'px',
+          left: offset.left
+        })
+        .removeClass('is-hiding')
+        .stop(false)
+        .fadeIn('fast', function() { $password.focus(); });
+    },
+
+    getRemainingHeight: function()
+    {
+      return this.$els.window[0].innerHeight
+        - this.$els.navbar.outerHeight(true)
+        - this.$els.progressBar.outerHeight(true)
+        - this.inputView.$el.outerHeight(true)
+        - 14 * 4;
+    },
+
+    getProgressBarClassName: function()
+    {
+      if (currentState.isInProgress())
+      {
+        return 'progress-bar-warning progress-bar-striped active';
+      }
+
+      var result = currentState.get('result');
+
+      if (result === 'failure')
+      {
+        return 'progress-bar-danger';
+      }
+
+      if (result === 'success')
+      {
+        return 'progress-bar-success';
+      }
+
+      return 'progress-bar-warning';
+    },
+
+    getProgressBarWidth: function()
+    {
+      if (currentState.isInProgress())
+      {
+        return Math.max(0, Math.min(100, currentState.get('overallProgress'))) + '%';
+      }
+
+      return currentState.get('result') ? '100%' : '0%';
     },
 
     updateHotkeys: function()
@@ -258,9 +372,72 @@ define([
       });
     },
 
+    updateProgressBarClassName: function()
+    {
+      this.$els.progressBar[0].className = 'progress-bar ' + this.getProgressBarClassName();
+    },
+
+    animateLicenseError: function()
+    {
+      var $license = this.$id('licenseError').removeClass('is-animating');
+
+      if ($license.is(':visible'))
+      {
+        this.timers.licenseAnimation = setTimeout(function() { $license.addClass('is-animating'); }, 1000);
+      }
+    },
+
+    onInputModeChange: function()
+    {
+      this.el.dataset.inputMode = currentState.get('inputMode');
+    },
+
+    onWorkModeChange: function()
+    {
+      this.el.dataset.workMode = currentState.get('workMode');
+    },
+
+    onLicenseInfoChange: function()
+    {
+      this.$id('licenseInfo').toggle(!settings.isValidLicense());
+    },
+
+    onTestingEnabledChange: function()
+    {
+      this.$el.toggleClass('is-workModeChangeEnabled', !!settings.get('testingEnabled'));
+    },
+
+    onInProgressChange: function()
+    {
+      var inProgress = currentState.isInProgress();
+
+      this.$el.toggleClass('is-inProgress', inProgress);
+      this.$el.toggleClass('is-idle', !inProgress);
+
+      this.updateProgressBarClassName();
+    },
+
+    onOverallProgressChange: function()
+    {
+      this.$els.progressBar.css('width', this.getProgressBarWidth());
+    },
+
+    onResultChange: function()
+    {
+      this.updateProgressBarClassName();
+    },
+
     onWindowWheel: function(e)
     {
       return this.$(e.target).closest('.is-scrollable').length === 1;
+    },
+
+    onKeyDown: function(e)
+    {
+      if (e.keyCode === 27)
+      {
+        this.hideInputModeForm();
+      }
     }
 
   });

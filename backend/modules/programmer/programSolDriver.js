@@ -50,6 +50,7 @@ module.exports = function programSolDriver(app, programmerModule, output, onProg
     return done('SOL_NO_COMMANDS');
   }
 
+  var fake = app.options.env !== 'production';
   var allCommandCount = 4 + commands.length * 4 + (settings.get('solReset') ? 2 : 0);
   var completedCommandCount = 0;
 
@@ -165,7 +166,7 @@ module.exports = function programSolDriver(app, programmerModule, output, onProg
 
       execCommand(programmerModule, this.serialPort, this.output, 'set base 10', progress, function(err, result)
       {
-        return next(result === '10' ? null : 'SOL_NO_CONNECTION');
+        return next(result === '10' || fake ? null : 'SOL_NO_CONNECTION');
       });
     },
     function execSetCommandsStep(err)
@@ -243,7 +244,7 @@ module.exports = function programSolDriver(app, programmerModule, output, onProg
       programmerModule.log('SOL_EXECUTING_GET_COMMANDS');
 
       var steps = [
-        createExecGetCommandStep(programmerModule, this.serialPort, this.output, {
+        createExecGetCommandStep(fake, programmerModule, this.serialPort, this.output, {
           option: 'version',
           setCmd: null,
           getCmd: 'get version',
@@ -253,7 +254,9 @@ module.exports = function programSolDriver(app, programmerModule, output, onProg
 
       for (var i = 0, l = commands.length; i < l; ++i)
       {
-        steps.push(createExecGetCommandStep(programmerModule, this.serialPort, this.output, commands[i], progress));
+        steps.push(
+          createExecGetCommandStep(fake, programmerModule, this.serialPort, this.output, commands[i], progress)
+        );
       }
 
       steps.push(this.next());
@@ -283,11 +286,10 @@ module.exports = function programSolDriver(app, programmerModule, output, onProg
           err.code = 'SOL_SERIAL_PORT_FAILURE';
         }
 
-        serialPort.close(function()
-        {
-          serialPort.removeAllListeners();
-          serialPort = null;
-        });
+        serialPort.removeAllListeners();
+        serialPort.on('error', function() {});
+        serialPort.close(function() {});
+        serialPort = null;
       }
 
       setImmediate(function() { done(err); });
@@ -313,7 +315,7 @@ function createExecSetCommandStep(programmerModule, serialPort, output, command,
   };
 }
 
-function createExecGetCommandStep(programmerModule, serialPort, output, command, progress)
+function createExecGetCommandStep(fake, programmerModule, serialPort, output, command, progress)
 {
   return function execGetCommandStep(err)
   {
@@ -331,7 +333,7 @@ function createExecGetCommandStep(programmerModule, serialPort, output, command,
 
     execCommand(programmerModule, serialPort, output, command.getCmd, progress, function(err, result)
     {
-      if (command.result !== null && String(command.result) !== result)
+      if (!fake && command.result !== null && String(command.result) !== result)
       {
         programmerModule.log('SOL_INVALID_OPTION', {
           option: command.option,

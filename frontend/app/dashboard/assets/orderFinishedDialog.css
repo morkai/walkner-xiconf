@@ -1,0 +1,17 @@
+.dashboard-orderFinishedDialog-label {
+  margin: 0;
+  line-height: 1;
+}
+.dashboard-orderFinishedDialog-label.is-first {
+  margin-top: 0;
+}
+.dashboard-orderFinishedDialog-value {
+  margin: 7px 0 14px 0 !important;
+  font-size: 24px;
+  line-height: 1;
+}
+.dashboard-orderFinishedDialog kbd {
+  font-weight: bold;
+  padding-left: 7px;
+  padding-right: 7px;
+}

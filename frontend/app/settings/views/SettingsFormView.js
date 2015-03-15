@@ -32,6 +32,38 @@ define([
     '([a-zA-Z0-9=+\/\r\n]+)' +
     '-----END LICENSE KEY-----$'
   );
+  var ASCII = {
+    0: 'NUL',
+    1: 'SOH',
+    2: 'STX',
+    3: 'ETX',
+    4: 'EOT',
+    5: 'ENQ',
+    6: 'ACK',
+    7: 'BEL',
+    8: 'BS',
+    9: 'TAB',
+    11: 'VT',
+    12: 'FF',
+    14: 'SO',
+    15: 'SI',
+    16: 'DLE',
+    17: 'DC1',
+    18: 'DC2',
+    19: 'DC3',
+    20: 'DC4',
+    21: 'NAK',
+    22: 'SYN',
+    23: 'ETB',
+    24: 'CAN',
+    25: 'EM',
+    26: 'SUB',
+    27: 'ESC',
+    28: 'FS',
+    29: 'GS',
+    30: 'RS',
+    31: 'US'
+  };
 
   return View.extend({
 
@@ -49,6 +81,29 @@ define([
           trigger: false,
           replace: true
         });
+      },
+      'paste #-serviceTagLabelCode': function(e)
+      {
+        e.preventDefault();
+
+        var rawLabelCode = e.originalEvent.clipboardData.getData('text/plain');
+        var labelCode = '';
+
+        for (var i = 0; i < rawLabelCode.length; ++i)
+        {
+          var ascii = ASCII[rawLabelCode.charCodeAt(i)];
+
+          if (ascii === undefined)
+          {
+            labelCode += rawLabelCode.charAt(i);
+          }
+          else
+          {
+            labelCode += '<' + ascii + '>';
+          }
+        }
+
+        this.$id('serviceTagLabelCode').val(labelCode);
       },
       'click .settings-export': function()
       {

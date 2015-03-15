@@ -1,13 +1,13 @@
 <div class="dashboard-program">
-  <h3 id="<%- idPrefix %>-name" class="dashboard-program-name <%- program ? '' : 'hidden' %>">
+  <h3 id="<%- idPrefix %>-name" class="dashboard-header dashboard-program-name <%- program ? '' : 'hidden' %>">
     <span><%= program ? program.name : '' %></span>
     <button id="<%- idPrefix %>-change" class="btn btn-link" type="button" title="<%- t('dashboard', 'program:pick:title') %>">
       <i class="fa fa-exchange"></i>
-      <kbd data-hotkey="pickProgram">P</kbd>
+      <kbd data-hotkey="setProgram">?</kbd>
     </button>
   </h3>
   <div id="<%- idPrefix %>-container" class="form-control is-scrollable">
-    <button id="<%- idPrefix %>-pick" class="btn btn-link btn-lg dashboard-program-pick kbd-container <%- program ? 'hidden' : '' %>"><%- t('dashboard', 'program:pick') %><kbd data-hotkey="pickProgram">P</kbd></button>
+    <button id="<%- idPrefix %>-pick" class="btn btn-link btn-lg dashboard-program-pick kbd-container <%- program ? 'hidden' : '' %>"><%- t('dashboard', 'program:pick') %><kbd data-hotkey="setProgram">?</kbd></button>
     <div id="<%- idPrefix %>-steps" class="dashboard-program-steps <%- program ? '' : 'hidden' %>"></div>
   </div>
 </div>

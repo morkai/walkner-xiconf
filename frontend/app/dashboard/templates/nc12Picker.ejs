@@ -1,0 +1,9 @@
+<div id="<%- idPrefix %>-nc12Picker" class="dashboard-nc12Picker list-group">
+  <% nc12s.forEach(function(nc12, i) { %>
+  <a class="list-group-item dashboard-nc12Picker-item kbd-container" data-nc12="<%- nc12._id %>">
+    <h3><%= nc12._id %></h3>
+    <h4><%= nc12.name %> (<%- nc12.quantityDone.toLocaleString() %>/<%- nc12.quantityTodo.toLocaleString() %>)</h4>
+    <kbd class="is-inside"><%- i + 1 %></kbd>
+  </a>
+  <% }) %>
+</div>

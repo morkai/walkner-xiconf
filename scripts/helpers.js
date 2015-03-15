@@ -175,6 +175,22 @@ exports.copy = {
         dest: DEST_APP + '/bin/LptIo/inpoutx64.dll'
       },
       {
+        src: installerConfig.spool,
+        dest: DEST_APP + '/bin/spool.exe'
+      },
+      {
+        src: path.join(installerConfig.motoBarScan, 'MotoBarScan.exe'),
+        dest: DEST_APP + '/bin/MotoBarScan/MotoBarScan.exe'
+      },
+      {
+        src: path.join(installerConfig.motoBarScan, 'MotoBarScan.exe.config'),
+        dest: DEST_APP + '/bin/MotoBarScan/MotoBarScan.exe.config'
+      },
+      {
+        src: path.join(installerConfig.motoBarScan, 'Interop.CoreScanner.dll'),
+        dest: DEST_APP + '/bin/MotoBarScan/Interop.CoreScanner.dll'
+      },
+      {
         src: installerConfig.libeay32,
         dest: DEST_APP + '/node_modules/ursa/bin/libeay32.dll'
       },

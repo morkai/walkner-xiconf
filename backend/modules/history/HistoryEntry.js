@@ -15,8 +15,14 @@ function HistoryEntry(db, broker)
 {
   this.db = db;
   this.broker = broker;
-  this.mode = 'programming';
-  this.programming = false;
+
+  this.inputMode = 'local';
+  this.workMode = 'programming';
+  this.inProgress = false;
+  this.overallProgress = 0;
+  this.remoteData = null;
+  this.remoteConnected = false;
+  this.selectedNc12 = null;
 
   this.clear();
 }
@@ -27,6 +33,7 @@ HistoryEntry.prototype.toJSON = function()
     _id: this._id,
     order: this.order ? this.order.toJSON() : null,
     nc12: this.nc12,
+    serviceTag: this.serviceTag,
     counter: this.counter,
     startedAt: this.startedAt,
     finishedAt: this.finishedAt,
@@ -45,14 +52,19 @@ HistoryEntry.prototype.toJSON = function()
     countdown: this.countdown,
     program: this.program,
     steps: this.steps,
-    mode: this.mode,
-    programming: this.programming
+    inputMode: this.inputMode,
+    workMode: this.workMode,
+    inProgress: this.inProgress,
+    overallProgress: this.overallProgress,
+    remoteData: this.remoteData,
+    remoteConnected: this.remoteConnected,
+    selectedNc12: this.selectedNc12
   };
 };
 
-HistoryEntry.prototype.isProgramming = function()
+HistoryEntry.prototype.isInProgress = function()
 {
-  return this.programming;
+  return this.inProgress;
 };
 
 HistoryEntry.prototype.isFinished = function()
@@ -60,7 +72,7 @@ HistoryEntry.prototype.isFinished = function()
   return this.finishedAt !== null;
 };
 
-HistoryEntry.prototype.clear = function(clearOrder)
+HistoryEntry.prototype.clear = function(clearOrder, clearProgram)
 {
   this._id = null;
 
@@ -70,7 +82,13 @@ HistoryEntry.prototype.clear = function(clearOrder)
     this.counter = null;
   }
 
+  if (clearProgram !== false)
+  {
+    this.program = null;
+  }
+
   this.nc12 = null;
+  this.serviceTag = null;
   this.startedAt = null;
   this.finishedAt = null;
   this.duration = null;
@@ -86,15 +104,17 @@ HistoryEntry.prototype.clear = function(clearOrder)
   this.workflowFile = null;
   this.workflow = null;
   this.countdown = -1;
-  this.program = null;
   this.steps = null;
   this.metrics = null;
+  this.inProgress = false;
+  this.overallProgress = 0;
 };
 
 HistoryEntry.prototype.reset = function(orderNo, quantity, nc12)
 {
   this.startedAt = Date.now();
   this.nc12 = nc12;
+  this.serviceTag = null;
   this.log = [];
 
   if (orderNo === null)
@@ -131,7 +151,7 @@ HistoryEntry.prototype.reset = function(orderNo, quantity, nc12)
     nc12: this.nc12
   });
 
-  this._id = (this.startedAt + Math.random()).toString(36).toUpperCase();
+  this._id = (this.startedAt + Math.round(Math.random() * 9999999)).toString(36).toUpperCase();
   this.finishedAt = null;
   this.duration = null;
   this.result = null;
@@ -165,7 +185,8 @@ HistoryEntry.prototype.reset = function(orderNo, quantity, nc12)
     };
   }
 
-  this.programming = true;
+  this.inProgress = true;
+  this.overallProgress = 1;
 };
 
 HistoryEntry.prototype.hashFeatureFile = function()
@@ -227,12 +248,12 @@ HistoryEntry.prototype.save = function(featureDbPath, done)
         _id, _order, nc12, counter, startedAt, finishedAt, duration,\
         log, result, errorCode, exception, output, featureFile,\
         featureFileName, featureFileHash, workflowFile, workflow,\
-        program, steps, metrics\
+        program, steps, metrics, serviceTag\
       ) VALUES (\
         $_id, $_order, $nc12, $counter, $startedAt, $finishedAt, $duration,\
         $log, $result, $errorCode, $exception, $output, $featureFile,\
         $featureFileName, $featureFileHash, $workflowFile, $workflow,\
-        $program, $steps, $metrics\
+        $program, $steps, $metrics, $serviceTag\
       )";
     var params = {
       $_id: historyEntry._id,
@@ -254,7 +275,8 @@ HistoryEntry.prototype.save = function(featureDbPath, done)
       $workflow: historyEntry.workflow,
       $program: historyEntry.program ? JSON.stringify(historyEntry.program) : null,
       $steps: historyEntry.steps ? JSON.stringify(historyEntry.steps) : null,
-      $metrics: historyEntry.metrics ? JSON.stringify(historyEntry.metrics) : null
+      $metrics: historyEntry.metrics ? JSON.stringify(historyEntry.metrics) : null,
+      $serviceTag: historyEntry.serviceTag
     };
 
     historyEntry.db.run(sql, params, done);

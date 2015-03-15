@@ -8,7 +8,7 @@ module.exports = Order;
 
 function Order(startedAt, no, quantity)
 {
-  this._id = (startedAt + Math.random()).toString(36).toUpperCase();
+  this._id = (startedAt + Math.round(Math.random() * 9999999)).toString(36).toUpperCase();
   this.no = no;
   this.quantity = quantity;
   this.successCounter = 0;

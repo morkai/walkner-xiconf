@@ -32,18 +32,6 @@ define([
       }
     },
 
-    initialize: function()
-    {
-      this.idPrefix = _.uniqueId('historyFilter');
-    },
-
-    serialize: function()
-    {
-      return {
-        idPrefix: this.idPrefix
-      };
-    },
-
     afterRender: function()
     {
       var formData = this.serializeRqlQuery();
@@ -69,6 +57,7 @@ define([
       var formData = {
         from: '',
         to: '',
+        serviceTag: '',
         no: '',
         nc12: '',
         result: ['success', 'failure'],
@@ -88,6 +77,7 @@ define([
               time.format(term.args[1], datetimeFormat);
             break;
 
+          case 'serviceTag':
           case 'no':
           case 'nc12':
             formData[property] = term.args[1];
@@ -111,9 +101,15 @@ define([
       var selector = [];
       var fromMoment = time.getMoment(this.$id('from').val());
       var toMoment = time.getMoment(this.$id('to').val());
+      var serviceTag = this.$id('serviceTag').val().trim().toUpperCase();
       var no = this.$id('no').val().trim();
       var nc12 = this.$id('nc12').val().trim();
       var $result = this.$('input[name="result[]"]:checked');
+
+      if (/^P[0-9]+$/.test(serviceTag))
+      {
+        selector.push({name: 'eq', args: ['serviceTag', serviceTag]});
+      }
 
       if (/^[0-9]{9}$/.test(no))
       {

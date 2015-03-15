@@ -1,0 +1,11 @@
+<form>
+  <div class="form-group">
+    <label for="<%- idPrefix %>-orderNo"><%- t('dashboard', 'printServiceTagDialog:orderNo') %></label>
+    <input id="<%- idPrefix %>-orderNo" class="form-control" type="text" required pattern="^[0-9]{1,9}$" maxlength="9" value="<%- orderNo %>">
+  </div>
+  <div class="form-group">
+    <label for="<%- idPrefix %>-counter"><%- t('dashboard', 'printServiceTagDialog:counter') %></label>
+    <input id="<%- idPrefix %>-counter" class="form-control" type="text" required value="<%- counter %>">
+  </div>
+  <button id="<%- idPrefix %>-submit" class="btn btn-lg btn-block btn-primary" type="submit"><%- t('dashboard', 'printServiceTagDialog:submit') %></button>
+</form>

@@ -18,16 +18,22 @@
   <div class="row">
     <div class="col-md-4">
       <p class="dashboard-orderFinishedDialog-label"><%- t('dashboard', 'orderFinishedDialog:startedAt') %></p>
-      <p class="dashboard-orderFinishedDialog-value"><%- time.format(order.startedAt, 'HH:mm:ss') %></p>
+      <p class="dashboard-orderFinishedDialog-value"><%- order.startedAt %></p>
     </div>
     <div class="col-md-4">
       <p class="dashboard-orderFinishedDialog-label"><%- t('dashboard', 'orderFinishedDialog:finishedAt') %></p>
-      <p class="dashboard-orderFinishedDialog-value"><%- time.format(order.finishedAt, 'HH:mm:ss') %></p>
+      <p class="dashboard-orderFinishedDialog-value"><%- order.finishedAt %></p>
     </div>
     <div class="col-md-4">
       <p class="dashboard-orderFinishedDialog-label"><%- t('dashboard', 'orderFinishedDialog:duration') %></p>
-      <p class="dashboard-orderFinishedDialog-value"><%- time.toString(order.duration / 1000) %></p>
+      <p class="dashboard-orderFinishedDialog-value"><%- order.duration %></p>
     </div>
   </div>
-  <button class="btn btn-lg btn-block btn-primary dialog-answer" type="button" autofocus data-answer="yes"><%- t('dashboard', 'orderFinishedDialog:yes') %> <kbd><%- resetOrderHotkey %></kbd></button>
+  <button class="btn btn-lg btn-block btn-primary dialog-answer" type="button" autofocus data-answer="yes">
+    <% if (remote) { %>
+    <%- t('dashboard', 'orderFinishedDialog:close') %> <kbd>Esc</kbd>
+    <% } else { %>
+    <%- t('dashboard', 'orderFinishedDialog:yes') %> <kbd><%- resetOrderHotkey %></kbd>
+    <% } %>
+  </button>
 </div>

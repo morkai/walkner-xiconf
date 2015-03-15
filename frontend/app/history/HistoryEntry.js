@@ -3,10 +3,12 @@
 // Part of the walkner-xiconf project <http://lukasz.walukiewicz.eu/p/walkner-xiconf>
 
 define([
+  'underscore',
   '../socket',
   '../core/Model',
   './util/decorateLogEntry'
 ], function(
+  _,
   socket,
   Model,
   decorateLogEntry
@@ -85,14 +87,29 @@ define([
       return featureFileName === '' ? null : featureFileName;
     },
 
-    isProgramming: function()
+    isInProgress: function()
     {
-      return this.get('programming');
+      return this.get('inProgress');
     },
 
-    isTesting: function()
+    isProgrammingMode: function()
     {
-      return this.get('mode') === 'testing';
+      return this.get('workMode') === 'programming';
+    },
+
+    isTestingMode: function()
+    {
+      return this.get('workMode') === 'testing';
+    },
+
+    isLocalInput: function()
+    {
+      return this.get('inputMode') === 'local';
+    },
+
+    isRemoteInput: function()
+    {
+      return this.get('inputMode') === 'remote';
     },
 
     hasOrder: function()
@@ -102,6 +119,16 @@ define([
 
     isOrderFinished: function()
     {
+      if (this.isRemoteInput())
+      {
+        var remoteData = this.get('remoteData');
+
+        return remoteData && remoteData.nc12 && remoteData.nc12.length && _.all(remoteData.nc12, function(nc12)
+        {
+          return nc12.quantityDone >= nc12.quantityTodo;
+        });
+      }
+
       var order = this.get('order');
 
       return order && order.successCounter >= order.quantity;

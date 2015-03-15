@@ -34,7 +34,7 @@ define([
     template: template,
 
     localTopics: {
-      'hotkeys.pickProgram': function()
+      'hotkeys.setProgram': function()
       {
         this.$id('pick').click();
       },
@@ -69,7 +69,7 @@ define([
 
       this.setView('.dashboard-program-steps', this.programStepsView);
 
-      this.listenTo(this.model, 'change:programming change:mode', this.toggleControls);
+      this.listenTo(this.model, 'change:inProgress change:workMode', this.toggleControls);
       this.listenTo(this.model, 'change:program', this.onProgramChange);
       this.listenTo(this.programStepsView, 'afterRender', this.toggleLastStepsBorder);
     },
@@ -95,7 +95,7 @@ define([
 
     toggleControls: function()
     {
-      var disabled = !this.model.isTesting() || this.model.isProgramming() || !user.isLocal();
+      var disabled = !this.model.isTestingMode() || this.model.isInProgress() || !user.isLocal();
 
       this.$id('pick').attr('disabled', disabled);
       this.$id('change').attr('disabled', disabled);

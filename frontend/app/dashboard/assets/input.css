@@ -1,0 +1,140 @@
+.dashboard-input .form-control {
+  padding: 0 5px;
+  height: 70px;
+  line-height: 1;
+  font-family: Consolas, monospace;
+  font-size: 58px;
+  text-align: center;
+}
+.dashboard-input-orderNoAndQuantity {
+  display: flex;
+}
+.dashboard-input-orderNo {
+  width: 316px;
+}
+.dashboard-input-quantity {
+  margin-left: 14px;
+  width: 150px;
+}
+.dashboard-input-quantity .is-overflow {
+  outline: 4px solid #c7254e;
+  color: #c7254e;
+}
+.dashboard-input-nc12 {
+  margin-top: 14px;
+  margin-bottom: 14px;
+}
+.is-idle .dashboard-input-nc12.is-multi > .form-control {
+  cursor: pointer;
+  outline: 4px solid #f0ad4e;
+  color: #f0ad4e;
+  background-color: #fefefe;
+}
+.dashboard.is-idle[data-input-mode="remote"] .dashboard-input-nc12.is-multi > kbd {
+  display: inline!important;
+}
+.dashboard-input-actions {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+.dashboard-input-actions > kbd {
+  position: static;
+  display: inline-block;
+}
+.dashboard-input-actions > .btn-link {
+  margin-left: 10px;
+  padding: 0;
+  line-height: 1;
+  font-size: 24px;
+}
+.dashboard-input kbd.is-inside {
+  bottom: 1px;
+  right: 1px;
+}
+.dashboard-input-buttons kbd.is-inside {
+  bottom: 0;
+  right: 0;
+}
+.dashboard-input-buttons {
+  display: flex;
+}
+.dashboard-input-buttons > .btn {
+  padding: 0;
+  width: 480px;
+  height: 70px;
+  line-height: 68px;
+  font-size: 48px;
+  text-transform: uppercase;
+}
+.dashboard-input-cancel,
+.dashboard-input-toggleWorkMode {
+  display: none;
+}
+.is-inProgress .dashboard-input-cancel,
+.is-workModeChangeEnabled .dashboard-input-toggleWorkMode {
+  display: inline-block;
+}
+.is-inProgress .dashboard-input-start,
+.is-inProgress .dashboard-input-toggleWorkMode {
+  display: none;
+}
+.dashboard-input-buttons > .dashboard-input-toggleWorkMode {
+  width: 114px;
+}
+.dashboard-input-toggleWorkMode > .fa {
+  vertical-align: top;
+  font-size: 64px;
+  line-height: 68px;
+}
+.dashboard-input-toggleWorkMode > .fa-list-ol {
+  font-size: 48px;
+}
+.dashboard[data-work-mode="programming"] .dashboard-input-toggleWorkMode > .fa-list-ol,
+.dashboard[data-work-mode="testing"] .dashboard-input-toggleWorkMode > .fa-smile-o {
+  display: inline-block;
+}
+.dashboard[data-work-mode="testing"] .dashboard-input-toggleWorkMode > .fa-list-ol,
+.dashboard[data-work-mode="programming"] .dashboard-input-toggleWorkMode > .fa-smile-o {
+  display: none;
+}
+.dashboard[data-input-mode="remote"] .dashboard-input-orderNo .dashboard-input-actions,
+.dashboard[data-input-mode="remote"] .dashboard-input-orderNo > kbd,
+.dashboard[data-input-mode="remote"] .dashboard-input-quantity > kbd,
+.dashboard[data-input-mode="remote"] .dashboard-input-nc12 > kbd {
+  display: none!important;
+}
+.dashboard-nc12Picker {
+  position: absolute;
+  top: 98px;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+}
+.dashboard-nc12Picker > .list-group-item:hover {
+  background: #ffffd6;
+  cursor: pointer;
+}
+.dashboard-nc12Picker h3 {
+  margin: -7px 0 0 0;
+  font-family: Consolas, monospace;
+  font-size: 58px;
+  line-height: 1;
+}
+.dashboard-nc12Picker h4 {
+  margin: 0;
+  line-height: 1;
+}
+.dashboard-nc12Picker kbd {
+  bottom: 0;
+  right: 0;
+}
+.is-selecting .dashboard-nc12Picker,
+.is-idle .dashboard-input-nc12.is-selecting > .form-control {
+  cursor: wait;
+}
+.is-selecting .dashboard-nc12Picker > .list-group-item:hover {
+  cursor: inherit;
+  background: #fff;
+}

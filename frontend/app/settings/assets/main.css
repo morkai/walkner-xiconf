@@ -5,7 +5,7 @@
   padding-bottom: 0;
 }
 .settings-form textarea[name="licenseKey"] {
-  font-family: "Source Code Pro", monospace;
+  font-family: Consolas, Menlo, Monaco, monospace;
   height: 182px;
 }
 .settings-form input[readonly] {
@@ -15,4 +15,7 @@
   width: 100px;
   display: inline-block;
   vertical-align: top;
+}
+.settings-form textarea[name="serviceTagLabelCode"] {
+  font-family: Consolas, Menlo, Monaco, monospace;
 }

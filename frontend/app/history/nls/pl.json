@@ -34,6 +34,7 @@
   "PROPERTY:workflowFile": "Plik konfiguracyjny programatora",
   "PROPERTY:workflow": "Zawartość pliku konfiguracyjnego programatora",
   "PROPERTY:programName": "Nazwa programu",
+  "PROPERTY:serviceTag": "Service Tag",
 
   "FILTER:from": "Od",
   "FILTER:to": "Do",
@@ -99,6 +100,10 @@
   "log:TESTING_PLC_SETUP": "Przygotowywanie sterownika...",
   "log:TESTING_PLC_TEARDOWN": "Wyłączanie sterownika...",
   "log:TESTING_EXECUTING_STEP": "{type, select, pe{Wykonywanie testu obwodu ochronnego} sol{Programowanie Fortimo Solar} fn{Wykonywanie testu funkcjonalnego} other{Wykonywanie kroku programu <em>{type}</em>}}...",
+  "log:ACQUIRING_SERVICE_TAG": "Pobieranie nowego Service Taga...",
+  "log:SERVICE_TAG_ACQUIRED": "Otrzymano Service Tag: <code>{serviceTag}</code>",
+  "log:PRINTING_SERVICE_TAG": "Drukowanie etykiety Service Tag na drukarce <code>{printerName}</code>...",
+  "log:PRINTING_SERVICE_TAG_FAILURE": "Nie udało się wydrukować etykiety Service Tag: <code>{error}</code>",
 
   "error:WORKFLOW_FILE_ERROR": "Błąd podczas odczytywania pliku konfiguracyjnego programatora.",
   "error:WORKFLOW_FILE_WRITE_ERROR": "Błąd podczas zapisywania pliku konfiguracyjnego programatora.",
@@ -164,5 +169,6 @@
   "error:TESTING_SDP_INVALID_RESPONSE": "TEST: Otrzymano nieprawidłową odpowiedź od testera.",
   "error:TESTING_MAX_RESISTANCE": "TEST: Przekroczono maksymalną wartość rezystancji.",
   "error:TESTING_MIN_POWER": "TEST: Przekroczono minimalną wartość mocy.",
-  "error:TESTING_MAX_POWER": "TEST: Przekroczono maksymalną wartość mocy."
+  "error:TESTING_MAX_POWER": "TEST: Przekroczono maksymalną wartość mocy.",
+  "error:REMOTE_SERVICE_TAG_FAILURE": "Błąd podczas pobierania nowego Service Taga."
 }

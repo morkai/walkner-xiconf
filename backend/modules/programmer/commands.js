@@ -4,59 +4,101 @@
 
 'use strict';
 
-var lodash = require('lodash');
+var _ = require('lodash');
+var step = require('h5.step');
 
 module.exports = function setUpProgrammerCommands(app, programmerModule)
 {
   var settings = app[programmerModule.config.settingsId];
+  var sio = app[programmerModule.config.sioId];
 
-  app[programmerModule.config.sioId].on('connection', function(socket)
+  [
+    'programmer.stateChanged',
+    'programmer.logged',
+    'programmer.stepProgressed'
+  ].forEach(function(topic)
   {
+    app.broker.subscribe(topic, function(message)
+    {
+      sio.sockets.volatile.emit(topic, message);
+    });
+  });
+
+  sio.on('connection', function(socket)
+  {
+    socket.volatile.emit('programmer.stateChanged', programmerModule.currentState.toJSON());
+
     socket.on('programmer.getCurrentState', getCurrentState);
 
     if (socket.handshake.address.address === '127.0.0.1')
     {
-      socket.on('programmer.switchMode', switchMode);
-      socket.on('programmer.pickProgram', pickProgram);
-      socket.on('programmer.program', program);
+      socket.on('programmer.setInputMode', setInputMode);
+      socket.on('programmer.setWorkMode', setWorkMode);
+      socket.on('programmer.setProgram', setProgram);
+      socket.on('programmer.selectNc12', selectNc12);
+      socket.on('programmer.start', start);
       socket.on('programmer.cancel', cancel);
-      socket.on('programmer.resetOrder', resetOrder);
-      socket.on('programmer.repeatOrder', repeatOrder);
+      socket.on('programmer.reload', reload);
+      socket.on('programmer.reset', reset);
+      socket.on('programmer.printServiceTags', printServiceTags);
     }
   });
 
   function getCurrentState(reply)
   {
-    if (lodash.isFunction(reply))
+    if (_.isFunction(reply))
     {
       reply(programmerModule.currentState.toJSON());
     }
   }
 
-  function switchMode(mode, reply)
+  function setInputMode(inputMode, password, reply)
   {
-    if (lodash.isFunction(reply))
-    {
-      programmerModule.switchMode(mode, reply);
-    }
-  }
-
-  function pickProgram(programId, reply)
-  {
-    if (lodash.isFunction(reply))
-    {
-      programmerModule.pickProgram(programId, reply);
-    }
-  }
-
-  function program(data, reply)
-  {
-    if (!lodash.isFunction(reply))
+    if (!_.isFunction(reply))
     {
       return;
     }
 
-    if (!lodash.isObject(data) || !/^[0-9]{12}$/.test(data.nc12))
+    if (settings.get('protectInputMode') && password !== settings.get('password'))
+    {
+      return reply(new Error('INVALID_PASSWORD'));
+    }
+
+    programmerModule.setInputMode(inputMode, reply);
+  }
+
+  function setWorkMode(workMode, reply)
+  {
+    if (_.isFunction(reply))
+    {
+      programmerModule.setWorkMode(workMode, reply);
+    }
+  }
+
+  function setProgram(programId, reply)
+  {
+    if (_.isFunction(reply))
+    {
+      programmerModule.setProgram(programId, reply);
+    }
+  }
+
+  function selectNc12(nc12, reply)
+  {
+    if (_.isFunction(reply))
+    {
+      programmerModule.selectNc12(nc12, reply);
+    }
+  }
+
+  function start(data, reply)
+  {
+    if (!_.isFunction(reply))
+    {
+      return;
+    }
+
+    if (!_.isObject(data) || !/^[0-9]{12}$/.test(data.nc12))
     {
       return reply(new Error('INPUT'));
     }
@@ -89,12 +131,12 @@ module.exports = function setUpProgrammerCommands(app, programmerModule)
       return reply(new Error('INPUT'));
     }
 
-    programmerModule.program(data, reply);
+    programmerModule.start(data, reply);
   }
 
   function cancel(reply)
   {
-    if (!lodash.isFunction(reply))
+    if (!_.isFunction(reply))
     {
       return;
     }
@@ -111,26 +153,126 @@ module.exports = function setUpProgrammerCommands(app, programmerModule)
     }
   }
 
-  function resetOrder(reply)
+  function reset(reply)
   {
-    if (lodash.isFunction(reply))
+    if (_.isFunction(reply))
     {
-      programmerModule.resetOrder(reply);
+      programmerModule.reset(reply);
     }
   }
 
-  function repeatOrder(reply)
+  function reload(reply)
   {
-    if (lodash.isFunction(reply))
+    if (_.isFunction(reply))
     {
-      programmerModule.repeatOrder(reply);
+      programmerModule.reload(reply);
     }
+  }
+
+  function printServiceTags(orderNo, items, reply)
+  {
+    if (!_.isFunction(reply))
+    {
+      return;
+    }
+
+    if (!_.isString(orderNo) || !/^[0-9]+$/.test(orderNo) || !_.isString(items) || _.isEmpty(items))
+    {
+      return reply(new Error('INPUT'));
+    }
+
+    var serviceTags = [];
+    var serviceTagPrefix = orderNo;
+
+    while (serviceTagPrefix.length < 13)
+    {
+      serviceTagPrefix = '0' + serviceTagPrefix;
+    }
+
+    serviceTagPrefix = 'P' + serviceTagPrefix;
+
+    var re = /([0-9]+)(?:\s*\-\s*([0-9]+))?/g;
+    var matches;
+    var itemMap = {};
+
+    while ((matches = re.exec(items)) !== null)
+    {
+      var n1 = parseInt(matches[1], 10);
+      var n2 = parseInt(matches[2], 10);
+
+      if (isNaN(n2) || n2 === n1)
+      {
+        if (n1 === 0 || n1 > 9999)
+        {
+          return reply(new Error('INPUT'));
+        }
+
+        itemMap[n1] = true;
+
+        continue;
+      }
+
+      if (n1 > n2)
+      {
+        var ntmp = n1;
+        n1 = n2;
+        n2 = ntmp;
+      }
+
+      if (n2 - n1 > 100)
+      {
+        return reply(new Error('INPUT'));
+      }
+
+      for (var n = n1; n <= n2; ++n)
+      {
+        if (n > 9999)
+        {
+          return reply(new Error('INPUT'));
+        }
+
+        itemMap[n] = true;
+      }
+    }
+
+    var itemNos = Object.keys(itemMap).map(Number);
+
+    if (itemNos.length > 100)
+    {
+      return reply(new Error('INPUT'));
+    }
+
+    itemNos.sort(function(a, b) { return a - b; }).forEach(function(itemNo)
+    {
+      var serviceTagSuffix = itemNo.toString();
+
+      while (serviceTagSuffix.length < 4)
+      {
+        serviceTagSuffix = '0' + serviceTagSuffix;
+      }
+
+      serviceTags.push(serviceTagPrefix + serviceTagSuffix);
+    });
+
+    step(
+      function()
+      {
+        for (var i = 0; i < serviceTags.length; ++i)
+        {
+          programmerModule.printServiceTag(serviceTags[i], this.group());
+        }
+      },
+      function(err)
+      {
+        reply(err, serviceTags.length);
+      }
+    );
   }
 
   function validateOrder(data)
   {
     return /^[0-9]{9}$/.test(data.orderNo)
-      && lodash.isNumber(data.quantity)
+      && _.isNumber(data.quantity)
       && data.quantity > 0
       && data.quantity < 1000;
   }

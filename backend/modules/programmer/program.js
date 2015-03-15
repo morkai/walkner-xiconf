@@ -4,33 +4,60 @@
 
 'use strict';
 
-var spawn = require('child_process').spawn;
 var fs = require('fs');
+var _ = require('lodash');
 var step = require('h5.step');
 var findFeatureFile = require('./findFeatureFile');
 var readFeatureFile = require('./readFeatureFile');
 var programAndTest = require('./programAndTest');
 var programSolDriver = require('./programSolDriver');
+var programMowDriver = require('./programMowDriver');
 var LptIo = require('./LptIo');
 
 module.exports = function program(app, programmerModule, data, done)
 {
+  var settings = app[programmerModule.config.settingsId];
   var currentState = programmerModule.currentState;
 
-  if (currentState.isProgramming())
+  if (currentState.isInProgress())
   {
     return done(new Error('IN_PROGRESS'));
+  }
+  else if (currentState.inputMode === 'remote' && !programmerModule.remoteCoordinator.isConnected())
+  {
+    return done(new Error('NO_REMOTE_CONNECTION'));
   }
   else
   {
     done();
   }
 
-  var settings = app[programmerModule.config.settingsId];
-
   programmerModule.cancelled = false;
 
-  programmerModule.updateCurrentProgram();
+  var thisProgrammingCancelled = false;
+  var thisProgrammingCancelledSub = app.broker.subscribe('programmer.cancelled')
+    .setLimit(1)
+    .on('message', function() { thisProgrammingCancelled = true; });
+
+  app.broker.subscribe('programmer.finished', function() { thisProgrammingCancelledSub.cancel(); });
+
+  var shouldAcquireServiceTag = currentState.inputMode === 'remote';
+  var shouldPrintServiceTag = shouldAcquireServiceTag
+    && settings.get('serviceTagPrint')
+    && !_.isEmpty(settings.get('serviceTagPrinter'))
+    && !_.isEmpty(settings.get('serviceTagLabelCode'));
+
+  if (programmerModule.newProgram)
+  {
+    if (currentState.program && currentState.program._id === programmerModule.newProgram._id)
+    {
+      currentState.program = programmerModule.newProgram;
+    }
+
+    programmerModule.newProgram = null;
+  }
+
+  programmerModule.OVERALL_PROGRAMMING_PROGRESS = shouldPrintServiceTag ? 90 : 100;
 
   currentState.reset(data.orderNo, data.quantity, data.nc12);
 
@@ -51,6 +78,8 @@ module.exports = function program(app, programmerModule, data, done)
     handleWriteWorkflowFileResultStep,
     tryToProgramLptStep,
     tryToProgramStep,
+    tryToAcquireServiceTagStep,
+    tryToPrintServiceTag,
     finalizeStep
   );
 
@@ -62,23 +91,34 @@ module.exports = function program(app, programmerModule, data, done)
 
     if (!delay)
     {
-      return;
+      return programmerModule.updateOverallProgress(6);
     }
 
     programmerModule.log('COUNTDOWN_STARTED', {delay: delay});
     programmerModule.changeState({countdown: delay});
 
+    var percent100 = delay;
     var next = this.next();
     var timer = setInterval(function()
     {
       --delay;
 
+      var percent;
+
       if (delay < 0)
       {
         delay = -1;
+        percent = 1;
+      }
+      else
+      {
+        percent = (percent100 - delay) / percent100;
       }
 
-      programmerModule.changeState({countdown: delay});
+      programmerModule.changeState({
+        overallProgress: 1 + 5 * percent,
+        countdown: delay
+      });
 
       if (delay === -1)
       {
@@ -99,15 +139,15 @@ module.exports = function program(app, programmerModule, data, done)
   {
     /*jshint validthis:true*/
 
+    if (thisProgrammingCancelled)
+    {
+      return this.skip();
+    }
+
     if (this.sub)
     {
       this.sub.cancel();
       this.sub = null;
-    }
-
-    if (programmerModule.cancelled)
-    {
-      return this.skip('CANCELLED');
     }
 
     var featurePath1 = settings.get('featurePath1');
@@ -116,6 +156,8 @@ module.exports = function program(app, programmerModule, data, done)
     {
       return this.skip('UNSET_FEATURE_PATH_1');
     }
+
+    programmerModule.updateOverallProgress(7);
 
     programmerModule.log('SEARCHING_FEATURE_FILE', {
       featurePath: featurePath1
@@ -136,32 +178,39 @@ module.exports = function program(app, programmerModule, data, done)
   {
     /*jshint validthis:true*/
 
-    this.sub.cancel();
-    this.sub = null;
-
-    if (programmerModule.cancelled)
+    if (thisProgrammingCancelled)
     {
-      return this.skip('CANCELLED');
+      return this.skip();
+    }
+
+    if (this.sub)
+    {
+      this.sub.cancel();
+      this.sub = null;
     }
 
     this.foundFeature1 = false;
 
     if (err)
     {
+      programmerModule.updateOverallProgress(8);
       programmerModule.log('SEARCHING_FEATURE_FILE_FAILURE', {
         error: err.message
       });
     }
     else if (filePath === false)
     {
+      programmerModule.updateOverallProgress(8);
       programmerModule.log('SEARCHING_FEATURE_FILE_TIMEOUT');
     }
     else if (filePath === null)
     {
+      programmerModule.updateOverallProgress(8);
       programmerModule.log('MISSING_FEATURE_FILE_1');
     }
     else if (files.length > 1)
     {
+      programmerModule.updateOverallProgress(8);
       programmerModule.log('DUPLICATE_FEATURE_FILE_1', {fileCount: files.length, files: files});
     }
     else
@@ -169,6 +218,7 @@ module.exports = function program(app, programmerModule, data, done)
       this.foundFeature1 = true;
 
       programmerModule.changeState({
+        overallProgress: 8,
         featureFile: filePath,
         featureFileName: files[0]
       });
@@ -181,19 +231,21 @@ module.exports = function program(app, programmerModule, data, done)
     setImmediate(this.next());
   }
 
-  function readFeatureFile1Step()
+  function readFeatureFile1Step(err)
   {
     /*jshint validthis:true*/
 
-    if (programmerModule.cancelled)
+    if (thisProgrammingCancelled || err)
     {
-      return this.skip('CANCELLED');
+      return this.skip(err);
     }
 
     if (!this.foundFeature1)
     {
       return;
     }
+
+    programmerModule.updateOverallProgress(9);
 
     programmerModule.log('READING_FEATURE_FILE', {
       featureFile: currentState.featureFile
@@ -221,24 +273,27 @@ module.exports = function program(app, programmerModule, data, done)
     this.sub.cancel();
     this.sub = null;
 
-    if (programmerModule.cancelled)
+    if (thisProgrammingCancelled)
     {
-      return this.skip('CANCELLED');
+      return this.skip();
     }
 
     if (err)
     {
+      programmerModule.updateOverallProgress(10);
       programmerModule.log('READING_FEATURE_FILE_FAILURE', {
         error: err.message
       });
     }
     else if (feature === false)
     {
+      programmerModule.updateOverallProgress(10);
       programmerModule.log('READING_FEATURE_FILE_TIMEOUT');
     }
     else
     {
       programmerModule.changeState({
+        overallProgress: 10,
         feature: feature
       });
 
@@ -254,15 +309,13 @@ module.exports = function program(app, programmerModule, data, done)
   {
     /*jshint validthis:true*/
 
-    if (programmerModule.cancelled)
+    if (thisProgrammingCancelled)
     {
-      return this.skip('CANCELLED');
+      return this.skip();
     }
 
     if (this.foundFeature1)
     {
-      programmerModule.log('SKIPPING_FEATURE_FILE_2');
-
       return setImmediate(this.next());
     }
 
@@ -272,6 +325,8 @@ module.exports = function program(app, programmerModule, data, done)
     {
       return this.skip('MISSING_FEATURE_FILE');
     }
+
+    programmerModule.updateOverallProgress(11);
 
     programmerModule.log('SEARCHING_FEATURE_FILE', {
       featurePath: featurePath2
@@ -292,6 +347,11 @@ module.exports = function program(app, programmerModule, data, done)
   {
     /*jshint validthis:true*/
 
+    if (thisProgrammingCancelled)
+    {
+      return this.skip();
+    }
+
     if (this.foundFeature1)
     {
       return;
@@ -300,27 +360,26 @@ module.exports = function program(app, programmerModule, data, done)
     this.sub.cancel();
     this.sub = null;
 
-    if (programmerModule.cancelled)
-    {
-      return this.skip('CANCELLED');
-    }
-
     if (err)
     {
+      programmerModule.changeState(12);
       programmerModule.log('SEARCHING_FEATURE_FILE_FAILURE', {
         error: err.message
       });
     }
     else if (filePath === false)
     {
+      programmerModule.changeState(12);
       programmerModule.log('SEARCHING_FEATURE_FILE_TIMEOUT');
     }
     else if (filePath === null)
     {
+      programmerModule.changeState(12);
       programmerModule.log('MISSING_FEATURE_FILE_2');
     }
     else if (files.length > 1)
     {
+      programmerModule.updateOverallProgress(12);
       programmerModule.log('DUPLICATE_FEATURE_FILE_2', {fileCount: files.length, files: files});
 
       return this.skip('DUPLICATE_FEATURE_FILE');
@@ -328,6 +387,7 @@ module.exports = function program(app, programmerModule, data, done)
     else
     {
       programmerModule.changeState({
+        overallProgress: 12,
         featureFile: filePath,
         featureFileName: files[0]
       });
@@ -349,15 +409,17 @@ module.exports = function program(app, programmerModule, data, done)
   {
     /*jshint validthis:true*/
 
+    if (thisProgrammingCancelled)
+    {
+      return this.skip();
+    }
+
     if (this.foundFeature1)
     {
       return;
     }
 
-    if (programmerModule.cancelled)
-    {
-      return this.skip('CANCELLED');
-    }
+    programmerModule.updateOverallProgress(13);
 
     programmerModule.log('READING_FEATURE_FILE', {
       featureFile: currentState.featureFile
@@ -377,6 +439,11 @@ module.exports = function program(app, programmerModule, data, done)
   {
     /*jshint validthis:true*/
 
+    if (thisProgrammingCancelled)
+    {
+      return this.skip('CANCELLED');
+    }
+
     if (this.foundFeature1)
     {
       return;
@@ -384,11 +451,6 @@ module.exports = function program(app, programmerModule, data, done)
 
     this.sub.cancel();
     this.sub = null;
-
-    if (programmerModule.cancelled)
-    {
-      return this.skip('CANCELLED');
-    }
 
     if (err)
     {
@@ -403,6 +465,7 @@ module.exports = function program(app, programmerModule, data, done)
     }
 
     programmerModule.changeState({
+      overallProgress: 14,
       feature: feature
     });
 
@@ -417,9 +480,9 @@ module.exports = function program(app, programmerModule, data, done)
   {
     /*jshint validthis:true*/
 
-    if (programmerModule.cancelled)
+    if (thisProgrammingCancelled)
     {
-      return this.skip('CANCELLED');
+      return this.skip();
     }
 
     var solFilePattern = settings.get('solFilePattern') || '';
@@ -427,7 +490,9 @@ module.exports = function program(app, programmerModule, data, done)
 
     this.isSolProgram = solFilePattern.length && featureFile.indexOf(solFilePattern) !== -1;
 
-    if (!this.isSolProgram && currentState.mode === 'testing')
+    programmerModule.updateOverallProgress(15);
+
+    if (!this.isSolProgram && currentState.workMode === 'testing')
     {
       return this.skip('TESTING_NOT_SOL');
     }
@@ -437,9 +502,9 @@ module.exports = function program(app, programmerModule, data, done)
   {
     /*jshint validthis:true*/
 
-    if (programmerModule.cancelled)
+    if (thisProgrammingCancelled)
     {
-      return this.skip('CANCELLED');
+      return this.skip();
     }
 
     if (this.isSolProgram)
@@ -463,6 +528,7 @@ module.exports = function program(app, programmerModule, data, done)
     });
 
     programmerModule.changeState({
+      overallProgress: 16,
       workflowFile: workflowFile,
       workflow: workflow.trim()
     });
@@ -474,9 +540,9 @@ module.exports = function program(app, programmerModule, data, done)
   {
     /*jshint validthis:true*/
 
-    if (programmerModule.cancelled)
+    if (thisProgrammingCancelled)
     {
-      return this.skip('CANCELLED');
+      return this.skip();
     }
 
     if (this.isSolProgram)
@@ -491,6 +557,8 @@ module.exports = function program(app, programmerModule, data, done)
       return this.skip(err);
     }
 
+    programmerModule.updateOverallProgress(17);
+
     programmerModule.log('WORKFLOW_FILE_WRITTEN', {
       length: Buffer.byteLength(programmerModule.currentState.workflow, 'utf8')
     });
@@ -502,9 +570,9 @@ module.exports = function program(app, programmerModule, data, done)
   {
     /*jshint validthis:true*/
 
-    if (programmerModule.cancelled)
+    if (thisProgrammingCancelled)
     {
-      return this.skip('CANCELLED');
+      return this.skip();
     }
 
     if (this.isSolProgram || !settings.get('lptEnabled'))
@@ -546,22 +614,7 @@ module.exports = function program(app, programmerModule, data, done)
   {
     /*jshint validthis:true*/
 
-    if (programmerModule.cancelled)
-    {
-      return this.skip('CANCELLED');
-    }
-
-    if (currentState.program)
-    {
-      return programAndTest(app, programmerModule, this.next());
-    }
-
-    if (this.isSolProgram)
-    {
-      return programSolDriver(app, programmerModule, null, null, this.next());
-    }
-
-    if (err)
+    if (thisProgrammingCancelled || err)
     {
       return this.skip(err);
     }
@@ -572,104 +625,124 @@ module.exports = function program(app, programmerModule, data, done)
       this.sub = null;
     }
 
-    var programmerFile = settings.get('programmerFile');
+    programmerModule.updateOverallProgress(programmerModule.OVERALL_SETUP_PROGRESS);
 
-    if (typeof programmerFile !== 'string' || !programmerFile.length)
+    if (currentState.program)
     {
-      return this.skip('UNSET_PROGRAMMER_FILE');
+      return programAndTest(app, programmerModule, this.next());
     }
 
-    var schedulerFile = settings.get('schedulerFile');
-    var supportedDevicesFile = settings.get('supportedDevicesFile');
-    var comInterface = settings.get('interface') || 'd';
-    var args = [
-      '/f', currentState.featureFile,
-      '/w', currentState.workflowFile,
-      '/i', comInterface,
-      '/v', settings.get('logVerbosity') || 'fatal',
-      '/c', settings.get('continueOnWarnings') || 'halt'
-    ];
-
-    if (settings.get('schedulerEnabled') && schedulerFile.length)
+    if (this.isSolProgram)
     {
-      args.push('/s', schedulerFile);
+      return programSolDriver(app, programmerModule, null, onProgress, this.next());
     }
 
-    if (settings.get('supportedDevicesEnabled') && supportedDevicesFile.length)
+    this.sub = programMowDriver(app, programmerModule, onProgress, this.next());
+
+    function onProgress(progress)
     {
-      args.push('/d', supportedDevicesFile);
+      programmerModule.updateOverallProgress(progress, true);
+    }
+  }
+
+  function tryToAcquireServiceTagStep(err)
+  {
+    /*jshint validthis:true*/
+
+    if (thisProgrammingCancelled || err)
+    {
+      return this.skip(err);
     }
 
-    programmerModule.log('STARTING_PROGRAMMER', {
-      programmerFile: programmerFile,
-      interface: comInterface
-    });
+    if (this.sub)
+    {
+      this.sub.cancel();
+      this.sub = null;
+    }
 
-    var programmer = spawn(programmerFile, args);
+    if (!shouldAcquireServiceTag)
+    {
+      return;
+    }
+
+    programmerModule.updateOverallProgress(92);
+
+    programmerModule.log('ACQUIRING_SERVICE_TAG');
+
     var next = this.next();
-    var finalized = false;
-    var output = '';
+    var thisResultId = currentState._id;
+    var thisNc12 = currentState.nc12;
 
-    programmer.on('exit', function(exitCode)
+    this.sub = app.broker.subscribe('programmer.cancelled', next);
+
+    programmerModule.remoteCoordinator.acquireServiceTag(thisResultId, thisNc12, function(err, serviceTag)
     {
-      if (exitCode === 0)
+      if (thisProgrammingCancelled)
       {
-        finalize();
-      }
-      else
-      {
-        finalize('EXIT_CODE:' + exitCode);
-      }
-    });
+        if (serviceTag)
+        {
+          programmerModule.remoteCoordinator.releaseServiceTag(thisResultId, thisNc12, serviceTag);
+        }
 
-    programmer.on('error', function(err)
-    {
-      if (err.code === 'ENOENT')
-      {
-        finalize('MISSING_PROGRAMMER_FILE');
-      }
-      else
-      {
-        err.code = 'PROGRAMMER_FILE_ERROR';
-
-        finalize(err);
-      }
-    });
-
-    programmer.stderr.on('data', function(stderr) { output += stderr; });
-    programmer.stdout.on('data', function(stdout) { output += stdout; });
-
-    this.sub = app.broker.subscribe('programmer.cancelled', function()
-    {
-      programmer.removeAllListeners();
-      programmer.on('error', function() {});
-      programmer.kill();
-
-      finalize('CANCELLED');
-    });
-
-    function finalize(err)
-    {
-      if (finalized)
-      {
         return;
       }
 
-      finalized = true;
+      if (err)
+      {
+        err.code = 'REMOTE_SERVICE_TAG_FAILURE';
+      }
+      else
+      {
+        programmerModule.changeState({serviceTag: serviceTag});
+        programmerModule.log('SERVICE_TAG_ACQUIRED', {serviceTag: serviceTag});
+      }
 
-      programmerModule.changeState({
-        output: output
-      });
+      next(err);
+    });
+  }
 
-      setImmediate(function() { next(err); });
+  function tryToPrintServiceTag(err)
+  {
+    /*jshint validthis:true*/
+
+    if (thisProgrammingCancelled || err)
+    {
+      return this.skip(err);
     }
+
+    if (!shouldPrintServiceTag)
+    {
+      return;
+    }
+
+    programmerModule.updateOverallProgress(97);
+
+    programmerModule.log('PRINTING_SERVICE_TAG', {printerName: settings.get('serviceTagPrinter')});
+
+    var next = this.next();
+    var cancel = programmerModule.printServiceTag(currentState.serviceTag, function(err)
+    {
+      if (err)
+      {
+        programmerModule.log('PRINTING_SERVICE_TAG_FAILURE', {error: err.message});
+      }
+
+      next();
+    });
+
+    this.sub = app.broker.subscribe('programmer.cancelled', cancel);
   }
 
   function finalizeStep(err)
   {
     /*jshint validthis:true*/
 
-    if (this.sub != null)
+    if (thisProgrammingCancelled)
+    {
+      err = 'CANCELLED';
+    }
+
+    if (this.sub)
     {
       this.sub.cancel();
       this.sub = null;
@@ -694,7 +767,8 @@ module.exports = function program(app, programmerModule, data, done)
       exception: null,
       result: 'success',
       order: currentState.order,
-      programming: false
+      inProgress: false,
+      overallProgress: 100
     };
 
     if (err)
@@ -717,6 +791,13 @@ module.exports = function program(app, programmerModule, data, done)
         errorCode: changes.errorCode,
         nc12: currentState.nc12
       });
+
+      if (currentState.serviceTag !== null)
+      {
+        programmerModule.remoteCoordinator.releaseServiceTag(
+          currentState._id, currentState.nc12, currentState.serviceTag
+        );
+      }
     }
     else
     {
@@ -740,14 +821,14 @@ module.exports = function program(app, programmerModule, data, done)
 
     programmerModule.changeState(changes);
 
-    app.broker.publish('programmer.finished', currentState.toJSON());
-
     currentState.save(programmerModule.config.featureDbPath, function(err)
     {
       if (err)
       {
         programmerModule.error("Failed to save the current state: %s", err.stack);
       }
+
+      app.broker.publish('programmer.finished', currentState.toJSON());
     });
   }
 

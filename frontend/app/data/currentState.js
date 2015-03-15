@@ -1,27 +1,27 @@
 define([
   'underscore',
-  '../pubsub',
+  '../socket',
   '../history/HistoryEntry'
 ], function(
   _,
-  pubsub,
+  socket,
   HistoryEntry
 ) {
   'use strict';
 
   var currentState = new HistoryEntry(window.CURRENT_STATE || {});
 
-  pubsub.subscribe('programmer.stateChanged', function(changes)
+  socket.on('programmer.stateChanged', function(changes)
   {
     currentState.set(changes);
   });
 
-  pubsub.subscribe('programmer.logged', function(logEntry)
+  socket.on('programmer.logged', function(logEntry)
   {
     currentState.pushLogEntry(logEntry);
   });
 
-  pubsub.subscribe('programmer.stepProgressed', function(message)
+  socket.on('programmer.stepProgressed', function(message)
   {
     var steps = currentState.get('steps');
 

@@ -1,0 +1,42 @@
+.dashboard-log {
+  position: relative;
+  margin-top: 14px;
+  width: 480px;
+  cursor: default!important;
+  background: #fcfcfc!important;
+  resize: none;
+  overflow: scroll;
+}
+.dashboard-log p {
+  margin-bottom: 5px;
+}
+.dashboard-log p:last-child {
+  margin-bottom: 0;
+}
+.dashboard-log p:last-child span {
+  font-weight: bold;
+}
+.dashboard-log time {
+  color: #999;
+}
+.dashboard-log span {
+  margin-right: 5px;
+}
+.dashboard-log code {
+  white-space: pre-line;
+}
+.dashboard-log-countdown {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -125px;
+  margin-left: -225px;
+  width: 450px;
+  height: 240px;
+  font-size: 240px;
+  font-family: Consolas, monospace;
+  line-height: 1;
+  text-align: center;
+  text-shadow: 0 0 12px #999;
+  color: #000;
+}

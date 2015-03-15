@@ -8,6 +8,7 @@ define([
   'app/time',
   'app/core/View',
   'app/history/util/decorateLogEntry',
+  'app/dashboard/templates/log',
   'app/dashboard/templates/logEntry'
 ], function(
   $,
@@ -15,13 +16,14 @@ define([
   time,
   View,
   decorateLogEntry,
+  logTemplate,
   logEntryTemplate
 ) {
   'use strict';
 
   return View.extend({
 
-    className: 'form-control dashboard-log is-scrollable hidden',
+    template: logTemplate,
 
     localTopics: {
       'hotkeys.focusLog': function()
@@ -34,7 +36,7 @@ define([
     {
       this.$countdown = null;
 
-      this.listenTo(this.model, 'change:log', this.render);
+      this.listenTo(this.model, 'change:log', this.renderLogEntries);
       this.listenTo(this.model, 'change:countdown', this.renderCountdown);
       this.listenTo(this.model, 'push:log', this.renderLogEntry);
     },
@@ -46,13 +48,14 @@ define([
       this.$countdown = null;
     },
 
+    beforeRender: function()
+    {
+      this.$countdown = null;
+    },
+
     afterRender: function()
     {
-      this.$el.empty();
-
-      (this.model.get('log') || []).forEach(this.renderLogEntry.bind(this));
-
-      this.$el.removeClass('hidden').attr('tabindex', '0');
+      this.renderLogEntries();
 
       if (this.model.get('countdown') === -1)
       {
@@ -65,6 +68,18 @@ define([
     resize: function(height)
     {
       this.el.style.height = height + 'px';
+    },
+
+    renderLogEntries: function()
+    {
+      this.$el.find('p').remove();
+
+      var logEntries = this.model.get('log');
+
+      if (Array.isArray(logEntries) && logEntries.length)
+      {
+        logEntries.forEach(this.renderLogEntry, this);
+      }
     },
 
     renderLogEntry: function(logEntry)
@@ -106,16 +121,17 @@ define([
 
     hideCountdown: function()
     {
-      if (this.$countdown !== null)
+      var $countdown = this.$countdown;
+
+      if ($countdown === null)
       {
-        var $countdown = this.$countdown;
-
-        $countdown.fadeOut('fast', function() { $countdown.remove(); });
-
-        this.$countdown = null;
-
-        this.el.scrollTop = this.el.scrollHeight;
+        return;
       }
+
+      $countdown.fadeOut('fast', function() { $countdown.remove(); });
+
+      this.$countdown = null;
+      this.el.scrollTop = this.el.scrollHeight;
     }
 
   });

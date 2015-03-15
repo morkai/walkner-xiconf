@@ -40,7 +40,7 @@ define([
 
     resize: function(width, height)
     {
-      var size = Math.min(width, height * 1.1);
+      var size = Math.min(width, height);
 
       this.$els.css({
         width: size,

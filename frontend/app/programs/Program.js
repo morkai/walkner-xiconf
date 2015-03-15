@@ -57,6 +57,16 @@ define([
       };
     },
 
+    parse: function(obj)
+    {
+      if (typeof obj.steps === 'string')
+      {
+        obj.steps = JSON.parse(obj.steps);
+      }
+
+      return obj;
+    },
+
     serialize: function()
     {
       var obj = this.toJSON();

@@ -63,7 +63,7 @@ module.exports = function setProgramsRoutes(app, programsModule)
 
         if (!fields.length)
         {
-          fields = ['_id', 'name', 'type', 'updatedAt'];
+          fields = ['_id', 'name', 'type', 'updatedAt', 'steps'];
         }
 
         var sql = "SELECT " + fields + "\

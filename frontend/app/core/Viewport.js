@@ -316,11 +316,16 @@ define([
       this.$dialog.removeClass(_.result(this.currentDialog, 'dialogClassName'));
     }
 
+    if (_.isFunction(this.currentDialog.onDialogHidden))
+    {
+      this.currentDialog.onDialogHidden(this);
+    }
+
     if (_.isFunction(this.currentDialog.remove))
     {
       this.currentDialog.remove();
 
-      this.broker.publish('viewport.dialog.hidden');
+      this.broker.publish('viewport.dialog.hidden', this.currentDialog);
     }
 
     this.currentDialog = null;

@@ -31,7 +31,9 @@ exports.programmer = {
   featureDbPath: DATA_PATH + '/features',
   workflowFile: DATA_PATH + '/workflow.txt',
   lptIoFile: BIN_PATH + '/LptIo/LptIo.exe',
-  lastModeFile: DATA_PATH + '/lastMode.txt'
+  lastModeFile: DATA_PATH + '/lastMode.txt',
+  spoolFile: BIN_PATH + '/spool.exe',
+  motoBarScanFile: BIN_PATH + '/MotoBarScan/MotoBarScan.exe'
 };
 
 exports.history = {
@@ -106,23 +108,31 @@ exports.settings = {
     testingModbusEnabled: false,
     testingModbusHost: '127.0.0.1',
     testingModbusPort: 502,
+    prodLine: '',
+    serviceTagPrint: 1,
+    serviceTagPrinter: '',
+    serviceTagLabelType: 'zpl',
+    serviceTagLabelCode: '',
+    protectInputMode: 1,
+    bgScanner: 0,
     hotkeys: {
       focusOrderNo: 'Q',
       focusQuantity: 'W',
       focusNc12: 'E',
       focusLog: 'R',
       focusHistory: 'T',
-      toggleMode: 'A',
-      resetOrder: 'S',
-      repeatOrder: 'D',
-      switchMode: 'F',
-      program: 'Space',
+      toggleInputMode: 'A',
+      toggleWorkMode: 'S',
+      reset: 'D',
+      reload: 'F',
+      setProgram: 'G',
+      printServiceTag: 'H',
+      start: 'Space',
       cancel: 'Space',
-      pickProgram: 'G',
       showDashboardPage: 'Z',
       showHistoryPage: 'X',
-      showSettingsPage: 'C',
-      showProgramsPage: 'V'
+      showProgramsPage: 'C',
+      showSettingsPage: 'V'
     }
   }
 };
@@ -137,10 +147,8 @@ exports.pubsub = {
   republishTopics: [
     'featureSync.*',
     'settings.changed',
-    'programmer.stateChanged',
-    'programmer.stepProgressed',
-    'programmer.logged',
     'programmer.finished',
+    'programmer.barcodeScanned',
     'history.orderUpdated',
     'programs.*'
   ]

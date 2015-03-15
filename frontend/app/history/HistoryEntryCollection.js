@@ -31,6 +31,7 @@ define([
         fields: {
           _id: 1,
           _order: 1,
+          serviceTag: 1,
           nc12: 1,
           featureFileName: 1,
           no: 1,

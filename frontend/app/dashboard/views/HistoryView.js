@@ -78,7 +78,6 @@ define([
 
     initialize: function()
     {
-      this.idPrefix = _.uniqueId('historyView');
       this.firstRender = true;
 
       this.listenTo(this.collection, 'request', this.onCollectionRequest);
@@ -94,7 +93,7 @@ define([
       return {
         idPrefix: this.idPrefix,
         renderHistoryEntry: historyEntryTemplate,
-        models: this.collection.map(this.serializeModel.bind(this))
+        models: this.collection.map(this.serializeModel, this)
       };
     },
 

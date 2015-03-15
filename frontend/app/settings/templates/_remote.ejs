@@ -1,0 +1,36 @@
+<div id="<%- idPrefix %>-remote" class="panel-body tab-pane">
+  <div class="form-group">
+    <label for="<%- idPrefix %>-prodLine" class="control-label"><%- t('settings', 'setting:prodLine') %></label>
+    <input id="<%- idPrefix %>-prodLine" class="form-control" name="prodLine" type="text">
+  </div>
+  <div class="form-group">
+    <label for="<%- idPrefix %>-serviceTagPrint" class="control-label"><%- t('settings', 'setting:serviceTagPrint') %></label>
+    <div>
+      <label class="radio-inline">
+        <input id="<%- idPrefix %>-serviceTagPrint" name="serviceTagPrint" type="radio" value="1" required> <%- t('settings', 'setting:serviceTagPrint:on') %>
+      </label>
+      <label class="radio-inline">
+        <input name="serviceTagPrint" type="radio" value="0" required> <%- t('settings', 'setting:serviceTagPrint:off') %>
+      </label>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="<%- idPrefix %>-serviceTagPrinter" class="control-label"><%- t('settings', 'setting:serviceTagPrinter') %></label>
+    <input id="<%- idPrefix %>-serviceTagPrinter" class="form-control" name="serviceTagPrinter" type="text">
+  </div>
+  <div class="form-group">
+    <label for="<%- idPrefix %>-serviceTagLabelType" class="control-label"><%- t('settings', 'setting:serviceTagLabelType') %></label>
+    <div>
+      <label class="radio-inline">
+        <input id="<%- idPrefix %>-serviceTagLabelType" name="serviceTagLabelType" type="radio" value="zpl" required> <%- t('settings', 'setting:serviceTagLabelType:zpl') %>
+      </label>
+      <label class="radio-inline">
+        <input name="serviceTagLabelType" type="radio" value="dpl" required> <%- t('settings', 'setting:serviceTagLabelType:dpl') %>
+      </label>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="<%- idPrefix %>-serviceTagLabelCode" class="control-label"><%- t('settings', 'setting:serviceTagLabelCode') %></label>
+    <textarea id="<%- idPrefix %>-serviceTagLabelCode" class="form-control" name="serviceTagLabelCode" rows="10"></textarea>
+  </div>
+</div>

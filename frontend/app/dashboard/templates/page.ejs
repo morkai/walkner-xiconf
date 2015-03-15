@@ -1,7 +1,28 @@
-<div class="dashboard">
-  <div class="dashboard-left">
-    <kbd class="is-inside" data-hotkey="focusLog">R</kbd>
+<div class="dashboard <%- localUser ? 'is-localUser' : 'is-remoteUser' %> <%- inProgress ? 'is-inProgress' : 'is-idle' %> <%- windowFocused ? 'has-windowFocus' : '' %> <%- workModeChangeEnabled ? 'is-workModeChangeEnabled' : '' %>" data-work-mode="<%- workMode %>" data-input-mode="<%- inputMode %>">
+  <div class="dashboard-indicators">
+    <i id="<%- idPrefix %>-connection" class="fa fa-signal dashboard-indicator-connection"></i>
+    <div id="<%- idPrefix %>-toggleInputMode" class="dashboard-indicator dashboard-indicator-inputMode kbd-container">
+      <span class="dashboard-indicator-inputMode-local"><%- t('dashboard', 'inputMode:local') %></span>
+      <span class="dashboard-indicator-inputMode-remote"><%- t('dashboard', 'inputMode:remote') %></span>
+      <kbd data-hotkey="toggleInputMode" class="is-inside">?</kbd>
+    </div>
+    <div id="<%- idPrefix %>-windowFocus" class="dashboard-indicator dashboard-indicator-windowFocus">
+      <span class="dashboard-indicator-windowFocus-active"><%- t('dashboard', 'windowFocus:active') %></span>
+      <span class="dashboard-indicator-windowFocus-inactive"><%- t('dashboard', 'windowFocus:inactive') %></span>
+    </div>
+    <div id="<%- idPrefix %>-licenseError" class="dashboard-indicator dashboard-indicator-licenseError" style="display: <%- licenseError ? 'inline-block' : 'none' %>">
+      <span><%- t('dashboard', 'licenseError') %></span>
+    </div>
   </div>
-  <div class="dashboard-right"></div>
-  <a class="btn btn-danger active dashboard-license" href="#settings?tab=license"><%- t('dashboard', 'license:error') %></a>
+  <form id="<%- idPrefix %>-inputModeForm" class="dashboard-inputModeForm input-group is-hiding" style="display: none">
+    <input id="<%- idPrefix %>-password" type="password" class="form-control" placeholder="<%- t('dashboard', 'inputMode:password') %>">
+    <span class="input-group-btn">
+      <button class="btn btn-default" type="button"><i class="fa fa-unlock"></i></button>
+    </span>
+  </form>
+  <div class="dashboard-progress progress">
+    <div id="<%- idPrefix %>-progressBar" class="progress-bar <%- progressBarClassName %>" style="width: <%- progressBarWidth %>"></div>
+  </div>
+  <div class="dashboard-leftColumn"></div>
+  <div class="dashboard-rightColumn"></div>
 </div>

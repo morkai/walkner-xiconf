@@ -30,6 +30,15 @@ module.exports = function setSettingsRoutes(app, settingsModule)
       return res.send(400);
     }
 
+    var programmer = app[settingsModule.config.programmerId];
+
+    if (programmer && programmer.currentState.isInProgress())
+    {
+      res.statusCode = 400;
+
+      return next(new Error('LOCKED'));
+    }
+
     settingsModule.import(req.body, function(err)
     {
       if (err)
@@ -61,8 +70,7 @@ module.exports = function setSettingsRoutes(app, settingsModule)
 
     var programmer = app[settingsModule.config.programmerId];
 
-    if (programmer
-      && (programmer.currentState.order !== null || programmer.currentState.isProgramming()))
+    if (programmer && programmer.currentState.isInProgress())
     {
       res.statusCode = 400;
 

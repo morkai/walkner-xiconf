@@ -25,7 +25,7 @@ define([
       {
         var model = this.collection.get(e.currentTarget.dataset.id);
 
-        if (!model)
+        if (!model || window.getSelection().toString() !== '')
         {
           return;
         }
@@ -38,7 +38,7 @@ define([
       }
     },
 
-    columns: ['order', 'nc12', 'programName', 'counter', 'quantity', 'startedAt', 'duration'],
+    columns: ['serviceTag', 'order', 'nc12', 'programName', 'counter', 'quantity', 'startedAt', 'duration'],
 
     serializeActions: function()
     {
@@ -52,6 +52,7 @@ define([
       return {
         _id: model.id,
         className: 'history-entry ' + (model.get('result') === 'success' ? 'success' : 'danger'),
+        serviceTag: model.get('serviceTag'),
         order: order ? order.no : null,
         programName: model.getProgramName(),
         nc12: model.get('nc12'),
