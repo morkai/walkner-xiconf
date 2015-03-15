@@ -1,7 +1,7 @@
 {
   "guid": "10EDA1CE-8D27-4B75-97E9-003B3ADD4BA0",
   "name": "walkner-xiconf",
-  "version": "2.6.1",
+  "version": "2.7.0",
   "description": "Overlay application for Philips MultiOne Workflow.",
   "license": "CC BY-NC-SA 4.0",
   "homepage": "https://github.com/morkai/walkner-xiconf",
@@ -24,6 +24,7 @@
     "express": "~3.4.8",
     "ejs": "~0.8.8",
     "ejs-amd": "~0.0.4",
+    "socket.io-client": "~0.9.16",
     "socket.io": "~0.9.16",
     "lodash": "~2.4.1",
     "messageformat": "~0.2.1",
@@ -40,7 +41,8 @@
     "ursa": "~0.8.0",
     "semver": "~2.2.1",
     "jszip": "~2.21",
-    "request": "~2.34.0"
+    "request": "~2.34.0",
+    "serialport": "~1.4.8"
   },
   "devDependencies": {
     "grunt": "~0.4.5",

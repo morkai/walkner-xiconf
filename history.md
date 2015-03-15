@@ -1,3 +1,17 @@
+2.7.0 @ 2015-03-15
+==================
+
+  * Changed a border width of elements on the Programmer screen from 2px to 1px.
+  * Added an overall progress bar to the middle of the Programmer screen.
+  * Replaced the Manual/Auto modes with Local/Remote. The Local mode is the same as the Manual mode. The Remote mode
+    works by talking to the remote server. The remote server provides the current order data and generates Service Tags.
+    Multiple instances can work on the same order at the same time.
+  * Added an ability to switch the barcode scanning to a background process. Multiple scanners can be used at the same
+    time. Works only with the Motorola scanners.
+  * Added an ability to protect the input mode change with a password.
+  * Added an ability to print Service Tags using a ZPL or DPL printer.
+  * Added labels specifying the enabled program steps to the Name column on the Programs list screen.
+
 2.6.1 @ 2015-02-27
 ==================
 
