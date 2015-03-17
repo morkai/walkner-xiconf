@@ -15,7 +15,7 @@ exports.libeay32 = fs.existsSync(path.join(process.env.SYSTEMROOT, 'System32', '
   : 'C:/tools/OpenSSL-Win32/libeay32.dll';
 exports.imWorkin = 'C:/tools/ImWorkin.exe';
 exports.lptIo = 'C:/tools/LptIo';
-exports.spool = 'C:/spool/spool.exe';
+exports.spool = 'C:/tools/spool/spool.exe';
 exports.motoBarScan = 'C:/tools/MotoBarScan';
 exports.serviceUser = '';
 exports.servicePass = '';
