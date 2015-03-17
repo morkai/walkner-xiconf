@@ -55,6 +55,11 @@ RemoteCoordinator.prototype.acquireServiceTag = function(resultId, nc12, done)
 
 RemoteCoordinator.prototype.releaseServiceTag = function(resultId, nc12, serviceTag)
 {
+  if (!this.sio)
+  {
+    return;
+  }
+
   this.sio.emit('xiconf.releaseServiceTag', {
     resultId: resultId,
     nc12: nc12,
@@ -71,13 +76,20 @@ RemoteCoordinator.prototype.setUpSio = function()
   {
     this.sio.removeAllListeners();
     this.sio.disconnect();
+    this.sio = null;
+  }
+
+  var remoteServer = this.settings.get('remoteServer');
+
+  if (_.isEmpty(remoteServer))
+  {
+    return;
   }
 
   var remoteCoordinator = this;
   var programmer = this.programmer;
   var wasConnected = false;
   var wasReconnecting = false;
-  var remoteServer = this.settings.get('remoteServer');
   var sio = socketIoClient.connect(remoteServer, {
     'resource': 'socket.io',
     'transports': ['websocket'],
@@ -186,7 +198,7 @@ RemoteCoordinator.prototype.setUpSio = function()
  */
 RemoteCoordinator.prototype.connectToProdLine = function()
 {
-  if (!this.sio || !this.sio.socket.connected)
+  if (!this.isConnected())
   {
     return;
   }
