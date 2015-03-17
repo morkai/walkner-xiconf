@@ -39,7 +39,7 @@
 .is-connected-local .dashboard-indicator-connection {
   color: #f0ad4e;
 }
-.is-connected-remote .dashboard-indicator-connection {
+.is-connected-local.is-connected-remote .dashboard-indicator-connection {
   color: #5cb85c;
 }
 .dashboard-indicator-licenseError {
