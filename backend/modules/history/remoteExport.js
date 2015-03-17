@@ -34,7 +34,7 @@ module.exports = function setUpRemoteExport(app, historyModule)
     return !licenseInfo.error || licenseInfo.error === 'UNKNOWN_LICENSE' || licenseInfo.error === 'DUPLICATE_LICENSE';
   }
 
-  function scheduleNextSync(halve)
+  function scheduleNextSync(failed)
   {
     if (syncTimer !== null)
     {
@@ -43,14 +43,14 @@ module.exports = function setUpRemoteExport(app, historyModule)
 
     var syncInterval = settings.get('syncInterval');
 
-    if (typeof syncInterval !== 'number' || isNaN(syncInterval) || syncInterval < 10)
+    if (typeof syncInterval !== 'number' || isNaN(syncInterval) || syncInterval < 1)
     {
-      syncInterval = 10;
+      syncInterval = 1;
     }
 
-    if (halve)
+    if (failed)
     {
-      syncInterval = Math.round(syncInterval / 2);
+      syncInterval = Math.min(Math.round(syncInterval / 2), 5);
     }
 
     syncTimer = setTimeout(syncNow, syncInterval * 60 * 1000);

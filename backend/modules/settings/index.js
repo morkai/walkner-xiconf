@@ -184,7 +184,7 @@ exports.start = function startSettingsModule(app, module, done)
     validateStringSetting(rawSettings, newSettings, 'prodLine', 0);
     validateStringSetting(rawSettings, newSettings, 'serviceTagPrinter', 0);
     validateStringSetting(rawSettings, newSettings, 'serviceTagLabelCode', 0);
-    validateNumericSetting(rawSettings, newSettings, 'syncInterval', 10);
+    validateNumericSetting(rawSettings, newSettings, 'syncInterval', 1);
     validateNumericSetting(rawSettings, newSettings, 'searchTimeout1', 100);
     validateNumericSetting(rawSettings, newSettings, 'searchTimeout2', 100);
     validateNumericSetting(rawSettings, newSettings, 'readTimeout1', 100);
