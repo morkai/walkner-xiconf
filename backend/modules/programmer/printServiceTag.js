@@ -64,6 +64,35 @@ module.exports = function printServiceTag(spoolFile, printerName, labelType, lab
     return done();
   }
 
+  function insertServiceTag(labelCode, labelType, serviceTag)
+  {
+    labelCode = labelCode.replace(new RegExp('P[0-9]{' + (serviceTag.length - 1) + '}', 'g'), serviceTag);
+
+    if (labelType !== 'zpl')
+    {
+      return labelCode;
+    }
+
+    return labelCode.replace(/\^FD(.*?)\^FS/g, function(command, data)
+    {
+      if (!/^>(:|;|9)P/.test(data))
+      {
+        return command;
+      }
+
+      var remaining = serviceTag;
+
+      return command.replace(/>(:|;|5|6|7|9)([a-zA-Z0-9]+)/g, function(_, invocationCode, data)
+      {
+        var part = remaining.substr(0, data.length);
+
+        remaining = remaining.substr(data.length);
+
+        return '>' + invocationCode + part;
+      });
+    });
+  }
+
   step(
     function prepareLabelCodeStep()
     {
@@ -78,7 +107,7 @@ module.exports = function printServiceTag(spoolFile, printerName, labelType, lab
         labelCode = labelCode.replace(/\n+/g, '<CR>');
       }
 
-      labelCode = labelCode.replace(/P000+/g, serviceTag).replace(/<([A-Z]{2,3})>/g, function(_, code)
+      labelCode = insertServiceTag(labelCode, labelType, serviceTag).replace(/<([A-Z]{2,3})>/g, function(_, code)
       {
         return ASCII[code] === undefined ? ('%' + code) : String.fromCharCode(ASCII[code]);
       });
