@@ -1,3 +1,17 @@
+2.7.1 @ 2015-03-17
+
+  * Fixed the installer not bundling the `spool.exe` file.
+  * Fixed the remote coordinator connecting to the local socket.io server if the remote server setting was not set.
+  * Fixed the connection status indicator staying green after losing connection to the local server.
+  * Fixed the uninstaller not running in a language selected during the installation.
+  * Changed the Service Tag insertion into the ZPL label template so that it works with the Code128 barcode
+    in auto mode.
+  * Changed the multiple Service Tag label printing to be a serial process and not a parallel one.
+  * Changed the minimum sync interval from 10 minutes to 1 minute, but the minimum interval after a failed sync
+    is 5 minutes.
+  * Changed the default install directory from `C:\walkner` to `C:\walkner\xiconf`.
+  * Added an automatic DCOM permission granting for the custom Windows service user so that he can run the MotoBarScan.
+
 2.7.0 @ 2015-03-15
 ==================
 
