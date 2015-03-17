@@ -17,6 +17,7 @@ exports.imWorkin = 'C:/tools/ImWorkin.exe';
 exports.lptIo = 'C:/tools/LptIo';
 exports.spool = 'C:/tools/spool/spool.exe';
 exports.motoBarScan = 'C:/tools/MotoBarScan';
+exports.dComPerm = 'C:/tools/DComPerm.exe';
 exports.serviceUser = '';
 exports.servicePass = '';
 exports.serverPort = 1337;

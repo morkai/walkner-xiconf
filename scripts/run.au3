@@ -187,4 +187,22 @@ Func CreateService()
   $password = InputBox($LANG_INPUT_PASS_TITLE, $LANG_INPUT_PASS_LABEL, $SERVICE_PASS, "", 325, 125)
 
   RunWait(@ScriptDir & "\bin\" & $SERVICE_NAME & '\bin\service-create.bat "' & @ScriptDir & "\config\" & $SERVICE_NAME & ".js" & '" "' & $username & '" "' & $password & '"', @ScriptDir & "\bin", @SW_HIDE)
+
+  If $username <> "" And $password <> "" Then
+    GrantDComPermissions($username)
+  EndIf
+EndFunc
+
+Func GrantDComPermissions($username)
+  $pid = Run(@ScriptDir & "\bin\DComPerm.exe -dl list")
+
+  ProcessWaitClose($pid)
+
+  $stdout = StdoutRead($pid)
+
+  If StringRegExp($stdout, "(?i)Local.*?permitted.*?" & $username) Then
+    Return
+  EndIf
+
+  RunWait(@ScriptDir & "\bin\DComPerm.exe -dl set " & $username & " permit level:ll,la")
 EndFunc

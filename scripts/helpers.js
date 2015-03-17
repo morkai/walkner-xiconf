@@ -155,6 +155,10 @@ exports.copy = {
         dest: DEST_INSTALLER + '/bin/ntrights.exe'
       },
       {
+        src: installerConfig.dComPerm,
+        dest: DEST_INSTALLER + '/bin/DComPerm.exe'
+      },
+      {
         src: installerConfig.vcredist_x86,
         dest: DEST_INSTALLER + '/bin/vcredist_x86.exe'
       },
