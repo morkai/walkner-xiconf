@@ -21,7 +21,7 @@ Global const $CHROME_WAIT_TIME = 60
 
 _Singleton($SERVICE_NAME)
 
-$lang = ReadLang()
+$lang = FileRead(@ScriptDir & "\data\" & $SERVICE_NAME & ".lang", 2)
 
 Switch $lang
   Case "pl"

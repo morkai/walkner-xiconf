@@ -22,7 +22,7 @@ If Not FileExists($ROOT_DIR & "\bin\" & @ScriptName) Then
   Exit
 EndIf
 
-$lang = ReadLang()
+$lang = FileRead(@ScriptDir & "\..\data\" & $SERVICE_NAME & ".lang", 2)
 
 Switch $lang
   Case "pl"

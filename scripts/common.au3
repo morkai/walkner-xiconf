@@ -54,7 +54,3 @@ Func CountFilesInDir($dir)
 
   Return IsArray($dirSize) ? ($dirSize[1] + $dirSize[2]) : 0
 EndFunc
-
-Func ReadLang()
-  Return FileRead(@ScriptDir & "\data\" & $SERVICE_NAME & ".lang", 2)
-EndFunc
