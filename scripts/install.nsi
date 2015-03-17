@@ -1,6 +1,6 @@
 Unicode true
 Name "Walkner Xiconf v${PRODUCT_VERSION}"
-InstallDir "C:\walkner"
+InstallDir "C:\walkner\xiconf"
 OutFile "${__FILEDIR__}\..\build\walkner-xiconf-v${PRODUCT_VERSION}.exe"
 AllowRootDirInstall false
 SetCompressor /SOLID /FINAL lzma
