@@ -5,7 +5,6 @@
 'use strict';
 
 var _ = require('lodash');
-var step = require('h5.step');
 
 module.exports = function setUpProgrammerCommands(app, programmerModule)
 {
@@ -254,19 +253,28 @@ module.exports = function setUpProgrammerCommands(app, programmerModule)
       serviceTags.push(serviceTagPrefix + serviceTagSuffix);
     });
 
-    step(
-      function()
+    printNextServiceTag(serviceTags, 0, function(err)
+    {
+      reply(err, serviceTags.length);
+    });
+  }
+
+  function printNextServiceTag(serviceTags, i, done)
+  {
+    if (i === serviceTags.length)
+    {
+      return done();
+    }
+
+    programmerModule.printServiceTag(serviceTags[i], function(err)
+    {
+      if (err)
       {
-        for (var i = 0; i < serviceTags.length; ++i)
-        {
-          programmerModule.printServiceTag(serviceTags[i], this.group());
-        }
-      },
-      function(err)
-      {
-        reply(err, serviceTags.length);
+        return done(err);
       }
-    );
+
+      printNextServiceTag(serviceTags, i + 1, done);
+    });
   }
 
   function validateOrder(data)
