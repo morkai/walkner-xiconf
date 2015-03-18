@@ -486,7 +486,7 @@ define([
         $els.quantity
           .prop('disabled', orderFieldDisabled || countdown)
           .prop('required', ordersRequired);
-        $els.nc12.prop('disabled', isInProgress || isRemoteInput || countdown);
+        $els.nc12.prop('disabled', isInProgress || isRemoteInput || hasOrder || countdown);
         $els.start.prop('disabled', countdown);
         $els.toggleWorkMode.prop('disabled', isInProgress || countdown);
         $els.reset.prop('disabled', isInProgress || countdown);
@@ -536,7 +536,7 @@ define([
       else
       {
         var localOrder = this.model.get('order');
-        var localNc12 = this.model.get('result') === null ? (this.model.get('nc12') || null) : null;
+        var localNc12 = this.model.get('nc12');
 
         if (localOrder)
         {
