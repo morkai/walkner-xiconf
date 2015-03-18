@@ -362,19 +362,19 @@ module.exports = function program(app, programmerModule, data, done)
 
     if (err)
     {
-      programmerModule.changeState(12);
+      programmerModule.updateOverallProgress(12);
       programmerModule.log('SEARCHING_FEATURE_FILE_FAILURE', {
         error: err.message
       });
     }
     else if (filePath === false)
     {
-      programmerModule.changeState(12);
+      programmerModule.updateOverallProgress(12);
       programmerModule.log('SEARCHING_FEATURE_FILE_TIMEOUT');
     }
     else if (filePath === null)
     {
-      programmerModule.changeState(12);
+      programmerModule.updateOverallProgress(12);
       programmerModule.log('MISSING_FEATURE_FILE_2');
     }
     else if (files.length > 1)
