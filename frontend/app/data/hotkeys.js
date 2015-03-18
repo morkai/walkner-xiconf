@@ -20,6 +20,8 @@ define([
     ' '
   ].forEach(function(hotkey) { VALID_HOTKEYS[hotkey] = true; });
 
+  var enabled = false;
+  var barcodeScannedSub = null;
   var hotkeyToActions = {};
 
   function isValidHotkey(hotkey)
@@ -51,6 +53,19 @@ define([
       return;
     }
 
+    handleHotkey(hotkey);
+  }
+
+  function onBarcodeScanned(message)
+  {
+    if (message.remote && message.value.length === 1)
+    {
+      handleHotkey(message.value.toUpperCase());
+    }
+  }
+
+  function handleHotkey(hotkey)
+  {
     var actions = hotkeyToActions[hotkey];
 
     if (!Array.isArray(actions))
@@ -67,15 +82,34 @@ define([
   return {
     start: function()
     {
+      if (enabled)
+      {
+        return;
+      }
+
       $(window).on('keypress', onKeyPress);
       settings.on('change:hotkeys', this.cache);
 
+      barcodeScannedSub = broker.subscribe('programmer.barcodeScanned', onBarcodeScanned);
+
       this.cache();
+
+      enabled = true;
     },
     stop: function()
     {
+      if (!enabled)
+      {
+        return;
+      }
+
       $(window).off('keypress', onKeyPress);
       settings.off('change:hotkeys', this.cache);
+
+      barcodeScannedSub.cancel();
+      barcodeScannedSub = null;
+
+      enabled = false;
     },
     cache: function()
     {

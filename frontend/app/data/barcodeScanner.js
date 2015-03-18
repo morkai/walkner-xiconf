@@ -29,7 +29,12 @@ define([
     {
       if (enabled)
       {
-        broker.publish('programmer.barcodeScanned', {value: message.value, event: null});
+        broker.publish('programmer.barcodeScanned', {
+          remote: true,
+          local: false,
+          value: message.value,
+          event: null
+        });
       }
     });
 
@@ -92,7 +97,12 @@ define([
   {
     if (!settings.get('bgScanner'))
     {
-      broker.publish('programmer.barcodeScanned', {value: commandBuffer, event: e});
+      broker.publish('programmer.barcodeScanned', {
+        remote: false,
+        local: true,
+        value: commandBuffer,
+        event: e
+      });
     }
   }
 
