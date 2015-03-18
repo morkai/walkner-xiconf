@@ -5,7 +5,7 @@
 'use strict';
 
 var fs = require('fs');
-var lodash = require('lodash');
+var _ = require('lodash');
 var setUpRoutes = require('./routes');
 var validateLicense = require('./validateLicense');
 
@@ -34,7 +34,7 @@ exports.start = function startSettingsModule(app, module, done)
 
   module.export = function(password, includeLicenseInfo)
   {
-    var copy = lodash.merge({}, settings);
+    var copy = _.merge({}, settings);
 
     if (password === copy.password)
     {
@@ -72,12 +72,12 @@ exports.start = function startSettingsModule(app, module, done)
 
     var changes = validateSettings(newSettings);
 
-    if (lodash.isEmpty(changes) && !allowEmpty)
+    if (_.isEmpty(changes) && !allowEmpty)
     {
       return done(new Error('INVALID_CHANGES'));
     }
 
-    settings = lodash.merge(settings, changes);
+    settings = _.merge(settings, changes);
 
     fs.writeFile(
       module.config.settingsFile,
@@ -92,7 +92,7 @@ exports.start = function startSettingsModule(app, module, done)
 
         done();
 
-        if (!lodash.isEmpty(changes))
+        if (!_.isEmpty(changes))
         {
           delete changes.licenseKey;
 
@@ -129,6 +129,18 @@ exports.start = function startSettingsModule(app, module, done)
     }
   };
 
+  module.getInstallationId = function()
+  {
+    var id = module.get('id');
+
+    if (!_.isEmpty(id) && !_.isEmpty(process.env.COMPUTERNAME))
+    {
+      id = process.env.COMPUTERNAME + '-' + id;
+    }
+
+    return id;
+  };
+
   app.onModuleReady(
     [
       module.config.expressId
@@ -157,9 +169,9 @@ exports.start = function startSettingsModule(app, module, done)
       settings = {};
     }
 
-    settings = lodash.defaults(settings, module.config.defaults);
+    settings = _.defaults(settings, module.config.defaults);
 
-    module.import(lodash.merge({}, settings), done, true);
+    module.import(_.merge({}, settings), done, true);
   });
 
   function validateSettings(rawSettings)
@@ -168,7 +180,7 @@ exports.start = function startSettingsModule(app, module, done)
 
     validateLicense(app, module, rawSettings, newSettings, settings);
     validateStringSetting(rawSettings, newSettings, 'password1');
-    validateStringSetting(rawSettings, newSettings, 'id', 1, /^[a-zA-Z0-9-_]+$/);
+    validateStringSetting(rawSettings, newSettings, 'id', 0, /^[a-zA-Z0-9-_]*$/);
     validateStringSetting(rawSettings, newSettings, 'title', 0);
     validateStringSetting(rawSettings, newSettings, 'featurePath1');
     validateStringSetting(rawSettings, newSettings, 'featurePath2', 0);
@@ -235,7 +247,7 @@ exports.start = function startSettingsModule(app, module, done)
       delete newSettings.password1;
     }
 
-    if (lodash.isEmpty(newSettings))
+    if (_.isEmpty(newSettings))
     {
       return null;
     }
@@ -252,7 +264,7 @@ exports.start = function startSettingsModule(app, module, done)
 
     var value = rawSettings[setting];
 
-    if (lodash.isString(value)
+    if (_.isString(value)
       && value.length >= minLength
       && value !== settings[setting]
       && (!pattern || pattern.test(value)))
@@ -263,12 +275,12 @@ exports.start = function startSettingsModule(app, module, done)
 
   function validateNumericSetting(rawSettings, newSettings, setting, min, max)
   {
-    if (!lodash.isNumber(min))
+    if (!_.isNumber(min))
     {
       min = 1;
     }
 
-    if (!lodash.isNumber(max))
+    if (!_.isNumber(max))
     {
       max = Number.MAX_VALUE;
     }
@@ -293,7 +305,7 @@ exports.start = function startSettingsModule(app, module, done)
 
   function validateHotkeys(rawSettings, newSettings)
   {
-    if (!lodash.isObject(rawSettings.hotkeys))
+    if (!_.isObject(rawSettings.hotkeys))
     {
       return;
     }
@@ -306,9 +318,9 @@ exports.start = function startSettingsModule(app, module, done)
     {
       var hotkey = rawSettings.hotkeys[action];
 
-      if (lodash.isString(validHotkeys[action])
+      if (_.isString(validHotkeys[action])
         && /^[a-zA-Z0-9]+$/.test(action)
-        && lodash.isString(hotkey)
+        && _.isString(hotkey)
         && (hotkey.length <= 1 || hotkey === 'Space'))
       {
         hotkeys[action] = hotkey.length ? rawSettings.hotkeys[action] : null;

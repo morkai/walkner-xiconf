@@ -48,7 +48,7 @@ exports.settings = {
     : null,
   defaults: {
     password: 'x!c0nf',
-    id: process.env.COMPUTERNAME || exports.id,
+    id: '',
     licenseKey: '',
     licenseInfo: {
       appId: null,

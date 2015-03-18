@@ -1,7 +1,10 @@
 <div id="<%- idPrefix %>-license" class="panel-body tab-pane">
   <div class="form-group">
     <label for="<%- idPrefix %>-id" class="control-label"><%- t('settings', 'setting:id') %></label>
-    <input id="<%- idPrefix %>-id" class="form-control" name="id" type="text" required pattern="^[a-zA-Z0-9-_]+$">
+    <div class="input-group">
+      <span class="input-group-addon"><%- computerName %></span>
+      <input id="<%- idPrefix %>-id" class="form-control" name="id" type="text" pattern="^[a-zA-Z0-9-_]*$">
+    </div>
   </div>
   <div class="row">
     <div class="form-group col-md-8">

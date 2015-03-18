@@ -268,7 +268,7 @@ module.exports = function setUpRemoteExport(app, historyModule)
 
     this.zip = new JSZip();
     this.zip.file('meta.json', JSON.stringify({
-      id: settings.get('id'),
+      id: settings.getInstallationId(),
       title: settings.get('title'),
       uuid: cachedEncryptedUuids[uuid]
     }));

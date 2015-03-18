@@ -25,7 +25,8 @@ module.exports = function startCoreRoutes(app, express)
         APP_VERSION: JSON.stringify(app.options.version),
         TIME: JSON.stringify(Date.now()),
         SETTINGS: JSON.stringify(app.settings.export(null, true)),
-        CURRENT_STATE: JSON.stringify(app.programmer.currentState)
+        CURRENT_STATE: JSON.stringify(app.programmer.currentState),
+        COMPUTER_NAME: JSON.stringify(process.env.COMPUTERNAME || null)
       }
     });
   }

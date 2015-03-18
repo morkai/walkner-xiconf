@@ -203,7 +203,7 @@ RemoteCoordinator.prototype.connectToProdLine = function()
     return;
   }
 
-  var srcId = this.settings.get('id');
+  var srcId = this.settings.getInstallationId();
   var prodLineId = this.settings.get('prodLine');
 
   if (_.isEmpty(srcId) || _.isEmpty(prodLineId))
