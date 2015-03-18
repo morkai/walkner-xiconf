@@ -1,4 +1,15 @@
+2.7.2 @ 2015-03-18
+==================
+
+  * Fixed a crash on progress update when handling a result of the find a feature file in a second path step.
+  * Changed the hotkey execution so that hotkeys can be scanned from barcodes using the background scanner mode.
+  * Changed the default Start/Cancel hotkey from `Space` to `P`.
+  * Changed the behaviour of the 12NC field in the local input mode so that its value is remembered and the field is
+    disabled. The current state must be reset if one wants to use a different 12NC.
+  * Changed the installation ID setting to be optional and always prefixed with the computer's name.
+
 2.7.1 @ 2015-03-17
+==================
 
   * Fixed the installer not bundling the `spool.exe` file.
   * Fixed the remote coordinator connecting to the local socket.io server if the remote server setting was not set.
