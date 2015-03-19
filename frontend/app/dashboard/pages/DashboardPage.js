@@ -83,7 +83,8 @@ define([
       {
         hotkeys.start();
         this.hideInputModeForm();
-      }
+      },
+      'click #-connection': 'reconnectToProdLine'
     },
 
     initialize: function()
@@ -385,6 +386,28 @@ define([
       {
         this.timers.licenseAnimation = setTimeout(function() { $license.addClass('is-animating'); }, 1000);
       }
+    },
+
+    reconnectToProdLine: function()
+    {
+      if (!user.isLocal() || !this.socket.isConnected() || !currentState.get('remoteConnected'))
+      {
+        return;
+      }
+
+      var $connection = this.$id('connection');
+
+      if ($connection.hasClass('is-reconnecting'))
+      {
+        return;
+      }
+
+      $connection.addClass('is-reconnecting');
+
+      this.socket.emit('programmer.reconnectToProdLine', function()
+      {
+        $connection.removeClass('is-reconnecting');
+      });
     },
 
     onInputModeChange: function()

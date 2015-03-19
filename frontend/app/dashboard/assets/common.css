@@ -41,6 +41,11 @@
 }
 .is-connected-local.is-connected-remote .dashboard-indicator-connection {
   color: #5cb85c;
+  cursor: pointer;
+}
+.is-connected-local.is-connected-remote .dashboard-indicator-connection.is-reconnecting {
+  color: #0af;
+  cursor: default;
 }
 .dashboard-indicator-licenseError {
   position: absolute;

@@ -40,6 +40,7 @@ module.exports = function setUpProgrammerCommands(app, programmerModule)
       socket.on('programmer.reload', reload);
       socket.on('programmer.reset', reset);
       socket.on('programmer.printServiceTags', printServiceTags);
+      socket.on('programmer.reconnectToProdLine', reconnectToProdLine);
     }
   });
 
@@ -275,6 +276,16 @@ module.exports = function setUpProgrammerCommands(app, programmerModule)
 
       printNextServiceTag(serviceTags, i + 1, done);
     });
+  }
+
+  function reconnectToProdLine(reply)
+  {
+    if (_.isFunction(reply))
+    {
+      programmerModule.remoteCoordinator.connectToProdLine();
+
+      setTimeout(reply, 5000);
+    }
   }
 
   function validateOrder(data)
