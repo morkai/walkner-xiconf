@@ -132,14 +132,22 @@ exports.start = function startSettingsModule(app, module, done)
 
   module.getInstallationId = function()
   {
-    var id = module.get('id');
+    var appId = module.get('id') || '';
+    var machineId = process.env.COMPUTERNAME || process.env.USERNAME || '';
 
-    if (!_.isEmpty(id) && !_.isEmpty(process.env.COMPUTERNAME))
+    if (_.isEmpty(appId) && _.isEmpty(machineId))
     {
-      id = process.env.COMPUTERNAME + '-' + id;
+      return 'XICONF-' + Math.round(1000000000 + Math.random() * 8999999999).toString().toUpperCase().substr(0, 5);
     }
 
-    return id;
+    var installId = appId;
+
+    if (!_.isEmpty(machineId))
+    {
+      installId = _.isEmpty(installId) ? machineId : (machineId + '-' + installId);
+    }
+
+    return installId;
   };
 
   app.onModuleReady(
