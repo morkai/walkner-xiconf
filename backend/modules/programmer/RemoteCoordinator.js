@@ -37,6 +37,26 @@ RemoteCoordinator.prototype.isConnected = function()
   return this.sio && this.sio.socket.connected;
 };
 
+RemoteCoordinator.prototype.connectToProdLine = function()
+{
+  if (!this.isConnected())
+  {
+    return;
+  }
+
+  var srcId = this.settings.getInstallationId();
+  var prodLineId = this.settings.get('prodLine');
+
+  if (_.isEmpty(srcId) || _.isEmpty(prodLineId))
+  {
+    return;
+  }
+
+  this.sio.emit('xiconf.connect', srcId, prodLineId);
+
+  this.scheduleCurrentDataAvailabilityCheck();
+};
+
 RemoteCoordinator.prototype.acquireServiceTag = function(resultId, nc12, done)
 {
   if (!this.isConnected())
@@ -103,7 +123,10 @@ RemoteCoordinator.prototype.setUpSio = function()
 
   sio.on('connecting', function()
   {
-    programmer.debug("[remote] Connecting...");
+    if (!wasConnected)
+    {
+      programmer.debug("[remote] Connecting...");
+    }
   });
 
   sio.on('connect', function()
@@ -195,27 +218,6 @@ RemoteCoordinator.prototype.setUpSio = function()
 
 /**
  * @private
- */
-RemoteCoordinator.prototype.connectToProdLine = function()
-{
-  if (!this.isConnected())
-  {
-    return;
-  }
-
-  var srcId = this.settings.getInstallationId();
-  var prodLineId = this.settings.get('prodLine');
-
-  if (_.isEmpty(srcId) || _.isEmpty(prodLineId))
-  {
-    return;
-  }
-
-  this.sio.emit('xiconf.connect', srcId, prodLineId);
-};
-
-/**
- * @private
  * @param {object} newData
  */
 RemoteCoordinator.prototype.updateCurrentData = function(newData)
@@ -233,6 +235,27 @@ RemoteCoordinator.prototype.updateCurrentData = function(newData)
     this.programmer.currentState.clear();
     this.programmer.currentState.remoteData = this.currentData;
     this.programmer.changeState();
+  }
+};
+
+RemoteCoordinator.prototype.scheduleCurrentDataAvailabilityCheck = function()
+{
+  if (this.checkTimer !== null)
+  {
+    clearTimeout(this.checkTimer);
+  }
+
+  this.checkTimer = setTimeout(this.checkCurrentDataAvailability.bind(this), _.random(45, 90) * 1000);
+};
+
+/**
+ * @private
+ */
+RemoteCoordinator.prototype.checkCurrentDataAvailability = function()
+{
+  if (this.currentData.orderNo === null)
+  {
+    this.connectToProdLine();
   }
 };
 
@@ -284,6 +307,8 @@ RemoteCoordinator.prototype.onRemoteDataUpdated = function(newData)
   {
     this.newData = newData;
   }
+
+  this.scheduleCurrentDataAvailabilityCheck();
 };
 
 
