@@ -8,6 +8,7 @@ var fs = require('fs');
 var _ = require('lodash');
 var setUpRoutes = require('./routes');
 var validateLicense = require('./validateLicense');
+var setUpServiceTagPrinterZpl = require('./setUpServiceTagPrinterZpl');
 
 exports.DEFAULT_CONFIG = {
   expressId: 'express',
@@ -173,6 +174,11 @@ exports.start = function startSettingsModule(app, module, done)
 
     module.import(_.merge({}, settings), done, true);
   });
+
+  app.broker.subscribe('app.started', setUpServiceTagPrinterZpl.bind(null, app, module)).setLimit(1);
+  app.broker.subscribe('settings.changed')
+    .on('message', setUpServiceTagPrinterZpl.bind(null, app, module))
+    .setFilter(function(changes) { return changes.serviceTagPrinter !== undefined; });
 
   function validateSettings(rawSettings)
   {

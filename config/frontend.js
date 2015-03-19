@@ -110,7 +110,7 @@ exports.settings = {
     testingModbusPort: 502,
     prodLine: '',
     serviceTagPrint: 1,
-    serviceTagPrinter: '',
+    serviceTagPrinter: 'ServiceTagPrinterZPL',
     serviceTagLabelType: 'zpl',
     serviceTagLabelCode: '',
     protectInputMode: 1,
