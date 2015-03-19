@@ -17,7 +17,7 @@ RequestExecutionLevel admin
 !define MUI_LANGDLL_ALWAYSSHOW
 
 !define MUI_FINISHPAGE_NOREBOOTSUPPORT
-!define MUI_FINISHPAGE_RUN "$INSTDIR\Walkner Xiconf.exe"
+!define MUI_FINISHPAGE_RUN "$INSTDIR\bin\XiconfRun.exe"
 !define MUI_FINISHPAGE_RUN_TEXT "$(RUN_TEXT)"
 
 !insertmacro MUI_PAGE_WELCOME
@@ -42,7 +42,7 @@ Function .onInit
 FunctionEnd
 
 Function .onInstSuccess
-  FileOpen $0 "$INSTDIR\data\walkner-xiconf.lang" w
+  FileOpen $0 "$INSTDIR\data\lang.txt" w
 
   StrCmp $LANGUAGE ${LANG_ENGLISH} 0 +2
     FileWrite $0 "en"

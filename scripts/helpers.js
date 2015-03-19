@@ -12,7 +12,7 @@ var CHROME_VERSION = fs.readdirSync(path.join(installerConfig.googleChromePortab
 var DEST_INSTALLER = path.join(__dirname, '../build/installer');
 var DEST_SCRIPTS = path.join(__dirname, '../build/scripts');
 var DEST_APP = DEST_INSTALLER + '/bin/walkner-xiconf';
-var DEST_CHROME = DEST_INSTALLER + '/bin/google-chrome';
+var DEST_CHROME = DEST_INSTALLER + '/bin/chrome';
 var DEST_CHROME_BIN = DEST_CHROME + '/App/Chrome-bin/' + CHROME_VERSION;
 var SRC_CHROME = installerConfig.googleChromePortable;
 var SRC_CHROME_BIN = SRC_CHROME + '/App/Chrome-bin/' + CHROME_VERSION;
@@ -40,12 +40,6 @@ exports.copy = {
       },
       {
         expand: true,
-        cwd: './bin',
-        src: ['service-create.bat', 'service-remove.bat'],
-        dest: DEST_APP + '/bin'
-      },
-      {
-        expand: true,
         cwd: './config',
         src: ['frontend.js', 'require.js', 'license.ed.public.pem'],
         dest: DEST_APP + '/config'
@@ -64,8 +58,7 @@ exports.copy = {
           'favicon.ico',
           'assets/main.css',
           'vendor/font-awesome/fonts/fontawesome-webfont.woff',
-          'vendor/require/require.js',
-          'vendor/source-code-pro/SourceCodePro-Regular.otf'
+          'vendor/require/require.js'
         ],
         dest: DEST_APP + '/frontend-build'
       },
@@ -93,23 +86,23 @@ exports.copy = {
       },
       {
         src: './docs/install-guide.pl.pdf',
-        dest: DEST_INSTALLER + '/docs/walkner-xiconf-install-guide.pl.pdf'
+        dest: DEST_INSTALLER + '/docs/install-guide.pl.pdf'
       },
       {
         src: './docs/license.pl.pdf',
-        dest: DEST_INSTALLER + '/docs/walkner-xiconf-license.pl.pdf'
+        dest: DEST_INSTALLER + '/docs/license.pl.pdf'
       },
       {
         src: './docs/user-guide.pl.pdf',
-        dest: DEST_INSTALLER + '/docs/walkner-xiconf-user-guide.pl.pdf'
+        dest: DEST_INSTALLER + '/docs/user-guide.pl.pdf'
       },
       {
         src: './data/.keep',
-        dest: DEST_INSTALLER + '/data/walkner-xiconf-features/.keep'
+        dest: DEST_INSTALLER + '/data/features/.keep'
       },
       {
         src: './data/workflow.txt',
-        dest: DEST_INSTALLER + '/data/walkner-xiconf-workflow.txt'
+        dest: DEST_INSTALLER + '/data/workflow.txt'
       },
       {
         src: './data/.keep',
@@ -145,18 +138,6 @@ exports.copy = {
       {
         src: installerConfig.node,
         dest: DEST_INSTALLER + '/bin/node.exe'
-      },
-      {
-        src: installerConfig.nssm,
-        dest: DEST_INSTALLER + '/bin/nssm.exe'
-      },
-      {
-        src: installerConfig.ntrights,
-        dest: DEST_INSTALLER + '/bin/ntrights.exe'
-      },
-      {
-        src: installerConfig.dComPerm,
-        dest: DEST_INSTALLER + '/bin/DComPerm.exe'
       },
       {
         src: installerConfig.vcredist_x86,
@@ -199,12 +180,16 @@ exports.copy = {
         dest: DEST_APP + '/node_modules/ursa/bin/libeay32.dll'
       },
       {
-        src: DEST_SCRIPTS + '/Walkner Xiconf.exe',
-        dest: DEST_INSTALLER + '/Walkner Xiconf.exe'
+        src: installerConfig.stdRedir,
+        dest: DEST_INSTALLER + '/bin/XiconfStdRedir.exe'
       },
       {
-        src: DEST_SCRIPTS + '/walkner-xiconf-uninstall.exe',
-        dest: DEST_INSTALLER + '/bin/walkner-xiconf-uninstall.exe'
+        src: DEST_SCRIPTS + '/XiconfRun.exe',
+        dest: DEST_INSTALLER + '/bin/XiconfRun.exe'
+      },
+      {
+        src: DEST_SCRIPTS + '/XiconfUninstall.exe',
+        dest: DEST_INSTALLER + '/bin/XiconfUninstall.exe'
       }
     ]
   }
@@ -269,14 +254,6 @@ exports.replace = {
       {
         from :'#AutoIt3Wrapper_Res_ProductVersion=0.0.0',
         to: '#AutoIt3Wrapper_Res_ProductVersion=' + pkg.version
-      },
-      {
-        from: '$SERVICE_USER = ""',
-        to: '$SERVICE_USER = "' + installerConfig.serviceUser + '"'
-      },
-      {
-        from: '$SERVICE_PASS = ""',
-        to: '$SERVICE_PASS = "' + installerConfig.servicePass + '"'
       },
       {
         from: '$SERVER_PORT = 1337',

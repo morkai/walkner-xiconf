@@ -79,6 +79,6 @@ module.exports = function setSettingsRoutes(app, settingsModule)
 
     res.send();
 
-    setImmediate(function() { process.exit(); });
+    setImmediate(function() { process.exit(666); });
   });
 };
