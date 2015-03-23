@@ -29,7 +29,8 @@
   "form:restart": "Restartuj serwer",
   "form:password": "Hasło",
 
-  "mowVersion": "Wspierana wersja Philips MultiOne Workflow",
+  "mowVersion:supported": "Wspierana wersja Philips MultiOne Workflow",
+  "mowVersion:installed": "Zainstalowana wersja Philips MultiOne Workflow",
 
   "setting:id": "Identyfikator instalacji",
   "setting:title": "Tytuł",

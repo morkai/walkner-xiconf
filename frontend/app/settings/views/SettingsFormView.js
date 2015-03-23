@@ -145,7 +145,8 @@ define([
       return {
         idPrefix: this.idPrefix,
         hotkeyPattern: '^([A-Z\\[\\]\\;\',./]|Space)$',
-        computerName: window.COMPUTER_NAME || ''
+        computerName: window.COMPUTER_NAME || '',
+        multiOneWorkflowVersion: settings.get('multiOneWorkflowVersion')
       };
     },
 
@@ -172,6 +173,8 @@ define([
     onSettingsChange: function()
     {
       this.importSettings(settings.toJSON());
+
+      this.$id('mowVersion').text(settings.get('multiOneWorkflowVersion'));
     },
 
     onRestartClick: function()

@@ -30,7 +30,8 @@
     "form:restart": "Restart server",
     "form:password": "Password",
 
-    "mowVersion": "Supported Philips MultiOne Workflow version",
+    "mowVersion:supported": "Supported Philips MultiOne Workflow version",
+    "mowVersion:installed": "Installed Philips MultiOne Workflow version",
 
     "setting:id": "Installation ID",
     "setting:title": "Title",

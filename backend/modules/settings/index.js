@@ -5,7 +5,10 @@
 'use strict';
 
 var fs = require('fs');
+var exec = require('child_process').exec;
+var format = require('util').format;
 var _ = require('lodash');
+var step = require('h5.step');
 var setUpRoutes = require('./routes');
 var validateLicense = require('./validateLicense');
 var setUpServiceTagPrinterZpl = require('./setUpServiceTagPrinterZpl');
@@ -21,7 +24,9 @@ exports.DEFAULT_CONFIG = {
 
 exports.start = function startSettingsModule(app, module, done)
 {
-  var settings = {};
+  var settings = {
+    multiOneWorkflowVersion: '0.0.0.0'
+  };
 
   module.has = function(name)
   {
@@ -78,12 +83,30 @@ exports.start = function startSettingsModule(app, module, done)
       return done(new Error('INVALID_CHANGES'));
     }
 
-    settings = _.merge(settings, changes);
+    step(
+      function()
+      {
+        if (changes.programmerFile)
+        {
+          readMultiOneWorkflowVersion(changes.programmerFile, this.next());
+        }
+      },
+      function()
+      {
+        if (changes.programmerFile)
+        {
+          changes.multiOneWorkflowVersion = settings.multiOneWorkflowVersion;
+        }
 
-    fs.writeFile(
-      module.config.settingsFile,
-      JSON.stringify(settings),
-      {encoding: 'utf8'},
+        settings = _.merge(settings, changes);
+
+        fs.writeFile(
+          module.config.settingsFile,
+          JSON.stringify(settings),
+          {encoding: 'utf8'},
+          this.next()
+        );
+      },
       function(err)
       {
         if (err)
@@ -157,36 +180,73 @@ exports.start = function startSettingsModule(app, module, done)
     setUpRoutes.bind(null, app, module)
   );
 
-  fs.readFile(module.config.settingsFile, {encoding: 'utf8'}, function(err, contents)
-  {
-    if (err && err.code !== 'ENOENT')
+  step(
+    function()
     {
-      return done(err);
-    }
-
-    try
+      readInitialSettings(this.next());
+    },
+    function(err)
     {
-      settings = JSON.parse(contents || '{}');
-    }
-    catch (err)
-    {
-      module.warn("Failed to parse the settings file: %s", err.message);
-    }
+      if (err)
+      {
+        return this.skip(err);
+      }
 
-    if (settings === null || typeof settings !== 'object')
-    {
-      settings = {};
-    }
-
-    settings = _.defaults(settings, module.config.defaults);
-
-    module.import(_.merge({}, settings), done, true);
-  });
+      readMultiOneWorkflowVersion(null, this.next());
+    },
+    done
+  );
 
   app.broker.subscribe('app.started', setUpServiceTagPrinterZpl.bind(null, app, module)).setLimit(1);
   app.broker.subscribe('settings.changed')
     .on('message', setUpServiceTagPrinterZpl.bind(null, app, module))
     .setFilter(function(changes) { return changes.serviceTagPrinter !== undefined; });
+
+  function readInitialSettings(done)
+  {
+    fs.readFile(module.config.settingsFile, {encoding: 'utf8'}, function(err, contents)
+    {
+      if (err && err.code !== 'ENOENT')
+      {
+        return done(err);
+      }
+
+      try
+      {
+        settings = JSON.parse(contents || '{}');
+      }
+      catch (err)
+      {
+        module.warn("Failed to parse the settings file: %s", err.message);
+      }
+
+      if (settings === null || typeof settings !== 'object')
+      {
+        settings = {};
+      }
+
+      settings = _.defaults(settings, module.config.defaults);
+
+      module.import(_.merge({}, settings), done, true);
+    });
+  }
+
+  function readMultiOneWorkflowVersion(programmerFile, done)
+  {
+    var cmd = format('"%s" /f dummy /w dummy /c Halt', programmerFile || module.get('programmerFile'));
+    var options = {
+      timeout: 1337
+    };
+
+    exec(cmd, options, function(err, stdout)
+    {
+      var matches = stdout.match(/v(?:ersion)?.*?((?:[0-9]+\.?){4})/);
+
+      settings.multiOneWorkflowVersion = matches ? matches[1] : '0.0.0.0';
+
+      done();
+    });
+  }
 
   function validateSettings(rawSettings)
   {
