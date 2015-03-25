@@ -59,7 +59,8 @@ define([
       'hotkeys.reset': function() { this.clickElement('reset'); },
       'hotkeys.reload': function() { this.clickElement('reload'); },
       'hotkeys.printServiceTag': function() { this.clickElement('printServiceTag'); },
-      'programmer.barcodeScanned': 'onBarcodeScanned'
+      'programmer.barcodeScanned': 'onBarcodeScanned',
+      'serviceTagPrintRequested': function(message) { this.printServiceTag(message.serviceTag); }
     },
 
     events: {
@@ -333,15 +334,19 @@ define([
       });
     },
 
-    printServiceTag: function()
+    printServiceTag: function(serviceTag)
     {
       if (!user.isLocal() || this.printServiceTagDialogView)
       {
         return;
       }
 
+      if (typeof serviceTag !== 'string')
+      {
+        serviceTag = this.model.get('serviceTag');
+      }
+
       var view = this;
-      var serviceTag = this.model.get('serviceTag');
       var orderNo = this.$els.orderNo.val();
       var counter = '';
 

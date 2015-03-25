@@ -73,6 +73,19 @@ define([
             el.parentNode.firstElementChild.focus();
           }
         }
+      },
+      'click .dashboard-history-serviceTag': function(e)
+      {
+        var serviceTag = e.currentTarget.innerText.trim();
+
+        if (serviceTag === '')
+        {
+          return;
+        }
+
+        this.broker.publish('serviceTagPrintRequested', {serviceTag: serviceTag});
+
+        return false;
       }
     },
 
@@ -108,6 +121,7 @@ define([
         time: time.format(model.get('finishedAt'), 'HH:mm:ss'),
         orderNo: order ? order.no : '&nbsp;',
         quantity: order ? (model.get('counter') + '/' + order.quantity) : '&nbsp;',
+        serviceTag: model.get('serviceTag') || '&nbsp;',
         nc12: model.get('nc12'),
         programName: model.getProgramName() || '&nbsp;'
       };

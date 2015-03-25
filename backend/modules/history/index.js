@@ -69,6 +69,7 @@ exports.start = function startProgrammerModule(app, module, done)
       _order: historyEntry.order ? historyEntry.order._id : (historyEntry.orderId || null),
       no: historyEntry.order ? historyEntry.order.no : (historyEntry.orderNo || null),
       quantity: historyEntry.order ? historyEntry.order.quantity : (historyEntry.orderQuantity || null),
+      serviceTag: historyEntry.serviceTag,
       nc12: historyEntry.nc12,
       finishedAt: historyEntry.finishedAt,
       counter: historyEntry.counter,

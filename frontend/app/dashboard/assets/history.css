@@ -44,6 +44,12 @@
   font-style: normal;
   float: right;
 }
+.dashboard-history-serviceTag {
+  color: #337ab7;
+}
+.dashboard-history-serviceTag:hover {
+  color: #23527c;
+}
 kbd[data-hotkey="focusHistory"] {
   top: 30px;
   right: 18px;
