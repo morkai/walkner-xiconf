@@ -310,6 +310,7 @@ exports.start = function startSettingsModule(app, module, done)
     validateEnum(rawSettings, newSettings, 'testingModbusEnabled', Number, [0, 1]);
     validateEnum(rawSettings, newSettings, 'serviceTagPrint', Number, [0, 1]);
     validateEnum(rawSettings, newSettings, 'serviceTagLabelType', String, ['zpl', 'dpl']);
+    validateEnum(rawSettings, newSettings, 'serviceTagInLocalMode', String, ['disabled', 'optional', 'required']);
     validateEnum(rawSettings, newSettings, 'protectInputMode', Number, [0, 1]);
     validateEnum(rawSettings, newSettings, 'bgScanner', Number, [0, 1]);
     validateHotkeys(rawSettings, newSettings);

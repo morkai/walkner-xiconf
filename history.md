@@ -1,3 +1,25 @@
+2.8.0 @ 2015-03-28
+==================
+
+  * Fixed the remote coordinator not connecting to the specified production line if the installation ID setting
+    was empty.
+  * Changed the way the application is started and reorganized the installation's file structure. Previously, a Windows
+    service was created and run as a non-admin user which caused permission problems. Now, the application is started
+    by an AutoIt script that stays in the tray.
+  * Added automatic creation of `Generic / Text Only` printers on the same ports as `ZDesigner GK420t` printers
+    if the Service Tag printer name is set to `ServiceTagPrinterZPL`.
+  * Added a current remote data watchdog: every 30-90 seconds the remote coordinator reconnects to the production line
+    if it has a connection to the remote server and the current remote data is empty.
+  * Added an ability to manually reconnect to the production line by clicking on the green connection indicator. This
+    action can only be performed once per 5 seconds.
+  * Added the installed MultiOne Workflow version under the supported version in the MultiOne Workflow settings tab.
+  * Added a Service Tag column to the recent results list on the Programmer page. Clicking on a Service Tag opens up
+    the Print Service Tag label dialog.
+  * Added an ability to acquire Service Tags in the Local mode. The 'Service Tags in Local mode` setting can be set to
+    disabled, optional or required.
+  * Added a simple cache mechanism to the feature file searching. If the 12NC of the current process is the same as
+    the one in the previous, successful result, then a feature file path from that last result is used.
+
 2.7.2 @ 2015-03-18
 ==================
 

@@ -7,6 +7,7 @@
 var crypto = require('crypto');
 var fs = require('fs');
 var path = require('path');
+var _ = require('lodash');
 var Order = require('./Order');
 
 module.exports = HistoryEntry;
@@ -20,8 +21,10 @@ function HistoryEntry(db, broker)
   this.workMode = 'programming';
   this.inProgress = false;
   this.overallProgress = 0;
-  this.remoteData = null;
   this.remoteConnected = false;
+  this.remoteData = null;
+  this.remoteLeader = null;
+  this.selectedOrderNo = null;
   this.selectedNc12 = null;
 
   this.clear();
@@ -52,12 +55,15 @@ HistoryEntry.prototype.toJSON = function()
     countdown: this.countdown,
     program: this.program,
     steps: this.steps,
+    leds: Array.isArray(this.leds) && this.leds.length ? [].concat(this.log) : null,
     inputMode: this.inputMode,
     workMode: this.workMode,
     inProgress: this.inProgress,
     overallProgress: this.overallProgress,
-    remoteData: this.remoteData,
     remoteConnected: this.remoteConnected,
+    remoteData: this.remoteData,
+    remoteLeader: this.remoteLeader,
+    selectedOrderNo: this.selectedOrderNo,
     selectedNc12: this.selectedNc12
   };
 };
@@ -72,6 +78,16 @@ HistoryEntry.prototype.isFinished = function()
   return this.finishedAt !== null;
 };
 
+HistoryEntry.prototype.createServiceTagRequestData = function()
+{
+  return {
+    orderNo: this.order.no,
+    nc12: this.nc12,
+    multi: _.isString(this.workflow) && /multidevice\s*=\s*true/i.test(this.workflow),
+    leds: [].concat(this.leds)
+  };
+};
+
 HistoryEntry.prototype.clear = function(clearOrder, clearProgram)
 {
   this._id = null;
@@ -80,6 +96,7 @@ HistoryEntry.prototype.clear = function(clearOrder, clearProgram)
   {
     this.order = null;
     this.counter = null;
+    this.nc12 = null;
   }
 
   if (clearProgram !== false)
@@ -87,7 +104,6 @@ HistoryEntry.prototype.clear = function(clearOrder, clearProgram)
     this.program = null;
   }
 
-  this.nc12 = null;
   this.serviceTag = null;
   this.startedAt = null;
   this.finishedAt = null;
@@ -106,6 +122,7 @@ HistoryEntry.prototype.clear = function(clearOrder, clearProgram)
   this.countdown = -1;
   this.steps = null;
   this.metrics = null;
+  this.leds = null;
   this.inProgress = false;
   this.overallProgress = 0;
 };
@@ -167,6 +184,7 @@ HistoryEntry.prototype.reset = function(orderNo, quantity, nc12)
   this.countdown = -1;
   this.steps = null;
   this.metrics = null;
+  this.leds = [];
 
   if (this.program)
   {
@@ -248,12 +266,12 @@ HistoryEntry.prototype.save = function(featureDbPath, done)
         _id, _order, nc12, counter, startedAt, finishedAt, duration,\
         log, result, errorCode, exception, output, featureFile,\
         featureFileName, featureFileHash, workflowFile, workflow,\
-        program, steps, metrics, serviceTag\
+        program, steps, metrics, serviceTag, leds\
       ) VALUES (\
         $_id, $_order, $nc12, $counter, $startedAt, $finishedAt, $duration,\
         $log, $result, $errorCode, $exception, $output, $featureFile,\
         $featureFileName, $featureFileHash, $workflowFile, $workflow,\
-        $program, $steps, $metrics, $serviceTag\
+        $program, $steps, $metrics, $serviceTag, $leds\
       )";
     var params = {
       $_id: historyEntry._id,
@@ -276,7 +294,8 @@ HistoryEntry.prototype.save = function(featureDbPath, done)
       $program: historyEntry.program ? JSON.stringify(historyEntry.program) : null,
       $steps: historyEntry.steps ? JSON.stringify(historyEntry.steps) : null,
       $metrics: historyEntry.metrics ? JSON.stringify(historyEntry.metrics) : null,
-      $serviceTag: historyEntry.serviceTag
+      $serviceTag: historyEntry.serviceTag,
+      $leds: historyEntry.leds ? JSON.stringify(historyEntry.leds) : null
     };
 
     historyEntry.db.run(sql, params, done);

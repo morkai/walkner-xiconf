@@ -96,6 +96,13 @@ COMMIT TRANSACTION;';
         sql += 'CREATE INDEX IF NOT EXISTS serviceTag_D ON historyEntries(serviceTag DESC);\n';
       }
 
+      if (row.user_version < 3)
+      {
+        userVersion = 3;
+
+        sql += 'ALTER TABLE historyEntries ADD COLUMN leds TEXT;\n';
+      }
+
       if (sql === '')
       {
         return sqlite3Module.info("Database user version: %d", userVersion);

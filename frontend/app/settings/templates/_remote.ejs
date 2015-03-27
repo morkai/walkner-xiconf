@@ -4,6 +4,20 @@
     <input id="<%- idPrefix %>-prodLine" class="form-control" name="prodLine" type="text">
   </div>
   <div class="form-group">
+    <label for="<%- idPrefix %>-serviceTagInLocalMode" class="control-label"><%- t('settings', 'setting:serviceTagInLocalMode') %></label>
+    <div>
+      <label class="radio-inline">
+        <input id="<%- idPrefix %>-serviceTagInLocalMode" name="serviceTagInLocalMode" type="radio" value="disabled" required> <%- t('settings', 'setting:serviceTagInLocalMode:disabled') %>
+      </label>
+      <label class="radio-inline">
+        <input name="serviceTagInLocalMode" type="radio" value="optional" required> <%- t('settings', 'setting:serviceTagInLocalMode:optional') %>
+      </label>
+      <label class="radio-inline">
+        <input name="serviceTagInLocalMode" type="radio" value="required" required> <%- t('settings', 'setting:serviceTagInLocalMode:required') %>
+      </label>
+    </div>
+  </div>
+  <div class="form-group">
     <label for="<%- idPrefix %>-serviceTagPrint" class="control-label"><%- t('settings', 'setting:serviceTagPrint') %></label>
     <div>
       <label class="radio-inline">

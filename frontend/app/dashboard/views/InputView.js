@@ -531,11 +531,11 @@ define([
 
       if (this.model.isRemoteInput())
       {
-        data = this.model.get('remoteData') || {
-          orderNo: null,
-          nc12: [],
+        data = this.model.getSelectedRemoteData() || {
+          _id: null,
           quantityTodo: null,
-          quantityDone: null
+          quantityDone: null,
+          items: []
         };
       }
       else
@@ -546,79 +546,65 @@ define([
         if (localOrder)
         {
           data = {
-            orderNo: localOrder.no,
-            nc12: [],
+            _id: localOrder.no,
             quantityTodo: localOrder.quantity,
-            quantityDone: localOrder.successCounter
+            quantityDone: localOrder.successCounter,
+            items: []
           };
         }
         else
         {
           data = {
-            orderNo: null,
-            nc12: [],
+            _id: null,
             quantityTodo: null,
-            quantityDone: null
+            quantityDone: null,
+            items: []
           };
         }
 
         if (localNc12)
         {
-          data.nc12.push({_id: localNc12});
+          data.items.push({
+            kind: 'program',
+            nc12: localNc12
+          });
         }
       }
 
-      $els.orderNo.val(data.orderNo || '');
 
-      var nc12;
-      var selectedNc12 = _.findWhere(data.nc12, {_id: this.model.get('selectedNc12')});
-      var multi = data.nc12.length > 1;
+      $els.orderNo.val(data._id || '');
+
+      var programItems = _.where(data.items, {kind: 'program'});
+      var selectedProgramItem = _.findWhere(programItems, {nc12: this.model.get('selectedNc12')});
+      var multiNc12 = programItems.length > 1;
       var quantityTodo = data.quantityTodo;
       var quantityDone = data.quantityDone;
+      var nc12 = '';
 
-      if (data.nc12.length)
+      if (programItems.length)
       {
-        if (data.nc12.length === 1)
+        if (programItems.length === 1)
         {
-          nc12 = data.nc12[0]._id;
+          nc12 = programItems[0].nc12;
         }
-        else if (selectedNc12)
+        else if (selectedProgramItem)
         {
-          nc12 = selectedNc12._id;
-          quantityTodo = selectedNc12.quantityTodo;
-          quantityDone = selectedNc12.quantityDone;
+          nc12 = selectedProgramItem.nc12;
         }
         else
         {
-          var completed = 0;
-
-          _.forEach(data.nc12, function(nc12)
-          {
-            if (nc12.quantityDone >= nc12.quantityTodo)
-            {
-              completed += 1;
-            }
-          });
-
-          if (completed !== data.nc12.length)
-          {
-            quantityDone = 0;
-
-            _.forEach(data.nc12, function(nc12)
-            {
-              quantityDone += nc12.quantityDone > nc12.quantityTodo ? nc12.quantityTodo : nc12.quantityDone;
-            });
-          }
-
           nc12 = '????????????';
         }
       }
 
-      $els.nc12.val(nc12).closest('div').toggleClass('is-multi', user.isLocal() && !this.model.isInProgress() && multi);
+      $els.nc12
+        .val(nc12)
+        .closest('div')
+        .toggleClass('is-multi', user.isLocal() && !this.model.isInProgress() && multiNc12);
 
       var quantity = quantityTodo - quantityDone;
 
-      if (!data.orderNo || isNaN(quantity))
+      if (!data._id || isNaN(quantity))
       {
         $els.quantity.val('').removeClass('is-overflow');
       }
@@ -630,7 +616,7 @@ define([
 
     getStartData: function()
     {
-      var remoteData = this.model.isRemoteInput() ? this.model.get('remoteData') : null;
+      var remoteData = this.model.isRemoteInput() ? this.model.getSelectedRemoteData() : null;
       var nc12 = this.$els.nc12.val().trim();
 
       if (!/^[0-9]{12}$/.test(nc12))
@@ -956,15 +942,15 @@ define([
 
       if (this.model.isRemoteInput())
       {
-        var remoteData = this.model.get('remoteData');
+        var remoteData = this.model.getSelectedRemoteData();
 
-        if (!remoteData || !remoteData.orderNo)
+        if (!remoteData)
         {
           return null;
         }
 
         order = {
-          no: remoteData.orderNo,
+          no: remoteData._id,
           quantity: remoteData.quantityTodo.toLocaleString(),
           successCounter: remoteData.quantityDone.toLocaleString(),
           failureCounter: failureCounter ? ('~' + failureCounter.toLocaleString()) : '?',
@@ -992,7 +978,7 @@ define([
 
       if (order.startedAt && order.finishedAt)
       {
-        order.duration = time.toString((order.finishedAt - order.startedAt) / 1000);
+        order.duration = time.toString(time.getMoment(order.finishedAt).diff(order.startedAt) / 1000);
       }
 
       order.startedAt = this.formatTimeOrDateTime(order.startedAt);
@@ -1053,7 +1039,7 @@ define([
 
       var templateData = {
         idPrefix: this.idPrefix,
-        nc12s: this.model.get('remoteData').nc12
+        programs: _.where(this.model.getSelectedRemoteData().items, {kind: 'program'})
       };
 
       $(nc12PickerTemplate(templateData))

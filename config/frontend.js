@@ -113,6 +113,7 @@ exports.settings = {
     serviceTagPrinter: 'ServiceTagPrinterZPL',
     serviceTagLabelType: 'zpl',
     serviceTagLabelCode: '',
+    serviceTagInLocalMode: 'optional',
     protectInputMode: 1,
     bgScanner: 0,
     hotkeys: {

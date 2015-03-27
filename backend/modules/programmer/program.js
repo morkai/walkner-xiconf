@@ -16,14 +16,16 @@ var LptIo = require('./LptIo');
 
 module.exports = function program(app, programmerModule, data, done)
 {
+  var fake = app.options.env !== 'production';
   var settings = app[programmerModule.config.settingsId];
   var currentState = programmerModule.currentState;
+  var remoteCoordinator = programmerModule.remoteCoordinator;
 
   if (currentState.isInProgress())
   {
     return done(new Error('IN_PROGRESS'));
   }
-  else if (currentState.inputMode === 'remote' && !programmerModule.remoteCoordinator.isConnected())
+  else if (currentState.inputMode === 'remote' && !remoteCoordinator.isConnected())
   {
     return done(new Error('NO_REMOTE_CONNECTION'));
   }
@@ -41,7 +43,8 @@ module.exports = function program(app, programmerModule, data, done)
 
   app.broker.subscribe('programmer.finished', function() { thisProgrammingCancelledSub.cancel(); });
 
-  var shouldAcquireServiceTag = currentState.inputMode === 'remote';
+  var shouldAcquireServiceTag = !_.isEmpty(data.orderNo)
+    && (currentState.inputMode === 'remote' || settings.get('serviceTagInLocalMode') !== 'disabled');
   var shouldPrintServiceTag = shouldAcquireServiceTag
     && settings.get('serviceTagPrint')
     && !_.isEmpty(settings.get('serviceTagPrinter'))
@@ -159,18 +162,23 @@ module.exports = function program(app, programmerModule, data, done)
 
     programmerModule.updateOverallProgress(7);
 
+    var lastFeatureFile = programmerModule.getLastFeatureFile(currentState.nc12);
+    var next = this.next();
+
+    if (lastFeatureFile !== null)
+    {
+      programmerModule.log('USING_LAST_FEATURE_FILE');
+
+      return setImmediate(next, null, lastFeatureFile.fullPath, [lastFeatureFile.fileName]);
+    }
+
     programmerModule.log('SEARCHING_FEATURE_FILE', {
       featurePath: featurePath1
     });
 
     this.sub = app.broker.subscribe(
       'programmer.cancelled',
-      findFeatureFile(
-        featurePath1,
-        currentState.nc12,
-        settings.get('searchTimeout1'),
-        this.next()
-      )
+      findFeatureFile(featurePath1, currentState.nc12, settings.get('searchTimeout1'), next)
     );
   }
 
@@ -190,6 +198,14 @@ module.exports = function program(app, programmerModule, data, done)
     }
 
     this.foundFeature1 = false;
+
+    if (fake && !filePath)
+    {
+      files = [currentState.nc12 + ' Program FAKE.xml'];
+      filePath = '/FAKE/PATH/TO/' + files[0];
+
+      this.foundFeature1 = true;
+    }
 
     if (err)
     {
@@ -665,23 +681,29 @@ module.exports = function program(app, programmerModule, data, done)
       return;
     }
 
+    if (currentState.inputMode === 'local'
+      && !remoteCoordinator.isConnected()
+      && settings.get('serviceTagInLocalMode') === 'optional')
+    {
+      return programmerModule.log('SKIPPING_SERVICE_TAG_ACQUIRING');
+    }
+
     programmerModule.updateOverallProgress(92);
 
     programmerModule.log('ACQUIRING_SERVICE_TAG');
 
     var next = this.next();
-    var thisResultId = currentState._id;
-    var thisNc12 = currentState.nc12;
+    var serviceTagRequestData = currentState.createServiceTagRequestData();
 
     this.sub = app.broker.subscribe('programmer.cancelled', next);
 
-    programmerModule.remoteCoordinator.acquireServiceTag(thisResultId, thisNc12, function(err, serviceTag)
+    remoteCoordinator.acquireServiceTag(serviceTagRequestData, function(err, serviceTag)
     {
       if (thisProgrammingCancelled)
       {
         if (serviceTag)
         {
-          programmerModule.remoteCoordinator.releaseServiceTag(thisResultId, thisNc12, serviceTag);
+          remoteCoordinator.releaseServiceTag(serviceTagRequestData, serviceTag);
         }
 
         return;
@@ -710,7 +732,7 @@ module.exports = function program(app, programmerModule, data, done)
       return this.skip(err);
     }
 
-    if (!shouldPrintServiceTag)
+    if (!shouldPrintServiceTag || !currentState.serviceTag)
     {
       return;
     }
@@ -794,9 +816,9 @@ module.exports = function program(app, programmerModule, data, done)
 
       if (currentState.serviceTag !== null)
       {
-        programmerModule.remoteCoordinator.releaseServiceTag(
-          currentState._id, currentState.nc12, currentState.serviceTag
-        );
+        remoteCoordinator.releaseServiceTag({
+
+        });
       }
     }
     else

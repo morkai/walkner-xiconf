@@ -49,6 +49,8 @@ exports.start = function startProgrammerModule(app, module)
     throw new Error("history module is required!");
   }
 
+  var lastFeatureFile = null;
+
   module.OVERALL_SETUP_PROGRESS = 20;
   module.OVERALL_PROGRAMMING_PROGRESS = 100;
 
@@ -59,6 +61,11 @@ exports.start = function startProgrammerModule(app, module)
   module.newProgram = null;
 
   module.start = program.bind(null, app, module);
+
+  module.getLastFeatureFile = function(nc12)
+  {
+    return lastFeatureFile !== null && lastFeatureFile.nc12 === nc12 ? lastFeatureFile : null;
+  };
 
   module.setInputMode = function(inputMode, done)
   {
@@ -217,7 +224,7 @@ exports.start = function startProgrammerModule(app, module)
 
   module.changeState = function(changes)
   {
-    if (typeof changes === 'undefined')
+    if (changes === undefined)
     {
       app.broker.publish('programmer.stateChanged', module.currentState.toJSON());
     }
@@ -321,6 +328,24 @@ exports.start = function startProgrammerModule(app, module)
           module.error("Failed to switch the work mode to programming after testing was disabled: %s", err.message);
         }
       });
+    }
+
+    lastFeatureFile = null;
+  });
+
+  app.broker.subscribe('programmer.finished', function(finishedState)
+  {
+    if (finishedState.result === 'success' && finishedState.featureFile && finishedState.nc12)
+    {
+      lastFeatureFile = {
+        nc12: finishedState.nc12,
+        fullPath: finishedState.featureFile,
+        fileName: finishedState.featureFileName
+      };
+    }
+    else
+    {
+      lastFeatureFile = null;
     }
   });
 

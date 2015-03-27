@@ -3,7 +3,7 @@
   height: 70px;
   line-height: 1;
   font-family: Consolas, monospace;
-  font-size: 58px;
+  font-size: 56px;
   text-align: center;
 }
 .dashboard-input-orderNoAndQuantity {
@@ -14,7 +14,7 @@
 }
 .dashboard-input-quantity {
   margin-left: 14px;
-  width: 150px;
+  width: 185px;
 }
 .dashboard-input-quantity .is-overflow {
   outline: 4px solid #c7254e;

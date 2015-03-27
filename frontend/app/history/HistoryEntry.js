@@ -134,6 +134,32 @@ define([
       return order && order.successCounter >= order.quantity;
     },
 
+    getSelectedRemoteData: function()
+    {
+      var remoteData = this.get('remoteData');
+
+      if (!Array.isArray(remoteData) || !remoteData.length)
+      {
+        return null;
+      }
+
+      var selectedOrderNo = this.get('selectedOrderNo');
+
+      if (!selectedOrderNo)
+      {
+        return null;
+      }
+
+      var selectedRemoteData = _.findWhere(remoteData, {_id: selectedOrderNo});
+
+      if (!selectedRemoteData)
+      {
+        return null;
+      }
+
+      return selectedRemoteData;
+    },
+
     getCarouselItemId: function()
     {
       var result = this.get('result');
