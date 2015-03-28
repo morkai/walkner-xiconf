@@ -6,6 +6,9 @@
   * Changed the way the application is started and reorganized the installation's file structure. Previously, a Windows
     service was created and run as a non-admin user which caused permission problems. Now, the application is started
     by an AutoIt script that stays in the tray.
+  * Changed the way a selection of the 12NC works. Instead of a dropdown list, a modal dialog is displayed with a list
+    of the programs, a password field and a helpful message containing a name of the production line's leader.
+  * Changed the default feature file searching timeouts by x2.
   * Added automatic creation of `Generic / Text Only` printers on the same ports as `ZDesigner GK420t` printers
     if the Service Tag printer name is set to `ServiceTagPrinterZPL`.
   * Added a current remote data watchdog: every 30-90 seconds the remote coordinator reconnects to the production line
@@ -19,6 +22,9 @@
     disabled, optional or required.
   * Added a simple cache mechanism to the feature file searching. If the 12NC of the current process is the same as
     the one in the previous, successful result, then a feature file path from that last result is used.
+  * Added a value of the `Production line ID` setting to every programming result.
+  * Added an ability to switch between multiple recent orders in the remote input mode.
+  * Added a new option: LED boards checking.
 
 2.7.2 @ 2015-03-18
 ==================
