@@ -140,16 +140,16 @@ exports.start = function startSettingsModule(app, module, done)
     switch (feature)
     {
       case 'wmes':
-        return supportedFeatures & 1;
+        return !!(supportedFeatures & 1);
 
       case 'sol':
-        return supportedFeatures & 2;
+        return !!(supportedFeatures & 2);
 
       case 't24vdc':
-        return supportedFeatures & 4;
+        return !!(supportedFeatures & 4);
 
       case 'led':
-        return supportedFeatures & 8;
+        return !!(supportedFeatures & 8);
 
       default:
         return false;
