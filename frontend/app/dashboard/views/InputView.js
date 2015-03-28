@@ -691,24 +691,21 @@ define([
       var programItems = [];
       var ledItems = [];
 
-      if (isRemoteInput)
+      _.forEach(data.items, function(item)
       {
-        _.forEach(data.items, function(item)
+        if (item.kind === 'program')
         {
-          if (item.kind === 'program')
-          {
-            programItems.push(item);
-          }
-          else
-          {
-            ledItems.push(item);
-          }
-        });
-      }
+          programItems.push(item);
+        }
+        else
+        {
+          ledItems.push(item);
+        }
+      });
 
       var selectedProgramItem = _.findWhere(programItems, {nc12: this.model.get('selectedNc12')});
       var isMultiNc12 = programItems.length > 1;
-      var isLedOnly = !programItems.length && ledItems.length > 0 && !!settings.get('ledsEnabled');
+      var isLedOnly = isRemoteInput && !programItems.length && ledItems.length > 0 && !!settings.get('ledsEnabled');
       var quantityTodo = data.quantityTodo;
       var quantityDone = data.quantityDone;
       var nc12 = '';
