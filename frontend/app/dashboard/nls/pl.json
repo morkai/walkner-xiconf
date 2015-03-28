@@ -14,7 +14,10 @@
   "msg:start:requiredOrderNo": "Wymagany jest poprawny nr zlecenia!",
   "msg:start:requiredQuantity": "Wymagana jest poprawna ilość!",
   "msg:start:requiredNc12": "Wymagany jest poprawny kod 12NC!",
+  "msg:selectOrderNo:failure": "Nie udało się zmienić zlecenia :(",
+  "msg:selectOrderNo:success": "Zlecenie zostało zmienione :)",
   "msg:selectNc12:failure": "Nie udało się zmienić 12NC :(",
+  "msg:selectNc12:INVALID_PASSWORD": "Nie udało się zmienić 12NC: nieprawidłowe hasło :(",
   "msg:selectNc12:success": "12NC zostało zmienione :)",
 
   "connection:no": "Brak połączenia z lokalnym serwerem",
@@ -46,9 +49,20 @@
   "program:picker:failure": "Nie udało się ustawić programu :(",
   "program:picker:success": "Wybrany program został ustawiony :)",
 
+  "orderNoPickerDialog:title": "Zmień zlecenie",
+  "orderNoPickerDialog:nc12": "12NC:",
+  "orderNoPickerDialog:quantity": "Ilość:",
+
+  "nc12PickerDialog:title": "Zmień 12NC programowe",
+  "nc12PickerDialog:message": "Wybrane zlecenie ma zdefiniowane {nc12Count} {nc12Count, plural, few{programowe} other{programowych}} 12NC.<br>W celu wybrania poprawnego programu, skonsultuj się z liderem:<br>{leader}",
+  "nc12PickerDialog:password": "Hasło",
+  "nc12PickerDialog:quantity": "Ilość:",
+
   "orderFinishedDialog:title": "Koniec zlecenia",
-  "orderFinishedDialog:yes": "Resetuj zlecenie",
-  "orderFinishedDialog:close": "Zamknij",
+  "orderFinishedDialog:selectNextOrderNo": "Rozpocznij następne zlecenie",
+  "orderFinishedDialog:selectAnotherOrderNo": "Wybierz inne zlecenie",
+  "orderFinishedDialog:reset": "Resetuj zlecenie",
+  "orderFinishedDialog:close": "Kontynuuj aktualne zlecenie",
   "orderFinishedDialog:orderNo": "Nr zlecenia:",
   "orderFinishedDialog:quantity": "Ilość:",
   "orderFinishedDialog:successCounter": "Pomyślne:",

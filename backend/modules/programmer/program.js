@@ -267,6 +267,11 @@ module.exports = function program(app, programmerModule, data, done)
       featureFile: currentState.featureFile
     });
 
+    if (currentState.featureFile.indexOf('FAKE') === 1)
+    {
+      return setImmediate(this.next(), null, 'FAKE FEATURE FILE');
+    }
+
     this.sub = app.broker.subscribe(
       'programmer.cancelled',
       readFeatureFile(
@@ -286,8 +291,11 @@ module.exports = function program(app, programmerModule, data, done)
       return;
     }
 
-    this.sub.cancel();
-    this.sub = null;
+    if (this.sub)
+    {
+      this.sub.cancel();
+      this.sub = null;
+    }
 
     if (thisProgrammingCancelled)
     {

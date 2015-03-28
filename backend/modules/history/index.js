@@ -30,7 +30,7 @@ exports.start = function startProgrammerModule(app, module, done)
 
   module.createEntry = function()
   {
-    return new HistoryEntry(sqlite3Module.db, app.broker.sandbox());
+    return new HistoryEntry(sqlite3Module.db, app.broker.sandbox(), app[module.config.settingsId]);
   };
 
   app.onModuleReady(module.config.expressId, setUpRoutes.bind(null, app, module));

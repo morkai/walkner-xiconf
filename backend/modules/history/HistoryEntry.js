@@ -12,10 +12,11 @@ var Order = require('./Order');
 
 module.exports = HistoryEntry;
 
-function HistoryEntry(db, broker)
+function HistoryEntry(db, broker, settings)
 {
   this.db = db;
   this.broker = broker;
+  this.settings = settings;
 
   this.inputMode = 'local';
   this.workMode = 'programming';
@@ -266,12 +267,12 @@ HistoryEntry.prototype.save = function(featureDbPath, done)
         _id, _order, nc12, counter, startedAt, finishedAt, duration,\
         log, result, errorCode, exception, output, featureFile,\
         featureFileName, featureFileHash, workflowFile, workflow,\
-        program, steps, metrics, serviceTag, leds\
+        program, steps, metrics, serviceTag, leds, prodLine\
       ) VALUES (\
         $_id, $_order, $nc12, $counter, $startedAt, $finishedAt, $duration,\
         $log, $result, $errorCode, $exception, $output, $featureFile,\
         $featureFileName, $featureFileHash, $workflowFile, $workflow,\
-        $program, $steps, $metrics, $serviceTag, $leds\
+        $program, $steps, $metrics, $serviceTag, $leds, $prodLine\
       )";
     var params = {
       $_id: historyEntry._id,
@@ -295,7 +296,8 @@ HistoryEntry.prototype.save = function(featureDbPath, done)
       $steps: historyEntry.steps ? JSON.stringify(historyEntry.steps) : null,
       $metrics: historyEntry.metrics ? JSON.stringify(historyEntry.metrics) : null,
       $serviceTag: historyEntry.serviceTag,
-      $leds: historyEntry.leds ? JSON.stringify(historyEntry.leds) : null
+      $leds: historyEntry.leds ? JSON.stringify(historyEntry.leds) : null,
+      $prodLine: historyEntry.settings.get('prodLine') || null
     };
 
     historyEntry.db.run(sql, params, done);

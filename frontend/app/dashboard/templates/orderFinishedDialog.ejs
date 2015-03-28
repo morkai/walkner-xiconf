@@ -29,11 +29,21 @@
       <p class="dashboard-orderFinishedDialog-value"><%- order.duration %></p>
     </div>
   </div>
-  <button class="btn btn-lg btn-block btn-primary dialog-answer" type="button" autofocus data-answer="yes">
+  <% if (remainingOrdersCount > 0) { %>
+  <button class="btn btn-lg btn-block btn-success dialog-answer" type="button" autofocus data-answer="selectNextOrderNo">
+    <%- t('dashboard', 'orderFinishedDialog:selectNextOrderNo') %> <kbd><%- selectNextOrderNoHotkey %></kbd>
+  </button>
+  <% } %>
+  <% if (remainingOrdersCount > 1) { %>
+  <button class="btn btn-lg btn-block btn-warning dialog-answer" type="button" data-answer="selectAnotherOrderNo">
+    <%- t('dashboard', 'orderFinishedDialog:selectAnotherOrderNo') %> <kbd><%- selectAnotherOrderNoHotkey %></kbd>
+  </button>
+  <% } %>
+  <button class="btn btn-lg btn-block btn-<%- remainingOrdersCount ? 'danger' : 'primary' %> dialog-answer" type="button" <%- remainingOrdersCount ? '' : 'autofocus' %> data-answer="reset">
     <% if (remote) { %>
     <%- t('dashboard', 'orderFinishedDialog:close') %> <kbd>Esc</kbd>
     <% } else { %>
-    <%- t('dashboard', 'orderFinishedDialog:yes') %> <kbd><%- resetOrderHotkey %></kbd>
+    <%- t('dashboard', 'orderFinishedDialog:reset') %> <kbd><%- resetOrderHotkey %></kbd>
     <% } %>
   </button>
 </div>

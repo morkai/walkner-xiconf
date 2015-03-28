@@ -1,0 +1,71 @@
+.modal-open .dashboard-nc12PickerDialog {
+  overflow-y: hidden;
+}
+.dashboard-nc12PickerDialog .modal-header {
+  border: 0;
+}
+.dashboard-nc12PickerDialog .modal-body {
+  padding: 0;
+}
+.dashboard-nc12Picker .message {
+  border-left: 0;
+  border-right: 0;
+  font-size: 1.2em;
+  line-height: 1.4;
+}
+.dashboard-nc12Picker .form-control {
+  padding: 10px 15px;
+  height: auto;
+  font-size: 1.6em;
+  border-left: 0;
+  border-right: 0;
+}
+.dashboard-nc12Picker .list-group-item {
+  position: relative;
+  cursor: pointer;
+  margin-bottom: 0;
+  border-bottom: 1px solid #ddd;
+  border-top: 0;
+  border-left: 0;
+  border-right: 0;
+}
+.dashboard-nc12Picker .list-group-item:last-child {
+  border-bottom: 0;
+}
+.dashboard-nc12Picker .list-group-item:hover {
+  background-color: #ffffd6;
+}
+.dashboard-nc12Picker .list-group-item:focus,
+.dashboard-nc12Picker .list-group-item.active:hover {
+  outline: none;
+  background-color: #337ab7;
+  border-color: #337ab7;
+  color: #fff;
+}
+.dashboard-nc12Picker kbd {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+  font-size: 2em;
+}
+.dashboard-nc12Picker-list {
+  margin: 0;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+.dashboard-nc12Picker-name {
+  display: block;
+  margin: 7px 0;
+  font-size: 1.5em;
+  line-height: 1;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.dashboard-nc12Picker-nc12 {
+  display: block;
+  font-size: 2em;
+  line-height: 1;
+}

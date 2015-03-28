@@ -1,0 +1,13 @@
+<div class="dashboard-orderNoPicker">
+  <div id="<%- idPrefix %>-list" class="dashboard-orderNoPicker-list list-group is-scrollable">
+    <% items.forEach(function(item) { %>
+    <a class="list-group-item list-group-item-<%- item.className %>" href="#" tabindex="100" data-id="<%- item.orderNo %>" data-hotkey="<%- item.hotkey %>">
+      <kbd><%- item.hotkey %></kbd>
+      <span class="dashboard-orderNoPicker-orderNo"><%- item.orderNo %></span>
+      <span class="dashboard-orderNoPicker-name"><%= item.name %></span>
+      <span class="dashboard-orderNoPicker-nc12"><%- t('dashboard', 'orderNoPickerDialog:nc12') %> <%- item.nc12 %></span>
+      <span class="dashboard-orderNoPicker-quantity"><%- t('dashboard', 'orderNoPickerDialog:quantity') %> <%- item.quantityDone.toLocaleString() %>/<%- item.quantityTodo.toLocaleString() %></span>
+    </a>
+    <% }) %>
+  </div>
+</div>

@@ -21,7 +21,7 @@ define([
 
   return View.extend({
 
-    dialogClassName: 'dashboard-programPicker-dialog',
+    dialogClassName: 'dashboard-programPickerDialog',
 
     template: template,
 

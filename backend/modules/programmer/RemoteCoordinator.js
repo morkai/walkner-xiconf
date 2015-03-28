@@ -275,8 +275,7 @@ RemoteCoordinator.prototype.scheduleSelectedOrderNoCheck = function()
     clearImmediate(this.selectedOrderNoTimer);
   }
 
-  //todo remove
-  this.selectedOrderNoTimer = null;//setImmediate(this.checkSelectedOrderNo.bind(this), 1);
+  this.selectedOrderNoTimer = setImmediate(this.checkSelectedOrderNo.bind(this), 1);
 };
 
 /**
@@ -286,15 +285,24 @@ RemoteCoordinator.prototype.checkSelectedOrderNo = function()
 {
   this.selectedOrderNoTimer = null;
 
-  var currentOrderData = _.find(this.currentData, {orderNo: this.selectedOrderNo});
+  var currentOrderData = _.find(this.currentData, {_id: this.selectedOrderNo});
 
-  if (currentOrderData && currentOrderData.status === -1)
+  if (currentOrderData)
   {
     return;
   }
 
   var newOrderData = _.findLast(this.currentData, {status: -1});
-  var newSelectedOrderNo = newOrderData ? newOrderData._id : null;
+  var newSelectedOrderNo;
+
+  if (!newOrderData)
+  {
+    newSelectedOrderNo = this.currentData.length ? this.currentData[0]._id : null;
+  }
+  else
+  {
+    newSelectedOrderNo = newOrderData._id;
+  }
 
   if (this.selectedOrderNo !== newSelectedOrderNo)
   {
@@ -406,5 +414,3 @@ RemoteCoordinator.prototype.onLeaderUpdated = function(newLeader)
 {
   this.programmer.changeState({remoteLeader: newLeader});
 };
-
-

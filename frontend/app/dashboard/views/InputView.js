@@ -14,9 +14,10 @@ define([
   'app/core/View',
   'app/core/views/DialogView',
   './PrintServiceTagDialogView',
+  './OrderNoPickerDialogView',
+  './Nc12PickerDialogView',
   'app/dashboard/templates/input',
-  'app/dashboard/templates/orderFinishedDialog',
-  'app/dashboard/templates/nc12Picker'
+  'app/dashboard/templates/orderFinishedDialog'
 ], function(
   _,
   $,
@@ -29,9 +30,10 @@ define([
   View,
   DialogView,
   PrintServiceTagDialogView,
+  OrderNoPickerDialogView,
+  Nc12PickerDialogView,
   inputTemplate,
-  orderFinishedDialogTemplate,
-  nc12PickerTemplate
+  orderFinishedDialogTemplate
 ) {
   'use strict';
 
@@ -40,13 +42,33 @@ define([
     template: inputTemplate,
 
     localTopics: {
-      'hotkeys.focusOrderNo': function() { this.focusElement('orderNo'); },
-      'hotkeys.focusQuantity': function() { this.focusElement('quantity'); },
+      'hotkeys.focusOrderNo': function()
+      {
+        if (this.$id('orderNo').parent().hasClass('is-multi'))
+        {
+          this.showOrderNoPickerDialog();
+        }
+        else
+        {
+          this.focusElement('orderNo');
+        }
+      },
+      'hotkeys.focusQuantity': function()
+      {
+        if (this.$id('orderNo').parent().hasClass('is-multi'))
+        {
+          this.selectNextOrderNo();
+        }
+        else
+        {
+          this.focusElement('quantity');
+        }
+      },
       'hotkeys.focusNc12': function()
       {
         if (this.$id('nc12').parent().hasClass('is-multi'))
         {
-          this.toggleNc12Picker();
+          this.showNc12PickerDialog();
         }
         else
         {
@@ -73,12 +95,15 @@ define([
       {
         if (e.target.classList.contains('form-control'))
         {
-          this.toggleNc12Picker();
+          this.showNc12PickerDialog();
         }
       },
-      'click .dashboard-nc12Picker-item': function(e)
+      'click .dashboard-input-orderNo.is-multi': function(e)
       {
-        this.selectNc12(e.currentTarget.dataset.nc12);
+        if (e.target.classList.contains('form-control'))
+        {
+          this.showOrderNoPickerDialog();
+        }
       }
     },
 
@@ -170,6 +195,8 @@ define([
 
     startOrCancel: function()
     {
+      viewport.closeAllDialogs();
+
       if (this.model.isInProgress())
       {
         this.cancel();
@@ -365,10 +392,12 @@ define([
 
       this.broker.subscribe('viewport.dialog.shown')
         .setFilter(function(dialogView) { return dialogView === view.printServiceTagDialogView; })
+        .setLimit(1)
         .on('message', function() { hotkeys.stop(); });
 
       this.broker.subscribe('viewport.dialog.hidden')
         .setFilter(function(dialogView) { return dialogView === view.printServiceTagDialogView; })
+        .setLimit(1)
         .on('message', function()
         {
           view.printServiceTagDialogView = null;
@@ -411,7 +440,58 @@ define([
       });
     },
 
-    selectNc12: function(nc12, done)
+    selectNextOrderNo: function()
+    {
+      viewport.closeAllDialogs();
+
+      this.selectOrderNo(this.model.getNextOrderNo());
+    },
+
+    selectOrderNo: function(orderNo, done)
+    {
+      if (this.model.isInProgress() || !this.model.isRemoteInput() || orderNo === this.model.get('selectedOrderNo'))
+      {
+        return;
+      }
+
+      var view = this;
+      var $orderNo = this.$('.dashboard-input-orderNo');
+
+      if ($orderNo.hasClass('is-selecting'))
+      {
+        return;
+      }
+
+      $orderNo.addClass('is-selecting');
+
+      this.socket.emit('programmer.selectOrderNo', orderNo, function(err)
+      {
+        if (!view.$els)
+        {
+          return;
+        }
+
+        $orderNo.removeClass('is-selecting');
+
+        if (done)
+        {
+          return done(err);
+        }
+
+        if (err)
+        {
+          view.showMessage('error', 'selectOrderNo:failure');
+        }
+        else
+        {
+          viewport.closeAllDialogs();
+
+          view.showMessage('success', 'selectOrderNo:success');
+        }
+      });
+    },
+
+    selectNc12: function(nc12, password, done)
     {
       var view = this;
       var $nc12 = this.$('.dashboard-input-nc12');
@@ -423,7 +503,7 @@ define([
 
       $nc12.addClass('is-selecting');
 
-      this.socket.emit('programmer.selectNc12', nc12, function(err)
+      this.socket.emit('programmer.selectNc12', nc12, password, function(err)
       {
         if (!view.$els)
         {
@@ -439,14 +519,25 @@ define([
 
         if (err)
         {
-          view.showMessage('error', 'selectNc12:failure');
+          var message = 'selectNc12:';
+
+          if (t.has('dashboard', 'msg:selectNc12:' + err.message))
+          {
+            message += err.message;
+          }
+          else
+          {
+            message += 'failure';
+          }
+
+          view.showMessage('error', message);
         }
         else
         {
+          viewport.closeAllDialogs();
+
           view.showMessage('success', 'selectNc12:success');
         }
-
-        view.hideNc12Picker();
       });
     },
 
@@ -527,10 +618,18 @@ define([
         return;
       }
 
+      var multiOrderNo = false;
       var data;
 
       if (this.model.isRemoteInput())
       {
+        var remoteData = this.model.get('remoteData');
+
+        if (Array.isArray(remoteData) && remoteData.length > 1)
+        {
+          multiOrderNo = true;
+        }
+
         data = this.model.getSelectedRemoteData() || {
           _id: null,
           quantityTodo: null,
@@ -571,8 +670,10 @@ define([
         }
       }
 
-
-      $els.orderNo.val(data._id || '');
+      $els.orderNo
+        .val(data._id || '')
+        .closest('div')
+        .toggleClass('is-multi', user.isLocal() && !this.model.isInProgress() && multiOrderNo);
 
       var programItems = _.where(data.items, {kind: 'program'});
       var selectedProgramItem = _.findWhere(programItems, {nc12: this.model.get('selectedNc12')});
@@ -874,14 +975,96 @@ define([
       }
     },
 
-    showOrderFinishedDialog: function()
+    showOrderNoPickerDialog: function()
     {
-      if (!this.model.isOrderFinished())
+      if (this.model.isInProgress() || !this.model.isRemoteInput())
       {
         return;
       }
 
-      this.hideOrderFinishedDialog();
+      if (viewport.currentDialog && viewport.currentDialog.dialogClassName === 'dashboard-orderNoPickerDialog')
+      {
+        return;
+      }
+
+      viewport.closeAllDialogs();
+
+      var orderNoPickerDialogView = new OrderNoPickerDialogView({model: this.model});
+
+      this.listenTo(orderNoPickerDialogView, 'orderNoPicked', function(orderNo)
+      {
+        if (this.model.get('selectedOrderNo') === orderNo)
+        {
+          viewport.closeDialog();
+        }
+        else
+        {
+          this.selectOrderNo(orderNo);
+        }
+      });
+
+      this.broker.subscribe('viewport.dialog.shown')
+        .setFilter(function(dialogView) { return dialogView === orderNoPickerDialogView; })
+        .setLimit(1)
+        .on('message', function() { hotkeys.stop(); });
+
+      this.broker.subscribe('viewport.dialog.hidden')
+        .setFilter(function(dialogView) { return dialogView === orderNoPickerDialogView; })
+        .setLimit(1)
+        .on('message', function() { hotkeys.start(); });
+
+      viewport.showDialog(orderNoPickerDialogView, t('dashboard', 'orderNoPickerDialog:title'));
+    },
+
+    showNc12PickerDialog: function()
+    {
+      if (this.model.isInProgress() || !this.model.isRemoteInput())
+      {
+        return;
+      }
+
+      if (viewport.currentDialog && viewport.currentDialog.dialogClassName === 'dashboard-nc12PickerDialog')
+      {
+        return;
+      }
+
+      viewport.closeAllDialogs();
+
+      var nc12PickerDialogView = new Nc12PickerDialogView({model: this.model});
+
+      this.listenTo(nc12PickerDialogView, 'nc12Picked', function(nc12, password)
+      {
+        if (this.model.get('selectedNc12') === nc12)
+        {
+          viewport.closeDialog();
+        }
+        else
+        {
+          this.selectNc12(nc12, password);
+        }
+      });
+
+      this.broker.subscribe('viewport.dialog.shown')
+        .setFilter(function(dialogView) { return dialogView === nc12PickerDialogView; })
+        .setLimit(1)
+        .on('message', function() { hotkeys.stop(); });
+
+      this.broker.subscribe('viewport.dialog.hidden')
+        .setFilter(function(dialogView) { return dialogView === nc12PickerDialogView; })
+        .setLimit(1)
+        .on('message', function() { hotkeys.start(); });
+
+      viewport.showDialog(nc12PickerDialogView, t('dashboard', 'nc12PickerDialog:title'));
+    },
+
+    showOrderFinishedDialog: function()
+    {
+      if (this.model.isInProgress() || !this.model.isOrderFinished())
+      {
+        return;
+      }
+
+      viewport.closeAllDialogs();
 
       var dialogView = new DialogView({
         dialogClassName: 'dashboard-orderFinishedDialog',
@@ -892,9 +1075,17 @@ define([
 
       this.listenTo(dialogView, 'answered', function(answer)
       {
-        if (answer === 'yes')
+        if (answer === 'reset')
         {
           view.clickElement('reset');
+        }
+        else if (answer === 'selectNextOrderNo')
+        {
+          view.selectNextOrderNo();
+        }
+        else if (answer === 'selectAnotherOrderNo')
+        {
+          view.clickElement('orderNo');
         }
       });
 
@@ -938,6 +1129,7 @@ define([
     {
       var orderData = this.model.get('order');
       var failureCounter = orderData ? orderData.failureCounter : 0;
+      var remainingOrdersCount = 0;
       var order;
 
       if (this.model.isRemoteInput())
@@ -958,6 +1150,11 @@ define([
           finishedAt: remoteData.finishedAt,
           duration: '?'
         };
+
+        _.forEach(this.model.get('remoteData'), function(orderData)
+        {
+          remainingOrdersCount += orderData.status === -1 ? 1 : 0;
+        });
       }
       else if (!orderData)
       {
@@ -984,10 +1181,15 @@ define([
       order.startedAt = this.formatTimeOrDateTime(order.startedAt);
       order.finishedAt = this.formatTimeOrDateTime(order.finishedAt);
 
+      var hotkeys = settings.get('hotkeys');
+
       return {
         remote: this.model.isRemoteInput(),
         order: order,
-        resetOrderHotkey: settings.get('hotkeys').reset
+        remainingOrdersCount: remainingOrdersCount,
+        selectNextOrderNoHotkey: hotkeys.focusQuantity,
+        selectAnotherOrderNoHotkey: hotkeys.focusOrderNo,
+        resetOrderHotkey: hotkeys.reset
       };
     },
 

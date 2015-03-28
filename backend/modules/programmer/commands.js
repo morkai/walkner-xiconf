@@ -34,6 +34,7 @@ module.exports = function setUpProgrammerCommands(app, programmerModule)
       socket.on('programmer.setInputMode', setInputMode);
       socket.on('programmer.setWorkMode', setWorkMode);
       socket.on('programmer.setProgram', setProgram);
+      socket.on('programmer.selectOrderNo', selectOrderNo);
       socket.on('programmer.selectNc12', selectNc12);
       socket.on('programmer.start', start);
       socket.on('programmer.cancel', cancel);
@@ -83,11 +84,19 @@ module.exports = function setUpProgrammerCommands(app, programmerModule)
     }
   }
 
-  function selectNc12(nc12, reply)
+  function selectOrderNo(orderNo, reply)
   {
     if (_.isFunction(reply))
     {
-      programmerModule.selectNc12(nc12, reply);
+      programmerModule.selectOrderNo(orderNo, reply);
+    }
+  }
+
+  function selectNc12(nc12, password, reply)
+  {
+    if (_.isFunction(reply))
+    {
+      programmerModule.selectNc12(nc12, password, reply);
     }
   }
 

@@ -24,14 +24,23 @@
   margin-top: 14px;
   margin-bottom: 14px;
 }
+.is-idle .dashboard-input-orderNo.is-multi > .form-control {
+  cursor: pointer;
+  background-color: #fefefe;
+}
 .is-idle .dashboard-input-nc12.is-multi > .form-control {
   cursor: pointer;
   outline: 4px solid #f0ad4e;
   color: #f0ad4e;
   background-color: #fefefe;
 }
+.dashboard.is-idle[data-input-mode="remote"] .dashboard-input-orderNo.is-multi > kbd,
 .dashboard.is-idle[data-input-mode="remote"] .dashboard-input-nc12.is-multi > kbd {
   display: inline!important;
+}
+.is-idle .dashboard-input-orderNo.is-selecting > .form-control,
+.is-idle .dashboard-input-nc12.is-selecting > .form-control {
+  cursor: wait;
 }
 .dashboard-input-actions {
   position: absolute;
@@ -104,37 +113,5 @@
 .dashboard[data-input-mode="remote"] .dashboard-input-nc12 > kbd {
   display: none!important;
 }
-.dashboard-nc12Picker {
-  position: absolute;
-  top: 98px;
-  left: 0;
-  right: 0;
-  z-index: 1;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-}
-.dashboard-nc12Picker > .list-group-item:hover {
-  background: #ffffd6;
-  cursor: pointer;
-}
-.dashboard-nc12Picker h3 {
-  margin: -7px 0 0 0;
-  font-family: Consolas, monospace;
-  font-size: 58px;
-  line-height: 1;
-}
-.dashboard-nc12Picker h4 {
-  margin: 0;
-  line-height: 1;
-}
-.dashboard-nc12Picker kbd {
-  bottom: 0;
-  right: 0;
-}
-.is-selecting .dashboard-nc12Picker,
-.is-idle .dashboard-input-nc12.is-selecting > .form-control {
-  cursor: wait;
-}
-.is-selecting .dashboard-nc12Picker > .list-group-item:hover {
-  cursor: inherit;
-  background: #fff;
-}
+
+

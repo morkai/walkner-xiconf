@@ -56,13 +56,13 @@
   -o-transition-duration: 0.3s;
   transition-duration: 0.3s;
 }
-.modal-open .dashboard-programPicker-dialog {
+.modal-open .dashboard-programPickerDialog {
   overflow-y: hidden;
 }
-.dashboard-programPicker-dialog .modal-header {
+.dashboard-programPickerDialog .modal-header {
   border: 0;
 }
-.dashboard-programPicker-dialog .modal-body {
+.dashboard-programPickerDialog .modal-body {
   padding: 0;
 }
 .dashboard-programPicker .form-control {
@@ -82,12 +82,20 @@
 }
 .dashboard-programPicker-list > .list-group-item {
   margin-bottom: 0;
-  border-top: 0;
   border-bottom: 1px solid #ddd;
+  border-top: 0;
+  border-left: 0;
+  border-right: 0;
 }
-.dashboard-programPicker-list > .list-group-item:hover,
-.dashboard-programPicker-list > .list-group-item:focus {
+.dashboard-programPicker-list > .list-group-item:last-child {
+  border-bottom: 0;
+}
+.dashboard-programPicker-list > .list-group-item:hover {
   background: #ffffd6;
-  outline: none;
   cursor: pointer;
+}
+.dashboard-programPicker-list > .list-group-item:focus {
+  color: #fff;
+  background: #337ab7;
+  outline: none;
 }

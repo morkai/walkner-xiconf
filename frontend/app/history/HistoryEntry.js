@@ -121,12 +121,9 @@ define([
     {
       if (this.isRemoteInput())
       {
-        var remoteData = this.get('remoteData');
+        var remoteData = this.getSelectedRemoteData();
 
-        return remoteData && remoteData.nc12 && remoteData.nc12.length && _.all(remoteData.nc12, function(nc12)
-        {
-          return nc12.quantityDone >= nc12.quantityTodo;
-        });
+        return remoteData && remoteData.status !== -1;
       }
 
       var order = this.get('order');
@@ -158,6 +155,28 @@ define([
       }
 
       return selectedRemoteData;
+    },
+
+    getNextOrderNo: function()
+    {
+      var remoteData = this.get('remoteData');
+
+      if (!Array.isArray(remoteData) || !remoteData.length)
+      {
+        return null;
+      }
+
+      for (var i = remoteData.length - 1; i >= 0; --i)
+      {
+        var orderData = remoteData[i];
+
+        if (orderData.status === -1)
+        {
+          return orderData._id;
+        }
+      }
+
+      return remoteData[0]._id;
     },
 
     getCarouselItemId: function()

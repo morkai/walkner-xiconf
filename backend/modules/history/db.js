@@ -101,6 +101,7 @@ COMMIT TRANSACTION;';
         userVersion = 3;
 
         sql += 'ALTER TABLE historyEntries ADD COLUMN leds TEXT;\n';
+        sql += 'ALTER TABLE historyEntries ADD COLUMN prodLine TEXT;\n';
       }
 
       if (sql === '')

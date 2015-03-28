@@ -1,0 +1,16 @@
+<div class="dashboard-nc12Picker">
+  <div class="message message-inline message-warning">
+    <p><%- t('dashboard', 'nc12PickerDialog:message', {nc12Count: items.length, leader: leader}) %></p>
+  </div>
+  <input id="<%- idPrefix %>-password" class="form-control" type="password" tabindex="99" placeholder="<%- t('dashboard', 'nc12PickerDialog:password') %>">
+  <div id="<%- idPrefix %>-list" class="dashboard-nc12Picker-list list-group is-scrollable">
+    <% items.forEach(function(item) { %>
+    <a class="list-group-item" href="#" tabindex="100" data-id="<%- item.nc12 %>" data-hotkey="<%- item.hotkey %>">
+      <kbd><%- item.hotkey %></kbd>
+      <span class="dashboard-nc12Picker-nc12"><%- item.nc12 %></span>
+      <span class="dashboard-nc12Picker-name"><%= item.name %></span>
+      <span class="dashboard-nc12Picker-quantity"><%- t('dashboard', 'nc12PickerDialog:quantity') %> <%- item.quantityDone.toLocaleString() %>/<%- item.quantityTodo.toLocaleString() %></span>
+    </a>
+    <% }) %>
+  </div>
+</div>

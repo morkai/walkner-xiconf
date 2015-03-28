@@ -118,7 +118,7 @@ exports.start = function startProgrammerModule(app, module)
     module.changeState();
   };
 
-  module.selectNc12 = function(nc12, done)
+  module.selectOrderNo = function(orderNo, done)
   {
     if (module.currentState.isInProgress())
     {
@@ -128,6 +128,31 @@ exports.start = function startProgrammerModule(app, module)
     if (module.currentState.inputMode !== 'remote')
     {
       return done(new Error('INVALID_INPUT_MODE'));
+    }
+
+    done(null);
+
+    module.currentState.clear(true, false);
+    module.currentState.selectedOrderNo = orderNo;
+    module.currentState.selectedNc12 = null;
+    module.changeState();
+  };
+
+  module.selectNc12 = function(nc12, password, done)
+  {
+    if (module.currentState.isInProgress())
+    {
+      return done(new Error('IN_PROGRESS'));
+    }
+
+    if (module.currentState.inputMode !== 'remote')
+    {
+      return done(new Error('INVALID_INPUT_MODE'));
+    }
+
+    if (password !== settings.get('password'))
+    {
+      return done(new Error('INVALID_PASSWORD'));
     }
 
     done(null);
