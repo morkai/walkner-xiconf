@@ -70,6 +70,7 @@ module.exports = function program(app, programmerModule, data, done)
   var isLedOnly = currentState.waitingForLeds && _.isEmpty(currentState.nc12);
 
   step(
+    validateRemoteOrderItemsStep,
     countdownStep,
     findFeatureFile1Step,
     handleFindFeatureFile1ResultStep,
@@ -89,6 +90,48 @@ module.exports = function program(app, programmerModule, data, done)
     tryToPrintServiceTag,
     finalizeStep
   );
+
+  function validateRemoteOrderItemsStep()
+  {
+    /*jshint validthis:true*/
+
+    if (currentState.inputMode !== 'remote')
+    {
+      return;
+    }
+
+    var orderData = currentState.getSelectedOrderData();
+
+    if (!orderData)
+    {
+      return;
+    }
+
+    var items = orderData.items;
+
+    for (var i = 0; i < items.length; ++i)
+    {
+      var item = items[i];
+
+      if (item.kind === 'program' && item.nc12 !== currentState.nc12)
+      {
+        continue;
+      }
+
+      var quantityPerResult = item.quantityTodo / orderData.quantityTodo;
+
+      if (isNaN(quantityPerResult) || quantityPerResult < 1 || quantityPerResult % 1 !== 0)
+      {
+        var err = new Error(
+          "12NC " + item.nc12 + " has an invalid quantity (" + item.quantityTodo + "). Order's quantity is "
+          + orderData.quantityTodo + "."
+        );
+        err.code = 'INVALID_ITEM_QUANTITY';
+
+        return this.skip(err);
+      }
+    }
+  }
 
   function countdownStep()
   {

@@ -176,5 +176,6 @@
   "error:TESTING_MAX_RESISTANCE": "TEST: Przekroczono maksymalną wartość rezystancji.",
   "error:TESTING_MIN_POWER": "TEST: Przekroczono minimalną wartość mocy.",
   "error:TESTING_MAX_POWER": "TEST: Przekroczono maksymalną wartość mocy.",
-  "error:REMOTE_SERVICE_TAG_FAILURE": "Błąd podczas pobierania nowego Service Taga."
+  "error:REMOTE_SERVICE_TAG_FAILURE": "Błąd podczas pobierania nowego Service Taga.",
+  "error:INVALID_ITEM_QUANTITY": "Wykryto nieprawidłowe ilości komponentów w aktualnym zleceniu."
 }
