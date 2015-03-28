@@ -1,3 +1,6 @@
+.is-waitingForLeds .dashboard-history {
+  display: none;
+}
 .dashboard-history .list-group {
   overflow-y: scroll;
   overflow-x: hidden;

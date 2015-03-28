@@ -21,6 +21,11 @@ define([
     currentState.pushLogEntry(logEntry);
   });
 
+  socket.on('programmer.ledUpdated', function(message)
+  {
+    currentState.updateLed(message.index, message.data);
+  });
+
   socket.on('programmer.stepProgressed', function(message)
   {
     var steps = currentState.get('steps');

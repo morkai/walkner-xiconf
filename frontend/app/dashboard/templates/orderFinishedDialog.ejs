@@ -41,7 +41,7 @@
   <% } %>
   <button class="btn btn-lg btn-block btn-<%- remainingOrdersCount ? 'danger' : 'primary' %> dialog-answer" type="button" <%- remainingOrdersCount ? '' : 'autofocus' %> data-answer="reset">
     <% if (remote) { %>
-    <%- t('dashboard', 'orderFinishedDialog:close') %> <kbd>Esc</kbd>
+    <%- t('dashboard', 'orderFinishedDialog:close') %> <kbd><%- closeDialogHotkey %></kbd>
     <% } else { %>
     <%- t('dashboard', 'orderFinishedDialog:reset') %> <kbd><%- resetOrderHotkey %></kbd>
     <% } %>

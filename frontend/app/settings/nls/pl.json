@@ -133,6 +133,9 @@
   "setting:bgScanner": "Tryb pracy czytnika kodów",
   "setting:bgScanner:on": "Po stronie serwera",
   "setting:bgScanner:off": "Po stronie klienta",
+  "setting:ledsEnabled": "Sprawdzanie płytek LED",
+  "setting:ledsEnabled:on": "Włączone",
+  "setting:ledsEnabled:off": "Wyłączone",
 
   "license:NO_KEY": "Brak klucza licencji.",
   "license:INVALID_ED_PEM": "Nieprawidłowy klucz odszyfrowywania.",
@@ -157,5 +160,6 @@
   "hotkey:start": "Rozpocznij",
   "hotkey:cancel": "Anuluj",
   "hotkey:setProgram": "Wybierz program",
-  "hotkey:printServiceTag": "Drukuj Service Tag"
+  "hotkey:printServiceTag": "Drukuj Service Tag",
+  "hotkey:closeDialog": "Zamknij okno dialogowe"
 }

@@ -60,11 +60,14 @@ module.exports = function program(app, programmerModule, data, done)
     programmerModule.newProgram = null;
   }
 
-  programmerModule.OVERALL_PROGRAMMING_PROGRESS = shouldPrintServiceTag ? 90 : 100;
-
   currentState.reset(data.orderNo, data.quantity, data.nc12);
 
   programmerModule.changeState();
+
+  programmerModule.OVERALL_SETUP_PROGRESS = currentState.waitingForLeds ? 25 : 20;
+  programmerModule.OVERALL_PROGRAMMING_PROGRESS = shouldPrintServiceTag ? 90 : 100;
+
+  var isLedOnly = currentState.waitingForLeds && _.isEmpty(currentState.nc12);
 
   step(
     countdownStep,
@@ -79,6 +82,7 @@ module.exports = function program(app, programmerModule, data, done)
     checkSolProgramStep,
     writeWorkflowFileStep,
     handleWriteWorkflowFileResultStep,
+    waitForLedsStep,
     tryToProgramLptStep,
     tryToProgramStep,
     tryToAcquireServiceTagStep,
@@ -153,6 +157,11 @@ module.exports = function program(app, programmerModule, data, done)
       this.sub = null;
     }
 
+    if (isLedOnly)
+    {
+      return;
+    }
+
     var featurePath1 = settings.get('featurePath1');
 
     if (typeof featurePath1 !== 'string' || featurePath1.length === 0)
@@ -189,6 +198,11 @@ module.exports = function program(app, programmerModule, data, done)
     if (thisProgrammingCancelled)
     {
       return this.skip();
+    }
+
+    if (isLedOnly)
+    {
+      return;
     }
 
     if (this.sub)
@@ -256,6 +270,11 @@ module.exports = function program(app, programmerModule, data, done)
       return this.skip(err);
     }
 
+    if (isLedOnly)
+    {
+      return;
+    }
+
     if (!this.foundFeature1)
     {
       return;
@@ -285,6 +304,11 @@ module.exports = function program(app, programmerModule, data, done)
   function handleReadFeatureFile1ResultStep(err, feature)
   {
     /*jshint validthis:true*/
+
+    if (isLedOnly)
+    {
+      return;
+    }
 
     if (!this.foundFeature1)
     {
@@ -338,6 +362,11 @@ module.exports = function program(app, programmerModule, data, done)
       return this.skip();
     }
 
+    if (isLedOnly)
+    {
+      return;
+    }
+
     if (this.foundFeature1)
     {
       return setImmediate(this.next());
@@ -374,6 +403,11 @@ module.exports = function program(app, programmerModule, data, done)
     if (thisProgrammingCancelled)
     {
       return this.skip();
+    }
+
+    if (isLedOnly)
+    {
+      return;
     }
 
     if (this.foundFeature1)
@@ -438,6 +472,11 @@ module.exports = function program(app, programmerModule, data, done)
       return this.skip();
     }
 
+    if (isLedOnly)
+    {
+      return;
+    }
+
     if (this.foundFeature1)
     {
       return;
@@ -465,7 +504,12 @@ module.exports = function program(app, programmerModule, data, done)
 
     if (thisProgrammingCancelled)
     {
-      return this.skip('CANCELLED');
+      return this.skip();
+    }
+
+    if (isLedOnly)
+    {
+      return;
     }
 
     if (this.foundFeature1)
@@ -509,6 +553,11 @@ module.exports = function program(app, programmerModule, data, done)
       return this.skip();
     }
 
+    if (isLedOnly)
+    {
+      return;
+    }
+
     var solFilePattern = settings.get('solFilePattern') || '';
     var featureFile = currentState.featureFile;
 
@@ -529,6 +578,11 @@ module.exports = function program(app, programmerModule, data, done)
     if (thisProgrammingCancelled)
     {
       return this.skip();
+    }
+
+    if (isLedOnly)
+    {
+      return;
     }
 
     if (this.isSolProgram)
@@ -569,6 +623,11 @@ module.exports = function program(app, programmerModule, data, done)
       return this.skip();
     }
 
+    if (isLedOnly)
+    {
+      return;
+    }
+
     if (this.isSolProgram)
     {
       return;
@@ -590,6 +649,60 @@ module.exports = function program(app, programmerModule, data, done)
     setImmediate(this.next());
   }
 
+  function waitForLedsStep()
+  {
+    /*jshint validthis:true*/
+
+    if (thisProgrammingCancelled)
+    {
+      return this.skip();
+    }
+
+    var ledCount = currentState.leds.length;
+
+    if (!ledCount)
+    {
+      return;
+    }
+
+    programmerModule.updateOverallProgress(20);
+
+    if (!currentState.waitingForLeds)
+    {
+      return;
+    }
+
+    programmerModule.log('WAITING_FOR_LEDS', {
+      ledCount: ledCount
+    });
+
+    var next = this.next();
+    var cancelSub;
+    var waitingSub;
+
+    cancelSub = app.broker.subscribe('programmer.cancelled', function()
+    {
+      waitingSub.cancel();
+      waitingSub = null;
+
+      setImmediate(next);
+    }).setLimit(1);
+
+    waitingSub = app.broker.subscribe('programmer.stateChanged', function(changes)
+    {
+      if (changes.waitingForLeds === false)
+      {
+        waitingSub.cancel();
+        waitingSub = null;
+
+        cancelSub.cancel();
+        cancelSub = null;
+
+        setImmediate(next);
+      }
+    });
+  }
+
   function tryToProgramLptStep()
   {
     /*jshint validthis:true*/
@@ -597,6 +710,11 @@ module.exports = function program(app, programmerModule, data, done)
     if (thisProgrammingCancelled)
     {
       return this.skip();
+    }
+
+    if (isLedOnly)
+    {
+      return;
     }
 
     if (this.isSolProgram || !settings.get('lptEnabled'))
@@ -641,6 +759,11 @@ module.exports = function program(app, programmerModule, data, done)
     if (thisProgrammingCancelled || err)
     {
       return this.skip(err);
+    }
+
+    if (isLedOnly)
+    {
+      return;
     }
 
     if (this.sub)
@@ -797,6 +920,7 @@ module.exports = function program(app, programmerModule, data, done)
       exception: null,
       result: 'success',
       order: currentState.order,
+      waitingForLeds: false,
       inProgress: false,
       overallProgress: 100
     };
@@ -819,14 +943,12 @@ module.exports = function program(app, programmerModule, data, done)
         time: changes.finishedAt,
         duration: changes.duration,
         errorCode: changes.errorCode,
-        nc12: currentState.nc12
+        nc12: currentState.nc12 || '-'
       });
 
       if (currentState.serviceTag !== null)
       {
-        remoteCoordinator.releaseServiceTag({
-
-        });
+        remoteCoordinator.releaseServiceTag(currentState.createServiceTagRequestData(), currentState.serviceTag);
       }
     }
     else
@@ -836,7 +958,7 @@ module.exports = function program(app, programmerModule, data, done)
       programmerModule.log('PROGRAMMING_SUCCESS', {
         time: changes.finishedAt,
         duration: changes.duration,
-        nc12: currentState.nc12
+        nc12: currentState.nc12 || '-'
       });
     }
 

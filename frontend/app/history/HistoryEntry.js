@@ -25,15 +25,6 @@ define([
 
     nlsDomain: 'history',
 
-    defaults: {
-
-    },
-
-    initialize: function()
-    {
-
-    },
-
     parse: function(data)
     {
       data.order = !data._order ? null : {
@@ -55,6 +46,11 @@ define([
       delete data.orderStartedAt;
       delete data.orderFinishedAt;
       delete data.orderDuration;
+
+      if (typeof data.leds === 'string')
+      {
+        data.leds = JSON.parse(data.leds);
+      }
 
       return data;
     },
@@ -184,6 +180,20 @@ define([
       var result = this.get('result');
 
       return result === 'success' || result === 'failure' ? result : 'program';
+    },
+
+    updateLed: function(index, data)
+    {
+      var leds = this.get('leds');
+
+      if (!Array.isArray(leds) || !leds[index])
+      {
+        return;
+      }
+
+      leds[index] = data;
+
+      this.trigger('change:led', index, data);
     },
 
     pushLogEntry: function(logEntry)

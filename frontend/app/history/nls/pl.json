@@ -5,7 +5,7 @@
   "MSG:LOADING_FAILURE": "Ładowanie historii nie powiodło się :(",
   "MSG:LOADING_SINGLE_FAILURE": "Ładowanie danych wpisu historii nie powiodło się :(",
 
-  "PANEL:TITLE:details:order": "Szczegóły zlecenia",
+  "PANEL:TITLE:details:order": "Szczegóły lokalnego zlecenia",
   "PANEL:TITLE:details:entry": "Szczegóły programowania",
 
   "PAGE_ACTION:export": "Eksportuj historię",
@@ -48,6 +48,7 @@
   "tab:output": "Przebieg komunikacji",
   "tab:workflow": "Konfiguracja programatora",
   "tab:feature": "Konfiguracja drivera",
+  "tab:leds": "Płytki LED",
   "tab:program": "Program",
 
   "metrics:title": "Zmierzone wartości",
@@ -107,6 +108,8 @@
   "log:SKIPPING_SERVICE_TAG_ACQUIRING": "Pomijanie pobierania nowego Service Taga...",
   "log:PRINTING_SERVICE_TAG": "Drukowanie etykiety Service Tag na drukarce <code>{printerName}</code>...",
   "log:PRINTING_SERVICE_TAG_FAILURE": "Nie udało się wydrukować etykiety Service Tag: <code>{error}</code>",
+  "log:LED_CHECKING_STARTED": "Rozpoczynanie sprawdzania płytek LED...",
+  "log:WAITING_FOR_LEDS": "Oczekiwanie na {ledCount} {ledCount, plural, one{płytkę} few{płytki} other{płytek}} LED...",
 
   "error:WORKFLOW_FILE_ERROR": "Błąd podczas odczytywania pliku konfiguracyjnego programatora.",
   "error:WORKFLOW_FILE_WRITE_ERROR": "Błąd podczas zapisywania pliku konfiguracyjnego programatora.",

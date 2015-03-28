@@ -11,6 +11,7 @@ define([
   'app/time',
   'app/data/settings',
   'app/data/hotkeys',
+  'app/data/ledBuffer',
   'app/core/View',
   'app/core/views/DialogView',
   './PrintServiceTagDialogView',
@@ -27,6 +28,7 @@ define([
   time,
   settings,
   hotkeys,
+  ledBuffer,
   View,
   DialogView,
   PrintServiceTagDialogView,
@@ -42,6 +44,7 @@ define([
     template: inputTemplate,
 
     localTopics: {
+      'hotkeys.closeDialog': function() { viewport.closeDialog(); },
       'hotkeys.focusOrderNo': function()
       {
         if (this.$id('orderNo').parent().hasClass('is-multi'))
@@ -126,6 +129,7 @@ define([
 
       this.listenTo(this.model, 'change', _.debounce(this.onModelChange.bind(this), 25));
       this.listenTo(this.model, 'change:remoteData', this.onRemoteDataChange);
+      this.listenTo(this.model, 'change:waitingForLeds', this.onWaitingForLedsChange);
       this.listenTo(settings, 'change:orders', this.toggleControls);
 
       if (user.isLocal())
@@ -191,6 +195,14 @@ define([
       var $el = this.$els[elId];
 
       return $el && !$el.prop('disabled') && $el.is(':visible');
+    },
+
+    checkSerialNumber: function(nc12, serialNumber)
+    {
+      if (this.model.get('waitingForLeds'))
+      {
+        this.socket.emit('programmer.checkSerialNumber', this.$els.orderNo.val(), nc12, serialNumber);
+      }
     },
 
     startOrCancel: function()
@@ -618,10 +630,11 @@ define([
         return;
       }
 
+      var isRemoteInput = this.model.isRemoteInput();
       var multiOrderNo = false;
       var data;
 
-      if (this.model.isRemoteInput())
+      if (isRemoteInput)
       {
         var remoteData = this.model.get('remoteData');
 
@@ -675,12 +688,31 @@ define([
         .closest('div')
         .toggleClass('is-multi', user.isLocal() && !this.model.isInProgress() && multiOrderNo);
 
-      var programItems = _.where(data.items, {kind: 'program'});
+      var programItems = [];
+      var ledItems = [];
+
+      if (isRemoteInput)
+      {
+        _.forEach(data.items, function(item)
+        {
+          if (item.kind === 'program')
+          {
+            programItems.push(item);
+          }
+          else
+          {
+            ledItems.push(item);
+          }
+        });
+      }
+
       var selectedProgramItem = _.findWhere(programItems, {nc12: this.model.get('selectedNc12')});
-      var multiNc12 = programItems.length > 1;
+      var isMultiNc12 = programItems.length > 1;
+      var isLedOnly = !programItems.length && ledItems.length > 0 && !!settings.get('ledsEnabled');
       var quantityTodo = data.quantityTodo;
       var quantityDone = data.quantityDone;
       var nc12 = '';
+      var nc12Title = '';
 
       if (programItems.length)
       {
@@ -698,10 +730,21 @@ define([
         }
       }
 
+      if (isLedOnly)
+      {
+        nc12Title = t('dashboard', 'input:nc12:ledOnly');
+      }
+      else if (isMultiNc12)
+      {
+        nc12Title = t('dashboard', 'input:nc12:multi');
+      }
+
       $els.nc12
         .val(nc12)
+        .attr('title', nc12Title)
+        .toggleClass('is-ledOnly', isLedOnly)
         .closest('div')
-        .toggleClass('is-multi', user.isLocal() && !this.model.isInProgress() && multiNc12);
+        .toggleClass('is-multi', user.isLocal() && !this.model.isInProgress() && isMultiNc12);
 
       var quantity = quantityTodo - quantityDone;
 
@@ -720,7 +763,7 @@ define([
       var remoteData = this.model.isRemoteInput() ? this.model.getSelectedRemoteData() : null;
       var nc12 = this.$els.nc12.val().trim();
 
-      if (!/^[0-9]{12}$/.test(nc12))
+      if (!/^[0-9]{12}$/.test(nc12) && !this.$els.nc12.hasClass('is-ledOnly'))
       {
         this.showMessage('warning', 'start:requiredNc12');
         this.$els.nc12.select();
@@ -742,7 +785,7 @@ define([
       var ordersRequired = orders === 'required';
       var orderNo = this.$els.orderNo.val().trim();
 
-      if (!/^[0-9]{9}$/.test(orderNo))
+      if (!/^[0-9]{1,9}$/.test(orderNo))
       {
         if (ordersRequired)
         {
@@ -794,15 +837,8 @@ define([
 
     onModelChange: function()
     {
-      var changed = this.model.changedAttributes();
-
       this.updateValues();
       this.toggleControls();
-
-      if (changed.selectedNc12 === undefined)
-      {
-        this.hideNc12Picker();
-      }
     },
 
     onResultChange: function()
@@ -844,6 +880,25 @@ define([
       this.updateOrderFinishedDialog();
     },
 
+    onWaitingForLedsChange: function()
+    {
+      if (!this.model.get('waitingForLeds'))
+      {
+        ledBuffer.clear();
+
+        return;
+      }
+
+      var leds = ledBuffer.get();
+
+      for (var i = 0; i < leds.length; ++i)
+      {
+        var led = leds[i];
+
+        this.checkSerialNumber(led.nc12, led.serialNumber);
+      }
+    },
+
     onKeyDown: function(e)
     {
       if (e.keyCode === 27 && this.$id('nc12Picker').length)
@@ -869,23 +924,49 @@ define([
 
     onBarcodeScanned: function(message)
     {
-      if (this.model.isRemoteInput())
-      {
-        return;
-      }
-
       if (message.event && !this.$(message.event.target).length)
       {
         message.event.preventDefault();
       }
 
-      if (/^[0-9]{9}-[0-9]{3}$/.test(message.value))
+      if (this.model.isRemoteInput())
+      {
+        if (/=[0-9]{8}=[0-9]{12}/.test(message.value))
+        {
+          this.handleLedCommand(message.value);
+        }
+      }
+      else if (/^[0-9]{9}-[0-9]{3}$/.test(message.value))
       {
         this.handleOrderNoAndQuantityCommand(message.value);
       }
       else if (/^[0-9]{12}$/.test(message.value))
       {
         this.handleNc12Command(message.value, message.event ? message.event.target : null);
+      }
+    },
+
+    handleLedCommand: function(led)
+    {
+      var matches = led.match(/=([0-9]{8})=([0-9]{12})/);
+
+      if (!matches)
+      {
+        return;
+      }
+
+      var nc12 = matches[2];
+      var serialNumber = matches[1];
+
+      if (this.model.get('waitingForLeds'))
+      {
+        this.checkSerialNumber(nc12, serialNumber);
+      }
+      else
+      {
+        ledBuffer.add(nc12, serialNumber);
+
+        this.start();
       }
     },
 
@@ -1189,6 +1270,7 @@ define([
         remainingOrdersCount: remainingOrdersCount,
         selectNextOrderNoHotkey: hotkeys.focusQuantity,
         selectAnotherOrderNoHotkey: hotkeys.focusOrderNo,
+        closeDialogHotkey: hotkeys.closeDialog,
         resetOrderHotkey: hotkeys.reset
       };
     },
@@ -1206,64 +1288,6 @@ define([
       return tsMoment.format('YYMMDD') === currentMoment.format('YYMMDD')
         ? tsMoment.format('HH:mm:ss')
         : tsMoment.format('YYYY-MM-DD, HH:mm:ss');
-    },
-
-    isSelectingNc12: function()
-    {
-      return this.$('.dashboard-input-nc12.is-selecting').length === 1;
-    },
-
-    toggleNc12Picker: function()
-    {
-      if (!user.isLocal() || this.model.isInProgress())
-      {
-        return;
-      }
-
-      var visible = this.$id('nc12Picker').length === 1;
-
-      if (visible)
-      {
-        this.selectNc12(null, this.hideNc12Picker.bind(this));
-      }
-      else
-      {
-        this.selectNc12(null, this.showNc12Picker.bind(this));
-      }
-    },
-
-    showNc12Picker: function()
-    {
-      if (this.isSelectingNc12())
-      {
-        return;
-      }
-
-      var templateData = {
-        idPrefix: this.idPrefix,
-        programs: _.where(this.model.getSelectedRemoteData().items, {kind: 'program'})
-      };
-
-      $(nc12PickerTemplate(templateData))
-        .hide()
-        .appendTo(this.$els.nc12.parent())
-        .stop()
-        .slideDown('fast');
-    },
-
-    hideNc12Picker: function()
-    {
-      if (this.isSelectingNc12())
-      {
-        return;
-      }
-
-      var $picker = this.$id('nc12Picker');
-
-      if ($picker.length)
-      {
-        $picker.stop().slideUp('fast', function() { $picker.remove(); });
-      }
     }
 
   });

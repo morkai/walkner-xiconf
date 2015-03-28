@@ -125,6 +125,10 @@
 .dashboard-carousel {
   margin-top: 68px!important;
 }
+.is-waitingForLeds .dashboard-carousel,
+.is-waitingForLeds .dashboard-program {
+  margin-top: 364px!important;
+}
 
 .dashboard-leftColumn {
   position: relative;
@@ -133,6 +137,7 @@
   flex-shrink: 0;
 }
 .dashboard-rightColumn {
+  position: relative;
   flex-grow: 1;
   flex-shrink: 1;
   margin-left: 14px;

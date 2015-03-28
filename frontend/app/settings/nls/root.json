@@ -134,6 +134,9 @@
     "setting:bgScanner": "Barcode scanner mode",
     "setting:bgScanner:on": "Server-side",
     "setting:bgScanner:off": "Client-side",
+    "setting:ledsEnabled": "LED boards checking",
+    "setting:ledsEnabled:on": "Enabled",
+    "setting:ledsEnabled:off": "Disabled",
 
     "license:NO_KEY": "No license key.",
     "license:INVALID_ED_PEM": "Invalid license decryption key.",
@@ -158,7 +161,8 @@
     "hotkey:start": "Start",
     "hotkey:cancel": "Cancel",
     "hotkey:setProgram": "Select program",
-    "hotkey:printServiceTag": "Print Service Tag"
+    "hotkey:printServiceTag": "Print Service Tag",
+    "hotkey:closeDialog": "Close modal dialog"
   },
   "pl": true
 }

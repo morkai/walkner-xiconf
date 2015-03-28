@@ -27,6 +27,7 @@ function HistoryEntry(db, broker, settings)
   this.remoteLeader = null;
   this.selectedOrderNo = null;
   this.selectedNc12 = null;
+  this.waitingForLeds = false;
 
   this.clear();
 }
@@ -56,7 +57,7 @@ HistoryEntry.prototype.toJSON = function()
     countdown: this.countdown,
     program: this.program,
     steps: this.steps,
-    leds: Array.isArray(this.leds) && this.leds.length ? [].concat(this.log) : null,
+    leds: this.leds,
     inputMode: this.inputMode,
     workMode: this.workMode,
     inProgress: this.inProgress,
@@ -65,7 +66,8 @@ HistoryEntry.prototype.toJSON = function()
     remoteData: this.remoteData,
     remoteLeader: this.remoteLeader,
     selectedOrderNo: this.selectedOrderNo,
-    selectedNc12: this.selectedNc12
+    selectedNc12: this.selectedNc12,
+    waitingForLeds: this.waitingForLeds
   };
 };
 
@@ -79,13 +81,65 @@ HistoryEntry.prototype.isFinished = function()
   return this.finishedAt !== null;
 };
 
+HistoryEntry.prototype.getSelectedOrderData = function()
+{
+  return _.find(this.remoteData, {_id: this.selectedOrderNo}) || null;
+};
+
+HistoryEntry.prototype.isLedOnly = function()
+{
+  var selectedOrderData = this.getSelectedOrderData();
+
+  if (!selectedOrderData)
+  {
+    return false;
+  }
+
+  var programs = 0;
+  var leds = 0;
+
+  _.forEach(selectedOrderData.items, function(item)
+  {
+    if (item.kind === 'program')
+    {
+      ++programs;
+    }
+    else if (item.kind === 'led')
+    {
+      ++leds;
+    }
+  });
+
+  return programs === 0 && leds > 0;
+};
+
 HistoryEntry.prototype.createServiceTagRequestData = function()
 {
+  var ledsMap = {};
+  var ledsList = [];
+  var leds = Array.isArray(this.leds) ? this.leds : [];
+
+  for (var i = 0; i < leds.length; ++i)
+  {
+    var led = leds[i];
+
+    if (!ledsMap[led.nc12])
+    {
+      ledsMap[led.nc12] = [];
+      ledsList.push({
+        nc12: led.nc12,
+        serialNumbers: ledsMap[led.nc12]
+      });
+    }
+
+    ledsMap[led.nc12].push(led.serialNumber);
+  }
+
   return {
     orderNo: this.order.no,
     nc12: this.nc12,
     multi: _.isString(this.workflow) && /multidevice\s*=\s*true/i.test(this.workflow),
-    leds: [].concat(this.leds)
+    leds: ledsList
   };
 };
 
@@ -163,11 +217,21 @@ HistoryEntry.prototype.reset = function(orderNo, quantity, nc12)
     });
   }
 
-  this.log.push({
-    time: this.startedAt,
-    text: 'PROGRAMMING_STARTED',
-    nc12: this.nc12
-  });
+  if (_.isEmpty(this.nc12))
+  {
+    this.log.push({
+      time: this.startedAt,
+      text: 'LED_CHECKING_STARTED'
+    });
+  }
+  else
+  {
+    this.log.push({
+      time: this.startedAt,
+      text: 'PROGRAMMING_STARTED',
+      nc12: this.nc12
+    });
+  }
 
   this._id = (this.startedAt + Math.round(Math.random() * 9999999)).toString(36).toUpperCase();
   this.finishedAt = null;
@@ -187,25 +251,74 @@ HistoryEntry.prototype.reset = function(orderNo, quantity, nc12)
   this.metrics = null;
   this.leds = [];
 
-  if (this.program)
-  {
-    this.steps = this.program.steps.map(function()
-    {
-      return {
-        status: 'idle',
-        progress: 0,
-        value: 0
-      };
-    });
-    this.metrics = {
-      uSet: [],
-      uGet: [],
-      i: []
-    };
-  }
+  this.setUpProgram();
+  this.setUpLeds();
 
+  this.waitingForLeds = !!this.settings.get('ledsEnabled')
+    && this.settings.supportsFeature('led')
+    && this.leds.length > 0;
   this.inProgress = true;
   this.overallProgress = 1;
+};
+
+HistoryEntry.prototype.setUpLeds = function()
+{
+  if (this.inputMode !== 'remote')
+  {
+    return;
+  }
+
+  var orderData = this.getSelectedOrderData();
+
+  if (!orderData)
+  {
+    return;
+  }
+
+  for (var i = 0; i < orderData.items.length; ++i)
+  {
+    var item = orderData.items[i];
+
+    if (item.kind !== 'led')
+    {
+      continue;
+    }
+
+    var ledsPerResult = Math.floor(item.quantityTodo / orderData.quantityTodo);
+
+    for (var ii = 0; ii < ledsPerResult; ++ii)
+    {
+      this.leds.push({
+        nc12: item.nc12,
+        name: item.name,
+        serialNumber: null,
+        status: 'waiting' // waiting, checking, checked or an error object
+      });
+    }
+  }
+};
+
+HistoryEntry.prototype.setUpProgram = function()
+{
+  if (!this.program)
+  {
+    return;
+  }
+
+  this.steps = this.program.steps.map(function()
+  {
+    return {
+      status: 'idle',
+      progress: 0,
+      value: 0
+    };
+  });
+
+  this.metrics = {
+    uSet: [],
+    uGet: [],
+    i: []
+  };
 };
 
 HistoryEntry.prototype.hashFeatureFile = function()
@@ -296,7 +409,7 @@ HistoryEntry.prototype.save = function(featureDbPath, done)
       $steps: historyEntry.steps ? JSON.stringify(historyEntry.steps) : null,
       $metrics: historyEntry.metrics ? JSON.stringify(historyEntry.metrics) : null,
       $serviceTag: historyEntry.serviceTag,
-      $leds: historyEntry.leds ? JSON.stringify(historyEntry.leds) : null,
+      $leds: Array.isArray(historyEntry.leds) && historyEntry.leds.length ? JSON.stringify(historyEntry.leds) : null,
       $prodLine: historyEntry.settings.get('prodLine') || null
     };
 

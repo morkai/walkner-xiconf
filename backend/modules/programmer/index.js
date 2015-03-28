@@ -12,6 +12,7 @@ var setUpBarcodeScanner = require('./barcodeScanner');
 var program = require('./program');
 var printServiceTag = require('./printServiceTag');
 var RemoteCoordinator = require('./RemoteCoordinator');
+var LedManager = require('./LedManager');
 
 exports.DEFAULT_CONFIG = {
   settingsId: 'settings',
@@ -57,6 +58,8 @@ exports.start = function startProgrammerModule(app, module)
   module.currentState = historyModule.createEntry();
 
   module.remoteCoordinator = new RemoteCoordinator(app, module);
+
+  module.ledManager = new LedManager(app.broker.sandbox(), module);
 
   module.newProgram = null;
 
@@ -328,6 +331,11 @@ exports.start = function startProgrammerModule(app, module)
       serviceTag,
       done
     );
+  };
+
+  module.checkSerialNumber = function(orderNo, nc12, serialNumber)
+  {
+    module.ledManager.check(orderNo, nc12, serialNumber);
   };
 
   setUpBlockage(app, module);

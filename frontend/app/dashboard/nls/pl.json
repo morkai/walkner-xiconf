@@ -33,6 +33,8 @@
   "input:orderNo": "Nr zlecenia",
   "input:quantity": "Ilość",
   "input:nc12": "12NC",
+  "input:nc12:ledOnly": "Brak 12NC programowych.\nTylko płytki LED.",
+  "input:nc12:multi": "Dostępne kilka 12NC programowych.\nKliknij, aby zmienić 12NC.",
   "input:start": "Rozpocznij",
   "input:cancel": "Anuluj",
   "input:toggleWorkMode": "Przełącz tryb pracy",
@@ -76,5 +78,14 @@
   "printServiceTagDialog:counter": "Sztuki",
   "printServiceTagDialog:submit": "Drukuj etykietę",
   "printServiceTagDialog:failure": "Nie udało się wydrukować etykiety Service Tag :(",
-  "printServiceTagDialog:success": "Wygenerowano żądanie drukowania {count, plural, one{etykiety} other{{count} etykiet}} Service Tag."
+  "printServiceTagDialog:success": "Wygenerowano żądanie drukowania {count, plural, one{etykiety} other{{count} etykiet}} Service Tag.",
+
+  "leds": "Płytki LED",
+  "leds:error:INVALID_NC12": "Nieprawidłowe 12NC:<br>{nc12}!",
+  "leds:error:NO_CONNECTION": "Brak połączenia z<br>serwerem zewnętrznym!",
+  "leds:error:TIMEOUT": "Upłynął limit czasu<br>oczekiwania na odpowiedź!",
+  "ledS:error:DB_FAILURE": "Błąd bazy danych!",
+  "leds:error:UNKNOWN_ORDER_NO": "Nieznane zlecenie!",
+  "leds:error:UNKNOWN_ITEM_NC12": "Nieznana pozycja zlecenia!",
+  "leds:error:SERIAL_NUMBER_USED": "SN użyty w zleceniu {orderNo}:<br>{name}"
 }

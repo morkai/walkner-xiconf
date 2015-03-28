@@ -55,7 +55,7 @@ define([
         serviceTag: model.get('serviceTag'),
         order: order ? order.no : null,
         programName: model.getProgramName(),
-        nc12: model.get('nc12'),
+        nc12: model.get('nc12') || null,
         counter: model.get('counter'),
         quantity: order ? order.quantity : null,
         startedAt: time.format(model.get('startedAt'), 'YYYY-MM-DD, HH:mm:ss.SSS'),

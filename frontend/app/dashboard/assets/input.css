@@ -3,7 +3,7 @@
   height: 70px;
   line-height: 1;
   font-family: Consolas, monospace;
-  font-size: 56px;
+  font-size: 54px;
   text-align: center;
 }
 .dashboard-input-orderNoAndQuantity {
@@ -16,13 +16,18 @@
   margin-left: 14px;
   width: 185px;
 }
-.dashboard-input-quantity .is-overflow {
+.dashboard-input-quantity > .is-overflow {
   outline: 4px solid #c7254e;
+  background-color: #f2dede;
   color: #c7254e;
 }
 .dashboard-input-nc12 {
   margin-top: 14px;
   margin-bottom: 14px;
+}
+.dashboard-input-nc12 > .is-ledOnly {
+  outline: 4px solid #5cb85c;
+  background-color: #dff0d8;
 }
 .is-idle .dashboard-input-orderNo.is-multi > .form-control {
   cursor: pointer;

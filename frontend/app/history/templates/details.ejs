@@ -54,7 +54,7 @@
         </div>
         <div class="prop">
           <div class="prop-name"><%- t('history', 'PROPERTY:nc12') %></div>
-          <div class="prop-value"><%- model.nc12 %></div>
+          <div class="prop-value"><%- model.nc12 || '-' %></div>
         </div>
         <div class="prop">
           <div class="prop-name"><%- t('history', 'PROPERTY:programName') %></div>
@@ -107,6 +107,9 @@
       <% if (model.feature) { %>
       <li data-tab="feature"><a href="#<%- idPrefix %>-feature" data-toggle="tab"><%- t('history', 'tab:feature') %></a></li>
       <% } %>
+      <% if (model.leds) { %>
+      <li data-tab="leds"><a href="#<%- idPrefix %>-leds" data-toggle="tab"><%- t('history', 'tab:leds') %></a></li>
+      <% } %>
       <% if (model.program) { %>
       <li data-tab="program"><a href="#<%- idPrefix %>-program" data-toggle="tab"><%- t('history', 'tab:program') %></a></li>
       <% } %>
@@ -132,6 +135,9 @@
       <% } %>
       <% if (model.feature) { %>
       <div class="tab-pane" id="<%- idPrefix %>-feature"><pre><code class="xml"><%= model.feature || '-' %></code></pre></div>
+      <% } %>
+      <% if (model.leds) { %>
+      <div class="tab-pane history-details-leds" id="<%- idPrefix %>-leds"></div>
       <% } %>
       <% if (model.program) { %>
       <div class="tab-pane" id="<%- idPrefix %>-program">

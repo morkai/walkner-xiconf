@@ -116,6 +116,7 @@ exports.settings = {
     serviceTagInLocalMode: 'optional',
     protectInputMode: 1,
     bgScanner: 0,
+    ledsEnabled: 0,
     hotkeys: {
       focusOrderNo: 'Q',
       focusQuantity: 'W',
@@ -133,7 +134,8 @@ exports.settings = {
       showDashboardPage: 'Z',
       showHistoryPage: 'X',
       showProgramsPage: 'C',
-      showSettingsPage: 'V'
+      showSettingsPage: 'V',
+      closeDialog: 'O'
     }
   }
 };

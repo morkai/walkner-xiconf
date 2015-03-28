@@ -14,7 +14,8 @@ module.exports = function setUpProgrammerCommands(app, programmerModule)
   [
     'programmer.stateChanged',
     'programmer.logged',
-    'programmer.stepProgressed'
+    'programmer.stepProgressed',
+    'programmer.ledUpdated'
   ].forEach(function(topic)
   {
     app.broker.subscribe(topic, function(message)
@@ -36,6 +37,7 @@ module.exports = function setUpProgrammerCommands(app, programmerModule)
       socket.on('programmer.setProgram', setProgram);
       socket.on('programmer.selectOrderNo', selectOrderNo);
       socket.on('programmer.selectNc12', selectNc12);
+      socket.on('programmer.checkSerialNumber', checkSerialNumber);
       socket.on('programmer.start', start);
       socket.on('programmer.cancel', cancel);
       socket.on('programmer.reload', reload);
@@ -100,6 +102,16 @@ module.exports = function setUpProgrammerCommands(app, programmerModule)
     }
   }
 
+  function checkSerialNumber(orderNo, nc12, serialNumber)
+  {
+    if (_.isString(orderNo) && /^[0-9]{1,9}$/.test(orderNo)
+      && _.isString(nc12) && /^[0-9]{12}$/.test(nc12)
+      && _.isString(serialNumber) && /^[0-9]{8}$/.test(serialNumber))
+    {
+      programmerModule.checkSerialNumber(orderNo, nc12, serialNumber);
+    }
+  }
+
   function start(data, reply)
   {
     if (!_.isFunction(reply))
@@ -107,12 +119,12 @@ module.exports = function setUpProgrammerCommands(app, programmerModule)
       return;
     }
 
-    if (!_.isObject(data) || !/^[0-9]{12}$/.test(data.nc12))
+    if (!_.isObject(data) || (!programmerModule.currentState.isLedOnly() && !/^[0-9]{12}$/.test(data.nc12)))
     {
       return reply(new Error('INPUT'));
     }
 
-    var orders = settings.get('orders');
+    var orders = programmerModule.currentState.inputMode === 'remote' ? 'required' : settings.get('orders');
 
     if (orders === 'required')
     {
@@ -299,9 +311,9 @@ module.exports = function setUpProgrammerCommands(app, programmerModule)
 
   function validateOrder(data)
   {
-    return /^[0-9]{9}$/.test(data.orderNo)
+    return /^[0-9]{1,9}$/.test(data.orderNo)
       && _.isNumber(data.quantity)
       && data.quantity > 0
-      && data.quantity < 1000;
+      && data.quantity < 9999;
   }
 };

@@ -8,6 +8,7 @@ define([
   'app/i18n',
   'app/highcharts',
   'app/core/View',
+  'app/dashboard/views/LedsView',
   'app/programs/views/ProgramStepsView',
   'app/history/templates/details'
 ], function(
@@ -16,6 +17,7 @@ define([
   t,
   Highcharts,
   View,
+  LedsView,
   ProgramStepsView,
   detailsTemplate
 ) {
@@ -58,6 +60,7 @@ define([
       this.featureHighlighted = false;
       this.metricsChart = null;
 
+      this.setView('.history-details-leds', new LedsView({model: this.model}));
       this.setView('.history-details-steps', new ProgramStepsView({model: this.model}));
     },
 

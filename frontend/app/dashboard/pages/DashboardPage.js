@@ -19,6 +19,7 @@ define([
   '../views/HistoryView',
   '../views/CarouselView',
   '../views/ProgramView',
+  '../views/LedsView',
   'app/dashboard/templates/page'
 ], function(
   _,
@@ -37,6 +38,7 @@ define([
   HistoryView,
   CarouselView,
   ProgramView,
+  LedsView,
   template
 ) {
   'use strict';
@@ -103,6 +105,7 @@ define([
       this.defineViews();
       this.insertView('.dashboard-leftColumn', this.inputView);
       this.insertView('.dashboard-leftColumn', this.logView);
+      this.insertView('.dashboard-rightColumn', this.ledsView);
       this.insertView('.dashboard-rightColumn', this.historyView);
       this.insertView('.dashboard-rightColumn', this.carouselView);
       this.insertView('.dashboard-rightColumn', this.programView);
@@ -120,6 +123,7 @@ define([
       this.listenTo(currentState, 'change:overallProgress', this.onOverallProgressChange);
       this.listenTo(currentState, 'change:result', this.onResultChange);
       this.listenTo(currentState, 'change:remoteConnected', this.toggleConnectionIndicator);
+      this.listenTo(currentState, 'change:waitingForLeds', this.onWaitingForLedsChange);
       this.listenTo(settings, 'change:licenseInfo', this.onLicenseInfoChange);
       this.listenTo(settings, 'change:testingEnabled', this.onTestingEnabledChange);
       this.listenTo(settings, 'change:hotkeys', this.updateHotkeys);
@@ -146,6 +150,7 @@ define([
     {
       this.inputView = new InputView({model: currentState});
       this.logView = new LogView({model: currentState});
+      this.ledsView = new LedsView({model: currentState});
       this.historyView = new HistoryView({collection: new HistoryEntryCollection()});
       this.carouselView = new CarouselView({model: currentState});
       this.programView = new ProgramView({model: currentState});
@@ -162,6 +167,7 @@ define([
         workMode: currentState.get('workMode'),
         inputMode: currentState.get('inputMode'),
         workModeChangeEnabled: !!settings.get('testingEnabled'),
+        waitingForLeds: currentState.get('waitingForLeds'),
         progressBarClassName: this.getProgressBarClassName(),
         progressBarWidth: this.getProgressBarWidth()
       };
@@ -195,6 +201,7 @@ define([
       this.logView.resize(height);
       this.carouselView.resize(width, height);
       this.programView.resize(width, height);
+      this.ledsView.resize(height);
     },
 
     toggleConnectionIndicator: function()
@@ -461,6 +468,11 @@ define([
       {
         this.hideInputModeForm();
       }
+    },
+
+    onWaitingForLedsChange: function()
+    {
+      this.$el.toggleClass('is-waitingForLeds', currentState.get('waitingForLeds'));
     }
 
   });

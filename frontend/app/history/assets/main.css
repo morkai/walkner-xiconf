@@ -32,3 +32,20 @@
 .history-details-metrics {
   margin-top: 14px;
 }
+.history-details-leds .dashboard-leds {
+  display: block;
+  position: static;
+}
+.history-details-leds .dashboard-header {
+  display: none;
+}
+.history-details-leds .dashboard-leds-list {
+  box-shadow: none;
+  min-height: inherit;
+  max-height: none;
+  overflow: auto;
+  border-top: 0;
+}
+.history-details-leds .dashboard-leds-led {
+  border-right: 0;
+}

@@ -84,6 +84,23 @@ RemoteCoordinator.prototype.acquireServiceTag = function(data, done)
 
 /**
  * @param {object} data
+ * @param {string} data.orderNo
+ * @param {string} data.nc12
+ * @param {string} data.serialNumber
+ * @param {function} done
+ */
+RemoteCoordinator.prototype.checkSerialNumber = function(data, done)
+{
+  if (!this.isConnected())
+  {
+    return done(new Error("No connection to the remote server: " + this.settings.get('remoteServer')));
+  }
+
+  this.sio.emit('xiconf.checkSerialNumber', data, done);
+};
+
+/**
+ * @param {object} data
  * @param {string} data.serviceTag
  * @param {string} data.orderNo
  * @param {string} data.nc12
