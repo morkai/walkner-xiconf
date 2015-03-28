@@ -132,7 +132,10 @@ HistoryEntry.prototype.createServiceTagRequestData = function()
       });
     }
 
-    ledsMap[led.nc12].push(led.serialNumber);
+    if (led.serialNumber !== null)
+    {
+      ledsMap[led.nc12].push(led.serialNumber);
+    }
   }
 
   return {
