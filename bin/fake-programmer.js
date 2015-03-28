@@ -43,7 +43,7 @@ function next(i)
 {
   if (i === chunks.length)
   {
-    return process.exit(Math.random() > 0.8 ? 0xFFFF : 0);
+    return process.exit(Math.random() > 0.9 ? 0xFFFF : 0);
   }
 
   var chunk = chunks[i];
