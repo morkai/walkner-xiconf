@@ -18,7 +18,7 @@
 #include <TrayConstants.au3>
 #include ".\common.au3"
 
-Global Const $MAX_CONNECT_TRIES = 10
+Global Const $MAX_CONNECT_TRIES = 30
 Global const $CHROME_WAIT_TIME = 60
 
 WinActivate($CHROME_TITLE)
@@ -184,7 +184,7 @@ Func RunConnectionCheck()
     EndIf
 
     SplashText($LANG_CONNECTING & " " & $connectCounter & "/" & $MAX_CONNECT_TRIES & "...")
-    Sleep(1000)
+    Sleep(2000)
   WEnd
 EndFunc
 
