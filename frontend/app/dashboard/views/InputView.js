@@ -705,7 +705,11 @@ define([
 
       var selectedProgramItem = _.findWhere(programItems, {nc12: this.model.get('selectedNc12')});
       var isMultiNc12 = programItems.length > 1;
-      var isLedOnly = isRemoteInput && !programItems.length && ledItems.length > 0 && !!settings.get('ledsEnabled');
+      var isLedOnly = isRemoteInput
+        && !this.model.hasProgram()
+        && !programItems.length
+        && ledItems.length > 0
+        && !!settings.get('ledsEnabled');
       var quantityTodo = data.quantityTodo;
       var quantityDone = data.quantityDone;
       var nc12 = '';
@@ -755,12 +759,32 @@ define([
       }
     },
 
+    isNc12Required: function()
+    {
+      if (this.$els.nc12.hasClass('is-ledOnly'))
+      {
+        return false;
+      }
+
+      if (this.model.hasProgramStep('sol'))
+      {
+        return true;
+      }
+
+      return !this.model.hasProgram();
+    },
+
     getStartData: function()
     {
       var remoteData = this.model.isRemoteInput() ? this.model.getSelectedRemoteData() : null;
       var nc12 = this.$els.nc12.val().trim();
 
-      if (!/^[0-9]{12}$/.test(nc12) && !this.$els.nc12.hasClass('is-ledOnly'))
+      if (!/^[0-9]{12}$/.test(nc12))
+      {
+        nc12 = '';
+      }
+
+      if (nc12 === '' && this.isNc12Required())
       {
         this.showMessage('warning', 'start:requiredNc12');
         this.$els.nc12.select();

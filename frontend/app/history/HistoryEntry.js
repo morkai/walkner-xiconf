@@ -113,6 +113,33 @@ define([
       return this.get('order') !== null;
     },
 
+    hasProgram: function()
+    {
+      return !!this.get('program');
+    },
+
+    hasProgramStep: function(type)
+    {
+      var program = this.get('program');
+
+      if (!program)
+      {
+        return false;
+      }
+
+      for (var i = 0; i < program.steps.length; ++i)
+      {
+        var step = program.steps[i];
+
+        if (step.enabled && step.type === type)
+        {
+          return true;
+        }
+      }
+
+      return false;
+    },
+
     isOrderFinished: function()
     {
       if (this.isRemoteInput())

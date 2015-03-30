@@ -90,7 +90,7 @@ HistoryEntry.prototype.isLedOnly = function()
 {
   var selectedOrderData = this.getSelectedOrderData();
 
-  if (!selectedOrderData)
+  if (!selectedOrderData || this.program)
   {
     return false;
   }
@@ -111,6 +111,26 @@ HistoryEntry.prototype.isLedOnly = function()
   });
 
   return programs === 0 && leds > 0;
+};
+
+HistoryEntry.prototype.hasProgramStep = function(type)
+{
+  if (!this.program)
+  {
+    return false;
+  }
+
+  for (var i = 0; i < this.program.steps.length; ++i)
+  {
+    var step = this.program.steps[i];
+
+    if (step.enabled && step.type === type)
+    {
+      return true;
+    }
+  }
+
+  return false;
 };
 
 HistoryEntry.prototype.createServiceTagRequestData = function()
@@ -188,9 +208,35 @@ HistoryEntry.prototype.clear = function(clearOrder, clearProgram)
 HistoryEntry.prototype.reset = function(orderNo, quantity, nc12)
 {
   this.startedAt = Date.now();
+  this._id = (this.startedAt + Math.round(Math.random() * 9999999)).toString(36).toUpperCase();
   this.nc12 = nc12;
   this.serviceTag = null;
   this.log = [];
+  this.finishedAt = null;
+  this.duration = null;
+  this.result = null;
+  this.errorCode = null;
+  this.exception = null;
+  this.output = null;
+  this.featureFile = null;
+  this.featureFileName = null;
+  this.featureFileHash = null;
+  this.feature = null;
+  this.workflowFile = null;
+  this.workflow = null;
+  this.countdown = -1;
+  this.steps = null;
+  this.metrics = null;
+  this.leds = [];
+
+  this.setUpProgram();
+  this.setUpLeds();
+
+  this.waitingForLeds = !!this.settings.get('ledsEnabled')
+    && this.settings.supportsFeature('led')
+    && this.leds.length > 0;
+  this.inProgress = true;
+  this.overallProgress = 1;
 
   if (orderNo === null)
   {
@@ -220,7 +266,7 @@ HistoryEntry.prototype.reset = function(orderNo, quantity, nc12)
     });
   }
 
-  if (_.isEmpty(this.nc12))
+  if (_.isEmpty(this.nc12) && this.waitingForLeds && !this.program)
   {
     this.log.push({
       time: this.startedAt,
@@ -232,36 +278,9 @@ HistoryEntry.prototype.reset = function(orderNo, quantity, nc12)
     this.log.push({
       time: this.startedAt,
       text: 'PROGRAMMING_STARTED',
-      nc12: this.nc12
+      nc12: this.nc12 || '-'
     });
   }
-
-  this._id = (this.startedAt + Math.round(Math.random() * 9999999)).toString(36).toUpperCase();
-  this.finishedAt = null;
-  this.duration = null;
-  this.result = null;
-  this.errorCode = null;
-  this.exception = null;
-  this.output = null;
-  this.featureFile = null;
-  this.featureFileName = null;
-  this.featureFileHash = null;
-  this.feature = null;
-  this.workflowFile = null;
-  this.workflow = null;
-  this.countdown = -1;
-  this.steps = null;
-  this.metrics = null;
-  this.leds = [];
-
-  this.setUpProgram();
-  this.setUpLeds();
-
-  this.waitingForLeds = !!this.settings.get('ledsEnabled')
-    && this.settings.supportsFeature('led')
-    && this.leds.length > 0;
-  this.inProgress = true;
-  this.overallProgress = 1;
 };
 
 HistoryEntry.prototype.setUpLeds = function()

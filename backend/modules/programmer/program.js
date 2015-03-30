@@ -200,7 +200,7 @@ module.exports = function program(app, programmerModule, data, done)
       this.sub = null;
     }
 
-    if (isLedOnly)
+    if (!currentState.nc12)
     {
       return;
     }
@@ -243,7 +243,7 @@ module.exports = function program(app, programmerModule, data, done)
       return this.skip();
     }
 
-    if (isLedOnly)
+    if (!currentState.nc12)
     {
       return;
     }
@@ -313,12 +313,7 @@ module.exports = function program(app, programmerModule, data, done)
       return this.skip(err);
     }
 
-    if (isLedOnly)
-    {
-      return;
-    }
-
-    if (!this.foundFeature1)
+    if (!currentState.nc12 || !this.foundFeature1)
     {
       return;
     }
@@ -348,12 +343,12 @@ module.exports = function program(app, programmerModule, data, done)
   {
     /*jshint validthis:true*/
 
-    if (isLedOnly)
+    if (thisProgrammingCancelled)
     {
-      return;
+      return this.skip();
     }
 
-    if (!this.foundFeature1)
+    if (!currentState.nc12 || !this.foundFeature1)
     {
       return;
     }
@@ -362,11 +357,6 @@ module.exports = function program(app, programmerModule, data, done)
     {
       this.sub.cancel();
       this.sub = null;
-    }
-
-    if (thisProgrammingCancelled)
-    {
-      return this.skip();
     }
 
     if (err)
@@ -405,12 +395,7 @@ module.exports = function program(app, programmerModule, data, done)
       return this.skip();
     }
 
-    if (isLedOnly)
-    {
-      return;
-    }
-
-    if (this.foundFeature1)
+    if (!currentState.nc12 || this.foundFeature1)
     {
       return setImmediate(this.next());
     }
@@ -448,12 +433,7 @@ module.exports = function program(app, programmerModule, data, done)
       return this.skip();
     }
 
-    if (isLedOnly)
-    {
-      return;
-    }
-
-    if (this.foundFeature1)
+    if (!currentState.nc12 || this.foundFeature1)
     {
       return;
     }
@@ -515,12 +495,7 @@ module.exports = function program(app, programmerModule, data, done)
       return this.skip();
     }
 
-    if (isLedOnly)
-    {
-      return;
-    }
-
-    if (this.foundFeature1)
+    if (!currentState.nc12 || this.foundFeature1)
     {
       return;
     }
@@ -550,12 +525,7 @@ module.exports = function program(app, programmerModule, data, done)
       return this.skip();
     }
 
-    if (isLedOnly)
-    {
-      return;
-    }
-
-    if (this.foundFeature1)
+    if (!currentState.nc12 || this.foundFeature1)
     {
       return;
     }
@@ -596,13 +566,14 @@ module.exports = function program(app, programmerModule, data, done)
       return this.skip();
     }
 
-    if (isLedOnly)
+    var featureFile = currentState.featureFile;
+
+    if (_.isEmpty(featureFile))
     {
       return;
     }
 
     var solFilePattern = settings.get('solFilePattern') || '';
-    var featureFile = currentState.featureFile;
 
     this.isSolProgram = solFilePattern.length && featureFile.indexOf(solFilePattern) !== -1;
 
@@ -623,12 +594,7 @@ module.exports = function program(app, programmerModule, data, done)
       return this.skip();
     }
 
-    if (isLedOnly)
-    {
-      return;
-    }
-
-    if (this.isSolProgram)
+    if (this.isSolProgram || _.isEmpty(currentState.featureFile))
     {
       return;
     }
@@ -666,12 +632,7 @@ module.exports = function program(app, programmerModule, data, done)
       return this.skip();
     }
 
-    if (isLedOnly)
-    {
-      return;
-    }
-
-    if (this.isSolProgram)
+    if (!currentState.nc12 || this.isSolProgram)
     {
       return;
     }
@@ -755,12 +716,7 @@ module.exports = function program(app, programmerModule, data, done)
       return this.skip();
     }
 
-    if (isLedOnly)
-    {
-      return;
-    }
-
-    if (this.isSolProgram || !settings.get('lptEnabled'))
+    if (!currentState.nc12 || this.isSolProgram || !settings.get('lptEnabled'))
     {
       return;
     }
@@ -804,11 +760,6 @@ module.exports = function program(app, programmerModule, data, done)
       return this.skip(err);
     }
 
-    if (isLedOnly)
-    {
-      return;
-    }
-
     if (this.sub)
     {
       this.sub.cancel();
@@ -825,6 +776,11 @@ module.exports = function program(app, programmerModule, data, done)
     if (this.isSolProgram)
     {
       return programSolDriver(app, programmerModule, null, onProgress, this.next());
+    }
+
+    if (_.isEmpty(currentState.workflow))
+    {
+      return;
     }
 
     this.sub = programMowDriver(app, programmerModule, onProgress, this.next());

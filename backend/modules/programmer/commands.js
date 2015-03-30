@@ -119,9 +119,20 @@ module.exports = function setUpProgrammerCommands(app, programmerModule)
       return;
     }
 
-    if (!_.isObject(data) || (!programmerModule.currentState.isLedOnly() && !/^[0-9]{12}$/.test(data.nc12)))
+    if (!_.isObject(data))
     {
       return reply(new Error('INPUT'));
+    }
+
+    if (!/^[0-9]{12}$/.test(data.nc12))
+    {
+      var isLedOnly = programmerModule.currentState.isLedOnly();
+      var hasSolProgramStep = programmerModule.currentState.hasProgramStep('sol');
+
+      if (hasSolProgramStep && !isLedOnly)
+      {
+        return reply(new Error('INPUT'));
+      }
     }
 
     var orders = programmerModule.currentState.inputMode === 'remote' ? 'required' : settings.get('orders');
