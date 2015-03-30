@@ -705,7 +705,8 @@ define([
 
       var selectedProgramItem = _.findWhere(programItems, {nc12: this.model.get('selectedNc12')});
       var isMultiNc12 = programItems.length > 1;
-      var isLedOnly = isRemoteInput
+      var isLedOnly = user.isLocal()
+        && isRemoteInput
         && !this.model.hasProgram()
         && !programItems.length
         && ledItems.length > 0
@@ -727,7 +728,7 @@ define([
         }
         else
         {
-          nc12 = '????????????';
+          nc12 = '';
         }
       }
 
@@ -743,9 +744,10 @@ define([
       $els.nc12
         .val(nc12)
         .attr('title', nc12Title)
+        .parent('div')
         .toggleClass('is-ledOnly', isLedOnly)
-        .closest('div')
-        .toggleClass('is-multi', user.isLocal() && !this.model.isInProgress() && isMultiNc12);
+        .toggleClass('is-multi', user.isLocal() && !this.model.isInProgress() && isMultiNc12)
+        .toggleClass('is-picked', nc12 !== '');
 
       var quantity = quantityTodo - quantityDone;
 
@@ -761,7 +763,7 @@ define([
 
     isNc12Required: function()
     {
-      if (this.$els.nc12.hasClass('is-ledOnly'))
+      if (this.$els.nc12.parent().hasClass('is-ledOnly'))
       {
         return false;
       }

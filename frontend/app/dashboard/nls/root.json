@@ -35,7 +35,7 @@
     "input:quantity": "Quantity",
     "input:nc12": "12NC",
     "input:nc12:ledOnly": "No program 12NC.\nOnly LED boards.",
-    "input:nc12:multi": "A few program 12NCs are available.\nClick to change 12NC.",
+    "input:nc12:multi": "Multiple program 12NCs are available.\nClick to pick 12NC.",
     "input:start": "Start",
     "input:cancel": "Cancel",
     "input:toggleWorkMode": "Toggle the work mode",

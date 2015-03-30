@@ -34,7 +34,7 @@
   "input:quantity": "Ilość",
   "input:nc12": "12NC",
   "input:nc12:ledOnly": "Brak 12NC programowych.\nTylko płytki LED.",
-  "input:nc12:multi": "Dostępne kilka 12NC programowych.\nKliknij, aby zmienić 12NC.",
+  "input:nc12:multi": "Dostępne kilka 12NC programowych.\nKliknij, aby wybrać 12NC.",
   "input:start": "Rozpocznij",
   "input:cancel": "Anuluj",
   "input:toggleWorkMode": "Przełącz tryb pracy",

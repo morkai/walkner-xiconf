@@ -18,16 +18,40 @@
 }
 .dashboard-input-quantity > .is-overflow {
   outline: 4px solid #c7254e;
-  background-color: #f2dede;
-  color: #c7254e;
+  background-color: rgba(199, 37, 78, 0.25);
 }
 .dashboard-input-nc12 {
   margin-top: 14px;
   margin-bottom: 14px;
 }
-.dashboard-input-nc12 > .is-ledOnly {
+.dashboard-input-nc12 > .form-control {
+  position: relative;
+  z-index: 2;
+}
+.dashboard-input-nc12.is-ledOnly > .form-control {
   outline: 4px solid #5cb85c;
-  background-color: #dff0d8;
+  background-color: rgba(92, 184, 92, .25);
+}
+.dashboard-input-ledOnly,
+.dashboard-input-multiNc12 {
+  display: none;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  font-size: 1.4em;
+  line-height: 35px;
+  z-index: 1;
+}
+.is-ledOnly > .dashboard-input-ledOnly {
+  display: block;
+}
+.is-multi > .dashboard-input-multiNc12 {
+  display: block;
+}
+.is-multi.is-picked > .dashboard-input-multiNc12 {
+  display: none;
 }
 .is-idle .dashboard-input-orderNo.is-multi > .form-control {
   cursor: pointer;
@@ -36,12 +60,13 @@
 .is-idle .dashboard-input-nc12.is-multi > .form-control {
   cursor: pointer;
   outline: 4px solid #f0ad4e;
-  color: #f0ad4e;
-  background-color: #fefefe;
+  /*color: #f0ad4e;*/
+  background-color: rgba(240, 173, 78, .25);
 }
 .dashboard.is-idle[data-input-mode="remote"] .dashboard-input-orderNo.is-multi > kbd,
 .dashboard.is-idle[data-input-mode="remote"] .dashboard-input-nc12.is-multi > kbd {
   display: inline!important;
+  z-index: 3;
 }
 .is-idle .dashboard-input-orderNo.is-selecting > .form-control,
 .is-idle .dashboard-input-nc12.is-selecting > .form-control {
