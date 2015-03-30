@@ -37,10 +37,12 @@ define([
 
     serialize: function()
     {
+      var leds = this.model.get('leds') || [];
+
       return {
         idPrefix: this.idPrefix,
         renderLed: ledTemplate,
-        leds: (this.model.get('leds') || []).map(this.serializeLed)
+        leds: leds.map(this.serializeLed)
       };
     },
 
@@ -93,6 +95,12 @@ define([
     renderLed: function(index, led)
     {
       var timers = this.timers;
+
+      if (!led)
+      {
+        led = this.model.get('leds')[index];
+      }
+
       var $led = $(ledTemplate(this.serializeLed(led)));
 
       this.$id('list').children().eq(index).replaceWith($led);
@@ -113,6 +121,8 @@ define([
 
         $led.removeClass('blink');
       }, 200);
+
+      $led[0].scrollIntoView(true);
     },
 
     afterRender: function()
