@@ -1,3 +1,15 @@
+2.8.1 @ 2015-03-30
+==================
+
+  * Fixed `null` serial numbers being sent during Service Tag acquisition resulting in the request being rejected with
+    an `INPUT` error.
+  * Changed the LED boards list, so that the recently updated item is scrolled into view.
+  * Changed the 12NC requirement validation, so that the process can be started without 12NC if there are only LED
+    boards to check or a program without a Fortimo Solar programming step.
+  * Changed the way the LED boards only and multiple 12NC information is conveyed to the user from different
+    background colors to different background colors AND messages.
+  * Added remote order's quantities validation as the first step of the programming process.
+
 2.8.0 @ 2015-03-28
 ==================
 
