@@ -35,8 +35,16 @@ RemoteCoordinator.prototype.isConnected = function()
   return this.sio && this.sio.socket.connected;
 };
 
-RemoteCoordinator.prototype.connectToProdLine = function()
+RemoteCoordinator.prototype.connectToProdLine = function(forceReconnect)
 {
+  if (forceReconnect)
+  {
+    this.scheduleCurrentDataAvailabilityCheck();
+    this.setUpSio();
+
+    return;
+  }
+
   if (!this.isConnected())
   {
     return;

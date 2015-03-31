@@ -314,7 +314,7 @@ module.exports = function setUpProgrammerCommands(app, programmerModule)
   {
     if (_.isFunction(reply))
     {
-      programmerModule.remoteCoordinator.connectToProdLine();
+      programmerModule.remoteCoordinator.connectToProdLine(true);
 
       setTimeout(reply, 5000);
     }

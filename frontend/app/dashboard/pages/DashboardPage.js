@@ -397,7 +397,7 @@ define([
 
     reconnectToProdLine: function()
     {
-      if (!user.isLocal() || !this.socket.isConnected() || !currentState.get('remoteConnected'))
+      if (!user.isLocal() || !this.socket.isConnected())
       {
         return;
       }

@@ -38,12 +38,12 @@
 }
 .is-connected-local .dashboard-indicator-connection {
   color: #f0ad4e;
+  cursor: pointer;
 }
 .is-connected-local.is-connected-remote .dashboard-indicator-connection {
   color: #5cb85c;
-  cursor: pointer;
 }
-.is-connected-local.is-connected-remote .dashboard-indicator-connection.is-reconnecting {
+.is-connected-local .dashboard-indicator-connection.is-reconnecting {
   color: #0af;
   cursor: default;
 }
