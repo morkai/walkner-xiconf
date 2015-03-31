@@ -1,3 +1,11 @@
+2.8.2 @ 2015-03-31
+==================
+
+  * Changed the application runner to try to connect to the server 30 times (up from 10) and to wait 2s between tries
+    (up from 1s).
+  * Changed the connection indicator on the Programmer page, so that it can be clicked when not connected to the remote
+    server. Clicking the connection indicator now destroys the current connection and attempts to establish a new one.
+
 2.8.1 @ 2015-03-30
 ==================
 
