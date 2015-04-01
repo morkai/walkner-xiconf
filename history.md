@@ -1,3 +1,9 @@
+2.8.3 @ 2015-04-01
+==================
+
+  * Fixed a crash during the start of the settings module.
+  * Removed the Google Chrome Portable and vcredist_x86.exe from the installer.
+
 2.8.2 @ 2015-03-31
 ==================
 
