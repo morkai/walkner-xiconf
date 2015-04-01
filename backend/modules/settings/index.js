@@ -78,9 +78,14 @@ exports.start = function startSettingsModule(app, module, done)
 
     var changes = validateSettings(newSettings);
 
-    if (_.isEmpty(changes) && !allowEmpty)
+    if (_.isEmpty(changes))
     {
-      return done(new Error('INVALID_CHANGES'));
+      if (!allowEmpty)
+      {
+        return done(new Error('INVALID_CHANGES'));
+      }
+
+      changes = {};
     }
 
     step(
