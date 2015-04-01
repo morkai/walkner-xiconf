@@ -73,6 +73,7 @@ _Singleton("XICONF")
 TrayCreateItem($LANG_TRAY_EXIT)
 TrayItemSetOnEvent(-1, "ExitProgram")
 TraySetOnEvent($TRAY_EVENT_PRIMARYDOUBLE, "RunAll")
+TraySetToolTip($PRODUCT_NAME & " " & $PRODUCT_VERSION)
 TraySetState($TRAY_ICONSTATE_SHOW)
 
 While 1
@@ -90,7 +91,6 @@ Func Install()
 
   InstallRegistry()
   InstallShortcuts()
-  InstallVcRedist()
 EndFunc
 
 Func InstallRegistry()
@@ -120,18 +120,6 @@ Func InstallShortcuts()
 
   If MsgBox(BitOr($MB_YESNO, $MB_ICONQUESTION), $LANG_AUTOSTART_TITLE, $LANG_AUTOSTART_MESSAGE) == $IDYES Then
     FileCreateShortcut(@ScriptFullPath, @StartupDir & "\" & $PRODUCT_NAME & ".lnk")
-  EndIf
-EndFunc
-
-Func InstallVcRedist()
-  $x32Installed = RegRead("HKLM\SOFTWARE\Microsoft\VisualStudio\10.0\VC\VCRedist\x86", "Installed") == "1"
-  $x64Installed = RegRead("HKLM\SOFTWARE\Wow6432Node\Microsoft\VisualStudio\10.0\VC\VCRedist\x86", "Installed") == "1"
-
-  If Not $x32Installed Or Not $x64Installed Then
-    $exitCode = ShellExecuteWait(@ScriptDir & "\bin\vcredist_x86.exe", "/q /norestart")
-    If $exitCode == 0 Then
-      FileDelete(@ScriptDir & "\bin\vcredist_x86.exe")
-    EndIf
   EndIf
 EndFunc
 
@@ -197,17 +185,9 @@ Func RunBrowser()
     SplashText($LANG_WINDOW_OPENING)
 
     $app = "http://" & $SERVER_ADDR & ":" & $SERVER_PORT & "/"
-    $appDir = @ScriptDir & "\chrome\App"
-    $dataDir = @ScriptDir & "\..\data\chrome-profile"
+    $chromeExeDir = FindChromeExeDir()
 
-    If Not FileExists($dataDir) Then
-      DirCopy($appDir & "\DefaultData\profile", $dataDir)
-      FileCopy($appDir & "\DefaultData\Local State", $dataDir & "\Local State")
-
-      $app = $app & "#settings?tab=license"
-    EndIf
-
-    Run($appDir & '\Chrome-bin\chrome.exe --lang=' & $lang & ' --user-data-dir="' & $dataDir & '" --app="' & $app & '"', $appDir & "\Chrome-bin")
+    Run($chromeExeDir & 'chrome.exe --lang=' & $lang & ' --app="' & $app & '"', $chromeExeDir)
 
     $browser = WinWait($CHROME_TITLE, "", $CHROME_WAIT_TIME)
   EndIf
@@ -217,6 +197,28 @@ Func RunBrowser()
   EndIf
 
   Return $browser
+EndFunc
+
+Func FindChromeExeDir()
+  $chromeExeDir = @ScriptDir & "\..\..\GoogleChromePortable\App\Chrome-bin\"
+  If FileExists($chromeExeDir & "chrome.exe") Then Return $chromeExeDir
+
+  $chromeExeDir = @ScriptDir & "\..\..\ChromiumPortable\App\Chromium\32\"
+  If FileExists($chromeExeDir & "chrome.exe") Then Return $chromeExeDir
+
+  $chromeExeDir = @ScriptDir & "\..\..\ChromiumPortable\App\Chromium\64\"
+  If FileExists($chromeExeDir & "chrome.exe") Then Return $chromeExeDir
+
+  $chromeExeDir = EnvGet('ProgramFiles(x86)') & "\Google\Chrome\Application\"
+  If FileExists($chromeExeDir & "chrome.exe") Then Return $chromeExeDir
+
+  $chromeExeDir = @ProgramFilesDir & "\Google\Chrome\Application\"
+  If FileExists($chromeExeDir & "chrome.exe") Then Return $chromeExeDir
+
+  $chromeExeDir = @LocalAppDataDir & "\Google\Chrome\Application\"
+  If FileExists($chromeExeDir & "chrome.exe") Then Return $chromeExeDir
+
+  Return ""
 EndFunc
 
 Func TryToConnect()

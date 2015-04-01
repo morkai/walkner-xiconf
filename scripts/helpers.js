@@ -7,15 +7,9 @@ var fs = require('fs');
 var pkg = require('../package.json');
 var installerConfig = require('./../config/installer');
 
-var CHROME_VERSION = fs.readdirSync(path.join(installerConfig.googleChromePortable, 'App', 'Chrome-bin'))
-  .filter(function(file) { return /^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$/.test(file); })[0];
 var DEST_INSTALLER = path.join(__dirname, '../build/installer');
 var DEST_SCRIPTS = path.join(__dirname, '../build/scripts');
 var DEST_APP = DEST_INSTALLER + '/bin/walkner-xiconf';
-var DEST_CHROME = DEST_INSTALLER + '/bin/chrome';
-var DEST_CHROME_BIN = DEST_CHROME + '/App/Chrome-bin/' + CHROME_VERSION;
-var SRC_CHROME = installerConfig.googleChromePortable;
-var SRC_CHROME_BIN = SRC_CHROME + '/App/Chrome-bin/' + CHROME_VERSION;
 
 exports.copy = {
   scripts: {
@@ -113,35 +107,8 @@ exports.copy = {
         dest: DEST_INSTALLER + '/config/walkner-xiconf.js'
       },
       {
-        expand: true,
-        cwd: SRC_CHROME_BIN,
-        src: ['**', '!default_apps/*.crx', '!Locales/*.pak', 'Locales/pl.pak', 'Locales/en-US.pak'],
-        dest: DEST_CHROME_BIN
-      },
-      {
-        src: './data/googleChromePortable/external_extensions.json',
-        dest: DEST_CHROME_BIN + '/default_apps/external_extensions.json'
-      },
-      {
-        expand: true,
-        cwd: path.dirname(SRC_CHROME_BIN),
-        src: '**',
-        dest: path.dirname(DEST_CHROME_BIN),
-        filter: 'isFile'
-      },
-      {
-        expand: true,
-        cwd: './data/googleChromePortable/DefaultData',
-        src: '**',
-        dest: DEST_CHROME + '/App/DefaultData'
-      },
-      {
         src: installerConfig.node,
         dest: DEST_INSTALLER + '/bin/node.exe'
-      },
-      {
-        src: installerConfig.vcredist_x86,
-        dest: DEST_INSTALLER + '/bin/vcredist_x86.exe'
       },
       {
         src: installerConfig.imWorkin,

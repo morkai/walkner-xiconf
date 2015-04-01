@@ -5,9 +5,7 @@ var path = require('path');
 
 exports.autoIt3Wrapper = 'C:/Program Files (x86)/AutoIt3/SciTE/AutoIt3Wrapper/AutoIt3Wrapper.exe';
 exports.makensis = 'C:/Program Files (x86)/NSIS/makensis.exe';
-exports.googleChromePortable = 'C:/tools/GoogleChromePortable';
 exports.node = 'C:/Program Files (x86)/nodejs/node.exe';
-exports.vcredist_x86 = 'C:/tools/vcredist_x86.exe';
 exports.libeay32 = fs.existsSync(path.join(process.env.SYSTEMROOT, 'System32', 'libeay32.dll'))
   ? path.join(process.env.SYSTEMROOT, 'system32', 'libeay32.dll')
   : 'C:/tools/OpenSSL-Win32/libeay32.dll';
