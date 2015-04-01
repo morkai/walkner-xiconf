@@ -25,6 +25,16 @@ define([
 
     template: template,
 
+    localTopics: {
+      'programmer.barcodeScanned': function(message)
+      {
+        if (message.remote === true && message.value.length === 1)
+        {
+          this.$('.list-group-item[data-hotkey="' + message.value.toUpperCase() + '"]').click();
+        }
+      }
+    },
+
     events: {
       'click .list-group-item': function(e)
       {
