@@ -8,11 +8,6 @@
 @import url("../app/history/assets/main.css");
 @import url("../app/settings/assets/main.css");
 
-@font-face {
-  font-family: "Source Code Pro";
-  src: url('../vendor/source-code-pro/SourceCodePro-Regular.otf');
-}
-
 #app-loading {
   position: absolute;
   top: 50%;

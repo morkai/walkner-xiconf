@@ -20,7 +20,7 @@
 .history-log > tbody > tr > td:first-child {
   border-right: none;
   width: 1%;
-  font-family: "Source Code Pro", monospace;
+  font-family: Consolas, monospace;
   color: #666;
 }
 .history-log > tbody > tr > td:last-child {
