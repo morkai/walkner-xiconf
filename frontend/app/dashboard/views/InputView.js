@@ -778,7 +778,8 @@ define([
 
     getStartData: function()
     {
-      var remoteData = this.model.isRemoteInput() ? this.model.getSelectedRemoteData() : null;
+      var isRemoteInput = this.model.isRemoteInput();
+      var remoteData = isRemoteInput ? this.model.getSelectedRemoteData() : null;
       var nc12 = this.$els.nc12.val().trim();
 
       if (!/^[0-9]{12}$/.test(nc12))
@@ -805,7 +806,7 @@ define([
         };
       }
 
-      var ordersRequired = orders === 'required';
+      var ordersRequired = isRemoteInput || orders === 'required';
       var orderNo = this.$els.orderNo.val().trim();
 
       if (!/^[0-9]{1,9}$/.test(orderNo))
