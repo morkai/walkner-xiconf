@@ -321,7 +321,7 @@ exports.start = function startSettingsModule(app, module, done)
     validateEnum(rawSettings, newSettings, 'serviceTagInLocalMode', String, ['disabled', 'optional', 'required']);
     validateEnum(rawSettings, newSettings, 'protectInputMode', Number, [0, 1]);
     validateEnum(rawSettings, newSettings, 'bgScanner', Number, [0, 1]);
-    validateEnum(rawSettings, newSettings, 'ledsEnabled', Number, [0, 1]);
+    validateEnum(rawSettings, newSettings, 'ledsEnabled', Number, [0, 1, 2]);
     validateHotkeys(rawSettings, newSettings);
 
     if (newSettings.password1)

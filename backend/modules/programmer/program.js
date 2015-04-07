@@ -84,6 +84,7 @@ module.exports = function program(app, programmerModule, data, done)
     writeWorkflowFileStep,
     handleWriteWorkflowFileResultStep,
     waitForLedsStep,
+    waitForContinueStep,
     tryToProgramLptStep,
     tryToProgramStep,
     tryToAcquireServiceTagStep,
@@ -707,6 +708,51 @@ module.exports = function program(app, programmerModule, data, done)
     });
   }
 
+  function waitForContinueStep()
+  {
+    /*jshint validthis:true*/
+
+    if (thisProgrammingCancelled)
+    {
+      return this.skip();
+    }
+
+    if (!currentState.nc12 || settings.get('ledsEnabled') !== 2 || _.isEmpty(currentState.leds))
+    {
+      return;
+    }
+
+    programmerModule.log('WAITING_FOR_CONTINUE');
+
+    programmerModule.changeState({waitingForContinue: true});
+
+    var next = this.next();
+    var cancelSub;
+    var waitingSub;
+
+    cancelSub = app.broker.subscribe('programmer.cancelled', function()
+    {
+      waitingSub.cancel();
+      waitingSub = null;
+
+      setImmediate(next);
+    }).setLimit(1);
+
+    waitingSub = app.broker.subscribe('programmer.stateChanged', function(changes)
+    {
+      if (changes.waitingForContinue === false)
+      {
+        waitingSub.cancel();
+        waitingSub = null;
+
+        cancelSub.cancel();
+        cancelSub = null;
+
+        setImmediate(next);
+      }
+    });
+  }
+
   function tryToProgramLptStep()
   {
     /*jshint validthis:true*/
@@ -920,6 +966,7 @@ module.exports = function program(app, programmerModule, data, done)
       result: 'success',
       order: currentState.order,
       waitingForLeds: false,
+      waitingForContinue: false,
       inProgress: false,
       overallProgress: 100
     };

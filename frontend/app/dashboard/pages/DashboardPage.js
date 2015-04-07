@@ -124,6 +124,7 @@ define([
       this.listenTo(currentState, 'change:result', this.onResultChange);
       this.listenTo(currentState, 'change:remoteConnected', this.toggleConnectionIndicator);
       this.listenTo(currentState, 'change:waitingForLeds', this.onWaitingForLedsChange);
+      this.listenTo(currentState, 'change:waitingForContinue', this.onWaitingForContinueChange);
       this.listenTo(settings, 'change:licenseInfo', this.onLicenseInfoChange);
       this.listenTo(settings, 'change:testingEnabled', this.onTestingEnabledChange);
       this.listenTo(settings, 'change:hotkeys', this.updateHotkeys);
@@ -168,6 +169,7 @@ define([
         inputMode: currentState.get('inputMode'),
         workModeChangeEnabled: !!settings.get('testingEnabled'),
         waitingForLeds: currentState.get('waitingForLeds'),
+        waitingForContinue: currentState.get('waitingForContinue'),
         progressBarClassName: this.getProgressBarClassName(),
         progressBarWidth: this.getProgressBarWidth()
       };
@@ -197,7 +199,7 @@ define([
     {
       var height = this.getRemainingHeight();
       var width = this.historyView.$el.outerWidth(true);
-
+console.log(width);
       this.logView.resize(height);
       this.carouselView.resize(width, height);
       this.programView.resize(width, height);
@@ -480,6 +482,11 @@ define([
       {
         this.ledsView.resize();
       }
+    },
+
+    onWaitingForContinueChange: function()
+    {
+      this.$el.toggleClass('is-waitingForContinue', currentState.get('waitingForContinue'));
     }
 
   });

@@ -131,6 +131,7 @@ exports.settings = {
       printServiceTag: 'H',
       start: 'P',
       cancel: 'P',
+      continue: 'L',
       showDashboardPage: 'Z',
       showHistoryPage: 'X',
       showProgramsPage: 'C',

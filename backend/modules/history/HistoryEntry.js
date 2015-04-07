@@ -28,6 +28,7 @@ function HistoryEntry(db, broker, settings)
   this.selectedOrderNo = null;
   this.selectedNc12 = null;
   this.waitingForLeds = false;
+  this.waitingForContinue = false;
 
   this.clear();
 }
@@ -67,7 +68,8 @@ HistoryEntry.prototype.toJSON = function()
     remoteLeader: this.remoteLeader,
     selectedOrderNo: this.selectedOrderNo,
     selectedNc12: this.selectedNc12,
-    waitingForLeds: this.waitingForLeds
+    waitingForLeds: this.waitingForLeds,
+    waitingForContinue: this.waitingForContinue
   };
 };
 
@@ -201,6 +203,8 @@ HistoryEntry.prototype.clear = function(clearOrder, clearProgram)
   this.steps = null;
   this.metrics = null;
   this.leds = null;
+  this.waitingForLeds = false;
+  this.waitingForContinue = false;
   this.inProgress = false;
   this.overallProgress = 0;
 };
@@ -232,9 +236,10 @@ HistoryEntry.prototype.reset = function(orderNo, quantity, nc12)
   this.setUpProgram();
   this.setUpLeds();
 
-  this.waitingForLeds = !!this.settings.get('ledsEnabled')
+  this.waitingForLeds = this.settings.get('ledsEnabled') > 0
     && this.settings.supportsFeature('led')
     && this.leds.length > 0;
+  this.waitingForContinue = false;
   this.inProgress = true;
   this.overallProgress = 1;
 

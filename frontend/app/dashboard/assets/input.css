@@ -107,26 +107,31 @@
   text-transform: uppercase;
 }
 .dashboard-input-cancel,
-.dashboard-input-toggleWorkMode {
+.dashboard-input-toggleWorkMode,
+.dashboard-input-continue {
   display: none;
 }
 .is-inProgress .dashboard-input-cancel,
-.is-workModeChangeEnabled .dashboard-input-toggleWorkMode {
+.is-workModeChangeEnabled .dashboard-input-toggleWorkMode,
+.is-waitingForContinue .dashboard-input-continue {
   display: inline-block;
 }
 .is-inProgress .dashboard-input-start,
 .is-inProgress .dashboard-input-toggleWorkMode {
   display: none;
 }
-.dashboard-input-buttons > .dashboard-input-toggleWorkMode {
+.dashboard-input-buttons > .dashboard-input-toggleWorkMode,
+.dashboard-input-buttons > .dashboard-input-continue {
   width: 114px;
 }
-.dashboard-input-toggleWorkMode > .fa {
+.dashboard-input-toggleWorkMode > .fa,
+.dashboard-input-continue > .fa {
   vertical-align: top;
   font-size: 64px;
   line-height: 68px;
 }
-.dashboard-input-toggleWorkMode > .fa-list-ol {
+.dashboard-input-toggleWorkMode > .fa-list-ol,
+.dashboard-input-continue > .fa {
   font-size: 48px;
 }
 .dashboard[data-work-mode="programming"] .dashboard-input-toggleWorkMode > .fa-list-ol,

@@ -135,8 +135,9 @@
     "setting:bgScanner:on": "Server-side",
     "setting:bgScanner:off": "Client-side",
     "setting:ledsEnabled": "LED boards checking",
-    "setting:ledsEnabled:on": "Enabled",
     "setting:ledsEnabled:off": "Disabled",
+    "setting:ledsEnabled:auto": "Auto",
+    "setting:ledsEnabled:manual": "Manual",
 
     "license:NO_KEY": "No license key.",
     "license:INVALID_ED_PEM": "Invalid license decryption key.",
@@ -160,6 +161,7 @@
     "hotkey:reload": "Reload the last order",
     "hotkey:start": "Start",
     "hotkey:cancel": "Cancel",
+    "hotkey:continue": "Continue",
     "hotkey:setProgram": "Select program",
     "hotkey:printServiceTag": "Print Service Tag",
     "hotkey:closeDialog": "Close modal dialog"

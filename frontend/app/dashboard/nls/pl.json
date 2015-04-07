@@ -37,6 +37,7 @@
   "input:nc12:multi": "Dostępne kilka 12NC programowych.\nKliknij, aby wybrać 12NC.",
   "input:start": "Rozpocznij",
   "input:cancel": "Anuluj",
+  "input:continue": "Kontynuuj",
   "input:toggleWorkMode": "Przełącz tryb pracy",
   "input:reload": "Wczytaj ostatnie zlecenie",
   "input:reset": "Resetuj aktualny stan",

@@ -38,6 +38,7 @@
     "input:nc12:multi": "Multiple program 12NCs are available.\nClick to pick 12NC.",
     "input:start": "Start",
     "input:cancel": "Cancel",
+    "input:continue": "Continue",
     "input:toggleWorkMode": "Toggle the work mode",
     "input:reload": "Reload the last order",
     "input:reset": "Reset the current state",

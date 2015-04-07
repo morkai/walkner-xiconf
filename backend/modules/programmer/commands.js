@@ -40,6 +40,7 @@ module.exports = function setUpProgrammerCommands(app, programmerModule)
       socket.on('programmer.checkSerialNumber', checkSerialNumber);
       socket.on('programmer.start', start);
       socket.on('programmer.cancel', cancel);
+      socket.on('programmer.continue', continueProcess);
       socket.on('programmer.reload', reload);
       socket.on('programmer.reset', reset);
       socket.on('programmer.printServiceTags', printServiceTags);
@@ -183,6 +184,18 @@ module.exports = function setUpProgrammerCommands(app, programmerModule)
 
       app.broker.publish('programmer.cancelled');
     }
+  }
+
+  function continueProcess(reply)
+  {
+    if (!_.isFunction(reply))
+    {
+      return;
+    }
+
+    reply();
+
+    programmerModule.changeState({waitingForContinue: false});
   }
 
   function reset(reply)

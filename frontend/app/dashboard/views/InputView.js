@@ -81,6 +81,7 @@ define([
       'hotkeys.toggleWorkMode': function() { this.clickElement('toggleWorkMode'); },
       'hotkeys.start': function() { this.clickElement('start'); },
       'hotkeys.cancel': function() { this.clickElement('cancel'); },
+      'hotkeys.continue': function() { this.clickElement('continue'); },
       'hotkeys.reset': function() { this.clickElement('reset'); },
       'hotkeys.reload': function() { this.clickElement('reload'); },
       'hotkeys.printServiceTag': function() { this.clickElement('printServiceTag'); },
@@ -92,6 +93,7 @@ define([
       'submit': 'startOrCancel',
       'click #-reload': 'reload',
       'click #-reset': 'reset',
+      'click #-continue': 'continue',
       'click #-printServiceTag': 'printServiceTag',
       'click #-toggleWorkMode': 'toggleWorkMode',
       'click .dashboard-input-nc12.is-multi': function(e)
@@ -124,6 +126,7 @@ define([
         start: null,
         cancel: null,
         toggleWorkMode: null,
+        continue: null,
         inputs: null
       };
 
@@ -274,19 +277,35 @@ define([
       var view = this;
       var $cancel = this.$els.cancel.prop('disabled', true);
 
-      this.socket.emit('programmer.cancel', function(err)
+      this.socket.emit('programmer.cancel', function()
       {
         if (!view.$els)
         {
           return;
         }
 
-        if (err)
+        $cancel.prop('disabled', false);
+      });
+    },
+
+    continue: function()
+    {
+      if (!this.isElementEnabled('continue'))
+      {
+        return;
+      }
+
+      var view = this;
+      var $continue = this.$els.continue.prop('disabled', true);
+
+      this.socket.emit('programmer.continue', function()
+      {
+        if (!view.$els)
         {
-          view.showMessage('error', 'cancel:failure');
+          return;
         }
 
-        $cancel.prop('disabled', false);
+        $continue.prop('disabled', false);
       });
     },
 
@@ -597,6 +616,7 @@ define([
         $els.nc12.prop('disabled', isInProgress || isRemoteInput || hasOrder || countdown);
         $els.start.prop('disabled', countdown);
         $els.toggleWorkMode.prop('disabled', isInProgress || countdown);
+        $els.continue.prop('disabled', !this.model.get('waitingForContinue'));
         $els.reset.prop('disabled', isInProgress || countdown);
         $els.reload.prop('disabled', isInProgress || hasOrder || countdown);
       }
@@ -606,6 +626,7 @@ define([
         $els.start.prop('disabled', true);
         $els.cancel.prop('disabled', true);
         $els.toggleWorkMode.prop('disabled', true);
+        $els.continue.prop('disabled', true);
         $els.reset.prop('disabled', true);
         $els.reload.prop('disabled', true);
         $els.printServiceTag.prop('disabled', true);

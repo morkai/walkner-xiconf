@@ -134,8 +134,9 @@
   "setting:bgScanner:on": "Po stronie serwera",
   "setting:bgScanner:off": "Po stronie klienta",
   "setting:ledsEnabled": "Sprawdzanie płytek LED",
-  "setting:ledsEnabled:on": "Włączone",
   "setting:ledsEnabled:off": "Wyłączone",
+  "setting:ledsEnabled:auto": "Automatyczne",
+  "setting:ledsEnabled:manual": "Manualne",
 
   "license:NO_KEY": "Brak klucza licencji.",
   "license:INVALID_ED_PEM": "Nieprawidłowy klucz odszyfrowywania.",
@@ -159,6 +160,7 @@
   "hotkey:reload": "Wczytaj ostatnie zlecenie",
   "hotkey:start": "Rozpocznij",
   "hotkey:cancel": "Anuluj",
+  "hotkey:continue": "Kontynuuj",
   "hotkey:setProgram": "Wybierz program",
   "hotkey:printServiceTag": "Drukuj Service Tag",
   "hotkey:closeDialog": "Zamknij okno dialogowe"
