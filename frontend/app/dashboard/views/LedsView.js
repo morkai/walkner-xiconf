@@ -23,14 +23,8 @@ define([
 
     template: ledsTemplate,
 
-    events: {
-
-    },
-
     initialize: function()
     {
-      this.offsetTop = 0;
-
       this.listenTo(this.model, 'change:leds', this.render);
       this.listenTo(this.model, 'change:led', this.renderLed);
     },
@@ -127,14 +121,15 @@ define([
 
     afterRender: function()
     {
-      this.offsetTop = this.$id('list').offset().top;
-
       this.resize();
     },
 
     resize: function()
     {
-      this.$id('list')[0].style.maxHeight = (window.innerHeight - this.offsetTop - 14) + 'px';
+      var $list = this.$id('list');
+      var offsetTop = $list.offset().top;
+
+      $list[0].style.maxHeight = (window.innerHeight - offsetTop - 14) + 'px';
     }
 
   });

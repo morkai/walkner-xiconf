@@ -472,7 +472,14 @@ define([
 
     onWaitingForLedsChange: function()
     {
-      this.$el.toggleClass('is-waitingForLeds', currentState.get('waitingForLeds'));
+      var waitingForLeds = currentState.get('waitingForLeds');
+
+      this.$el.toggleClass('is-waitingForLeds', waitingForLeds);
+
+      if (waitingForLeds)
+      {
+        this.ledsView.resize();
+      }
     }
 
   });
