@@ -143,6 +143,12 @@ exports.addRoute = function(app, Model, req, res, next)
       {
         res.statusCode = 400;
       }
+      else if (err.code === 11000)
+      {
+        res.statusCode = 400;
+        err.code = 'DUPLICATE_KEY';
+        err.index = err.message.match(/\.\$(.*?) /)[1];
+      }
 
       return next(err);
     }
@@ -150,7 +156,7 @@ exports.addRoute = function(app, Model, req, res, next)
     res.format({
       json: function()
       {
-        res.send(201, model);
+        res.status(201).send(model);
       }
     });
 
@@ -195,7 +201,7 @@ exports.readRoute = function(app, options, req, res, next)
 
     if (model === null)
     {
-      return res.send(404);
+      return res.sendStatus(404);
     }
 
     if (typeof options.prepareResult === 'function')
@@ -257,7 +263,7 @@ exports.editRoute = function(app, Model, req, res, next)
 
     if (model === null)
     {
-      return res.send(404);
+      return res.sendStatus(404);
     }
 
     model.set(req.body);
@@ -274,6 +280,12 @@ exports.editRoute = function(app, Model, req, res, next)
         if (err.name === 'ValidationError')
         {
           res.statusCode = 400;
+        }
+        else if (err.code === 11000)
+        {
+          res.statusCode = 400;
+          err.code = 'DUPLICATE_KEY';
+          err.index = err.message.match(/\.\$(.*?) /)[1];
         }
 
         return next(err);
@@ -325,7 +337,7 @@ exports.deleteRoute = function(app, Model, req, res, next)
 
     if (model === null)
     {
-      return res.send(404);
+      return res.sendStatus(404);
     }
 
     model.remove(function(err)
@@ -338,7 +350,7 @@ exports.deleteRoute = function(app, Model, req, res, next)
       res.format({
         json: function()
         {
-          res.send(204);
+          res.sendStatus(204);
         }
       });
 
@@ -430,7 +442,7 @@ exports.exportRoute = function(options, req, res, next)
 
     if (columnNames === null)
     {
-      return res.send(204);
+      return res.sendStatus(204);
     }
 
     res.attachment(options.filename + '.csv');

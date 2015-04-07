@@ -3,14 +3,12 @@
 // Part of the walkner-xiconf project <http://lukasz.walukiewicz.eu/p/walkner-xiconf>
 
 define([
-  'jquery',
   'underscore',
   'form2js',
   'js2form',
   'app/viewport',
   '../View'
 ], function(
-  $,
   _,
   form2js,
   js2form,
@@ -25,13 +23,10 @@ define([
       'submit': 'submitForm'
     },
 
-    idPrefix: 'formView',
-
     $errorMessage: null,
 
     initialize: function()
     {
-      this.idPrefix = _.uniqueId(this.idPrefix);
       this.$errorMessage = null;
 
       this.listenTo(this.model, 'change', function()
@@ -51,6 +46,7 @@ define([
     serialize: function()
     {
       return {
+        editMode: !!this.options.editMode,
         idPrefix: this.idPrefix,
         formMethod: this.options.formMethod,
         formAction: this.options.formAction,

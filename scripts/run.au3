@@ -1,4 +1,5 @@
-﻿#AutoIt3Wrapper_Icon=.\run.ico
+﻿#AutoIt3Wrapper_UseX64=y
+#AutoIt3Wrapper_Icon=.\run.ico
 #AutoIt3Wrapper_Outfile=.\XiconfRun.exe
 #AutoIt3Wrapper_Res_Description=Aplikacja wspomagająca proces programowania sterowników LED oraz HID.
 #AutoIt3Wrapper_Res_Fileversion=1.0.0.0

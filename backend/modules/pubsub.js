@@ -270,7 +270,7 @@ exports.start = function startPubsubModule(app, module)
   {
     /*jshint forin:false*/
 
-    var sockets =  app[module.config.sioId].sockets.sockets;
+    var sockets =  app[module.config.sioId].sockets.connected;
     var socketIds = Object.keys(socketIdToMessagesMap);
 
     for (var i = 0, l = socketIds.length; i < l; ++i)

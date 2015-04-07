@@ -13,7 +13,10 @@ define([
 
     className: 'programs-list',
 
-    columns: ['name', 'updatedAt'],
+    columns: [
+      {id: 'name', className: 'is-min'},
+      'updatedAt'
+    ],
 
     serializeRow: function(model)
     {

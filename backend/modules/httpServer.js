@@ -34,7 +34,7 @@ exports.start = function startHttpServerModule(app, module, done)
 
   serverDomain.run(function()
   {
-    app.httpServer = http.createServer(function onRequest(req, res)
+    module.server = http.createServer(function onRequest(req, res)
     {
       var reqDomain = domain.create();
 
@@ -45,17 +45,28 @@ exports.start = function startHttpServerModule(app, module, done)
       {
         if (err.code !== 'ECONNRESET')
         {
-          module.error(err.stack);
+          module.error(err.stack || err.message || err);
         }
 
         reqDomain.dispose();
+
+        try
+        {
+          res.statusCode = 500;
+          res.end();
+        }
+        catch (err)
+        {
+          console.log('????????????????????????????', err);
+          module.error(err.stack);
+        }
       });
 
-      var express = app[module.config.expressId];
+      var expressApp = app[module.config.expressId].app;
 
-      if (express)
+      if (expressApp)
       {
-        express(req, res);
+        expressApp(req, res);
       }
       else
       {
@@ -64,11 +75,11 @@ exports.start = function startHttpServerModule(app, module, done)
       }
     });
 
-    app.httpServer.once('error', onFirstServerError);
+    module.server.once('error', onFirstServerError);
 
-    app.httpServer.listen(module.config.port, module.config.host, function()
+    module.server.listen(module.config.port, module.config.host, function()
     {
-      app.httpServer.removeListener('error', onFirstServerError);
+      module.server.removeListener('error', onFirstServerError);
 
       module.debug("Listening on port %d...", module.config.port);
 

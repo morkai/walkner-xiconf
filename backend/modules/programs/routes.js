@@ -154,7 +154,7 @@ module.exports = function setProgramsRoutes(app, programsModule)
 
       if (!row)
       {
-        return res.send(404);
+        return res.sendStatus(404);
       }
 
       row.steps = JSON.parse(row.steps);
@@ -274,7 +274,7 @@ module.exports = function setProgramsRoutes(app, programsModule)
           return next(err);
         }
 
-        res.send(204);
+        res.sendStatus(204);
 
         app.broker.publish('programs.deleted', {
           model: this.model,

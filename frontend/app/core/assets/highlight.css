@@ -1,5 +1,5 @@
 .hljs {
-  font-family: "Source Code Pro", monospace;
+  font-family: Consolas, Menlo, Monaco, monospace;
   font-size: 16px;
   color: #FF0;
 }
@@ -11,4 +11,7 @@
 }
 .hljs-title {
   font-weight: normal;
+}
+.hljs-number {
+  color: #fff;
 }

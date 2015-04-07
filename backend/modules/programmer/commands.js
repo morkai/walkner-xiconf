@@ -20,17 +20,17 @@ module.exports = function setUpProgrammerCommands(app, programmerModule)
   {
     app.broker.subscribe(topic, function(message)
     {
-      sio.sockets.volatile.emit(topic, message);
+      sio.emit(topic, message);
     });
   });
 
   sio.on('connection', function(socket)
   {
-    socket.volatile.emit('programmer.stateChanged', programmerModule.currentState.toJSON());
+    socket.emit('programmer.stateChanged', programmerModule.currentState.toJSON());
 
     socket.on('programmer.getCurrentState', getCurrentState);
 
-    if (socket.handshake.address.address === '127.0.0.1')
+    if (socket.conn.remoteAddress === '127.0.0.1')
     {
       socket.on('programmer.setInputMode', setInputMode);
       socket.on('programmer.setWorkMode', setWorkMode);

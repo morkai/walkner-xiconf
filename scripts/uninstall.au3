@@ -1,4 +1,5 @@
-﻿#AutoIt3Wrapper_Icon=.\uninstall.ico
+﻿#AutoIt3Wrapper_UseX64=y
+#AutoIt3Wrapper_Icon=.\uninstall.ico
 #AutoIt3Wrapper_Outfile=.\XiconfUninstall.exe
 #AutoIt3Wrapper_Res_Description=Odinstaluj aplikację Walkner Xiconf.
 #AutoIt3Wrapper_Res_Fileversion=1.0.0.0
@@ -13,6 +14,7 @@
 #AutoIt3Wrapper_Res_Field=E-mail|walkner@walkner.pl
 
 #RequireAdmin
+#NoTrayIcon
 
 #include ".\common.au3"
 
@@ -80,15 +82,15 @@ SplashText($LANG_CLOSING_STDREDIR)
 ProcessClose("XiconfStdRedir.exe")
 ProcessWaitClose("XiconfStdRedir.exe", 2)
 
+ProcessClose("XiconfRun.exe")
+ProcessWaitClose("XiconfRun.exe", 2)
+
 $nodePid = FindNodePid()
 
 If $nodePid <> 0 Then
   ProcessClose($nodePid)
   ProcessWaitClose($nodePid, 2)
 EndIf
-
-ProcessClose("XiconfRun.exe")
-ProcessWaitClose("XiconfRun.exe", 2)
 
 SplashText($LANG_REMOVING_SHORTCUTS)
 FileDelete(@DesktopDir & "\" & $PRODUCT_NAME & ".lnk")

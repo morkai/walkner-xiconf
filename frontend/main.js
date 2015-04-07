@@ -6,6 +6,13 @@
 {
   'use strict';
 
+  if (!window.location.origin)
+  {
+    window.location.origin = window.location.protocol + '//'
+      + window.location.hostname
+      + (window.location.port ? (':' + window.location.port) : '');
+  }
+
   var locale = localStorage.getItem('LOCALE') || navigator.language || 'en';
 
   if (locale !== 'pl')

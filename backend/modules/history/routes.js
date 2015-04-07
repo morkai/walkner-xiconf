@@ -182,7 +182,7 @@ module.exports = function setUpHistoryRoutes(app, historyModule)
 
       if (!row)
       {
-        return res.send(404);
+        return res.sendStatus(404);
       }
 
       if (row.program)
@@ -247,7 +247,7 @@ module.exports = function setUpHistoryRoutes(app, historyModule)
 
       if (!row)
       {
-        return res.send(404);
+        return res.sendStatus(404);
       }
 
       var startedAtMoment = moment(row.startedAt);

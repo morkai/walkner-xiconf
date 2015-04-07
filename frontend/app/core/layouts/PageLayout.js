@@ -31,8 +31,7 @@ define([
       id: null,
       actions: [],
       breadcrumbs: [],
-      title: null,
-      version: this.options.version || null
+      title: null
     };
 
     /**
@@ -56,20 +55,29 @@ define([
 
   PageLayout.prototype.destroy = function()
   {
+    if (this.el.ownerDocument)
+    {
+      this.el.ownerDocument.body.classList.remove('page');
+    }
+
     this.$breadcrumbs = null;
     this.$actions = null;
   };
 
   PageLayout.prototype.serialize = function()
   {
-    return {
-      idPrefix: this.idPrefix,
-      version: this.model.version ? ('v' + this.model.version) : ''
-    };
+    return _.extend(View.prototype.serialize.call(this), {
+      version: this.options.version
+    });
   };
 
   PageLayout.prototype.afterRender = function()
   {
+    if (this.el.ownerDocument)
+    {
+      this.el.ownerDocument.body.classList.add('page');
+    }
+
     this.$header = this.$('.page-header').first();
     this.$breadcrumbs = this.$('.page-breadcrumbs').first();
     this.$actions = this.$('.page-actions').first();
@@ -77,11 +85,6 @@ define([
     this.changeTitle();
     this.renderBreadcrumbs();
     this.renderActions();
-
-    if (!this.model.breadcrumbs.length && !this.model.actions.length)
-    {
-      this.$header.hide();
-    }
 
     if (this.model.id !== null)
     {
@@ -141,18 +144,6 @@ define([
     {
       this.setActions(page.actions, page);
     }
-  };
-
-  PageLayout.prototype.setVersion = function(version)
-  {
-    this.model.version = version;
-
-    if (this.isRendered())
-    {
-      this.$id('version').text(version ? ('v' + version) : '');
-    }
-
-    return this;
   };
 
   /**
@@ -380,11 +371,19 @@ define([
     {
       var action = actions[i];
 
-      if (action.privileges
-        && ((_.isFunction(action.privileges) && !action.privileges())
-          || !user.isAllowedTo(action.privileges)))
+      if (action.privileges)
       {
-        continue;
+        if (_.isFunction(action.privileges))
+        {
+          if (!action.privileges())
+          {
+            continue;
+          }
+        }
+        else if (!user.isAllowedTo(action.privileges))
+        {
+          continue;
+        }
       }
 
       if (typeof action.callback === 'function')

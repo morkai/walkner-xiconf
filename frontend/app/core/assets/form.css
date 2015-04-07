@@ -9,13 +9,13 @@
 .radio > .control-label {
   font-weight: bold;
 }
-.control-label + .form-control-static {
-  padding: 0;
-}
 .control-label.is-required:after {
   content: "*";
   font-family: Consolas, "Lucida Console", Monaco, monospace;
   color: #f00;
+}
+.control-label + .form-control-static {
+  padding: 0;
 }
 .form-control {
   padding: 6px;
@@ -30,6 +30,9 @@
 }
 .form-control[type="date"] {
   width: 11em;
+}
+.form-control[type="number"] {
+  text-align: right;
 }
 .form-control[type="number"].small {
   width: 8em;
@@ -106,6 +109,9 @@ input.no-controls::-webkit-inner-spin-button {
 }
 .form-group-horizontal > .form-group:last-child {
   margin-bottom: 15px;
+}
+.form-group-horizontal + .checkbox {
+  margin-top: 0;
 }
 .form-control[size="1"] {
   height: 34px;

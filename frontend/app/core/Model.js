@@ -3,10 +3,8 @@
 // Part of the walkner-xiconf project <http://lukasz.walukiewicz.eu/p/walkner-xiconf>
 
 define([
-  'underscore',
   'backbone'
 ], function(
-  _,
   Backbone
 ) {
   'use strict';

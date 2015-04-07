@@ -1,7 +1,3 @@
-.modal-backdrop {
-  bottom: 0;
-  height: auto!important;
-}
 .modal-header {
   padding: 1em;
 }
@@ -24,11 +20,6 @@
 /* Fix for a display issue in Chrome (left border is hidden) */
 .modal.has-panel .row .select2-choice {
   overflow: visible;
-}
-@media (min-width: 768px) {
-  .modal-dialog {
-    margin: 0 auto;
-  }
 }
 @media screen and (min-width: 1280px) {
   .modal.has-panel .modal-dialog {

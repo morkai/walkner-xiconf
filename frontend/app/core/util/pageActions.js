@@ -4,14 +4,12 @@
 
 define([
   'underscore',
-  'jquery',
   'app/i18n',
   'app/viewport',
   '../views/ActionFormView',
   'app/core/templates/jumpAction'
 ], function(
   _,
-  $,
   t,
   viewport,
   ActionFormView,
@@ -52,10 +50,10 @@ define([
 
     var $iconEl = $form.find('.fa').removeClass('fa-search').addClass('fa-spinner fa-spin');
 
-    var req = page.promised($.ajax({
+    var req = page.ajax({
       url: _.result(collection, 'url') + ';rid',
       data: {rid: rid}
-    }));
+    });
 
     req.done(function(modelId)
     {
@@ -82,28 +80,6 @@ define([
     return false;
   }
 
-  function prepareManagePrivilege(modelOrCollection, privilege)
-  {
-    if (privilege)
-    {
-      return privilege;
-    }
-
-    if (privilege === false)
-    {
-      return null;
-    }
-
-    var privilegePrefix = modelOrCollection.getPrivilegePrefix();
-
-    if (!privilegePrefix)
-    {
-      return null;
-    }
-
-    return privilegePrefix + ':MANAGE';
-  }
-
   return {
     add: function(collection, privilege)
     {
@@ -111,7 +87,7 @@ define([
         label: t.bound(collection.getNlsDomain(), 'PAGE_ACTION:add'),
         icon: 'plus',
         href: collection.genClientUrl('add'),
-        privileges: prepareManagePrivilege(collection, privilege)
+        privileges: privilege || (collection.getPrivilegePrefix() + ':MANAGE')
       };
     },
     edit: function(model, privilege)
@@ -120,7 +96,7 @@ define([
         label: t.bound(model.getNlsDomain(), 'PAGE_ACTION:edit'),
         icon: 'edit',
         href: model.genClientUrl('edit'),
-        privileges: prepareManagePrivilege(model, privilege)
+        privileges: privilege || (model.getPrivilegePrefix() + ':MANAGE')
       };
     },
     delete: function(model, privilege)
@@ -129,7 +105,7 @@ define([
         label: t.bound(model.getNlsDomain(), 'PAGE_ACTION:delete'),
         icon: 'times',
         href: model.genClientUrl('delete'),
-        privileges: prepareManagePrivilege(model, privilege),
+        privileges: privilege || (model.getPrivilegePrefix() + ':MANAGE'),
         callback: function(e)
         {
           if (e.button === 0)
@@ -166,9 +142,7 @@ define([
         icon: 'download',
         type: getTotalCount(collection) >= 10000 ? 'warning' : 'default',
         href: _.result(collection, 'url') + ';export?' + collection.rqlQuery,
-        privileges: privilege === undefined
-          ? (collection.getPrivilegePrefix() + ':VIEW')
-          : privilege === null ? null : privilege,
+        privileges: privilege || (collection.getPrivilegePrefix() + ':VIEW'),
         className: 'export' + (collection.length ? '' : ' disabled')
       };
     },

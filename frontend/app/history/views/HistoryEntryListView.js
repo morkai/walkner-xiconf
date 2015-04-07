@@ -15,6 +15,8 @@ define([
 
   return ListView.extend({
 
+    className: 'is-colored is-clickable',
+
     remoteTopics: {
       'history.orderUpdated': 'refreshCollection',
       'programmer.finished': 'refreshCollection'
@@ -38,7 +40,16 @@ define([
       }
     },
 
-    columns: ['serviceTag', 'order', 'nc12', 'programName', 'counter', 'quantity', 'startedAt', 'duration'],
+    columns: [
+      {id: 'serviceTag', className: 'is-min'},
+      {id: 'order', className: 'is-min'},
+      {id: 'nc12', className: 'is-min'},
+      {id: 'counter', className: 'is-min'},
+      {id: 'quantity', className: 'is-min'},
+      {id: 'startedAt', className: 'is-min'},
+      {id: 'duration', className: 'is-min'},
+      'programName'
+    ],
 
     serializeActions: function()
     {

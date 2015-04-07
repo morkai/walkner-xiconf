@@ -32,7 +32,7 @@ function RemoteCoordinator(app, programmerModule)
 
 RemoteCoordinator.prototype.isConnected = function()
 {
-  return this.sio && this.sio.socket.connected;
+  return this.sio && this.sio.io.readyState === 'open';
 };
 
 RemoteCoordinator.prototype.connectToProdLine = function(forceReconnect)
@@ -131,7 +131,7 @@ RemoteCoordinator.prototype.setUpSio = function()
   if (this.sio !== null)
   {
     this.sio.removeAllListeners();
-    this.sio.disconnect();
+    this.sio.close();
     this.sio = null;
   }
 
@@ -144,85 +144,60 @@ RemoteCoordinator.prototype.setUpSio = function()
 
   var remoteCoordinator = this;
   var programmer = this.programmer;
-  var wasConnected = false;
-  var wasReconnecting = false;
   var sio = socketIoClient.connect(remoteServer, {
-    'resource': 'socket.io',
-    'transports': ['websocket'],
-    'auto connect': false,
-    'connect timeout': 5000,
-    'reconnect': true,
-    'reconnection delay': _.random(100, 500),
-    'reconnection limit': _.random(4000, 8000),
-    'max reconnection attempts': Infinity
+    transports: ['websocket'],
+    autoConnect: false,
+    timeout: 5000,
+    reconnectionDelay: 1000,
+    reconnectionDelayMax: 5000
   });
 
-  sio.on('connecting', function()
+  sio.once('connecting', function()
   {
-    if (!wasConnected)
-    {
-      programmer.debug("[remote] Connecting...");
-    }
+    programmer.debug("[remote] Connecting...");
   });
 
-  sio.on('connect', function()
+  sio.once('connect', function()
   {
-    if (!wasConnected)
-    {
-      wasConnected = true;
+    programmer.debug("[remote] Connected to: %s", remoteServer);
 
-      programmer.debug("[remote] Connected to: %s", remoteServer);
+    remoteCoordinator.connectToProdLine();
 
-      remoteCoordinator.connectToProdLine();
-
-      programmer.changeState({remoteConnected: true});
-    }
+    programmer.changeState({remoteConnected: true});
   });
 
-  sio.on('connect_failed', function()
+  sio.once('connect_error', function(err)
   {
-    programmer.debug("[remote] Failed to connect.");
+    programmer.debug("[remote] Failed to connect: %s", err.message);
   });
 
   sio.on('disconnect', function()
   {
-    programmer.warn("[remote] Disconnected.");
+    programmer.warn("[remote] Disconnected :(");
 
     programmer.changeState({remoteConnected: false});
   });
 
   sio.on('reconnecting', function()
   {
-    if (!wasReconnecting)
-    {
-      wasReconnecting = true;
-
-      programmer.debug("[remote] Reconnecting...");
-    }
+    programmer.debug("[remote] Reconnecting...");
   });
 
   sio.on('reconnect', function()
   {
-    wasReconnecting = false;
+    sio.off('connect');
 
-    if (wasConnected)
-    {
-      programmer.warn("[remote] Reconnected to: %s", remoteServer);
+    programmer.warn("[remote] Reconnected to: %s", remoteServer);
 
-      remoteCoordinator.connectToProdLine();
+    remoteCoordinator.connectToProdLine();
 
-      programmer.changeState({remoteConnected: true});
-    }
+    programmer.changeState({remoteConnected: true});
   });
 
-  sio.on('reconnect_failed', function()
+  sio.on('reconnect_error', function(err)
   {
-    wasReconnecting = false;
-
-    programmer.debug("[remote] Failed to reconnect.");
+    programmer.debug("[remote] Failed to reconnect: %s", err.message);
   });
-
-  sio.on('error', forceReconnectOnFirstConnectFailure);
 
   sio.on('error', function(err)
   {
@@ -239,18 +214,9 @@ RemoteCoordinator.prototype.setUpSio = function()
   sio.on('xiconf.remoteDataUpdated', this.onRemoteDataUpdated.bind(this));
   sio.on('xiconf.leaderUpdated', this.onLeaderUpdated.bind(this));
 
-  sio.socket.connect();
+  sio.open();
 
   this.sio = sio;
-
-  function forceReconnectOnFirstConnectFailure()
-  {
-    if (!wasConnected)
-    {
-      sio.removeListener('error', forceReconnectOnFirstConnectFailure);
-      sio.socket.reconnect();
-    }
-  }
 };
 
 /**
@@ -347,7 +313,7 @@ RemoteCoordinator.prototype.scheduleCurrentDataAvailabilityCheck = function()
 
   this.currentDataAvailabilityTimer = setTimeout(
     this.checkCurrentDataAvailability.bind(this),
-    _.random(45, 90) * 1000
+    _.random(60, 180) * 1000
   );
 };
 

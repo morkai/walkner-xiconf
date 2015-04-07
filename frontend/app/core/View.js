@@ -10,7 +10,8 @@ define([
   'app/socket',
   'app/pubsub',
   './util'
-], function(
+],
+function(
   _,
   $,
   Layout,

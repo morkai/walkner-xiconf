@@ -17,7 +17,7 @@ module.exports = function setSettingsRoutes(app, settingsModule)
   {
     if (!settingsModule.has(req.params.name))
     {
-      return res.send(404);
+      return res.sendStatus(404);
     }
 
     return res.send(settingsModule.get(req.params.name));
@@ -27,7 +27,7 @@ module.exports = function setSettingsRoutes(app, settingsModule)
   {
     if (typeof req.body !== 'object' || req.body === null)
     {
-      return res.send(400);
+      return res.sendStatus(400);
     }
 
     var programmer = app[settingsModule.config.programmerId];
@@ -46,7 +46,7 @@ module.exports = function setSettingsRoutes(app, settingsModule)
         return next(err);
       }
 
-      return res.send(204);
+      return res.sendStatus(204);
     });
   });
 

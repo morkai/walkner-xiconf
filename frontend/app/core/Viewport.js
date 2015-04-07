@@ -185,11 +185,6 @@ define([
       {
         page.render();
       }
-
-      if (!viewport.$(':focus').length)
-      {
-        viewport.$('[autofocus]').first().focus();
-      }
     }
 
     function onPageLoadFailure()
@@ -218,7 +213,25 @@ define([
       return this;
     }
 
-    dialogView.render();
+    var afterRender = dialogView.afterRender;
+    var viewport = this;
+
+    dialogView.afterRender = function()
+    {
+      var $modalBody = viewport.$dialog.find('.modal-body');
+
+      if ($modalBody.children()[0] !== dialogView.el)
+      {
+        $modalBody.empty().append(dialogView.el);
+      }
+
+      viewport.$dialog.modal('show');
+
+      if (_.isFunction(afterRender))
+      {
+        afterRender.apply(dialogView, arguments);
+      }
+    };
 
     this.currentDialog = dialogView;
 
@@ -239,8 +252,7 @@ define([
       this.$dialog.addClass(_.result(dialogView, 'dialogClassName'));
     }
 
-    this.$dialog.find('.modal-body').empty().append(dialogView.el);
-    this.$dialog.modal('show');
+    dialogView.render();
 
     return this;
   };
@@ -316,16 +328,11 @@ define([
       this.$dialog.removeClass(_.result(this.currentDialog, 'dialogClassName'));
     }
 
-    if (_.isFunction(this.currentDialog.onDialogHidden))
-    {
-      this.currentDialog.onDialogHidden(this);
-    }
-
     if (_.isFunction(this.currentDialog.remove))
     {
       this.currentDialog.remove();
 
-      this.broker.publish('viewport.dialog.hidden', this.currentDialog);
+      this.broker.publish('viewport.dialog.hidden');
     }
 
     this.currentDialog = null;
