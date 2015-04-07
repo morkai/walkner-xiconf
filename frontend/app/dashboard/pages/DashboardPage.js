@@ -198,8 +198,8 @@ define([
     resize: function()
     {
       var height = this.getRemainingHeight();
-      var width = this.historyView.$el.outerWidth(true);
-console.log(width);
+      var width = Math.max(this.historyView.$el.outerWidth(true), this.ledsView.$el.outerWidth(true));
+
       this.logView.resize(height);
       this.carouselView.resize(width, height);
       this.programView.resize(width, height);
