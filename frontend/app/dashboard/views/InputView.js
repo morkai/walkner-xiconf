@@ -816,7 +816,7 @@ define([
         return null;
       }
 
-      var orders = settings.get('orders');
+      var orders = isRemoteInput ? 'required' : settings.get('orders');
 
       if (orders === 'disabled')
       {
@@ -827,7 +827,7 @@ define([
         };
       }
 
-      var ordersRequired = isRemoteInput || orders === 'required';
+      var ordersRequired = orders === 'required';
       var orderNo = this.$els.orderNo.val().trim();
 
       if (!/^[0-9]{1,9}$/.test(orderNo))
