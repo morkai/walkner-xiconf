@@ -1,3 +1,16 @@
+2.9.0 @ 2015-??-??
+==================
+
+  * Removed remaining references to the Source Code Pro font.
+  * Changed Node.js to v0.12.2 x64 and updated all dependencies.
+  * Changed the module start timeout from 3s to 6s.
+  * Changed the process start validation on the Programmer page to always require order number and quantity in
+    the remote input mode.
+  * Changed the LED boards barcode scanning to recognize more formats. Previously, only `/=[0-9]{8}=[0-9]{12}/` was
+    accepted. Now, `/.[0-9]{12}.[0-9]{5,11}/` or `/.[0-9]{5,11}.[0-9]{12}/`.
+  * Added an ability to pick the current order and 12NC using the background barcode scanner.
+  * Added an ability to wait for a user action to continue the process after all LEDs were scanned successfully.
+
 2.8.3 @ 2015-04-01
 ==================
 
