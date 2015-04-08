@@ -107,7 +107,7 @@ module.exports = function setUpProgrammerCommands(app, programmerModule)
   {
     if (_.isString(orderNo) && /^[0-9]{1,9}$/.test(orderNo)
       && _.isString(nc12) && /^[0-9]{12}$/.test(nc12)
-      && _.isString(serialNumber) && /^[0-9]{8}$/.test(serialNumber))
+      && _.isString(serialNumber) && /^[0-9]+$/.test(serialNumber))
     {
       programmerModule.checkSerialNumber(orderNo, nc12, serialNumber);
     }

@@ -976,7 +976,7 @@ define([
 
       if (this.model.isRemoteInput())
       {
-        if (/=[0-9]{8}=[0-9]{12}/.test(message.value))
+        if (/(.[0-9]{12}.[0-9]{5,11}|.[0-9]{5,11}.[0-9]{12})/.test(message.value))
         {
           this.handleLedCommand(message.value);
         }
@@ -993,15 +993,27 @@ define([
 
     handleLedCommand: function(led)
     {
-      var matches = led.match(/=([0-9]{8})=([0-9]{12})/);
+      var matches = led.match(/.([0-9]{12}).([0-9]{5,11})/);
+      var nc12;
+      var serialNumber;
 
       if (!matches)
       {
-        return;
-      }
+        matches = led.match(/.([0-9]{5,11}).([0-9]{12})/);
 
-      var nc12 = matches[2];
-      var serialNumber = matches[1];
+        if (!matches)
+        {
+          return;
+        }
+
+        nc12 = matches[2];
+        serialNumber = matches[1];
+      }
+      else
+      {
+        nc12 = matches[1];
+        serialNumber = matches[2];
+      }
 
       if (this.model.get('waitingForLeds'))
       {
