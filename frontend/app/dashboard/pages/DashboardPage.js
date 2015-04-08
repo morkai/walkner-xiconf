@@ -59,6 +59,7 @@ define([
 
     events: {
       'click #-toggleInputMode': function() { this.toggleInputMode(); },
+      'click #-continue': function() { this.broker.publish('hotkeys.continue'); },
       'submit #-inputModeForm': function()
       {
         var $password = this.$id('password');

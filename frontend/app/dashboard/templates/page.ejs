@@ -24,5 +24,11 @@
     <div id="<%- idPrefix %>-progressBar" class="progress-bar <%- progressBarClassName %>" style="width: <%- progressBarWidth %>"></div>
   </div>
   <div class="dashboard-leftColumn"></div>
-  <div class="dashboard-rightColumn"></div>
+  <div class="dashboard-rightColumn">
+    <button id="<%- idPrefix %>-continue" class="dashboard-continue btn btn-block btn-success">
+      <i class="fa fa-thumbs-o-up"></i>
+      <p><%- t('dashboard', 'leds:continue:p1') %></p>
+      <p><%- t('dashboard', 'leds:continue:p2') %></p>
+    </button>
+  </div>
 </div>

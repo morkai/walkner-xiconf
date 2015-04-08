@@ -89,7 +89,9 @@
     "ledS:error:DB_FAILURE": "Database failure!",
     "leds:error:UNKNOWN_ORDER_NO": "Unknown order!",
     "leds:error:UNKNOWN_ITEM_NC12": "Unknown order item!",
-    "leds:error:SERIAL_NUMBER_USED": "SN already used in order {orderNo}:<br>{name}"
+    "leds:error:SERIAL_NUMBER_USED": "SN already used in order {orderNo}:<br>{name}",
+    "leds:continue:p1": "LED boards scanned successfully!",
+    "leds:continue:p2": "Press <kbd data-hotkey=continue>?</kbd> or scan the start barcode<br>to start the programming."
   },
   "pl": true
 }
