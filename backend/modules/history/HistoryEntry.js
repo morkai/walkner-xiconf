@@ -137,26 +137,29 @@ HistoryEntry.prototype.hasProgramStep = function(type)
 
 HistoryEntry.prototype.createServiceTagRequestData = function()
 {
-  var ledsMap = {};
   var ledsList = [];
+  var ledsMap = {};
   var leds = Array.isArray(this.leds) ? this.leds : [];
 
-  for (var i = 0; i < leds.length; ++i)
+  if (this.settings.get('ledsEnabled') > 0 && this.settings.supportsFeature('led'))
   {
-    var led = leds[i];
-
-    if (!ledsMap[led.nc12])
+    for (var i = 0; i < leds.length; ++i)
     {
-      ledsMap[led.nc12] = [];
-      ledsList.push({
-        nc12: led.nc12,
-        serialNumbers: ledsMap[led.nc12]
-      });
-    }
+      var led = leds[i];
 
-    if (led.serialNumber !== null)
-    {
-      ledsMap[led.nc12].push(led.serialNumber);
+      if (!ledsMap[led.nc12])
+      {
+        ledsMap[led.nc12] = [];
+        ledsList.push({
+          nc12: led.nc12,
+          serialNumbers: ledsMap[led.nc12]
+        });
+      }
+
+      if (led.serialNumber !== null)
+      {
+        ledsMap[led.nc12].push(led.serialNumber);
+      }
     }
   }
 
