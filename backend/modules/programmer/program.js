@@ -67,8 +67,6 @@ module.exports = function program(app, programmerModule, data, done)
   programmerModule.OVERALL_SETUP_PROGRESS = currentState.waitingForLeds ? 25 : 20;
   programmerModule.OVERALL_PROGRAMMING_PROGRESS = shouldPrintServiceTag ? 90 : 100;
 
-  var isLedOnly = currentState.waitingForLeds && _.isEmpty(currentState.nc12);
-
   step(
     validateRemoteOrderItemsStep,
     countdownStep,
