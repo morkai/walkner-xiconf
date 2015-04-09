@@ -770,7 +770,7 @@ define([
         .toggleClass('is-multi', user.isLocal() && !this.model.isInProgress() && isMultiNc12)
         .toggleClass('is-picked', nc12 !== '');
 
-      var quantity = quantityTodo - quantityDone;
+      var quantity = Math.floor((quantityTodo - quantityDone) * 10) / 10;
 
       if (!data._id || isNaN(quantity))
       {
