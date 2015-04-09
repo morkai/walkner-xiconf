@@ -326,7 +326,7 @@ LedManager.prototype.cleanUpIndex = function(index)
 
   if (callbacks[index])
   {
-    callbacks[index].cancelledAt = Date.now();
+    callbacks[index].cancelled = true;
     delete callbacks[index];
   }
 };
