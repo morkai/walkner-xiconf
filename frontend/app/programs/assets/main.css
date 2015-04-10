@@ -1,33 +1,80 @@
-.programs-list .label {
+.xiconfPrograms-list .label {
   font-size: 100%;
   text-transform: uppercase;
 }
-.programs-list .label-pe {
+.xiconfPrograms-list .label-pe,
+.xiconfPrograms-stepPanel-pe > .panel-heading {
   background-color: #0af;
 }
-.programs-list .label-sol {
+.xiconfPrograms-stepPanel-pe,
+.xiconfPrograms-stepPanel-pe > .panel-heading {
+  border-color: #0af;
+}
+.xiconfPrograms-list .label-sol,
+.xiconfPrograms-stepPanel-sol > .panel-heading {
   background-color: #fa0;
+  border-color: #fa0;
 }
-.programs-list .label-fn {
+.xiconfPrograms-stepPanel-sol,
+.xiconfPrograms-stepPanel-sol > .panel-heading {
+  border-color: #fa0;
+}
+.xiconfPrograms-list .label-fn,
+.xiconfPrograms-stepPanel-fn > .panel-heading {
   background-color: #00af00;
+  border-color: #00af00;
 }
-.programs-form-fn {
-  margin-bottom: 0;
+.xiconfPrograms-stepPanel-fn,
+.xiconfPrograms-stepPanel-fn > .panel-heading {
+  border-color: #00af00;
 }
-.programs-form .panel-default .panel-body {
+.xiconfPrograms-list .label-wait,
+.xiconfPrograms-stepPanel-wait > .panel-heading {
+  background-color: #666;
+  text-transform: none;
+}
+.xiconfPrograms-stepPanel-wait,
+.xiconfPrograms-stepPanel-wait > .panel-heading {
+  border-color: #666;
+}
+.xiconfPrograms-stepPanel,
+.xiconfPrograms-stepPanel:last-child {
+  margin-bottom: 1em;
+}
+.xiconfPrograms-stepPanel > .panel-heading {
+  color: #fff;
+  text-shadow: 1px 1px 3px #333;
+  font-family: Verdana, sans-serif;
+  font-weight: bold;
+}
+.xiconfPrograms-stepPanel > .panel-body {
   padding-bottom: 0;
 }
-.programs-form .checkbox + .panel {
-  margin-top: 5px;
+.xiconfPrograms-stepPanel:first-child .btn[role="moveStepUp"] {
+  display: none;
 }
-.programs-step {
+.xiconfPrograms-stepPanel:last-child .btn[role="moveStepDown"] {
+  display: none;
+}
+.xiconfPrograms-form-stepType {
+  display: inline-block;
+  width: auto;
+  vertical-align: top;
+}
+.xiconfPrograms-form-stepType > option[disabled] {
+  display: none;
+}
+.xiconfPrograms-form-waitDuration {
+  margin-top: .5em;
+}
+.xiconfPrograms-step {
   display: flex;
   padding: 7px;
   border: 1px solid #ccc;
   border-top: 0;
   background-color: #fff;
 }
-.programs-step-status {
+.xiconfPrograms-step-status {
   position: relative;
   display: inline-block;
   margin-right: 7px;
@@ -37,7 +84,7 @@
   background-color: #ccc;
   box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.15);
 }
-.programs-step-cornerBox {
+.xiconfPrograms-step-cornerBox {
   position: absolute;
   padding: 2px 4px 1px 4px;
   font-size: 16px;
@@ -46,64 +93,64 @@
   background: #fff;
   box-shadow: 0 1px 2px #555;
 }
-.programs-step-unit {
+.xiconfPrograms-step-unit {
   left: -2px;
   top: -2px;
 }
-.programs-step-minValue {
+.xiconfPrograms-step-minValue {
   right: -2px;
   bottom: -2px;
 }
-.programs-step-maxValue {
+.xiconfPrograms-step-maxValue {
   right: -2px;
   top: -2px;
 }
-.programs-step-value {
+.xiconfPrograms-step-value {
   display: none;
   line-height: 90px;
   text-align: center;
   font-size: 40px;
   color: #fff;
 }
-.is-active .programs-step-value {
+.is-active .xiconfPrograms-step-value {
   display: block;
 }
-.programs-step-nameAndProgress {
+.xiconfPrograms-step-nameAndProgress {
   flex: 1 1 auto;
 }
-.programs-step .progress {
+.xiconfPrograms-step .progress {
   margin-top: 7px;
   margin-bottom: 0;
   height: 34px;
 }
-.programs-step .progress-bar {
+.xiconfPrograms-step .progress-bar {
   font-size: 18px;
   line-height: 34px;
 }
-.is-active.programs-step {
+.is-active.xiconfPrograms-step {
   background-color: #ffffd6;
 }
-.is-active .programs-step-status {
+.is-active .xiconfPrograms-step-status {
   background-color: #f0ad4e;
 }
-.is-failure .programs-step-status {
+.is-failure .xiconfPrograms-step-status {
   background-color: #d9534f;
 }
-.is-success .programs-step-status {
+.is-success .xiconfPrograms-step-status {
   background-color: #5cb85c;
 }
-.programs-step-name {
+.xiconfPrograms-step-name {
   display: inline-block;
   margin: 0 !important;
   vertical-align: top;
   white-space: nowrap;
 }
-.programs-step-details {
+.xiconfPrograms-step-details {
   display: flex;
   margin-top: 7px;
   line-height: 1;
   font-size: 16px;
 }
-.programs-step-details-prop {
+.xiconfPrograms-step-details-prop {
   margin-right: 14px;
 }

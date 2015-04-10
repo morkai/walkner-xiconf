@@ -4,13 +4,17 @@
 
 define([
   'app/i18n',
+  'app/user',
   'app/viewport',
+  'app/core/util/pageActions',
   'app/core/pages/FilteredListPage',
   '../views/ProgramListView',
   '../views/ProgramFilterView'
 ], function(
   t,
+  user,
   viewport,
+  pageActions,
   FilteredListPage,
   ProgramListView,
   ProgramFilterView
@@ -25,11 +29,20 @@ define([
 
     actions: function()
     {
-      var actions = FilteredListPage.prototype.actions.call(this);
+      var actions = [];
+
+      if (user.isLocal())
+      {
+        actions.push({
+          label: t.bound('programs', 'PAGE_ACTION:add'),
+          icon: 'plus',
+          href: this.collection.genClientUrl('add')
+        });
+      }
 
       actions.unshift({
         icon: 'refresh',
-        label: t('programs', 'PAGE_ACTION:sync'),
+        label: t.bound('programs', 'PAGE_ACTION:sync'),
         callback: this.onSyncActionClick.bind(this)
       });
 

@@ -195,7 +195,7 @@ module.exports = function setUpProgrammerCommands(app, programmerModule)
 
     reply();
 
-    programmerModule.changeState({waitingForContinue: false});
+    programmerModule.changeState({waitingForContinue: null});
   }
 
   function reset(reply)

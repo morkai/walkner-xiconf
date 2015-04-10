@@ -98,6 +98,16 @@ define([
           viewData.powerMin = viewData.minValue;
           viewData.powerMax = viewData.maxValue;
           break;
+
+        case 'wait':
+          viewData.value = '';
+          viewData.voltage = step.voltage.toLocaleString();
+
+          if (step.kind === 'auto')
+          {
+            viewData.totalTime = time.toString(step.duration);
+          }
+          break;
       }
 
       return viewData;
@@ -119,7 +129,7 @@ define([
 
     updateProgress: function(stepIndex, changes)
     {
-      var $step = this.$('.programs-step[data-index="' + stepIndex + '"]');
+      var $step = this.$('.xiconfPrograms-step[data-index="' + stepIndex + '"]');
       var $progressBar = $step.find('.progress-bar');
 
       if (changes.progress !== undefined)
@@ -129,13 +139,13 @@ define([
 
       if (changes.status !== undefined)
       {
-        $step.prop('className', 'programs-step is-' + changes.status);
+        $step.prop('className', 'xiconfPrograms-step is-' + changes.status);
         $progressBar.prop('className', 'progress-bar ' + this.getProgressBarClassName(changes.status));
       }
 
       if (changes.value !== undefined)
       {
-        $step.find('.programs-step-value').text(this.prepareStepValue(changes.value));
+        $step.find('.xiconfPrograms-step-value').text(this.prepareStepValue(changes.value));
       }
     },
 

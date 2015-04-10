@@ -96,6 +96,11 @@ module.exports = function programAndTest(app, programmerModule, done)
         parity: 'none'
       }, false);
 
+      if (fake)
+      {
+        serialPort.write = function() {};
+      }
+
       serialPort.on('error', function(err)
       {
         if (!serialPortError)
@@ -547,6 +552,13 @@ module.exports = function programAndTest(app, programmerModule, done)
     {
       return createExecuteFnStepStep(step, stepIndex, modbusMaster, sdpMaster, metrics);
     }
+
+    if (step.type === 'wait')
+    {
+      return createExecuteWaitStepStep(step, stepIndex, modbusMaster, sdpMaster, metrics);
+    }
+
+    return function() {};
   }
 
   function createExecutePeStepStep(programStep, stepIndex, modbusMaster, sdpMaster, metrics)
@@ -700,6 +712,121 @@ module.exports = function programAndTest(app, programmerModule, done)
     };
   }
 
+  function createExecuteWaitStepStep(programStep, stepIndex, modbusMaster, sdpMaster, metrics)
+  {
+    return function executeFnStepStep(err)
+    {
+      if (programmerModule.cancelled)
+      {
+        return this.skip('CANCELLED');
+      }
+
+      if (err)
+      {
+        return this.skip(err);
+      }
+
+      programmerModule.log('TESTING_EXECUTING_STEP', {type: programStep.type, index: stepIndex});
+
+      programmerModule.updateStepProgress(stepIndex, {
+        status: 'active',
+        progress: 0
+      });
+
+      var nextProgramStep = this.next();
+
+      step(
+        createSwitchCoilsStep(modbusMaster, false, false),
+        createSdpCommandStep(true, sdpMaster, 'CURR', programStep.voltage >= 0 ? settings.get('testingCurrent') : 0),
+        createSdpCommandStep(true, sdpMaster, 'VOLT', programStep.voltage),
+        createSdpCommandStep(true, sdpMaster, 'SOUT', programStep.voltage >= 0),
+        function(err)
+        {
+          if (programmerModule.cancelled)
+          {
+            return this.skip('CANCELLED');
+          }
+
+          if (err)
+          {
+            return this.skip(err);
+          }
+
+          var totalTime = programStep.duration * 1000;
+          var startTime = Date.now();
+          var nextStep = this.next();
+          var successTimer = null;
+          var progressTimer = null;
+          var waitingSub;
+          var cancelSub;
+
+          if (programStep.kind === 'auto')
+          {
+            successTimer = this.successTimer = setTimeout(nextStep, totalTime);
+            progressTimer = this.progressTimer = setInterval(function()
+            {
+              programmerModule.updateStepProgress(stepIndex, {
+                progress: (Date.now() - startTime) * 100 / totalTime
+              });
+            }, 250);
+          }
+          else
+          {
+            programmerModule.updateStepProgress(stepIndex, {
+              progress: 50
+            });
+            programmerModule.changeState({waitingForContinue: 'test'});
+
+            waitingSub = this.waitingSub = app.broker.subscribe('programmer.stateChanged', function(changes)
+            {
+              if (changes.waitingForContinue === null)
+              {
+                waitingSub.cancel();
+                waitingSub = null;
+
+                cancelSub.cancel();
+                cancelSub = null;
+
+                setImmediate(nextStep);
+              }
+            });
+          }
+
+          cancelSub = this.cancelSub = app.broker.subscribe('programmer.cancelled', function()
+          {
+            if (successTimer !== null)
+            {
+              clearTimeout(successTimer);
+              clearInterval(progressTimer);
+            }
+
+            nextStep();
+          });
+        },
+        function(err)
+        {
+          if (this.progressTimer)
+          {
+            clearTimeout(this.progressTimer);
+            this.progressTimer = null;
+          }
+
+          if (this.waitingSub)
+          {
+            this.waitingSub.cancel();
+            this.waitingSub = null;
+          }
+
+          if (err)
+          {
+            return this.skip(err);
+          }
+        },
+        createFinalizeProgramStep(stepIndex, nextProgramStep)
+      );
+    };
+  }
+
   function monitorReadingsDuringSol(uSet, sdpMaster, metrics, isMonitoringStopped)
   {
     if (isMonitoringStopped())
@@ -741,7 +868,7 @@ module.exports = function programAndTest(app, programmerModule, done)
 
       this.cancelSub = app.broker.subscribe('programmer.cancelled', function()
       {
-        clearInterval(successTimer);
+        clearTimeout(successTimer);
         nextStep();
       });
 

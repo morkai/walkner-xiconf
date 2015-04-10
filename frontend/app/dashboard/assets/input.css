@@ -152,38 +152,6 @@
 .dashboard[data-input-mode="remote"] .dashboard-input-nc12 > kbd {
   display: none!important;
 }
-.dashboard-continue {
-  display: none;
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 296px;
-  z-index: 3;
-  text-shadow: 1px 1px 1px #333;
-  box-shadow: 0 .5em 1em rgba(0, 0, 0, .5);
-  -webkit-animation: dashboard-continue-pulse 0.5s infinite alternate;
-  animation: dashboard-continue-pulse 0.5s infinite alternate;
-}
-.is-waitingForContinue .dashboard-continue {
-  display: block;
-}
-@-webkit-keyframes dashboard-continue-pulse {
-  0% {
-    background: #5cb85c;
-  }
-  100% {
-    background: #6ECA6E;
-  }
-}
-@keyframes dashboard-continue-pulse {
-  0% {
-    background: #5cb85c;
-  }
-  100% {
-    background: #6ECA6E;
-  }
-}
 .dashboard-continue > .fa {
   font-size: 84px;
   margin-bottom: 14px;

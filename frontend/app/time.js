@@ -76,7 +76,8 @@ define([
       g: 3600,
       h: 3600,
       m: 60,
-      s: 1
+      s: 1,
+      ms: 0.001
     };
 
     var time = str.trim();
@@ -84,7 +85,7 @@ define([
 
     if (/^[0-9]+\.?[0-9]*$/.test(time) === false)
     {
-      var re = /([0-9\.]+) *(h|m|s)[a-z]*/ig;
+      var re = /([0-9\.]+) *(h|ms|m|s)[a-z]*/ig;
       var match;
 
       seconds = 0;

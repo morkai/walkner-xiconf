@@ -89,6 +89,9 @@
   "leds:error:UNKNOWN_ORDER_NO": "Nieznane zlecenie!",
   "leds:error:UNKNOWN_ITEM_NC12": "Nieznana pozycja zlecenia!",
   "leds:error:SERIAL_NUMBER_USED": "SN użyty w zleceniu {orderNo}:<br>{name}",
-  "leds:continue:p1": "Płytki LED zeskanowane pomyślnie!",
-  "leds:continue:p2": "Wciśnij <kbd data-hotkey=continue>?</kbd> lub zeskanuj kod startu,<br> aby rozpocząć programowanie."
+
+  "continue:led:p1": "Płytki LED zeskanowane pomyślnie!",
+  "continue:led:p2": "Wciśnij <kbd data-hotkey=continue>?</kbd> lub zeskanuj kod startu,<br> aby rozpocząć programowanie.",
+  "continue:test:p1": "Testowanie wstrzymane!",
+  "continue:test:p2": "Wciśnij <kbd data-hotkey=continue>?</kbd> lub zeskanuj kod startu,<br> aby kontynuować testowanie."
 }

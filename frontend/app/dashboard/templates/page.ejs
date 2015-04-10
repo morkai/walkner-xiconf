@@ -1,4 +1,4 @@
-<div class="dashboard <%- localUser ? 'is-localUser' : 'is-remoteUser' %> <%- inProgress ? 'is-inProgress' : 'is-idle' %> <%- windowFocused ? 'has-windowFocus' : '' %> <%- workModeChangeEnabled ? 'is-workModeChangeEnabled' : '' %> <%- waitingForLeds ? 'is-waitingForLeds' : '' %> <%- waitingForContinue ? 'is-waitingForContinue' : '' %>" data-work-mode="<%- workMode %>" data-input-mode="<%- inputMode %>">
+<div class="dashboard <%- localUser ? 'is-localUser' : 'is-remoteUser' %> <%- inProgress ? 'is-inProgress' : 'is-idle' %> <%- windowFocused ? 'has-windowFocus' : '' %> <%- workModeChangeEnabled ? 'is-workModeChangeEnabled' : '' %> <%- waitingForLeds ? 'is-waitingForLeds' : '' %> <%- waitingForContinue ? 'is-waitingForContinue' : '' %>" data-work-mode="<%- workMode %>" data-input-mode="<%- inputMode %>" data-waiting="<%- waitingForContinue || '' %>">
   <div class="dashboard-indicators">
     <i id="<%- idPrefix %>-connection" class="fa fa-signal dashboard-indicator-connection"></i>
     <div id="<%- idPrefix %>-toggleInputMode" class="dashboard-indicator dashboard-indicator-inputMode kbd-container">
@@ -25,10 +25,15 @@
   </div>
   <div class="dashboard-leftColumn"></div>
   <div class="dashboard-rightColumn">
-    <button id="<%- idPrefix %>-continue" class="dashboard-continue btn btn-block btn-success">
-      <i class="fa fa-thumbs-o-up"></i>
-      <p><%- t('dashboard', 'leds:continue:p1') %></p>
-      <p><%- t('dashboard', 'leds:continue:p2') %></p>
+    <button id="<%- idPrefix %>-continue" class="dashboard-continue dashboard-continue-led btn btn-success">
+      <i class="fa fa-arrow-right"></i>
+      <p><%- t('dashboard', 'continue:led:p1') %></p>
+      <p><%- t('dashboard', 'continue:led:p2') %></p>
+    </button>
+    <button id="<%- idPrefix %>-continue" class="dashboard-continue dashboard-continue-test btn btn-warning">
+      <i class="fa fa-arrow-right"></i>
+      <p><%- t('dashboard', 'continue:test:p1') %></p>
+      <p><%- t('dashboard', 'continue:test:p2') %></p>
     </button>
   </div>
 </div>

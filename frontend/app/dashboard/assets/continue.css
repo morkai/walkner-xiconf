@@ -1,0 +1,56 @@
+.dashboard-continue {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 296px;
+  z-index: 3;
+  width: 100%;
+  text-shadow: 1px 1px 1px #333;
+  box-shadow: 0 .5em 1em rgba(0, 0, 0, .5);
+  -webkit-animation: 0.5s infinite alternate;
+  animation: 0.5s infinite alternate;
+}
+.is-waitingForContinue[data-waiting="led"] .dashboard-continue-led {
+  display: block;
+  -webkit-animation-name: dashboard-continue-pulse-success;
+  animation-name: dashboard-continue-pulse-success;
+}
+.is-waitingForContinue[data-waiting="test"] .dashboard-continue-test {
+  display: block;
+  -webkit-animation-name: dashboard-continue-pulse-warning;
+  animation-name: dashboard-continue-pulse-warning;
+}
+@-webkit-keyframes dashboard-continue-pulse-success {
+  0% {
+    background: #5cb85c;
+  }
+  100% {
+    background: #6ECA6E;
+  }
+}
+@keyframes dashboard-continue-pulse-success {
+  0% {
+    background: #5cb85c;
+  }
+  100% {
+    background: #6ECA6E;
+  }
+}
+@-webkit-keyframes dashboard-continue-pulse-warning {
+  0% {
+    background: #f0ad4e;
+  }
+  100% {
+    background: #FFC162;
+  }
+}
+@keyframes dashboard-continue-pulse-warning {
+  0% {
+    background: #f0ad4e;
+  }
+  100% {
+    background: #FFC162;
+  }
+}

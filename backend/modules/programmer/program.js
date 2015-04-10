@@ -722,7 +722,7 @@ module.exports = function program(app, programmerModule, data, done)
 
     programmerModule.log('WAITING_FOR_CONTINUE');
 
-    programmerModule.changeState({waitingForContinue: true});
+    programmerModule.changeState({waitingForContinue: 'led'});
 
     var next = this.next();
     var cancelSub;
@@ -738,7 +738,7 @@ module.exports = function program(app, programmerModule, data, done)
 
     waitingSub = app.broker.subscribe('programmer.stateChanged', function(changes)
     {
-      if (changes.waitingForContinue === false)
+      if (changes.waitingForContinue === null)
       {
         waitingSub.cancel();
         waitingSub = null;
@@ -964,7 +964,7 @@ module.exports = function program(app, programmerModule, data, done)
       result: 'success',
       order: currentState.order,
       waitingForLeds: false,
-      waitingForContinue: false,
+      waitingForContinue: null,
       inProgress: false,
       overallProgress: 100
     };

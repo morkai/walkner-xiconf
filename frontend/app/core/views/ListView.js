@@ -323,7 +323,7 @@ define([
         var model = collection.get(row._id);
         var actions = [ListView.actions.viewDetails(model, nlsDomain)];
 
-        if (user.isAllowedTo((privilegePrefix || model.getPrivilegePrefix()) + ':MANAGE'))
+        if (privilegePrefix === false || user.isAllowedTo((privilegePrefix || model.getPrivilegePrefix()) + ':MANAGE'))
         {
           actions.push(
             ListView.actions.edit(model, nlsDomain),

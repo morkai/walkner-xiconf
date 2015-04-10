@@ -7,26 +7,24 @@ define([
   '../router',
   '../viewport',
   '../core/util/showDeleteFormPage',
-  '../core/pages/DetailsPage',
   '../core/pages/AddFormPage',
   '../core/pages/EditFormPage',
   './Program',
   './ProgramCollection',
   './pages/ProgramListPage',
-  './views/ProgramDetailsView',
+  './pages/ProgramDetailsPage',
   './views/ProgramFormView',
   'i18n!app/nls/programs'
 ], function(broker,
   router,
   viewport,
   showDeleteFormPage,
-  DetailsPage,
   AddFormPage,
   EditFormPage,
   Program,
   ProgramCollection,
   ProgramListPage,
-  ProgramDetailsView,
+  ProgramDetailsPage,
   ProgramFormView
 ) {
   'use strict';
@@ -51,8 +49,7 @@ define([
 
   router.map('/programs/:id', function(req)
   {
-    viewport.showPage(new DetailsPage({
-      DetailsView: ProgramDetailsView,
+    viewport.showPage(new ProgramDetailsPage({
       model: new Program({_id: req.params.id})
     }));
   });

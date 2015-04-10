@@ -28,32 +28,7 @@ define([
       return {
         type: 't24vdc',
         name: '',
-        steps: [
-          {
-            type: 'pe',
-            enabled: 1,
-            startTime: 2,
-            duration: 3,
-            voltage: 10,
-            resistanceMax: 0.1
-          },
-          {
-            type: 'sol',
-            enabled: 1,
-            voltage: 12
-          },
-          {
-            type: 'fn',
-            enabled: 1,
-            startTime: 2,
-            duration: 28,
-            voltage: 12,
-            powerReq: 100,
-            powerRel: 5,
-            powerMin: 95,
-            powerMax: 105
-          }
-        ]
+        steps: []
       };
     },
 
@@ -76,6 +51,11 @@ define([
 
       return obj;
     }
+
+  }, {
+
+    PROGRAM_TYPES: ['t24vdc'],
+    STEP_TYPES: ['wait', 'pe', 'sol', 'fn']
 
   });
 });

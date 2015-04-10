@@ -487,7 +487,11 @@ define([
 
     onWaitingForContinueChange: function()
     {
-      this.$el.toggleClass('is-waitingForContinue', currentState.get('waitingForContinue'));
+      var waitingForContinue = currentState.get('waitingForContinue');
+
+      this.$el
+        .toggleClass('is-waitingForContinue', waitingForContinue !== null)
+        .attr('data-waiting', waitingForContinue);
     }
 
   });

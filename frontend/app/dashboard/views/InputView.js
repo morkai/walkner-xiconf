@@ -616,7 +616,7 @@ define([
         $els.nc12.prop('disabled', isInProgress || isRemoteInput || hasOrder || countdown);
         $els.start.prop('disabled', countdown);
         $els.toggleWorkMode.prop('disabled', isInProgress || countdown);
-        $els.continue.prop('disabled', !this.model.get('waitingForContinue'));
+        $els.continue.prop('disabled', this.model.get('waitingForContinue') === null);
         $els.reset.prop('disabled', isInProgress || countdown);
         $els.reload.prop('disabled', isInProgress || hasOrder || countdown);
       }

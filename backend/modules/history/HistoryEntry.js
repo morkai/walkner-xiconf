@@ -28,7 +28,7 @@ function HistoryEntry(db, broker, settings)
   this.selectedOrderNo = null;
   this.selectedNc12 = null;
   this.waitingForLeds = false;
-  this.waitingForContinue = false;
+  this.waitingForContinue = null;
 
   this.clear();
 }
@@ -207,7 +207,7 @@ HistoryEntry.prototype.clear = function(clearOrder, clearProgram)
   this.metrics = null;
   this.leds = null;
   this.waitingForLeds = false;
-  this.waitingForContinue = false;
+  this.waitingForContinue = null;
   this.inProgress = false;
   this.overallProgress = 0;
 };
@@ -242,7 +242,7 @@ HistoryEntry.prototype.reset = function(orderNo, quantity, nc12)
   this.waitingForLeds = this.settings.get('ledsEnabled') > 0
     && this.settings.supportsFeature('led')
     && this.leds.length > 0;
-  this.waitingForContinue = false;
+  this.waitingForContinue = null;
   this.inProgress = true;
   this.overallProgress = 1;
 

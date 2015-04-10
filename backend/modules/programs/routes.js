@@ -318,6 +318,11 @@ module.exports = function setProgramsRoutes(app, programsModule)
       return validateProgramFnStep(step);
     }
 
+    if (step.type === 'wait')
+    {
+      return validateProgramWaitStep(step);
+    }
+
     return false;
   }
 
@@ -343,5 +348,12 @@ module.exports = function setProgramsRoutes(app, programsModule)
       && step.powerMin <= step.powerReq
       && step.powerMax >= step.powerReq
       && step.powerMin <= step.powerMax;
+  }
+
+  function validateProgramWaitStep(step)
+  {
+    return (step.kind === 'manual' || step.kind === 'auto')
+      && step.duration >= 0
+      && step.voltage >= 0;
   }
 };

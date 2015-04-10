@@ -103,7 +103,7 @@
     "log:TESTING_SDP_TEARDOWN": "Tearing down the SDP...",
     "log:TESTING_PLC_SETUP": "Setting up the PLC...",
     "log:TESTING_PLC_TEARDOWN": "Tearing down the PLC...",
-    "log:TESTING_EXECUTING_STEP": "{type, select, pe{Executing the protective earth test} sol{Executing the Fortimo Solar programming} fn{Executing the functional test} other{Executing the <em>{type}</em> program step}}...",
+    "log:TESTING_EXECUTING_STEP": "{type, select, wait{Waiting} pe{Executing the protective earth test} sol{Executing the Fortimo Solar programming} fn{Executing the functional test} other{Executing the <em>{type}</em> program step}}...",
     "log:ACQUIRING_SERVICE_TAG": "Acquiring a new Service Tag...",
     "log:SERVICE_TAG_ACQUIRED": "Acquired Service Tag: <code>{serviceTag}</code>",
     "log:SKIPPING_SERVICE_TAG_ACQUIRING": "Skipping acquiring a new Service Tag...",
