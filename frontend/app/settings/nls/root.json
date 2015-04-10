@@ -83,6 +83,7 @@
     "setting:solReset": "Device reset before execution of the GET commands",
     "setting:solReset:on": "On",
     "setting:solReset:off": "Off",
+    "setting:solResetDelay": "Delay after device reset [ms]",
     "setting:lptEnabled": "Programming with LPT",
     "setting:lptEnabled:on": "Enabled",
     "setting:lptEnabled:off": "Disabled",

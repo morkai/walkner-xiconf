@@ -82,6 +82,7 @@
   "setting:solReset": "Resetowanie urządzenia przed wykonaniem komend odczytujących",
   "setting:solReset:on": "Włączone",
   "setting:solReset:off": "Wyłączone",
+  "setting:solResetDelay": "Czas opóźnienia po resecie urządzenia [ms]",
   "setting:lptEnabled": "Programowanie z wykorzystaniem LPT",
   "setting:lptEnabled:on": "Włączone",
   "setting:lptEnabled:off": "Wyłączone",

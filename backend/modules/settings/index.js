@@ -288,6 +288,7 @@ exports.start = function startSettingsModule(app, module, done)
     validateNumericSetting(rawSettings, newSettings, 'cancelDelay', 0);
     validateNumericSetting(rawSettings, newSettings, 'blockageInterval', 0);
     validateNumericSetting(rawSettings, newSettings, 'blockageDuration', 0);
+    validateNumericSetting(rawSettings, newSettings, 'solResetDelay', 333);
     validateNumericSetting(rawSettings, newSettings, 'lptStartTimeout', 1000);
     validateNumericSetting(rawSettings, newSettings, 'lptReadPort', 0);
     validateNumericSetting(rawSettings, newSettings, 'lptReadBit', 0);

@@ -219,6 +219,16 @@ module.exports = function programSolDriver(app, programmerModule, output, onProg
       programmerModule.log('SOL_RESETTING');
 
       var next = this.next();
+      var resetDelay = parseInt(settings.get('solResetDelay'), 10);
+
+      if (isNaN(resetDelay))
+      {
+        resetDelay = 2000;
+      }
+      else if (resetDelay < 333)
+      {
+        resetDelay = 333;
+      }
 
       execCommand(
         programmerModule,
@@ -226,7 +236,7 @@ module.exports = function programSolDriver(app, programmerModule, output, onProg
         this.output,
         'do reset',
         progress,
-        setTimeout.bind(null, next, 1000)
+        setTimeout.bind(null, next, resetDelay)
       );
     },
     function execGetCommandsStep()

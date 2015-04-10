@@ -90,6 +90,7 @@ exports.settings = {
     solComPattern: 'FTDI',
     solFilePattern: 'SOL',
     solReset: 1,
+    solResetDelay: 2000,
     lptEnabled: 0,
     lptStartTimeout: 30000,
     lptFilePattern: '',
