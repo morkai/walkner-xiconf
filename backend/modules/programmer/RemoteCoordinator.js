@@ -145,6 +145,7 @@ RemoteCoordinator.prototype.setUpSio = function()
   var remoteCoordinator = this;
   var programmer = this.programmer;
   var sio = socketIoClient.connect(remoteServer, {
+    path: '/sio',
     transports: ['websocket'],
     autoConnect: false,
     timeout: 5000,
