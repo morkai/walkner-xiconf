@@ -50,7 +50,7 @@ module.exports = function setUpRemoteExport(app, historyModule)
 
     if (failed)
     {
-      syncInterval = Math.min(Math.round(syncInterval / 2), 5);
+      syncInterval = Math.max(Math.round(syncInterval / 2), 10);
     }
 
     syncTimer = setTimeout(syncNow, syncInterval * 60 * 1000);
@@ -66,7 +66,7 @@ module.exports = function setUpRemoteExport(app, historyModule)
     {
       historyModule.warn("Stopping the remote export: invalid license :(");
 
-      return scheduleNextSync(false);
+      return scheduleNextSync(true);
     }
 
     step(
