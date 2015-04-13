@@ -1,5 +1,11 @@
 <div class="dashboard-leds">
-  <h3 class="dashboard-header"><%- t('dashboard', 'leds') %></h3>
+  <h3 class="dashboard-header">
+    <span><%- t('dashboard', 'leds') %></span>
+    <button id="<%- idPrefix %>-reset" class="btn btn-link" type="button" title="<%- t('dashboard', 'leds:reset') %>" <%- resetEnabled ? '' : 'disabled' %>>
+      <i class="fa fa-eraser"></i>
+      <kbd data-hotkey="reset"><%- resetHotkey %></kbd>
+    </button>
+  </h3>
   <ul id="<%- idPrefix %>-list" class="dashboard-leds-list list-group form-control is-scrollable">
     <% leds.forEach(function(led) { %>
     <%- renderLed(led) %>

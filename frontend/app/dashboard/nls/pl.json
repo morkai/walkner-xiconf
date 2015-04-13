@@ -82,6 +82,7 @@
   "printServiceTagDialog:success": "Wygenerowano żądanie drukowania {count, plural, one{etykiety} other{{count} etykiet}} Service Tag.",
 
   "leds": "Płytki LED",
+  "leds:reset": "Resetuj zeskanowane płytki LED",
   "leds:error:INVALID_NC12": "Nieprawidłowe 12NC:<br>{nc12}!",
   "leds:error:NO_CONNECTION": "Brak połączenia z<br>serwerem zewnętrznym!",
   "leds:error:TIMEOUT": "Upłynął limit czasu<br>oczekiwania na odpowiedź!",

@@ -57,6 +57,18 @@ LedManager.prototype.check = function(orderNo, nc12, serialNumber)
 };
 
 /**
+ * @param {number} index
+ * @param {object} led
+ */
+LedManager.prototype.resetLed = function(index, led)
+{
+  led.status = 'waiting';
+  led.serialNumber = null;
+
+  this.updateLed(index, led);
+};
+
+/**
  * @private
  * @param {string} nc12
  * @param {string} serialNumber
@@ -150,19 +162,6 @@ LedManager.prototype.checkIndex = function(index, orderNo, nc12, serialNumber)
   {
     this.checkLed(index, led, orderNo, nc12, serialNumber);
   }
-};
-
-/**
- * @private
- * @param {number} index
- * @param {object} led
- */
-LedManager.prototype.resetLed = function(index, led)
-{
-  led.status = 'waiting';
-  led.serialNumber = null;
-
-  this.updateLed(index, led);
 };
 
 /**

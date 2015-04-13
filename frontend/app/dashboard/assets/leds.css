@@ -9,6 +9,17 @@
 .is-waitingForLeds .dashboard-leds {
   display: block;
 }
+.dashboard-leds > .dashboard-header > .btn {
+  margin-right: 19px;
+  padding: 0;
+  line-height: 1;
+  font-size: 24px;
+  float: right;
+}
+.dashboard-leds > .dashboard-header > .btn > kbd[data-hotkey="reset"] {
+  margin: 2px 0 0 4px;
+  font-size: 11px;
+}
 .dashboard-leds-list {
   margin: 0;
   padding: 0;

@@ -43,6 +43,7 @@ module.exports = function setUpProgrammerCommands(app, programmerModule)
       socket.on('programmer.continue', continueProcess);
       socket.on('programmer.reload', reload);
       socket.on('programmer.reset', reset);
+      socket.on('programmer.resetLeds', resetLeds);
       socket.on('programmer.printServiceTags', printServiceTags);
       socket.on('programmer.reconnectToProdLine', reconnectToProdLine);
     }
@@ -203,6 +204,14 @@ module.exports = function setUpProgrammerCommands(app, programmerModule)
     if (_.isFunction(reply))
     {
       programmerModule.reset(reply);
+    }
+  }
+
+  function resetLeds(reply)
+  {
+    if (_.isFunction(reply))
+    {
+      programmerModule.resetLeds(reply);
     }
   }
 

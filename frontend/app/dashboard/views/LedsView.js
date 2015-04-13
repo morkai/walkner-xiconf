@@ -6,6 +6,8 @@ define([
   'underscore',
   'jquery',
   'app/i18n',
+  'app/user',
+  'app/data/settings',
   'app/core/View',
   'app/dashboard/templates/leds',
   'app/dashboard/templates/led'
@@ -13,6 +15,8 @@ define([
   _,
   $,
   t,
+  user,
+  settings,
   View,
   ledsTemplate,
   ledTemplate
@@ -22,6 +26,37 @@ define([
   return View.extend({
 
     template: ledsTemplate,
+
+    localTopics: {
+      'hotkeys.reset': function()
+      {
+        this.$id('reset').click();
+      }
+    },
+
+    events: {
+      'click #-reset': function()
+      {
+        if (!this.model.get('waitingForLeds'))
+        {
+          return;
+        }
+
+        var $reset = this.$id('reset');
+
+        if ($reset.prop('disabled'))
+        {
+          return;
+        }
+
+        $reset.prop('disabled', true);
+
+        this.socket.emit('programmer.resetLeds', function()
+        {
+          $reset.prop('disabled', false);
+        });
+      }
+    },
 
     initialize: function()
     {
@@ -36,7 +71,9 @@ define([
       return {
         idPrefix: this.idPrefix,
         renderLed: ledTemplate,
-        leds: leds.map(this.serializeLed)
+        leds: leds.map(this.serializeLed),
+        resetHotkey: settings.get('hotkeys').reset || '?',
+        resetEnabled: user.isLocal()
       };
     },
 

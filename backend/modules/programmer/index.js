@@ -5,7 +5,7 @@
 'use strict';
 
 var fs = require('fs');
-var lodash = require('lodash');
+var _ = require('lodash');
 var setUpCommands = require('./commands');
 var setUpBlockage = require('./blockage');
 var setUpBarcodeScanner = require('./barcodeScanner');
@@ -206,6 +206,31 @@ exports.start = function startProgrammerModule(app, module)
     module.changeState();
   };
 
+  module.resetLeds = function(done)
+  {
+    if (!module.currentState.waitingForLeds)
+    {
+      return done(new Error('NOT_WAITING_FOR_LEDS'));
+    }
+
+    var leds = module.currentState.leds;
+
+    if (_.isEmpty(leds))
+    {
+      return done();
+    }
+
+    _.forEach(leds, function(led, i)
+    {
+      if (led.status !== 'waiting')
+      {
+        module.ledManager.resetLed(i, led);
+      }
+    });
+
+    setImmediate(done);
+  };
+
   module.reload = function(done)
   {
     var sql = "SELECT * FROM orders ORDER BY startedAt DESC LIMIT 1";
@@ -276,7 +301,7 @@ exports.start = function startProgrammerModule(app, module)
       return;
     }
 
-    lodash.merge(steps[stepIndex], stepProgress);
+    _.merge(steps[stepIndex], stepProgress);
 
     app.broker.publish('programmer.stepProgressed', {
       stepIndex: stepIndex,
