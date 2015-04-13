@@ -356,7 +356,7 @@ define([
           var hotkey = this.dataset.hotkey;
 
           page.$els.hotkeys[hotkey] = page.$els.hotkeys[hotkey]
-            ? page.$([this].concat(page.$els.hotkeys[hotkey][0]))
+            ? page.$([this].concat(page.$els.hotkeys[hotkey].get()))
             : page.$(this);
         });
       }
@@ -374,11 +374,11 @@ define([
 
         if (!hotkey)
         {
-          $hotkey.hide();
+          $hotkey.css('display', 'none');
         }
         else
         {
-          $hotkey.text(hotkey).show();
+          $hotkey.text(hotkey).css('display', '');
         }
       });
     },
