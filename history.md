@@ -1,6 +1,7 @@
-2.9.0 @ 2015-??-??
+2.9.0 @ 2015-04-13
 ==================
 
+  * Fixed the in progress serial number checks not being properly cancelled when the same LED board was scanned again.
   * Removed remaining references to the Source Code Pro font.
   * Changed Node.js to v0.12.2 x64 and updated all dependencies.
   * Changed the module start timeout from 3s to 6s.
@@ -8,8 +9,18 @@
     the remote input mode.
   * Changed the LED boards barcode scanning to recognize more formats. Previously, only `/=[0-9]{8}=[0-9]{12}/` was
     accepted. Now, `/.[0-9]{12}.[0-9]{5,11}/` or `/.[0-9]{5,11}.[0-9]{12}/`.
+  * Changed the Quantity field on the Programmer page to show at most 1 decimal place if the current quantity is not
+    an integer.
+  * Changed the programs to have a dynamic definition of steps (multiple steps of the same type can be used and in any
+    order).
   * Added an ability to pick the current order and 12NC using the background barcode scanner.
   * Added an ability to wait for a user action to continue the process after all LEDs were scanned successfully.
+  * Added a new setting: `solResetDelay` - a number of milliseconds to wait after the device reset before continuing
+    (previously hardcoded to 1000ms).
+  * Added a new program step type: `wait` - waits until the specified time passes (auto) or for a user action (manual)
+    before continuing the process.
+  * Added an ability to restart the application from the remote server.
+  * Added an ability to update the application from the remote server.
 
 2.8.3 @ 2015-04-01
 ==================
