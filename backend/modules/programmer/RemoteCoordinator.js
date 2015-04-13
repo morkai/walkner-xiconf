@@ -138,7 +138,7 @@ RemoteCoordinator.prototype.setUpSio = function()
 
   var remoteServer = this.settings.get('remoteServer');
 
-  if (_.isEmpty(remoteServer))
+  if (_.isEmpty(remoteServer) || _.isEmpty(this.settings.get('prodLine')))
   {
     return;
   }
@@ -170,7 +170,7 @@ RemoteCoordinator.prototype.setUpSio = function()
 
   sio.once('connect_error', function(err)
   {
-    programmer.debug("[remote] Failed to connect: %s", err.message);
+    programmer.debug("[remote] Failed to connect: %s", err.message || err);
   });
 
   sio.on('disconnect', function()
@@ -198,7 +198,7 @@ RemoteCoordinator.prototype.setUpSio = function()
 
   sio.on('reconnect_error', function(err)
   {
-    programmer.debug("[remote] Failed to reconnect: %s", err.message);
+    programmer.debug("[remote] Failed to reconnect: %s", err.message || err);
   });
 
   sio.on('error', function(err)
