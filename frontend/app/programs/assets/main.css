@@ -70,8 +70,7 @@
 .xiconfPrograms-step {
   display: flex;
   padding: 7px;
-  border: 1px solid #ccc;
-  border-top: 0;
+  border-bottom: 1px solid #ccc;
   background-color: #fff;
 }
 .xiconfPrograms-step-status {

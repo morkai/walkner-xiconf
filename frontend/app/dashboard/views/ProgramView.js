@@ -109,7 +109,7 @@ define([
       var scrollHeight = this.$id('container').prop('scrollHeight');
       var stepsHeight = $steps.outerHeight();
 
-      $steps.find('.programs-step:last-child').css('border-bottom-width', scrollHeight > stepsHeight ? '' : '0');
+      $steps.find('.xiconfPrograms-step:last-child').css('border-bottom-width', scrollHeight > stepsHeight ? '' : '0');
     },
 
     resize: function(width, height)
