@@ -159,7 +159,7 @@ exports.start = function startUpdaterModule(app, updaterModule)
         try
         {
           oldPackageJson = require(path.join(app.options.rootPath, '..', 'package.json'));
-          newPackageJson = require(path.join(updateDirPath, 'package.json'));
+          newPackageJson = findNewPackageJson(updateDirPath);
 
           if (newPackageJson.name !== oldPackageJson.name
             || !semver.gt(newPackageJson.version, oldPackageJson.version))
@@ -201,5 +201,17 @@ exports.start = function startUpdaterModule(app, updaterModule)
     {
       require(path.join(updateDirPath, 'install.js'))(app, updaterModule, packageJson);
     }, 1337 * 2);
+  }
+
+  function findNewPackageJson(updateDirPath)
+  {
+    try
+    {
+      return require(path.join(updateDirPath, 'data', 'package.json'));
+    }
+    catch (err)
+    {
+      return require(path.join(updateDirPath, 'package.json'));
+    }
   }
 };
