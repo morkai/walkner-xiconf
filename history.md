@@ -1,3 +1,15 @@
+2.10.0 @ 2015-04-13
+===================
+
+  * Fixed the program steps on the selected program list having an extra left and bottom border.
+  * Fixed a bug that caused incorrect hotkey labels for hotkeys that appear on the screen more than twice.
+  * Removed update checking after the application start. Updates can now only be started from the remote server.
+  * Added a 3s delay between scans of the same LED board.
+  * Added an automatic addition of the scanned LED boards from the last failed programming result for the same order.
+    This feature kicks in if after 2 seconds of waiting for LEDs, no LED is scanned.
+  * Added an action to reset all scanned LED boards at once.
+  * Added an ability to configure the application from the remote server.
+
 2.9.1 @ 2015-04-13
 ==================
 
