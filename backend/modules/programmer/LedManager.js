@@ -196,20 +196,15 @@ LedManager.prototype.checkLed = function(index, led, orderNo, nc12, serialNumber
   this.timers[index] = timer;
 
   var ledManager = this;
-  var reqData = {
-    orderNo: orderNo,
-    nc12: nc12,
-    serialNumber: serialNumber
-  };
 
-  this.remoteCoordinator.checkSerialNumber(reqData, function(err, xiconfOrder)
+  setTimeout(function(ledManager, callback)
   {
     if (!callback.cancelled)
     {
       ledManager.cleanUpIndex(index);
-      callback(err, xiconfOrder);
+      callback();
     }
-  });
+  }, 333, ledManager, callback);
 };
 
 /**
