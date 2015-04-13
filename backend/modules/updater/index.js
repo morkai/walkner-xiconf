@@ -9,7 +9,7 @@ var path = require('path');
 var url = require('url');
 var fs = require('fs');
 var exec = require('child_process').exec;
-var format = require('util').format;
+var util = require('util');
 var _ = require('lodash');
 var request = require('request');
 var step = require('h5.step');
@@ -122,7 +122,7 @@ exports.start = function startUpdaterModule(app, updaterModule)
       {
         updaterModule.debug("Removing old update directory...");
 
-        var cmd = format(
+        var cmd = util.format(
           'RD /S /Q "%s"',
           updateDirPath
         );
@@ -133,7 +133,7 @@ exports.start = function startUpdaterModule(app, updaterModule)
       {
         updaterModule.debug("Unzipping the update archive...");
 
-        var cmd = format(
+        var cmd = util.format(
           '"%s" "%s" -d "%s"',
           updaterModule.config.unzipExe,
           updateZipPath,
@@ -199,7 +199,20 @@ exports.start = function startUpdaterModule(app, updaterModule)
 
     setTimeout(function()
     {
-      require(path.join(updateDirPath, 'install.js'))(app, updaterModule, packageJson);
+      try
+      {
+        require(path.join(updateDirPath, 'install.js'))(app, updaterModule, packageJson);
+      }
+      catch (err)
+      {
+        updaterModule.error(
+          "Failed to install update: %s\nSTDERR:\n%s\nSTDOUT:\n%s", err.message || err,
+          err.stderr,
+          err.stdout
+        );
+
+        process.exit(1);
+      }
     }, 1337 * 2);
   }
 
