@@ -33,6 +33,49 @@ exports.start = function startProgrammerModule(app, module, done)
     return new HistoryEntry(sqlite3Module.db, app.broker.sandbox(), app[module.config.settingsId]);
   };
 
+  module.findLedsFromRecentFailure = function(orderNo, nc12, done)
+  {
+    var ids = [];
+
+    for (var i = 0; i < this.recent.length; ++i)
+    {
+      var recentHistoryEntry = this.recent[i];
+
+      if (recentHistoryEntry.result !== 'failure'
+        || recentHistoryEntry.no !== orderNo
+        || recentHistoryEntry.nc12 !== nc12)
+      {
+        break;
+      }
+
+      if (recentHistoryEntry.errorCode !== 'CANCELLED')
+      {
+        ids.push("'" + recentHistoryEntry._id + "'");
+      }
+    }
+
+    if (!ids.length)
+    {
+      return done(null, ids);
+    }
+
+    var sql = "SELECT e.leds\
+               FROM historyEntries e\
+               WHERE _id IN(" + ids + ") AND e.leds IS NOT NULL\
+               ORDER BY e.startedAt DESC\
+               LIMIT 1";
+
+    sqlite3Module.db.get(sql, {}, function(err, row)
+    {
+      if (err)
+      {
+        return done(err);
+      }
+
+      return done(null, row.leds ? JSON.parse(row.leds) : []);
+    });
+  };
+
   app.onModuleReady(module.config.expressId, setUpRoutes.bind(null, app, module));
 
   app.onModuleReady(module.config.settingsId, setUpRemoteExport.bind(null, app, module));
@@ -74,6 +117,7 @@ exports.start = function startProgrammerModule(app, module, done)
       finishedAt: historyEntry.finishedAt,
       counter: historyEntry.counter,
       result: historyEntry.result,
+      errorCode: historyEntry.errorCode,
       featureFileName: historyEntry.featureFileName
     });
 

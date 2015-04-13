@@ -18,6 +18,7 @@ module.exports = function program(app, programmerModule, data, done)
 {
   var fake = app.options.env !== 'production';
   var settings = app[programmerModule.config.settingsId];
+  var history = app[programmerModule.config.historyId];
   var currentState = programmerModule.currentState;
   var remoteCoordinator = programmerModule.remoteCoordinator;
 
@@ -684,9 +685,13 @@ module.exports = function program(app, programmerModule, data, done)
     var next = this.next();
     var cancelSub;
     var waitingSub;
+    var lastLedsTimer = setTimeout(addLedsFromLastResult, 2000);
 
     cancelSub = app.broker.subscribe('programmer.cancelled', function()
     {
+      clearTimeout(lastLedsTimer);
+      lastLedsTimer = null;
+
       waitingSub.cancel();
       waitingSub = null;
 
@@ -697,6 +702,9 @@ module.exports = function program(app, programmerModule, data, done)
     {
       if (changes.waitingForLeds === false)
       {
+        clearTimeout(lastLedsTimer);
+        lastLedsTimer = null;
+
         waitingSub.cancel();
         waitingSub = null;
 
@@ -706,6 +714,43 @@ module.exports = function program(app, programmerModule, data, done)
         setImmediate(next);
       }
     });
+
+    function addLedsFromLastResult()
+    {
+      history.findLedsFromRecentFailure(currentState.order.no, currentState.nc12, function(err, leds)
+      {
+        if (lastLedsTimer === null)
+        {
+          return;
+        }
+
+        lastLedsTimer = null;
+
+        if (_.any(currentState.leds, function(led) { return led.status !== 'waiting'; }))
+        {
+          return;
+        }
+
+        if (err)
+        {
+          return programmerModule.error("Failed to find LEDs from recent failure: %s", err.message);
+        }
+
+        leds = _.filter(leds, function(led) { return led.status === 'checked' && !_.isEmpty(led.serialNumber); });
+
+        if (!leds.length)
+        {
+          return;
+        }
+
+        programmerModule.log('ADDING_LAST_LEDS', {ledCount: leds.length});
+
+        _.forEach(leds, function(led)
+        {
+          programmerModule.checkSerialNumber(currentState.order.no, led.nc12, led.serialNumber);
+        });
+      });
+    }
   }
 
   function waitForContinueStep()
