@@ -217,6 +217,7 @@ RemoteCoordinator.prototype.setUpSio = function()
   sio.on('xiconf.leaderUpdated', this.onLeaderUpdated.bind(this));
   sio.on('xiconf.restart', this.onRestart.bind(this));
   sio.on('xiconf.update', this.onUpdate.bind(this));
+  sio.on('xiconf.configure', this.onConfigure.bind(this));
 
   sio.open();
 
@@ -438,4 +439,19 @@ RemoteCoordinator.prototype.onRestart = function()
 RemoteCoordinator.prototype.onUpdate = function()
 {
   this.broker.publish('updater.checkRequested');
+};
+
+/**
+ * @private
+ */
+RemoteCoordinator.prototype.onConfigure = function(settings, reply)
+{
+  if (this.programmer.currentState.isInProgress())
+  {
+    this.broker.subscribe('programmer.finished', this.onConfigure.bind(this, settings)).setLimit(1);
+  }
+  else
+  {
+    this.settings.import(settings, reply, false, true);
+  }
 };

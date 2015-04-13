@@ -62,11 +62,11 @@ exports.start = function startSettingsModule(app, module, done)
     return copy;
   };
 
-  module.import = function(newSettings, done, allowEmpty)
+  module.import = function(newSettings, done, allowEmpty, noPassword)
   {
     if (settings.password)
     {
-      if (newSettings.password !== settings.password)
+      if (newSettings.password !== settings.password && noPassword !== true)
       {
         return done(new Error('PASSWORD'));
       }
