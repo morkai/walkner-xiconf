@@ -7,6 +7,7 @@
 var _ = require('lodash');
 
 var REMOTE_CHECK_TIMEOUT_DELAY = 10 * 1000;
+var CHECK_LOCK_DURATION = 3000;
 
 module.exports = LedManager;
 
@@ -19,7 +20,9 @@ function LedManager(broker, programmer)
 
   this.timers = {};
   this.callbacks = {};
+  this.checkLocks = {};
 
+  broker.subscribe('programmer.started', this.cleanUpCheckLocks.bind(this));
   broker.subscribe('programmer.finished', this.cleanUp.bind(this));
 }
 
@@ -39,6 +42,16 @@ LedManager.prototype.check = function(orderNo, nc12, serialNumber)
 
   if (index !== -1)
   {
+    var checkTime = this.checkLocks[serialNumber];
+    var now = Date.now();
+
+    if (checkTime && (now - CHECK_LOCK_DURATION) < checkTime)
+    {
+      return;
+    }
+
+    this.checkLocks[serialNumber] = now;
+
     this.checkIndex(index, orderNo, nc12, serialNumber);
   }
 };
@@ -302,6 +315,14 @@ LedManager.prototype.cleanUp = function()
 
   this.timers = {};
   this.callbacks = {};
+};
+
+/**
+ * @private
+ */
+LedManager.prototype.cleanUpCheckLocks = function()
+{
+  this.checkLocks = {};
 };
 
 /**

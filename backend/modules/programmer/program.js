@@ -62,6 +62,8 @@ module.exports = function program(app, programmerModule, data, done)
 
   currentState.reset(data.orderNo, data.quantity, data.nc12);
 
+  app.broker.publish('programmer.started');
+
   programmerModule.changeState();
 
   programmerModule.OVERALL_SETUP_PROGRESS = currentState.waitingForLeds ? 25 : 20;
