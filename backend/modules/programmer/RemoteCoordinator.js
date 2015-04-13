@@ -343,7 +343,8 @@ RemoteCoordinator.prototype.onSettingsChanged = function(changes)
 {
   if (changes.remoteServer !== undefined
     || changes.id !== undefined
-    || changes.prodLine !== undefined)
+    || changes.prodLine !== undefined
+    || changes.licenseInfo !== undefined)
   {
     this.setUpSio();
   }
