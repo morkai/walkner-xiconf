@@ -1,0 +1,8 @@
+{
+  "root": {
+    "title": "Application update",
+    "p1": "The application is currently being updated from version {fromVersion} to version {toVersion}. Please wait...",
+    "p2": "In case of any problems, notify the leader!"
+  },
+  "pl": true
+}

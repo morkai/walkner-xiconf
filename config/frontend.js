@@ -20,7 +20,8 @@ exports.modules = [
   'pubsub',
   'express',
   'httpServer',
-  'sio'
+  'sio',
+  'updater'
 ];
 
 exports.sqlite3 = {
@@ -168,4 +169,8 @@ exports.express = {
     t: 'app/i18n'
   },
   title: exports.id
+};
+
+exports.updater = {
+
 };

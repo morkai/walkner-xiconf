@@ -350,6 +350,11 @@ exports.start = function startProgrammerModule(app, module)
 
   app.broker.subscribe('app.started', readLastMode);
 
+  app.broker.subscribe('updater.updating', function(message)
+  {
+    module.changeState({updating: message});
+  });
+
   app.broker.subscribe('settings.changed', function(changes)
   {
     if (changes.testingEnabled === 0)

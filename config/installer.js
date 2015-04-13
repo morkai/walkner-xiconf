@@ -11,6 +11,7 @@ exports.lptIo = 'C:/tools/LptIo';
 exports.spool = 'C:/tools/spool/spool.exe';
 exports.motoBarScan = 'C:/tools/MotoBarScan';
 exports.stdRedir = 'C:/tools/StdRedir.exe';
+exports.unzip = 'C:/tools/unzip.exe';
 exports.serverPort = 1337;
 
 exports.libeay32 = null;

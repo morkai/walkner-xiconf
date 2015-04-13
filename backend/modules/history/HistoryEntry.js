@@ -29,6 +29,7 @@ function HistoryEntry(db, broker, settings)
   this.selectedNc12 = null;
   this.waitingForLeds = false;
   this.waitingForContinue = null;
+  this.updating = null;
 
   this.clear();
 }
@@ -69,7 +70,8 @@ HistoryEntry.prototype.toJSON = function()
     selectedOrderNo: this.selectedOrderNo,
     selectedNc12: this.selectedNc12,
     waitingForLeds: this.waitingForLeds,
-    waitingForContinue: this.waitingForContinue
+    waitingForContinue: this.waitingForContinue,
+    updating: this.updating
   };
 };
 

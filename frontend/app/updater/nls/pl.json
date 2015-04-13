@@ -1,0 +1,5 @@
+{
+  "title": "Aktualizacja aplikacji",
+  "p1": "Aplikacja jest aktualizowana z wersji {fromVersion} do wersji {toVersion}. Proszę czekać...",
+  "p2": "W razie problemów powiadom lidera!"
+}

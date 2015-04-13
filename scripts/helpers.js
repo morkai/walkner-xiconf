@@ -144,7 +144,11 @@ exports.copy = {
       },
       {
         src: installerConfig.libeay32,
-        dest: DEST_APP + '/node_modules/ursa/bin/libeay32.dll'
+        dest: DEST_APP + '/node_modules/ursa/lib/libeay32.dll'
+      },
+      {
+        src: installerConfig.unzip,
+        dest: DEST_INSTALLER + '/bin/unzip.exe'
       },
       {
         src: installerConfig.stdRedir,

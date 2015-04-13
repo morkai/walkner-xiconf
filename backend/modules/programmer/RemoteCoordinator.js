@@ -216,6 +216,7 @@ RemoteCoordinator.prototype.setUpSio = function()
   sio.on('xiconf.remoteDataUpdated', this.onRemoteDataUpdated.bind(this));
   sio.on('xiconf.leaderUpdated', this.onLeaderUpdated.bind(this));
   sio.on('xiconf.restart', this.onRestart.bind(this));
+  sio.on('xiconf.update', this.onUpdate.bind(this));
 
   sio.open();
 
@@ -429,4 +430,12 @@ RemoteCoordinator.prototype.onRestart = function()
   {
     process.exit();
   }
+};
+
+/**
+ * @private
+ */
+RemoteCoordinator.prototype.onUpdate = function()
+{
+  this.broker.publish('updater.checkRequested');
 };

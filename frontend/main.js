@@ -257,6 +257,7 @@
       'app/data/currentState',
       'app/data/settings',
       'app/data/hotkeys',
+      'app/updater/index',
       'app/backdrop',
       'app/time',
       'app/routes',

@@ -7,6 +7,7 @@
 @import url("../app/programs/assets/main.css");
 @import url("../app/history/assets/main.css");
 @import url("../app/settings/assets/main.css");
+@import url("../app/updater/assets/main.css");
 
 #app-loading {
   position: absolute;

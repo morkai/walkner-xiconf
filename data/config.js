@@ -28,3 +28,5 @@ config.settings.defaults.programmerFile = path.join(
   process.env['ProgramFiles(x86)'] || process.env.ProgramFiles,
   'Philips MultiOne Workflow\\MultiOneWorkflow.exe'
 );
+
+config.updater.unzipExe = path.join(BIN_PATH, 'unzip.exe');

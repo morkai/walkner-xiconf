@@ -1,0 +1,12 @@
+.updater-updating {
+  font-size: 1.4em;
+  padding: 40px;
+}
+.updater-updating > h1 {
+  margin: 0;
+  line-height: 1;
+}
+.updater-updating > .progress {
+  height: 60px;
+  margin: 20px 0;
+}
