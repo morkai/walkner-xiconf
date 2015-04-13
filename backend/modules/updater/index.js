@@ -29,7 +29,6 @@ exports.start = function startUpdaterModule(app, updaterModule)
 
   app.broker.subscribe('programmer.stateChanged', onProgrammerStateChanged);
   app.broker.subscribe('updater.checkRequested', update);
-  app.broker.subscribe('app.started', update).setLimit(1);
 
   function onProgrammerStateChanged(message)
   {
