@@ -1,3 +1,8 @@
+2.9.1 @ 2015-04-13
+==================
+
+  * Removed the remote serial number uniqueness check.
+
 2.9.0 @ 2015-04-13
 ==================
 
