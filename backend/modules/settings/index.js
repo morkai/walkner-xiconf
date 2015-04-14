@@ -243,7 +243,7 @@ exports.start = function startSettingsModule(app, module, done)
   {
     var cmd = format('"%s" /f dummy /w dummy /c Halt', programmerFile || module.get('programmerFile'));
     var options = {
-      timeout: 1337
+      timeout: 5000
     };
 
     exec(cmd, options, function(err, stdout)
