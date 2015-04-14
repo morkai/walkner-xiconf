@@ -438,6 +438,15 @@ module.exports = function setUpRemoteExport(app, historyModule)
     else
     {
       historyModule.info("Finished exporting data to the remote server!");
+
+      var licenseInfo = settings.get('licenseInfo');
+
+      if (licenseInfo.error === 'UNKNOWN_LICENSE' || licenseInfo.error === 'DUPLICATE_LICENSE')
+      {
+        licenseInfo.error = null;
+
+        app.broker.publish('settings.changed', {licenseInfo: licenseInfo});
+      }
     }
 
     scheduleNextSync(!!err);
