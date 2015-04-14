@@ -59,9 +59,11 @@ RemoteCoordinator.prototype.connectToProdLine = function(forceReconnect)
     return;
   }
 
+  var licenseInfo = this.settings.get('licenseInfo');
   var data = {
     srcId: srcId,
-    licenseId: this.settings.get('licenseInfo').uuid,
+    licenseId: licenseInfo.uuid,
+    licenseError: licenseInfo.error,
     prodLineId: prodLineId,
     appVersion: this.appVersion,
     mowVersion: this.settings.get('multiOneWorkflowVersion'),
