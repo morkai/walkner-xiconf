@@ -1,3 +1,14 @@
+2.10.1 @ 2015-04-14
+===================
+
+  * Changed the module start timeout from 5s to 10s.
+  * Changed the MultiOne Workflow version read timeout from 1337ms to 5s.
+  * Changed the history export to reset the `UNKNOWN_LICENSE` and `DUPLICATE_LICENSE` errors if the export succeeded.
+  * Changed the remote connection coordinator to also send the current license error when connecting to the remote
+    server.
+  * Added a new setting: Barcode scanner beeping - determines a beep sound the background barcode scanner should play
+    when the LED board check fails.
+
 2.10.0 @ 2015-04-13
 ===================
 
