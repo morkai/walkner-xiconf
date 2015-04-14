@@ -30,9 +30,15 @@ function LedManager(broker, programmer)
  * @param {string} orderNo
  * @param {string} nc12
  * @param {string} serialNumber
+ * @param {number} [scannerId]
  */
-LedManager.prototype.check = function(orderNo, nc12, serialNumber)
+LedManager.prototype.check = function(orderNo, nc12, serialNumber, scannerId)
 {
+  if (!scannerId)
+  {
+    scannerId = 0;
+  }
+
   if (!this.currentState.waitingForLeds)
   {
     return;
@@ -47,12 +53,18 @@ LedManager.prototype.check = function(orderNo, nc12, serialNumber)
 
     if (checkTime && (now - CHECK_LOCK_DURATION) < checkTime)
     {
+      this.publishCheckFailure(index, scannerId, 'LOCKED');
+
       return;
     }
 
     this.checkLocks[serialNumber] = now;
 
-    this.checkIndex(index, orderNo, nc12, serialNumber);
+    this.checkIndex(index, orderNo, nc12, serialNumber, scannerId);
+  }
+  else
+  {
+    this.publishCheckFailure(index, scannerId, 'NOT_FOUND');
   }
 };
 
@@ -66,6 +78,10 @@ LedManager.prototype.resetLed = function(index, led)
   led.serialNumber = null;
 
   this.updateLed(index, led);
+
+  this.broker.publish('programmer.ledManager.reset', {
+    ledIndex: index
+  });
 };
 
 /**
@@ -147,8 +163,9 @@ LedManager.prototype.findIndex = function(nc12, serialNumber)
  * @param {string} orderNo
  * @param {string} nc12
  * @param {string} serialNumber
+ * @param {string} serialNumber
  */
-LedManager.prototype.checkIndex = function(index, orderNo, nc12, serialNumber)
+LedManager.prototype.checkIndex = function(index, orderNo, nc12, serialNumber, scannerId)
 {
   this.cleanUpIndex(index);
 
@@ -160,7 +177,7 @@ LedManager.prototype.checkIndex = function(index, orderNo, nc12, serialNumber)
   }
   else
   {
-    this.checkLed(index, led, orderNo, nc12, serialNumber);
+    this.checkLed(index, led, orderNo, nc12, serialNumber, scannerId);
   }
 };
 
@@ -171,8 +188,9 @@ LedManager.prototype.checkIndex = function(index, orderNo, nc12, serialNumber)
  * @param {string} orderNo
  * @param {string} nc12
  * @param {string} serialNumber
+ * @param {number} scannerId
  */
-LedManager.prototype.checkLed = function(index, led, orderNo, nc12, serialNumber)
+LedManager.prototype.checkLed = function(index, led, orderNo, nc12, serialNumber, scannerId)
 {
   led.status = null;
   led.serialNumber = serialNumber;
@@ -194,15 +212,18 @@ LedManager.prototype.checkLed = function(index, led, orderNo, nc12, serialNumber
 
   if (led.status !== null)
   {
-    return this.updateLed(index, led);
+    this.updateLed(index, led);
+    this.publishCheckFailure(index, scannerId, led.status.message);
+
+    return;
   }
 
   led.status = 'checking';
 
   this.updateLed(index, led);
 
-  var callback = this.onChecked.bind(this, index, led);
-  var timer = setTimeout(this.onTimeout.bind(this, index, led), REMOTE_CHECK_TIMEOUT_DELAY);
+  var callback = this.onChecked.bind(this, index, led, scannerId);
+  var timer = setTimeout(this.onTimeout.bind(this, index, led, scannerId), REMOTE_CHECK_TIMEOUT_DELAY);
 
   this.callbacks[index] = callback;
   this.timers[index] = timer;
@@ -216,17 +237,18 @@ LedManager.prototype.checkLed = function(index, led, orderNo, nc12, serialNumber
       ledManager.cleanUpIndex(index);
       callback();
     }
-  }, 333, ledManager, callback);
+  }, 1, ledManager, callback);
 };
 
 /**
  * @private
  * @param {number} index
  * @param {object} led
+ * @param {number} scannerId
  * @param {object|null} err
  * @param {object|null} xiconfOrder
  */
-LedManager.prototype.onChecked = function(index, led, err, xiconfOrder)
+LedManager.prototype.onChecked = function(index, led, scannerId, err, xiconfOrder)
 {
   if (err)
   {
@@ -259,7 +281,16 @@ LedManager.prototype.onChecked = function(index, led, err, xiconfOrder)
 
   if (led.status === 'checked')
   {
+    this.broker.publish('programmer.ledManager.checked', {
+      ledIndex: index,
+      scannerId: scannerId
+    });
+
     this.checkAllLeds();
+  }
+  else
+  {
+    this.publishCheckFailure(index, scannerId, led.status.message);
   }
 };
 
@@ -267,8 +298,9 @@ LedManager.prototype.onChecked = function(index, led, err, xiconfOrder)
  * @private
  * @param {number} index
  * @param {object} led
+ * @param {number} scannerId
  */
-LedManager.prototype.onTimeout = function(index, led)
+LedManager.prototype.onTimeout = function(index, led, scannerId)
 {
   this.cleanUpIndex(index);
 
@@ -277,6 +309,7 @@ LedManager.prototype.onTimeout = function(index, led)
   };
 
   this.updateLed(index, led);
+  this.publishCheckFailure(index, scannerId, led.status.message);
 };
 
 /**
@@ -362,5 +395,19 @@ LedManager.prototype.updateLed = function(index, data)
 
   leds[index] = data;
 
-  this.broker.publish('programmer.ledUpdated', {index: index, data: data});
+  this.broker.publish('programmer.ledManager.updated', {index: index, data: data});
+};
+
+/**
+ * @param {number} ledIndex
+ * @param {number} scannerId
+ * @param {string} reason
+ */
+LedManager.prototype.publishCheckFailure = function(ledIndex, scannerId, reason)
+{
+  this.broker.publish('programmer.ledManager.checkFailed', {
+    ledIndex: ledIndex,
+    scannerId: scannerId,
+    reason: reason
+  });
 };

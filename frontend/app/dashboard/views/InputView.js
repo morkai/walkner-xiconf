@@ -200,11 +200,11 @@ define([
       return $el && !$el.prop('disabled') && $el.is(':visible');
     },
 
-    checkSerialNumber: function(nc12, serialNumber)
+    checkSerialNumber: function(nc12, serialNumber, scannerId)
     {
       if (this.model.get('waitingForLeds'))
       {
-        this.socket.emit('programmer.checkSerialNumber', this.$els.orderNo.val(), nc12, serialNumber);
+        this.socket.emit('programmer.checkSerialNumber', this.$els.orderNo.val(), nc12, serialNumber, scannerId);
       }
     },
 
@@ -940,7 +940,7 @@ define([
       {
         var led = leds[i];
 
-        this.checkSerialNumber(led.nc12, led.serialNumber);
+        this.checkSerialNumber(led.nc12, led.serialNumber, led.scannerId);
       }
     },
 
@@ -978,7 +978,7 @@ define([
       {
         if (/(.[0-9]{12}.[0-9]{5,11}|.[0-9]{5,11}.[0-9]{12})/.test(message.value))
         {
-          this.handleLedCommand(message.value);
+          this.handleLedCommand(message.value, message.scannerId);
         }
       }
       else if (/^[0-9]{9}-[0-9]{3}$/.test(message.value))
@@ -991,7 +991,7 @@ define([
       }
     },
 
-    handleLedCommand: function(led)
+    handleLedCommand: function(led, scannerId)
     {
       var matches = led.match(/.([0-9]{12}).([0-9]{5,11})/);
       var nc12;
@@ -1017,11 +1017,11 @@ define([
 
       if (this.model.get('waitingForLeds'))
       {
-        this.checkSerialNumber(nc12, serialNumber);
+        this.checkSerialNumber(nc12, serialNumber, scannerId);
       }
       else
       {
-        ledBuffer.add(nc12, serialNumber);
+        ledBuffer.add(nc12, serialNumber, scannerId);
 
         this.start();
       }

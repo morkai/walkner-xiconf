@@ -32,9 +32,13 @@ define([
   pubsub.subscribe('programmer.finished', clearBuffer);
 
   return {
-    add: function(nc12, serialNumber)
+    add: function(nc12, serialNumber, scannerId)
     {
-      ledBuffer.push({nc12: nc12, serialNumber: serialNumber});
+      ledBuffer.push({
+        nc12: nc12,
+        serialNumber: serialNumber,
+        scannerId: scannerId || 0
+      });
 
       scheduleBufferClear();
     },

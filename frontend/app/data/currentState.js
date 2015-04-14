@@ -21,7 +21,7 @@ define([
     currentState.pushLogEntry(logEntry);
   });
 
-  socket.on('programmer.ledUpdated', function(message)
+  socket.on('programmer.ledManager.updated', function(message)
   {
     currentState.updateLed(message.index, message.data);
   });

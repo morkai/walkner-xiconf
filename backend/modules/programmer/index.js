@@ -358,9 +358,9 @@ exports.start = function startProgrammerModule(app, module)
     );
   };
 
-  module.checkSerialNumber = function(orderNo, nc12, serialNumber)
+  module.checkSerialNumber = function(orderNo, nc12, serialNumber, scannerId)
   {
-    module.ledManager.check(orderNo, nc12, serialNumber);
+    module.ledManager.check(orderNo, nc12, serialNumber, scannerId);
   };
 
   setUpBlockage(app, module);

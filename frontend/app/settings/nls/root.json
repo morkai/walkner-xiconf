@@ -135,6 +135,8 @@
     "setting:bgScanner": "Barcode scanner mode",
     "setting:bgScanner:on": "Server-side",
     "setting:bgScanner:off": "Client-side",
+    "setting:bgScannerBeep": "Barcode scanner beeping",
+    "setting:bgScannerBeep:off": "Disabled",
     "setting:ledsEnabled": "LED boards checking",
     "setting:ledsEnabled:off": "Disabled",
     "setting:ledsEnabled:auto": "Auto",

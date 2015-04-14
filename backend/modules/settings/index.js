@@ -299,6 +299,7 @@ exports.start = function startSettingsModule(app, module, done)
     validateNumericSetting(rawSettings, newSettings, 'testingMaxVoltage', 0.1, 99.9);
     validateNumericSetting(rawSettings, newSettings, 'testingCurrent', 0.01, 10);
     validateNumericSetting(rawSettings, newSettings, 'testingModbusPort', 1, 65535);
+    validateNumericSetting(rawSettings, newSettings, 'bgScannerBeep', -1, 26);
     validateEnum(rawSettings, newSettings, 'solReset', Number, [0, 1]);
     validateEnum(rawSettings, newSettings, 'backupPath', Number, [1, 2]);
     validateEnum(rawSettings, newSettings, 'orders', String, ['disabled', 'optional', 'required']);

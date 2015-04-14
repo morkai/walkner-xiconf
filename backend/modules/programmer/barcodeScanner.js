@@ -4,6 +4,7 @@
 
 'use strict';
 
+var format = require('util').format;
 var spawn = require('child_process').spawn;
 
 module.exports = function setUpBarcodeScanner(app, programmerModule)
@@ -18,6 +19,28 @@ module.exports = function setUpBarcodeScanner(app, programmerModule)
   app.broker.subscribe('settings.changed', toggleMotoBarScan).setFilter(function(changes)
   {
     return changes.bgScanner !== undefined;
+  });
+
+  app.broker.subscribe('programmer.ledManager.checkFailed', function(message)
+  {
+    var scannerId = message.scannerId;
+
+    if (!scannerId || !motoBarScan)
+    {
+      return;
+    }
+
+    var bgScannerBeep = settings.get('bgScannerBeep');
+
+    if (bgScannerBeep >= 0)
+    {
+      motoBarScan.stdin.write(format(
+        'LED %d RED 1\r\nBEEP %d %d\r\n',
+        scannerId,
+        scannerId,
+        bgScannerBeep
+      ));
+    }
   });
 
   function toggleMotoBarScan()
@@ -87,9 +110,16 @@ module.exports = function setUpBarcodeScanner(app, programmerModule)
 
       while ((eolIndex = buffer.indexOf('\r\n')) !== -1)
       {
-        var barcodeValue = buffer.substr(0, eolIndex);
+        var scannedValue = buffer.substr(0, eolIndex);
+        var matches = scannedValue.match(/^BARCODE ([0-9]+) (.*?)$/);
 
-        app.broker.publish('programmer.barcodeScanned', {value: barcodeValue});
+        if (matches !== null)
+        {
+          app.broker.publish('programmer.barcodeScanned', {
+            scannerId: parseInt(matches[1], 10),
+            value: matches[2]
+          });
+        }
 
         buffer = buffer.substr(eolIndex + 2);
       }

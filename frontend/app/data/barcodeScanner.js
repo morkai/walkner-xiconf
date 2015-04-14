@@ -33,6 +33,7 @@ define([
           remote: true,
           local: false,
           value: message.value,
+          scannerId: message.scannerId,
           event: null
         });
       }
@@ -101,6 +102,7 @@ define([
         remote: false,
         local: true,
         value: commandBuffer,
+        scannerId: 0,
         event: e
       });
     }

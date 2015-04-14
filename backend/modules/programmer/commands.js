@@ -15,7 +15,7 @@ module.exports = function setUpProgrammerCommands(app, programmerModule)
     'programmer.stateChanged',
     'programmer.logged',
     'programmer.stepProgressed',
-    'programmer.ledUpdated'
+    'programmer.ledManager.updated'
   ].forEach(function(topic)
   {
     app.broker.subscribe(topic, function(message)
@@ -104,13 +104,18 @@ module.exports = function setUpProgrammerCommands(app, programmerModule)
     }
   }
 
-  function checkSerialNumber(orderNo, nc12, serialNumber)
+  function checkSerialNumber(orderNo, nc12, serialNumber, scannerId)
   {
     if (_.isString(orderNo) && /^[0-9]{1,9}$/.test(orderNo)
       && _.isString(nc12) && /^[0-9]{12}$/.test(nc12)
       && _.isString(serialNumber) && /^[0-9]+$/.test(serialNumber))
     {
-      programmerModule.checkSerialNumber(orderNo, nc12, serialNumber);
+      programmerModule.checkSerialNumber(
+        orderNo,
+        nc12,
+        serialNumber,
+        _.isNumber(scannerId) && scannerId > 0 ? scannerId : 0
+      );
     }
   }
 
