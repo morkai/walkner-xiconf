@@ -32,9 +32,9 @@ exports.start = function startUpdaterModule(app, updaterModule)
 
   function onProgrammerStateChanged(message)
   {
-    if (message.isInProgress !== undefined)
+    if (message.inProgress !== undefined)
     {
-      isProgrammingInProgress = message.isInProgress;
+      isProgrammingInProgress = message.inProgress;
     }
   }
 
