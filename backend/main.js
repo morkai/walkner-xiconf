@@ -52,7 +52,7 @@ var app = {
     startTime: startTime,
     env: process.env.NODE_ENV,
     rootPath: __dirname,
-    moduleStartTimeout: process.env.NODE_ENV === 'production' ? 6000 : 3000
+    moduleStartTimeout: process.env.NODE_ENV === 'production' ? 10000 : 3000
   }
 };
 
