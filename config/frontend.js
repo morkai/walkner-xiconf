@@ -118,7 +118,8 @@ exports.settings = {
     serviceTagInLocalMode: 'optional',
     protectInputMode: 1,
     bgScanner: 0,
-    bgScannerBeep: -1,
+    bgScannerBeepBad: -1,
+    bgScannerBeepGood: -1,
     ledsEnabled: 0,
     hotkeys: {
       focusOrderNo: 'Q',

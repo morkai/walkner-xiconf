@@ -30,12 +30,34 @@ module.exports = function setUpBarcodeScanner(app, programmerModule)
       return;
     }
 
-    var bgScannerBeep = settings.get('bgScannerBeep');
+    var bgScannerBeep = settings.get('bgScannerBeepBad');
 
     if (bgScannerBeep >= 0)
     {
       motoBarScan.stdin.write(format(
         'LED %d RED 1\r\nBEEP %d %d\r\n',
+        scannerId,
+        scannerId,
+        bgScannerBeep
+      ));
+    }
+  });
+
+  app.broker.subscribe('programmer.ledManager.checked', function(message)
+  {
+    var scannerId = message.scannerId;
+
+    if (!scannerId || !motoBarScan)
+    {
+      return;
+    }
+
+    var bgScannerBeep = settings.get('bgScannerBeepGood');
+
+    if (bgScannerBeep >= 0)
+    {
+      motoBarScan.stdin.write(format(
+        'LED %d GREEN 1\r\nBEEP %d %d\r\n',
         scannerId,
         scannerId,
         bgScannerBeep
