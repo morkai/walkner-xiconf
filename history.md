@@ -1,3 +1,11 @@
+2.10.2 @ 2015-04-15
+===================
+
+  * Fixed the update being installed while programming is in progress.
+  * Changed the Barcode scanner beeping setting to Barcode scanner bad beep.
+  * Added a new setting: Barcode scanner good beep - determines a beep sound the background barcode scanner should play
+    when the LED board check succeeds.
+
 2.10.1 @ 2015-04-14
 ===================
 
