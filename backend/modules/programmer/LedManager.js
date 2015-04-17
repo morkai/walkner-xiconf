@@ -163,7 +163,7 @@ LedManager.prototype.findIndex = function(nc12, serialNumber)
  * @param {string} orderNo
  * @param {string} nc12
  * @param {string} serialNumber
- * @param {string} serialNumber
+ * @param {number} scannerId
  */
 LedManager.prototype.checkIndex = function(index, orderNo, nc12, serialNumber, scannerId)
 {
@@ -354,7 +354,16 @@ LedManager.prototype.cleanUp = function()
  */
 LedManager.prototype.cleanUpCheckLocks = function()
 {
-  this.checkLocks = {};
+  var checkLocks = this.checkLocks;
+  var now = Date.now();
+
+  _.forEach(checkLocks, function(time, serialNumber)
+  {
+    if ((time - 3000) >= now)
+    {
+      delete checkLocks[serialNumber];
+    }
+  });
 };
 
 /**

@@ -1019,7 +1019,7 @@ define([
       {
         this.checkSerialNumber(nc12, serialNumber, scannerId);
       }
-      else
+      else if (this.model.get('countdown') === -1 || !this.model.get('finishedAt'))
       {
         ledBuffer.add(nc12, serialNumber, scannerId);
 
