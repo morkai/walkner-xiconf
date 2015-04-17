@@ -54,14 +54,10 @@ module.exports = function setUpRemoteExport(app, historyModule)
     }
 
     syncTimer = setTimeout(syncNow, syncInterval * 60 * 1000);
-
-    historyModule.info("Scheduled the next remote sync to happen in %d minutes!", syncInterval);
   }
 
   function syncNow()
   {
-    historyModule.info("Starting the remote export process...");
-
     if (!isValidLicense())
     {
       historyModule.warn("Stopping the remote export: invalid license :(");
@@ -91,8 +87,6 @@ module.exports = function setUpRemoteExport(app, historyModule)
     this.remoteUrl.pathname = '/ping';
 
     var pingUrl = url.format(this.remoteUrl);
-
-    historyModule.debug("Pinging the remote server: %s...", pingUrl);
 
     if (!this.remoteUrl.protocol || !this.remoteUrl.host)
     {
@@ -126,8 +120,6 @@ module.exports = function setUpRemoteExport(app, historyModule)
       return this.skip(err);
     }
 
-    historyModule.debug("Reading the last export time...");
-
     var ctx = this;
     var next = this.next();
 
@@ -147,8 +139,6 @@ module.exports = function setUpRemoteExport(app, historyModule)
 
       ctx.lastExportTime = lastExportTime;
 
-      historyModule.debug("Last export time is %s!", new Date(lastExportTime));
-
       return setImmediate(next);
     });
   }
@@ -161,8 +151,6 @@ module.exports = function setUpRemoteExport(app, historyModule)
     {
       return this.skip(err);
     }
-
-    historyModule.debug("Finding the history entries to export...");
 
     var ctx = this;
     var next = this.next();
@@ -195,8 +183,6 @@ module.exports = function setUpRemoteExport(app, historyModule)
         }
       }
 
-      historyModule.debug("Found %d history entry(ies) to export!", rows.length);
-
       return setImmediate(next);
     });
   }
@@ -219,8 +205,6 @@ module.exports = function setUpRemoteExport(app, historyModule)
       return;
     }
 
-    historyModule.debug("Finding the orders to export...");
-
     orderIds = orderIds.map(function(orderId) { return '"' + orderId + '"'; }).join(', ');
 
     var ctx = this;
@@ -235,8 +219,6 @@ module.exports = function setUpRemoteExport(app, historyModule)
       }
 
       ctx.orders = JSON.stringify(rows);
-
-      historyModule.debug("Found %d order(s) to export!", rows.length);
 
       return setImmediate(next);
     });
@@ -256,14 +238,11 @@ module.exports = function setUpRemoteExport(app, historyModule)
       return this.skip();
     }
 
-    historyModule.debug("Initializing the archive...");
-
     var uuid = settings.get('licenseInfo').uuid;
 
     if (!cachedEncryptedUuids[uuid])
     {
-      cachedEncryptedUuids[uuid] =
-        ursa.createPublicKey(settings.config.licenseEdPem).encrypt(uuid, 'utf8', 'base64');
+      cachedEncryptedUuids[uuid] = ursa.createPublicKey(settings.config.licenseEdPem).encrypt(uuid, 'utf8', 'base64');
     }
 
     this.zip = new JSZip();
@@ -297,10 +276,8 @@ module.exports = function setUpRemoteExport(app, historyModule)
 
     if (featureFileHashes.length === 0)
     {
-      return historyModule.debug("No feature files to pack!");
+      return;
     }
-
-    historyModule.debug("Packing %d feature file(s)...", featureFileHashes.length);
 
     var featuresZip = this.zip.folder('features');
 
@@ -333,14 +310,10 @@ module.exports = function setUpRemoteExport(app, historyModule)
   {
     /*jshint validthis:true*/
 
-    historyModule.debug("Generating the archive file...");
-
     this.archive = this.zip.generate({
       type: 'nodebuffer',
       compression: 'DEFLATE'
     });
-
-    historyModule.debug("Generated the archive file (%d bytes)!", this.archive.length);
 
     this.zip = null;
 
@@ -354,8 +327,6 @@ module.exports = function setUpRemoteExport(app, historyModule)
     this.remoteUrl.pathname = '/xiconf;import';
 
     var resultsUrl = url.format(this.remoteUrl);
-
-    historyModule.debug("POSTing the archive to: %s...", resultsUrl);
 
     var options = {
       url: resultsUrl,
@@ -415,8 +386,6 @@ module.exports = function setUpRemoteExport(app, historyModule)
     var file = historyModule.config.lastExportTimeFile;
     var contents = this.latestStartedAt.toString();
 
-    historyModule.debug("Saving the last export time (%s)...", new Date(this.latestStartedAt));
-
     fs.writeFile(file, contents, this.next());
   }
 
@@ -437,8 +406,6 @@ module.exports = function setUpRemoteExport(app, historyModule)
     }
     else
     {
-      historyModule.info("Finished exporting data to the remote server!");
-
       var licenseInfo = settings.get('licenseInfo');
 
       if (licenseInfo.error === 'UNKNOWN_LICENSE' || licenseInfo.error === 'DUPLICATE_LICENSE')
