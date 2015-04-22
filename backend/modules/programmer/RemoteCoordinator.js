@@ -52,9 +52,8 @@ RemoteCoordinator.prototype.connectToProdLine = function(forceReconnect)
   }
 
   var srcId = this.settings.getInstallationId();
-  var prodLineId = this.settings.get('prodLine');
 
-  if (_.isEmpty(srcId) || _.isEmpty(prodLineId))
+  if (_.isEmpty(srcId))
   {
     return;
   }
@@ -64,7 +63,7 @@ RemoteCoordinator.prototype.connectToProdLine = function(forceReconnect)
     srcId: srcId,
     licenseId: licenseInfo.uuid,
     licenseError: licenseInfo.error,
-    prodLineId: prodLineId,
+    prodLineId: this.settings.get('prodLine'),
     appVersion: this.appVersion,
     mowVersion: this.settings.get('multiOneWorkflowVersion'),
     selectedOrderNo: this.selectedOrderNo
@@ -140,7 +139,7 @@ RemoteCoordinator.prototype.setUpSio = function()
 
   var remoteServer = this.settings.get('remoteServer');
 
-  if (_.isEmpty(remoteServer) || _.isEmpty(this.settings.get('prodLine')))
+  if (_.isEmpty(remoteServer))
   {
     return;
   }
