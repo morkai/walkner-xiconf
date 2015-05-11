@@ -25,7 +25,8 @@ exports.DEFAULT_CONFIG = {
 exports.start = function startSettingsModule(app, module, done)
 {
   var settings = {
-    multiOneWorkflowVersion: '0.0.0.0'
+    multiOneWorkflowVersion: '0.0.0.0',
+    coreScannerDriver: false
   };
 
   module.has = function(name)
@@ -200,7 +201,8 @@ exports.start = function startSettingsModule(app, module, done)
         return this.skip(err);
       }
 
-      readMultiOneWorkflowVersion(null, this.next());
+      readMultiOneWorkflowVersion(null, this.group());
+      checkCoreScannerDriver(this.group());
     },
     done
   );
@@ -251,6 +253,16 @@ exports.start = function startSettingsModule(app, module, done)
       var matches = stdout.match(/v(?:ersion)?.*?((?:[0-9]+\.?){4})/);
 
       settings.multiOneWorkflowVersion = matches ? matches[1] : '0.0.0.0';
+
+      done();
+    });
+  }
+
+  function checkCoreScannerDriver(done)
+  {
+    exec('sc qc CoreScanner', {timeout: 5000}, function(err, stdout, stderr)
+    {
+      settings.coreScannerDriver = _.includes(stdout, 'SERVICE_NAME: CoreScanner');
 
       done();
     });
