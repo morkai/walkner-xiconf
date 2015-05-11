@@ -902,9 +902,10 @@ module.exports = function program(app, programmerModule, data, done)
       return;
     }
 
-    if (currentState.inputMode === 'local'
-      && !remoteCoordinator.isConnected()
-      && settings.get('serviceTagInLocalMode') === 'optional')
+    var isLocalInputMode = currentState.inputMode === 'local';
+    var isOptionalServiceTag = settings.get('serviceTagInLocalMode') === 'optional';
+
+    if (isLocalInputMode && !remoteCoordinator.isConnected() && isOptionalServiceTag)
     {
       return programmerModule.log('SKIPPING_SERVICE_TAG_ACQUIRING');
     }
@@ -932,6 +933,13 @@ module.exports = function program(app, programmerModule, data, done)
 
       if (err)
       {
+        if (isLocalInputMode && isOptionalServiceTag)
+        {
+          programmerModule.log('ACQUIRING_SERVICE_TAG_FAILURE', {error: err.message});
+
+          return next();
+        }
+
         err.code = 'REMOTE_SERVICE_TAG_FAILURE';
       }
       else
