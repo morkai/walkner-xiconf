@@ -66,6 +66,7 @@ RemoteCoordinator.prototype.connectToProdLine = function(forceReconnect)
     prodLineId: this.settings.get('prodLine'),
     appVersion: this.appVersion,
     mowVersion: this.settings.get('multiOneWorkflowVersion'),
+    coreScannerDriver: this.settings.get('coreScannerDriver'),
     selectedOrderNo: this.selectedOrderNo
   };
 
