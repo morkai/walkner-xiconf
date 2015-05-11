@@ -26,13 +26,15 @@ module.exports = function setUpProgrammerCommands(app, programmerModule)
 
   sio.on('connection', function(socket)
   {
+    var isLocal = socket.conn.remoteAddress === '127.0.0.1';
+
     socket.emit('programmer.stateChanged', programmerModule.currentState.toJSON());
 
     socket.on('programmer.getCurrentState', getCurrentState);
+    socket.on('programmer.setInputMode', setInputMode.bind(null, isLocal));
 
-    if (socket.conn.remoteAddress === '127.0.0.1')
+    if (isLocal)
     {
-      socket.on('programmer.setInputMode', setInputMode);
       socket.on('programmer.setWorkMode', setWorkMode);
       socket.on('programmer.setProgram', setProgram);
       socket.on('programmer.selectOrderNo', selectOrderNo);
@@ -57,14 +59,21 @@ module.exports = function setUpProgrammerCommands(app, programmerModule)
     }
   }
 
-  function setInputMode(inputMode, password, reply)
+  function setInputMode(isLocal, inputMode, password, reply)
   {
     if (!_.isFunction(reply))
     {
       return;
     }
 
-    if (settings.get('protectInputMode') && password !== settings.get('password'))
+    var protectInputMode = settings.get('protectInputMode');
+
+    if (!isLocal && !protectInputMode)
+    {
+      return reply(new Error('INVALID_HOST'));
+    }
+
+    if (protectInputMode && password !== settings.get('password'))
     {
       return reply(new Error('INVALID_PASSWORD'));
     }

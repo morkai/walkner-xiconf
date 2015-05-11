@@ -225,7 +225,7 @@ define([
 
     toggleInputMode: function(password)
     {
-      if (!user.isLocal() || currentState.isInProgress())
+      if (currentState.isInProgress() || (!user.isLocal() && !settings.get('protectInputMode')))
       {
         return;
       }
