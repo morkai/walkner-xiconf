@@ -121,6 +121,7 @@ exports.settings = {
     bgScannerBeepBad: -1,
     bgScannerBeepGood: -1,
     ledsEnabled: 0,
+    programming: 1,
     hotkeys: {
       focusOrderNo: 'Q',
       focusQuantity: 'W',

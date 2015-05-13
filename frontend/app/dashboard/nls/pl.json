@@ -34,6 +34,7 @@
   "input:quantity": "Ilość",
   "input:nc12": "12NC",
   "input:nc12:ledOnly": "Zlecenie nie zawiera programu do drivera.\nSkanowanie płytek LED aktywne.",
+  "input:nc12:noProgramming": "Stanowisko bez programowania.\nSkanowanie płytek LED aktywne.",
   "input:nc12:multi": "Dostępne kilka 12NC programowych.\nKliknij, aby wybrać program.",
   "input:start": "Rozpocznij",
   "input:cancel": "Anuluj",

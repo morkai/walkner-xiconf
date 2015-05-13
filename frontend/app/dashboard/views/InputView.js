@@ -732,6 +732,7 @@ define([
         && !programItems.length
         && ledItems.length > 0
         && !!settings.get('ledsEnabled');
+      var isNoProgramming = this.model.isNoProgramming();
       var quantityTodo = data.quantityTodo;
       var quantityDone = data.quantityDone;
       var nc12 = '';
@@ -753,7 +754,12 @@ define([
         }
       }
 
-      if (isLedOnly)
+      if (isNoProgramming)
+      {
+        nc12 = '';
+        nc12Title = t('dashboard', 'input:nc12:noProgramming');
+      }
+      else if (isLedOnly)
       {
         nc12Title = t('dashboard', 'input:nc12:ledOnly');
       }
@@ -767,6 +773,7 @@ define([
         .attr('title', nc12Title)
         .parent('div')
         .toggleClass('is-ledOnly', isLedOnly)
+        .toggleClass('is-noProgramming', isNoProgramming)
         .toggleClass('is-multi', user.isLocal() && !this.model.isInProgress() && isMultiNc12)
         .toggleClass('is-picked', nc12 !== '');
 
@@ -784,6 +791,11 @@ define([
 
     isNc12Required: function()
     {
+      if (this.model.isNoProgramming())
+      {
+        return false;
+      }
+
       if (this.$els.nc12.parent().hasClass('is-ledOnly'))
       {
         return false;
@@ -803,7 +815,7 @@ define([
       var remoteData = isRemoteInput ? this.model.getSelectedRemoteData() : null;
       var nc12 = this.$els.nc12.val().trim();
 
-      if (!/^[0-9]{12}$/.test(nc12))
+      if (this.model.isNoProgramming() || !/^[0-9]{12}$/.test(nc12))
       {
         nc12 = '';
       }

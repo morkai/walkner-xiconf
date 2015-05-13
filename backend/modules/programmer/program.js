@@ -1038,12 +1038,23 @@ module.exports = function program(app, programmerModule, data, done)
         changes.exception = err.message;
       }
 
-      programmerModule.log('PROGRAMMING_FAILURE', {
-        time: changes.finishedAt,
-        duration: changes.duration,
-        errorCode: changes.errorCode,
-        nc12: currentState.nc12 || '-'
-      });
+      if (currentState.nc12)
+      {
+        programmerModule.log('PROGRAMMING_FAILURE', {
+          time: changes.finishedAt,
+          duration: changes.duration,
+          errorCode: changes.errorCode,
+          nc12: currentState.nc12 || '-'
+        });
+      }
+      else
+      {
+        programmerModule.log('LED_SCANNING_FAILURE', {
+          time: changes.finishedAt,
+          duration: changes.duration,
+          errorCode: changes.errorCode
+        });
+      }
 
       if (currentState.serviceTag !== null)
       {
@@ -1054,11 +1065,21 @@ module.exports = function program(app, programmerModule, data, done)
     {
       changes.counter = currentState.counter + 1;
 
-      programmerModule.log('PROGRAMMING_SUCCESS', {
-        time: changes.finishedAt,
-        duration: changes.duration,
-        nc12: currentState.nc12 || '-'
-      });
+      if (currentState.nc12)
+      {
+        programmerModule.log('PROGRAMMING_SUCCESS', {
+          time: changes.finishedAt,
+          duration: changes.duration,
+          nc12: currentState.nc12 || '-'
+        });
+      }
+      else
+      {
+        programmerModule.log('LED_SCANNING_SUCCESS', {
+          time: changes.finishedAt,
+          duration: changes.duration
+        });
+      }
     }
 
     if (changes.order !== null)

@@ -5,11 +5,13 @@
 define([
   'underscore',
   '../socket',
+  '../data/settings',
   '../core/Model',
   './util/decorateLogEntry'
 ], function(
   _,
   socket,
+  settings,
   Model,
   decorateLogEntry
 ) {
@@ -106,6 +108,11 @@ define([
     isRemoteInput: function()
     {
       return this.get('inputMode') === 'remote';
+    },
+
+    isNoProgramming: function()
+    {
+      return this.isRemoteInput() && settings.get('programming') === 0;
     },
 
     hasOrder: function()

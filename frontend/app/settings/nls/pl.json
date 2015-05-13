@@ -141,6 +141,9 @@
   "setting:ledsEnabled:off": "Wyłączone",
   "setting:ledsEnabled:auto": "Automatyczne",
   "setting:ledsEnabled:manual": "Manualne",
+  "setting:programming": "Programowanie",
+  "setting:programming:off": "Wyłączone",
+  "setting:programming:on": "Włączone",
 
   "license:NO_KEY": "Brak klucza licencji.",
   "license:INVALID_ED_PEM": "Nieprawidłowy klucz odszyfrowywania.",

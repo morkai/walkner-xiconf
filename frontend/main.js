@@ -153,7 +153,7 @@
         newTitle.unshift(i18n('core', 'TITLE'));
       }
 
-      newTitle.unshift('Walkner Xiconf');
+      newTitle.unshift('Walkner Xiconf [' + (window.location.port || 80) + ']');
 
       document.title = newTitle.reverse().join(' < ');
     });

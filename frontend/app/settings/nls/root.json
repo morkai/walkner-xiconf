@@ -142,6 +142,9 @@
     "setting:ledsEnabled:off": "Disabled",
     "setting:ledsEnabled:auto": "Auto",
     "setting:ledsEnabled:manual": "Manual",
+    "setting:programming": "Programming",
+    "setting:programming:off": "Disabled",
+    "setting:programming:on": "Enabled",
 
     "license:NO_KEY": "No license key.",
     "license:INVALID_ED_PEM": "Invalid license decryption key.",

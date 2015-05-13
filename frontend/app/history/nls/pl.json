@@ -80,6 +80,8 @@
   "log:CANCELLING": "Anulowanie programowania...",
   "log:PROGRAMMING_SUCCESS": "Pomyślnie ukończono programowanie 12NC <code>{nc12}</code> w ciągu <code>{duration}</code>.",
   "log:PROGRAMMING_FAILURE": "Zakończono programowanie 12NC <code>{nc12}</code> w ciągu <code>{duration}</code> z powodu błędu: <code>{error}</code>",
+  "log:LED_SCANNING_SUCCESS": "Pomyślnie ukończono sprawdzanie płytek LED w ciągu <code>{duration}</code>.",
+  "log:LED_SCANNING_FAILURE": "Zakończono sprawdzanie płytek LED w ciągu <code>{duration}</code> z powodu błędu: <code>{error}</code>",
   "log:READING_FEATURE_FILE": "Odczytywanie pliku konfiguracyjnego drivera...",
   "log:READING_FEATURE_FILE_FAILURE": "Błąd podczas odczytywania pliku: <code>{error}</code>",
   "log:READING_FEATURE_FILE_TIMEOUT": "Upłynął limit czasu odczytywania pliku.",
