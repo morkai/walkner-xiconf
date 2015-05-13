@@ -653,7 +653,7 @@ define([
 
       var isRemoteInput = this.model.isRemoteInput();
       var multiOrderNo = false;
-      var data;
+      var orderData;
 
       if (isRemoteInput)
       {
@@ -664,7 +664,7 @@ define([
           multiOrderNo = true;
         }
 
-        data = this.model.getSelectedRemoteData() || {
+        orderData = this.model.getSelectedRemoteData() || {
           _id: null,
           quantityTodo: null,
           quantityDone: null,
@@ -678,7 +678,7 @@ define([
 
         if (localOrder)
         {
-          data = {
+          orderData = {
             _id: localOrder.no,
             quantityTodo: localOrder.quantity,
             quantityDone: localOrder.successCounter,
@@ -687,7 +687,7 @@ define([
         }
         else
         {
-          data = {
+          orderData = {
             _id: null,
             quantityTodo: null,
             quantityDone: null,
@@ -697,7 +697,7 @@ define([
 
         if (localNc12)
         {
-          data.items.push({
+          orderData.items.push({
             kind: 'program',
             nc12: localNc12
           });
@@ -705,14 +705,14 @@ define([
       }
 
       $els.orderNo
-        .val(data._id || '')
+        .val(orderData._id || '')
         .closest('div')
         .toggleClass('is-multi', user.isLocal() && !this.model.isInProgress() && multiOrderNo);
 
       var programItems = [];
       var ledItems = [];
 
-      _.forEach(data.items, function(item)
+      _.forEach(orderData.items, function(item)
       {
         if (item.kind === 'program')
         {
@@ -725,33 +725,28 @@ define([
       });
 
       var selectedProgramItem = _.findWhere(programItems, {nc12: this.model.get('selectedNc12')});
+      var isLedsEnabled = !!settings.get('ledsEnabled');
+      var isNoProgramming = this.model.isNoProgramming();
       var isMultiNc12 = programItems.length > 1;
       var isLedOnly = user.isLocal()
         && isRemoteInput
         && !this.model.hasProgram()
         && !programItems.length
         && ledItems.length > 0
-        && !!settings.get('ledsEnabled');
-      var isNoProgramming = this.model.isNoProgramming();
-      var quantityTodo = data.quantityTodo;
-      var quantityDone = data.quantityDone;
+        && isLedsEnabled;
+      var quantityTodo = orderData.quantityTodo;
+      var quantityDone = orderData.quantityDone;
       var nc12 = '';
       var nc12Title = '';
 
-      if (programItems.length)
+      if (!isNoProgramming && programItems.length)
       {
         if (programItems.length === 1)
         {
-          nc12 = programItems[0].nc12;
+          selectedProgramItem = programItems[0];
         }
-        else if (selectedProgramItem)
-        {
-          nc12 = selectedProgramItem.nc12;
-        }
-        else
-        {
-          nc12 = '';
-        }
+
+        nc12 = selectedProgramItem ? selectedProgramItem.nc12 : '';
       }
 
       if (isNoProgramming)
@@ -777,9 +772,29 @@ define([
         .toggleClass('is-multi', user.isLocal() && !this.model.isInProgress() && isMultiNc12)
         .toggleClass('is-picked', nc12 !== '');
 
+      if (isNoProgramming && ledItems.length)
+      {
+        quantityDone = 0;
+
+        _.forEach(ledItems, function(ledItem)
+        {
+          var quantityPerScan = ledItem.quantityTodo / orderData.quantityTodo;
+
+          quantityDone += ledItem.quantityDone / quantityPerScan;
+        });
+
+        quantityDone /= ledItems.length;
+      }
+      else if (!isLedsEnabled && ledItems.length && selectedProgramItem)
+      {
+        var quantityPerProgram = selectedProgramItem.quantityTodo / orderData.quantityTodo;
+
+        quantityDone = (selectedProgramItem.quantityDone + selectedProgramItem.extraQuantityDone) / quantityPerProgram;
+      }
+
       var quantity = Math.floor((quantityTodo - quantityDone) * 10) / 10;
 
-      if (!data._id || isNaN(quantity))
+      if (!orderData._id || isNaN(quantity))
       {
         $els.quantity.val('').removeClass('is-overflow');
       }
