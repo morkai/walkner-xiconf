@@ -9,7 +9,7 @@ var DATA_PATH = path.join(__dirname, '..', 'data');
 
 var config = module.exports = require(path.join(BIN_PATH, 'walkner-xiconf/config/frontend.js'));
 
-config.httpServer.port = 1337;
+config.httpServer.port = /^[0-9]+$/.test(process.env.XICONF_PORT) ? +process.env.XICONF_PORT : 1337;
 
 config.sqlite3.dbFile = path.join(DATA_PATH, 'db.sqlite3');
 

@@ -5,16 +5,39 @@
 #include <MsgBoxConstants.au3>
 #include <WinAPIProc.au3>
 
+$serverPort = 1337
+$configFile = ""
+
+For $i = 1 To $CmdLine[0] Step 2
+  $key = $CmdLine[$i]
+  $val = $CmdLine[0] >= $i + 1 ? $CmdLine[$i + 1] : "";
+
+  Switch $key
+    Case "--port"
+      $val = Int($val, 1)
+
+      If $val >= 80 Then
+        $serverPort = $val
+      EndIf
+
+    Case "--config"
+      If StringLen($val) > 0 Then
+        $configFile = "." & $val
+      EndIf
+  EndSwitch
+Next
+
 Global Const $PRODUCT_GUID = "00000000-0000-0000-0000-000000000000"
 Global Const $PRODUCT_NAME = "Walkner Xiconf"
 Global Const $PRODUCT_VERSION = "0.0.0"
 Global Const $PRODUCT_PUBLISHER = "Walkner elektronika przemysłowa Zbigniew Walukiewicz"
 Global Const $PRODUCT_URL = "http://walkner.pl/"
 Global Const $SERVER_ADDR = "127.0.0.1"
-Global Const $SERVER_PORT = 1337
+Global Const $SERVER_PORT = $serverPort
+Global Const $CONFIG_FILE = $configFile
 Global Const $DEFAULT_LANG = "en"
 Global Const $REGISTRY_KEY = "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{" & $PRODUCT_GUID & "}"
-Global Const $CHROME_TITLE = "[REGEXPCLASS:^Chrome_; REGEXPTITLE:(walkner-xiconf|< Walkner Xiconf)]"
+Global Const $CHROME_TITLE = "[REGEXPCLASS:^Chrome_; REGEXPTITLE:(walkner-xiconf|< Walkner Xiconf \[" & $SERVER_PORT & "\])]"
 
 Func ExitWithError($error)
   SplashOff()

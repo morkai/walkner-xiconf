@@ -69,13 +69,13 @@ EndSwitch
 Install()
 RunAll()
 
-_Singleton("XICONF")
+_Singleton("XICONF:" & $SERVER_PORT)
 
 TrayCreateItem($LANG_TRAY_EXIT)
 TrayItemSetOnEvent(-1, "ExitProgram")
 TraySetOnEvent($TRAY_EVENT_PRIMARYDOUBLE, "RunAll")
-TraySetToolTip($PRODUCT_NAME & " " & $PRODUCT_VERSION)
 TraySetState($TRAY_ICONSTATE_SHOW)
+TraySetToolTip($PRODUCT_NAME)
 
 While 1
   Sleep(100)
@@ -138,18 +138,24 @@ Func RunStdRedir()
   SplashText($LANG_STDREDIR_SEARCHING)
 
   If ProcessExists("XiconfStdRedir.exe") Then
-    Return
+    $stdRedirs = ProcessList("XiconfStdRedir.exe")
+
+    For $i = 1 To $stdRedirs[0][0]
+      If StringInStr(_WinAPI_GetProcessCommandLine($stdRedirs[$i][1]), "XICONF_PORT " & $SERVER_PORT) Then
+        Return
+      EndIF
+    Next
   EndIf
 
   $exe = '"' & @ScriptDir & '\node.exe"'
-  $log = '"' & @ScriptDir & '\..\logs\{yyMM}.log"'
+  $log = '"' & @ScriptDir & '\..\logs\{yyMM}' & $CONFIG_FILE & '.log"'
   $dir = '"' & @ScriptDir & '\walkner-xiconf"'
-  $arg = '"backend\main.js" "' & @ScriptDir & '\..\config\walkner-xiconf.js"'
+  $arg = '"backend\main.js" "' & @ScriptDir & '\..\config\walkner-xiconf' & $CONFIG_FILE & '.js"'
 
   SplashText($LANG_STDREDIR_RUNNING)
 
   ProcessClose(FindNodePid())
-  Run('"' & @ScriptDir & '\XiconfStdRedir.exe" --exe ' & $exe & " --log " & $log & " --dir " & $dir & " --env NODE_ENV production -- " & $arg, "", @SW_HIDE)
+  Run('"' & @ScriptDir & '\XiconfStdRedir.exe" --exe ' & $exe & " --log " & $log & " --dir " & $dir & " --env NODE_ENV production --env XICONF_PORT " & $SERVER_PORT & " -- " & $arg, "", @SW_HIDE)
 
   SplashText($LANG_STDREDIR_SEARCHING)
 
