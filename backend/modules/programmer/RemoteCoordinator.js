@@ -61,6 +61,7 @@ RemoteCoordinator.prototype.connectToProdLine = function(forceReconnect)
     srcId: srcId,
     licenseId: licenseInfo.uuid,
     licenseError: licenseInfo.error,
+    licenseKey: this.settings.get('licenseKey'),
     prodLineId: this.settings.get('prodLine'),
     appVersion: this.appVersion,
     mowVersion: this.settings.get('multiOneWorkflowVersion'),
