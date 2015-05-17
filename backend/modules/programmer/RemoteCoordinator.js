@@ -22,7 +22,6 @@ function RemoteCoordinator(app, programmerModule)
   this.newDataQueue = [];
 
   this.selectedOrderNoTimer = null;
-  this.currentDataAvailabilityTimer = null;
   this.restarting = false;
 
   this.broker.subscribe('app.started', this.setUpSio.bind(this)).setLimit(1);
@@ -40,7 +39,6 @@ RemoteCoordinator.prototype.connectToProdLine = function(forceReconnect)
 {
   if (forceReconnect)
   {
-    this.scheduleCurrentDataAvailabilityCheck();
     this.setUpSio();
 
     return;
@@ -71,8 +69,6 @@ RemoteCoordinator.prototype.connectToProdLine = function(forceReconnect)
   };
 
   this.sio.emit('xiconf.connect', data);
-
-  this.scheduleCurrentDataAvailabilityCheck();
 };
 
 /**
@@ -310,35 +306,6 @@ RemoteCoordinator.prototype.checkSelectedOrderNo = function()
 
 /**
  * @private
- */
-RemoteCoordinator.prototype.scheduleCurrentDataAvailabilityCheck = function()
-{
-  if (this.currentDataAvailabilityTimer !== null)
-  {
-    clearTimeout(this.currentDataAvailabilityTimer);
-  }
-
-  this.currentDataAvailabilityTimer = setTimeout(
-    this.checkCurrentDataAvailability.bind(this),
-    _.random(60, 180) * 1000
-  );
-};
-
-/**
- * @private
- */
-RemoteCoordinator.prototype.checkCurrentDataAvailability = function()
-{
-  this.currentDataAvailabilityTimer = null;
-
-  if (this.currentData.length === 0)
-  {
-    this.connectToProdLine();
-  }
-};
-
-/**
- * @private
  * @param {object} changes
  */
 RemoteCoordinator.prototype.onSettingsChanged = function(changes)
@@ -401,8 +368,6 @@ RemoteCoordinator.prototype.onRemoteDataUpdated = function(newData)
   {
     this.updateCurrentData(newData);
   }
-
-  this.scheduleCurrentDataAvailabilityCheck();
 };
 
 /**
