@@ -1,3 +1,28 @@
+2.11.0 @ 2015-05-17
+===================
+
+  * Removed the automatic current remote data availability checks from the remote coordinator. If somehow the current
+    remote data is empty when it shouldn't be, the operator can force reconnection with the remote server by clicking
+    the connection indicator on the Programmer page.
+  * Changed the remote coordinator so that it attempts to connect to the remote server even if the production line ID
+    setting is not specified.
+  * Changed the Toggle input mode action to be available from non-local computer if the input mode change password
+    protection setting is turned on.
+  * Changed a failure to acquire a Service Tag in the local input mode to not stop the programming process if
+    the Service Tag in Local mode setting is set to Optional.
+  * Changed the Quantity field on the Programmer page in the remote input mode to show:
+    * the program item's quantity, if the LED board scanning is disabled and a program 12NC is selected,
+    * or the sum of LED items' quantities, if the programming is disabled and the order contains any LED board items,
+    * or the order's quantity (this value was always shown previously).
+  * Changed the `ImWorking.exe` utility to send `F15` key instead of `ALT+1`.
+  * Added a flag indicating whether a CoreScanner drivers service is available to data that is being sent to the remote
+    server during connection to the production line. That flag is displayed on the remote server's clients list.
+  * Added a new setting: Programming on/off - if set to off, then the programming is not performed (as if the order
+    didn't have any program 12NCs - only LED boards). This allows multiple work stations to split work:
+    one is programming, and the other is checking the LED boards.
+  * Added support for running multiple instances of the application on a different HTTP port and with a different
+    config file by adding `--config` and `--port` parameters to the `XiconfRun.exe` shortcut.
+
 2.10.3 @ 2015-04-17
 ===================
 
