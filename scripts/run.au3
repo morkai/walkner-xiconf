@@ -64,6 +64,8 @@ Switch $lang
     $LANG_TRAY_EXIT = "Exit"
 EndSwitch
 
+Sleep(100)
+
 If _Singleton("XICONF:" & $SERVER_PORT, 1) = 0 Then
   If Not WinExists($CHROME_TITLE) Then
     RunBrowser()
@@ -77,8 +79,6 @@ Else
 EndIf
 
 Install()
-Sleep(100)
-_Singleton("XICONF:" & $SERVER_PORT)
 RunAll()
 
 TrayCreateItem($LANG_TRAY_EXIT)
