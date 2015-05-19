@@ -1003,7 +1003,7 @@ define([
 
       if (this.model.isRemoteInput())
       {
-        if (/(.[0-9]{12}.[0-9]{5,11}|.[0-9]{5,11}.[0-9]{12})/.test(message.value))
+        if (/([A-Z0-9]{22}-.*?[0-9]{12}[A-Z]|.[0-9]{12}.[0-9]{5,11}|.[0-9]{5,11}.[0-9]{12})/i.test(message.value))
         {
           this.handleLedCommand(message.value, message.scannerId);
         }
@@ -1020,26 +1020,38 @@ define([
 
     handleLedCommand: function(led, scannerId)
     {
-      var matches = led.match(/.([0-9]{12}).([0-9]{5,11})/);
+      var matches;
       var nc12;
       var serialNumber;
 
+      matches = led.match(/([A-Z0-9]{22})-.*?([0-9]{12})[A-Z]/i);
+
       if (!matches)
       {
-        matches = led.match(/.([0-9]{5,11}).([0-9]{12})/);
+        matches = led.match(/.([0-9]{12}).([0-9]{5,11})/);
 
         if (!matches)
         {
-          return;
-        }
+          matches = led.match(/.([0-9]{5,11}).([0-9]{12})/);
 
-        nc12 = matches[2];
-        serialNumber = matches[1];
+          if (!matches)
+          {
+            return;
+          }
+
+          nc12 = matches[2];
+          serialNumber = matches[1].toUpperCase();
+        }
+        else
+        {
+          nc12 = matches[1];
+          serialNumber = matches[2].toUpperCase();
+        }
       }
       else
       {
-        nc12 = matches[1];
-        serialNumber = matches[2];
+        nc12 = matches[2];
+        serialNumber = matches[1].toUpperCase();
       }
 
       if (this.model.get('waitingForLeds'))
