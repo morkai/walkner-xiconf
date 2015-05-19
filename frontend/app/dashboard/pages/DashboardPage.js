@@ -152,7 +152,7 @@ define([
     {
       this.inputView = new InputView({model: currentState});
       this.logView = new LogView({model: currentState});
-      this.ledsView = new LedsView({model: currentState});
+      this.ledsView = new LedsView({model: currentState, shortenSerialNumbers: true});
       this.historyView = new HistoryView({collection: new HistoryEntryCollection()});
       this.carouselView = new CarouselView({model: currentState});
       this.programView = new ProgramView({model: currentState});

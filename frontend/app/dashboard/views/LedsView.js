@@ -71,7 +71,7 @@ define([
       return {
         idPrefix: this.idPrefix,
         renderLed: ledTemplate,
-        leds: leds.map(this.serializeLed),
+        leds: leds.map(this.serializeLed, this),
         resetHotkey: settings.get('hotkeys').reset || '?',
         resetEnabled: user.isLocal()
       };
@@ -113,10 +113,27 @@ define([
         }
       }
 
+      var fullSerialNumber = led.serialNumber || '????????';
+      var shortSerialNumber = fullSerialNumber;
+
+      while (shortSerialNumber.length < 8)
+      {
+        shortSerialNumber = shortSerialNumber + ' ';
+      }
+
+      if (this.options.shortenSerialNumbers)
+      {
+        if (shortSerialNumber.length > 8)
+        {
+          shortSerialNumber = shortSerialNumber.substr(0, 3) + '~' + shortSerialNumber.substr(-4);
+        }
+      }
+
       return {
         className: className,
         statusIcon: statusIcon,
-        serialNumber: led.serialNumber || '????????',
+        fullSerialNumber: fullSerialNumber,
+        shortSerialNumber: shortSerialNumber,
         name: led.name,
         nc12: led.nc12,
         error: error

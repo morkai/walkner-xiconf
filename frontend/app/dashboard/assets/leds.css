@@ -62,6 +62,7 @@
   font-size: 3em;
   line-height: 0.953;
   flex: 0 0 auto;
+  white-space: pre;
 }
 .dashboard-leds-info {
   flex: 1 1 auto;
