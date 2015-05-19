@@ -53,6 +53,15 @@ var app = {
     env: process.env.NODE_ENV,
     rootPath: __dirname,
     moduleStartTimeout: process.env.NODE_ENV === 'production' ? 10000 : 3000
+  },
+  exit: function(code, err)
+  {
+    app.error(err.message);
+
+    if (app.options.env !== 'production' || code !== 'MODULE_START_FAILURE' || !/port.*?already/.test(err.message))
+    {
+      process.exit(1);
+    }
   }
 };
 
