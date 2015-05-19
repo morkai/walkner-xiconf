@@ -22,8 +22,6 @@
 Global Const $MAX_CONNECT_TRIES = 30
 Global const $CHROME_WAIT_TIME = 60
 
-WinActivate($CHROME_TITLE)
-
 Opt("WinTitleMatchMode", 2)
 Opt("TrayMenuMode", 3)
 Opt("TrayOnEventMode", 1)
@@ -66,10 +64,22 @@ Switch $lang
     $LANG_TRAY_EXIT = "Exit"
 EndSwitch
 
-Install()
-RunAll()
+If _Singleton("XICONF:" & $SERVER_PORT, 1) = 0 Then
+  If Not WinExists($CHROME_TITLE) Then
+    RunBrowser()
+  EndIf
 
+  WinActivate($CHROME_TITLE)
+
+  Exit
+Else
+  WinActivate($CHROME_TITLE)
+EndIf
+
+Install()
+Sleep(100)
 _Singleton("XICONF:" & $SERVER_PORT)
+RunAll()
 
 TrayCreateItem($LANG_TRAY_EXIT)
 TrayItemSetOnEvent(-1, "ExitProgram")
