@@ -1,3 +1,13 @@
+2.11.1 @ 2015-05-19
+===================
+
+  * Changed the serial numbers on the LED boards list to display maximum of 8 characters. If a serial number is longer,
+    then only the first 3 characters, followed by a `~` character, followed by the last 4 characters are displayed. Full
+    serial number is displayed in a tooltip (on mouse hover).
+  * Added additional checks to try to prevent corruption of the settings file, because of multiple server processes
+    being started.
+  * Added another pattern to the LED board barcode recognition.
+
 2.11.0 @ 2015-05-17
 ===================
 
