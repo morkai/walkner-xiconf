@@ -1,6 +1,5 @@
 {
   "breadcrumb": "Ustawienia",
-
   "msg:filesOnly": "Upuszczać można tylko pliki!",
   "msg:textOnly": "Upuszczać można tylko pliki tekstowe!",
   "msg:invalidFile": "Nieprawidłowa zawartość pliku!",
@@ -15,7 +14,6 @@
   "msg:restart:failure": "Nie udało się zrestartować serwera :(",
   "msg:restart:AUTH": "Nie można zrestartować serwera: nieprawidłowe hasło!",
   "msg:restart:LOCKED": "Nie można zrestartować serwera w trakcie programowania!",
-
   "form:settings": "Podstawowe ustawienia",
   "form:remote": "Tryb zdalny",
   "form:mow": "MultiOne Workflow",
@@ -28,10 +26,8 @@
   "form:export": "Eksportuj ustawienia",
   "form:restart": "Restartuj serwer",
   "form:password": "Hasło",
-
   "mowVersion:supported": "Wspierana wersja Philips MultiOne Workflow",
   "mowVersion:installed": "Zainstalowana wersja Philips MultiOne Workflow",
-
   "setting:id": "Identyfikator instalacji",
   "setting:title": "Tytuł",
   "setting:password1": "Nowe hasło",
@@ -136,6 +132,7 @@
   "setting:bgScanner:off": "Po stronie klienta",
   "setting:bgScannerBeepGood": "Brzęczenie czytnika dla dobrych kodów",
   "setting:bgScannerBeepBad": "Brzęczenie czytnika dla złych kodów",
+  "setting:bgScannerBeepDone": "Brzęczenie czytnika po sczytaniu płytek LED",
   "setting:bgScannerBeep:off": "Wyłączone",
   "setting:ledsEnabled": "Sprawdzanie płytek LED",
   "setting:ledsEnabled:off": "Wyłączone",
@@ -144,14 +141,12 @@
   "setting:programming": "Programowanie",
   "setting:programming:off": "Wyłączone",
   "setting:programming:on": "Włączone",
-
   "license:NO_KEY": "Brak klucza licencji.",
   "license:INVALID_ED_PEM": "Nieprawidłowy klucz odszyfrowywania.",
   "license:APP_ID": "Ustawiona licencja nie została przydzielona do uruchomionej aplikacji.",
   "license:APP_VERSION": "Ustawiona licencja nie obejmuje aktualnie uruchomionej wersji aplikacji.",
   "license:UNKNOWN_LICENSE": "Licencja nie została rozpoznana przez zewnętrzy serwer.",
   "license:DUPLICATE_LICENSE": "Zewnętrzny serwer wykrył zduplikowane licencje.",
-
   "hotkey:showDashboardPage": "Przejdź do Programowania",
   "hotkey:showHistoryPage": "Przejdź do Historii",
   "hotkey:showSettingsPage": "Przejdź do Ustawień",

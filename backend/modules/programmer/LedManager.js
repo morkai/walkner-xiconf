@@ -281,12 +281,7 @@ LedManager.prototype.onChecked = function(index, led, scannerId, err, xiconfOrde
 
   if (led.status === 'checked')
   {
-    this.broker.publish('programmer.ledManager.checked', {
-      ledIndex: index,
-      scannerId: scannerId
-    });
-
-    this.checkAllLeds();
+    this.checkAllLeds(index, scannerId);
   }
   else
   {
@@ -315,19 +310,31 @@ LedManager.prototype.onTimeout = function(index, led, scannerId)
 /**
  * @private
  */
-LedManager.prototype.checkAllLeds = function()
+LedManager.prototype.checkAllLeds = function(index, scannerId)
 {
   var leds = this.currentState.leds;
+  var done = true;
 
   for (var i = 0; i < leds.length; ++i)
   {
     if (leds[i].status !== 'checked')
     {
-      return;
+      done = false;
+
+      break;
     }
   }
 
-  this.programmer.changeState({waitingForLeds: false});
+  this.broker.publish('programmer.ledManager.checked', {
+    ledIndex: index,
+    scannerId: scannerId,
+    done: done
+  });
+
+  if (done)
+  {
+    this.programmer.changeState({waitingForLeds: false});
+  }
 };
 
 /**

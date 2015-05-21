@@ -120,6 +120,7 @@ exports.settings = {
     bgScanner: 0,
     bgScannerBeepBad: -1,
     bgScannerBeepGood: -1,
+    bgScannerBeepDone: -1,
     ledsEnabled: 0,
     programming: 1,
     hotkeys: {

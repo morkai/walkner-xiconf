@@ -53,6 +53,26 @@
   </div>
   <div class="row">
     <div class="form-group col-md-4">
+      <label for="<%- idPrefix %>-bgScannerBeepGood" class="control-label"><%- t('settings', 'setting:bgScannerBeepGood') %></label>
+      <select id="<%- idPrefix %>-bgScannerBeepGood" class="form-control" name="bgScannerBeepGood">
+        <% include _bgScannerOptions.ejs %>
+      </select>
+    </div>
+    <div class="form-group col-md-4">
+      <label for="<%- idPrefix %>-bgScannerBeepBad" class="control-label"><%- t('settings', 'setting:bgScannerBeepBad') %></label>
+      <select id="<%- idPrefix %>-bgScannerBeepBad" class="form-control" name="bgScannerBeepBad">
+        <% include _bgScannerOptions.ejs %>
+      </select>
+    </div>
+    <div class="form-group col-md-4">
+      <label for="<%- idPrefix %>-bgScannerBeepDone" class="control-label"><%- t('settings', 'setting:bgScannerBeepDone') %></label>
+      <select id="<%- idPrefix %>-bgScannerBeepDone" class="form-control" name="bgScannerBeepDone">
+        <% include _bgScannerOptions.ejs %>
+      </select>
+    </div>
+  </div>
+  <div class="row">
+    <div class="form-group col-md-4">
       <label for="<%- idPrefix %>-bgScanner" class="control-label"><%- t('settings', 'setting:bgScanner') %></label>
       <div>
         <label class="radio-inline">
@@ -63,74 +83,6 @@
         </label>
       </div>
     </div>
-    <div class="form-group col-md-4">
-      <label for="<%- idPrefix %>-bgScannerBeepGood" class="control-label"><%- t('settings', 'setting:bgScannerBeepGood') %></label>
-      <select id="<%- idPrefix %>-bgScannerBeepGood" class="form-control" name="bgScannerBeepGood">
-        <option value="-1"><%- t('settings', 'setting:bgScannerBeep:off') %>
-        <option value="0">1 SHORT HIGH
-        <option value="1">2 SHORT HIGH
-        <option value="2">3 SHORT HIGH
-        <option value="3">4 SHORT HIGH
-        <option value="4">5 SHORT HIGH
-        <option value="5">1 SHORT LOW
-        <option value="6">2 SHORT LOW
-        <option value="7">3 SHORT LOW
-        <option value="8">4 SHORT LOW
-        <option value="9">5 SHORT LOW
-        <option value="10">1 LONG HIGH
-        <option value="11">2 LONG HIGH
-        <option value="12">3 LONG HIGH
-        <option value="13">4 LONG HIGH
-        <option value="14">5 LONG HIGH
-        <option value="15">1 LONG LOW
-        <option value="16">2 LONG LOW
-        <option value="17">3 LONG LOW
-        <option value="18">4 LONG LOW
-        <option value="19">5 LONG LOW
-        <option value="20">FAST HIGH LOW HIGH LOW
-        <option value="21">SLOW HIGH LOW HIGH LOW
-        <option value="22">HIGH LOW
-        <option value="23">LOW HIGH
-        <option value="24">HIGH LOW HIGH
-        <option value="25">LOW HIGH LOW
-        <option value="26">HIGH HIGH LOW LOW
-      </select>
-    </div>
-    <div class="form-group col-md-4">
-      <label for="<%- idPrefix %>-bgScannerBeepBad" class="control-label"><%- t('settings', 'setting:bgScannerBeepBad') %></label>
-      <select id="<%- idPrefix %>-bgScannerBeepBad" class="form-control" name="bgScannerBeepBad">
-        <option value="-1"><%- t('settings', 'setting:bgScannerBeep:off') %>
-        <option value="0">1 SHORT HIGH
-        <option value="1">2 SHORT HIGH
-        <option value="2">3 SHORT HIGH
-        <option value="3">4 SHORT HIGH
-        <option value="4">5 SHORT HIGH
-        <option value="5">1 SHORT LOW
-        <option value="6">2 SHORT LOW
-        <option value="7">3 SHORT LOW
-        <option value="8">4 SHORT LOW
-        <option value="9">5 SHORT LOW
-        <option value="10">1 LONG HIGH
-        <option value="11">2 LONG HIGH
-        <option value="12">3 LONG HIGH
-        <option value="13">4 LONG HIGH
-        <option value="14">5 LONG HIGH
-        <option value="15">1 LONG LOW
-        <option value="16">2 LONG LOW
-        <option value="17">3 LONG LOW
-        <option value="18">4 LONG LOW
-        <option value="19">5 LONG LOW
-        <option value="20">FAST HIGH LOW HIGH LOW
-        <option value="21">SLOW HIGH LOW HIGH LOW
-        <option value="22">HIGH LOW
-        <option value="23">LOW HIGH
-        <option value="24">HIGH LOW HIGH
-        <option value="25">LOW HIGH LOW
-        <option value="26">HIGH HIGH LOW LOW
-      </select>
-    </div>
-  </div>
-  <div class="row">
     <div class="form-group col-md-4">
       <label for="<%- idPrefix %>-programDelay" class="control-label"><%- t('settings', 'setting:programDelay') %></label>
       <input id="<%- idPrefix %>-programDelay" class="form-control" name="programDelay" type="number" min="0" max="60">

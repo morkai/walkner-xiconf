@@ -52,7 +52,7 @@ module.exports = function setUpBarcodeScanner(app, programmerModule)
       return;
     }
 
-    var bgScannerBeep = settings.get('bgScannerBeepGood');
+    var bgScannerBeep = settings.get(message.done ? 'bgScannerBeepDone' : 'bgScannerBeepGood');
 
     if (bgScannerBeep >= 0)
     {
