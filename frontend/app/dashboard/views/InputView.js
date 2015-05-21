@@ -1003,7 +1003,7 @@ define([
 
       if (this.model.isRemoteInput())
       {
-        if (/([A-Z0-9]{22}-.*?[0-9]{12}[A-Z]|.[0-9]{12}.[0-9]{5,11}|.[0-9]{5,11}.[0-9]{12})/i.test(message.value))
+        if (/([A-Z0-9]{22}-.*?[0-9]{12}[^0-9]|.[0-9]{12}.[0-9]{5,11}|.[0-9]{5,11}.[0-9]{12})/i.test(message.value))
         {
           this.handleLedCommand(message.value, message.scannerId);
         }
@@ -1024,7 +1024,7 @@ define([
       var nc12;
       var serialNumber;
 
-      matches = led.match(/([A-Z0-9]{22})-.*?([0-9]{12})[A-Z]/i);
+      matches = led.match(/([A-Z0-9]{22})-.*?([0-9]{12})[^0-9]/i);
 
       if (!matches)
       {
