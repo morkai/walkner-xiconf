@@ -1,3 +1,10 @@
+2.11.2 @ 2015-05-21
+===================
+
+  * Changed the recently added LED board barcode pattern (the 12NC can now follow any non-numeric character).
+  * Added a new setting: Barcode scanner 'LED board scanning done' beep - a sound the barcode scanner should play after
+    all LED boards were scanned successfully.
+
 2.11.1 @ 2015-05-19
 ===================
 
