@@ -139,6 +139,7 @@
     "setting:bgScannerBeepBad": "Barcode scanner 'bad' beep",
     "setting:bgScannerBeepDone": "Barcode scanner 'LED board scanning done' beep",
     "setting:bgScannerBeep:off": "Disabled",
+    "setting:bgScannerFilter": "Barcode scanner serial number filter",
     "setting:ledsEnabled": "LED boards checking",
     "setting:ledsEnabled:off": "Disabled",
     "setting:ledsEnabled:auto": "Auto",

@@ -134,6 +134,7 @@
   "setting:bgScannerBeepBad": "Brzęczenie czytnika dla złych kodów",
   "setting:bgScannerBeepDone": "Brzęczenie czytnika po sczytaniu płytek LED",
   "setting:bgScannerBeep:off": "Wyłączone",
+  "setting:bgScannerFilter": "Filtr numerów seryjnych czytników kodów",
   "setting:ledsEnabled": "Sprawdzanie płytek LED",
   "setting:ledsEnabled:off": "Wyłączone",
   "setting:ledsEnabled:auto": "Automatyczne",

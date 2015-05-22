@@ -133,13 +133,13 @@ module.exports = function setUpBarcodeScanner(app, programmerModule)
       while ((eolIndex = buffer.indexOf('\r\n')) !== -1)
       {
         var scannedValue = buffer.substr(0, eolIndex);
-        var matches = scannedValue.match(/^BARCODE ([0-9]+) (.*?)$/);
+        var matches = scannedValue.match(/^BARCODE ([0-9]+) ([0-9]+) (.*?)$/);
 
         if (matches !== null)
         {
           app.broker.publish('programmer.barcodeScanned', {
-            scannerId: parseInt(matches[1], 10),
-            value: matches[2]
+            scannerId: parseInt(matches[2], 10),
+            value: matches[3]
           });
         }
 

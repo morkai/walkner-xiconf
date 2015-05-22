@@ -116,6 +116,33 @@ define([
       'submit': 'onSubmit'
     },
 
+    remoteTopics: {
+      'programmer.barcodeScanned': function(message)
+      {
+        if (!message.scannerId
+          || message.scannerId <= 255
+          || !document.activeElement
+          || document.activeElement.name !== 'bgScannerFilter')
+        {
+          return;
+        }
+
+        var serialNumbers = {};
+
+        this.$id('bgScannerFilter').val().split(/[^0-9]/).forEach(function(serialNumber)
+        {
+          if (/^[0-9]{4,}$/.test(serialNumber))
+          {
+            serialNumbers[serialNumber] = 1;
+          }
+        });
+
+        serialNumbers[message.scannerId] = 1;
+
+        this.$id('bgScannerFilter').val(Object.keys(serialNumbers).join(' '));
+      }
+    },
+
     initialize: function()
     {
       this.idPrefix = _.uniqueId('settingsForm');

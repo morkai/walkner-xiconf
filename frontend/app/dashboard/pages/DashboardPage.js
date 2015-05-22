@@ -129,8 +129,6 @@ define([
       this.listenTo(settings, 'change:licenseInfo', this.onLicenseInfoChange);
       this.listenTo(settings, 'change:testingEnabled', this.onTestingEnabledChange);
       this.listenTo(settings, 'change:hotkeys', this.updateHotkeys);
-
-      barcodeScanner.start();
     },
 
     destroy: function()
@@ -183,6 +181,8 @@ define([
 
     afterRender: function()
     {
+      barcodeScanner.start();
+
       this.$els.navbar = $('.navbar');
       this.$els.progressBar = this.$id('progressBar');
 

@@ -339,6 +339,7 @@ exports.start = function startSettingsModule(app, module, done)
     validateEnum(rawSettings, newSettings, 'bgScanner', Number, [0, 1]);
     validateEnum(rawSettings, newSettings, 'ledsEnabled', Number, [0, 1, 2]);
     validateEnum(rawSettings, newSettings, 'programming', Number, [0, 1]);
+    validateBgScannerFilter(rawSettings, newSettings);
     validateHotkeys(rawSettings, newSettings);
 
     if (newSettings.password1)
@@ -402,6 +403,25 @@ exports.start = function startSettingsModule(app, module, done)
     {
       newSettings[setting] = value;
     }
+  }
+
+  function validateBgScannerFilter(rawSettings, newSettings)
+  {
+    var newBgScannerFilter = rawSettings.bgScannerFilter;
+
+    if (!_.isString(newBgScannerFilter))
+    {
+      return;
+    }
+
+    var serialNumbers = {};
+
+    newBgScannerFilter
+      .split(/[^0-9]/)
+      .filter(function(serialNumber) { return /^[0-9]{4,}$/.test(serialNumber); })
+      .forEach(function(serialNumber) { serialNumbers[serialNumber] = 1; });
+
+    newSettings.bgScannerFilter = Object.keys(serialNumbers).join(' ');
   }
 
   function validateHotkeys(rawSettings, newSettings)

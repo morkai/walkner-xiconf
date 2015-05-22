@@ -19,15 +19,20 @@ define([
   var KEY_0 = 48;
   var KEY_9 = 57;
 
+  var enabledScanners = null;
   var enabled = false;
   var commandBuffer = '';
   var clearTimer = null;
 
   if (user.isLocal())
   {
+    cacheBgScannerFilter();
+
+    settings.on('change:bgScannerFilter', cacheBgScannerFilter);
+
     pubsub.subscribe('programmer.barcodeScanned', function(message)
     {
-      if (enabled)
+      if (enabled && (!enabledScanners || enabledScanners[message.scannerId]))
       {
         broker.publish('programmer.barcodeScanned', {
           remote: true,
@@ -92,6 +97,25 @@ define([
     clearTimer = null;
 
     commandBuffer = '';
+  }
+
+  function cacheBgScannerFilter()
+  {
+    var bgScannerFilter = settings.get('bgScannerFilter');
+
+    if (!bgScannerFilter)
+    {
+      enabledScanners = null;
+
+      return;
+    }
+
+    enabledScanners = {};
+
+    bgScannerFilter.split(' ').forEach(function(serialNumber)
+    {
+      enabledScanners[serialNumber] = true;
+    });
   }
 
   function handleCommandBuffer(e)
