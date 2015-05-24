@@ -1,3 +1,10 @@
+2.11.4 @ 2015-05-24
+===================
+
+  * Added a second config file that can be used to run another instance of the application.
+  * Added a new setting: Barcode scanner filter - a list of barcode scanner serial numbers that the application should
+    accept.
+
 2.11.3 @ 2015-05-22
 ===================
 
