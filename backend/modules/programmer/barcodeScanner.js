@@ -6,6 +6,7 @@
 
 var format = require('util').format;
 var spawn = require('child_process').spawn;
+var _ = require('lodash');
 
 module.exports = function setUpBarcodeScanner(app, programmerModule)
 {

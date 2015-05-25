@@ -712,7 +712,7 @@ module.exports = function programAndTest(app, programmerModule, done)
     };
   }
 
-  function createExecuteWaitStepStep(programStep, stepIndex, modbusMaster, sdpMaster, metrics)
+  function createExecuteWaitStepStep(programStep, stepIndex, modbusMaster, sdpMaster)
   {
     return function executeFnStepStep(err)
     {
