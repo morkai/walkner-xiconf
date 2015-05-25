@@ -13,6 +13,7 @@ config.httpServer.port = /^[0-9]+$/.test(process.env.XICONF_PORT) ? +process.env
 
 config.sqlite3.dbFile = path.join(DATA_PATH, 'db.sqlite3');
 
+config.programmer.httpPort = config.httpServer.port;
 config.programmer.featureDbPath = path.join(DATA_PATH, 'features');
 config.programmer.workflowFile = path.join(DATA_PATH, 'workflow.txt');
 config.programmer.lastModeFile = path.join(DATA_PATH, 'lastMode.txt');

@@ -28,13 +28,19 @@ exports.sqlite3 = {
   dbFile: DATA_PATH + '/db.sqlite3'
 };
 
+exports.httpServer = {
+  host: '0.0.0.0',
+  port: 1337
+};
+
 exports.programmer = {
   featureDbPath: DATA_PATH + '/features',
   workflowFile: DATA_PATH + '/workflow.txt',
   lptIoFile: BIN_PATH + '/LptIo/LptIo.exe',
   lastModeFile: DATA_PATH + '/lastMode.txt',
   spoolFile: BIN_PATH + '/spool.exe',
-  motoBarScanFile: BIN_PATH + '/MotoBarScan/MotoBarScan.exe'
+  motoBarScanFile: BIN_PATH + '/MotoBarScan/MotoBarScan.exe',
+  httpPort: exports.httpServer.port
 };
 
 exports.history = {
@@ -146,11 +152,6 @@ exports.settings = {
       closeDialog: 'O'
     }
   }
-};
-
-exports.httpServer = {
-  host: '0.0.0.0',
-  port: 1337
 };
 
 exports.pubsub = {

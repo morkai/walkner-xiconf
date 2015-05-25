@@ -19,12 +19,14 @@ exports.DEFAULT_CONFIG = {
   historyId: 'history',
   sqlite3Id: 'sqlite3',
   sioId: 'sio',
+  httpServerId: 'httpServer',
   featureDbPath: './',
   workflowFile: 'workflow.txt',
   lptIoFile: 'LptIo.exe',
   lastModeFile: 'lastMode.txt',
   spoolFile: 'spool.exe',
-  motoBarScanFile: 'MotoBarScan.exe'
+  motoBarScanFile: 'MotoBarScan.exe',
+  httpPort: 80
 };
 
 exports.start = function startProgrammerModule(app, module)
