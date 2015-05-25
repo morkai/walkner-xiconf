@@ -123,7 +123,7 @@ module.exports = function setUpProgrammerCommands(app, programmerModule)
         orderNo,
         nc12,
         serialNumber,
-        _.isNumber(scannerId) && scannerId > 0 ? scannerId : 0
+        _.isString(scannerId) && /^[A-Z0-9]+$/.test(scannerId) ? scannerId : null
       );
     }
   }

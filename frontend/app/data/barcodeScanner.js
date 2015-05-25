@@ -126,7 +126,7 @@ define([
         remote: false,
         local: true,
         value: commandBuffer,
-        scannerId: 0,
+        scannerId: null,
         event: e
       });
     }

@@ -417,8 +417,8 @@ exports.start = function startSettingsModule(app, module, done)
     var serialNumbers = {};
 
     newBgScannerFilter
-      .split(/[^0-9]/)
-      .filter(function(serialNumber) { return /^[0-9]{4,}$/.test(serialNumber); })
+      .split(/[^0-9A-Z]/)
+      .filter(function(serialNumber) { return /^[0-9A-Z]{4,}$/.test(serialNumber); })
       .forEach(function(serialNumber) { serialNumbers[serialNumber] = 1; });
 
     newSettings.bgScannerFilter = Object.keys(serialNumbers).join(' ');

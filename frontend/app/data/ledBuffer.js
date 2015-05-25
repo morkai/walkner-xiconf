@@ -37,7 +37,7 @@ define([
       ledBuffer.push({
         nc12: nc12,
         serialNumber: serialNumber,
-        scannerId: scannerId || 0
+        scannerId: scannerId || null
       });
 
       scheduleBufferClear();

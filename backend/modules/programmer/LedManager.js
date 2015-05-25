@@ -30,15 +30,10 @@ function LedManager(broker, programmer)
  * @param {string} orderNo
  * @param {string} nc12
  * @param {string} serialNumber
- * @param {number} [scannerId]
+ * @param {string|null} scannerId
  */
 LedManager.prototype.check = function(orderNo, nc12, serialNumber, scannerId)
 {
-  if (!scannerId)
-  {
-    scannerId = 0;
-  }
-
   if (!this.currentState.waitingForLeds)
   {
     return;
@@ -163,7 +158,7 @@ LedManager.prototype.findIndex = function(nc12, serialNumber)
  * @param {string} orderNo
  * @param {string} nc12
  * @param {string} serialNumber
- * @param {number} scannerId
+ * @param {string|null} scannerId
  */
 LedManager.prototype.checkIndex = function(index, orderNo, nc12, serialNumber, scannerId)
 {
@@ -188,7 +183,7 @@ LedManager.prototype.checkIndex = function(index, orderNo, nc12, serialNumber, s
  * @param {string} orderNo
  * @param {string} nc12
  * @param {string} serialNumber
- * @param {number} scannerId
+ * @param {string|null} scannerId
  */
 LedManager.prototype.checkLed = function(index, led, orderNo, nc12, serialNumber, scannerId)
 {
@@ -244,7 +239,7 @@ LedManager.prototype.checkLed = function(index, led, orderNo, nc12, serialNumber
  * @private
  * @param {number} index
  * @param {object} led
- * @param {number} scannerId
+ * @param {string|null} scannerId
  * @param {object|null} err
  * @param {object|null} xiconfOrder
  */
@@ -293,7 +288,7 @@ LedManager.prototype.onChecked = function(index, led, scannerId, err, xiconfOrde
  * @private
  * @param {number} index
  * @param {object} led
- * @param {number} scannerId
+ * @param {string|null} scannerId
  */
 LedManager.prototype.onTimeout = function(index, led, scannerId)
 {
@@ -309,6 +304,8 @@ LedManager.prototype.onTimeout = function(index, led, scannerId)
 
 /**
  * @private
+ * @param {number} index
+ * @param {string|null} scannerId
  */
 LedManager.prototype.checkAllLeds = function(index, scannerId)
 {
@@ -416,7 +413,7 @@ LedManager.prototype.updateLed = function(index, data)
 
 /**
  * @param {number} ledIndex
- * @param {number} scannerId
+ * @param {string|null} scannerId
  * @param {string} reason
  */
 LedManager.prototype.publishCheckFailure = function(ledIndex, scannerId, reason)

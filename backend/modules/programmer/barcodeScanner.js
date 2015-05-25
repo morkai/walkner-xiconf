@@ -23,11 +23,16 @@ module.exports = function setUpBarcodeScanner(app, programmerModule)
 
   app.broker.subscribe('programmer.ledManager.checkFailed', function(message)
   {
-    var scannerId = message.scannerId;
-
-    if (!scannerId || !motoBarScan)
+    if (!motoBarScan)
     {
       return;
+    }
+
+    var scannerId = message.scannerId;
+
+    if (!_.isString(scannerId) || !/^[A-Z0-9]+$/.test(scannerId))
+    {
+      scannerId = '1';
     }
 
     var bgScannerBeep = settings.get('bgScannerBeepBad');
@@ -45,11 +50,16 @@ module.exports = function setUpBarcodeScanner(app, programmerModule)
 
   app.broker.subscribe('programmer.ledManager.checked', function(message)
   {
-    var scannerId = message.scannerId;
-
-    if (!scannerId || !motoBarScan)
+    if (!motoBarScan)
     {
       return;
+    }
+
+    var scannerId = message.scannerId;
+
+    if (!_.isString(scannerId) || !/^[A-Z0-9]+$/.test(scannerId))
+    {
+      scannerId = '1';
     }
 
     var bgScannerBeep = settings.get(message.done ? 'bgScannerBeepDone' : 'bgScannerBeepGood');
@@ -133,12 +143,12 @@ module.exports = function setUpBarcodeScanner(app, programmerModule)
       while ((eolIndex = buffer.indexOf('\r\n')) !== -1)
       {
         var scannedValue = buffer.substr(0, eolIndex);
-        var matches = scannedValue.match(/^BARCODE ([0-9]+) ([0-9]+) (.*?)$/);
+        var matches = scannedValue.match(/^BARCODE ([0-9]+) ([A-Z0-9]+) (.*?)$/);
 
         if (matches !== null)
         {
           app.broker.publish('programmer.barcodeScanned', {
-            scannerId: parseInt(matches[2], 10),
+            scannerId: matches[2],
             value: matches[3]
           });
         }

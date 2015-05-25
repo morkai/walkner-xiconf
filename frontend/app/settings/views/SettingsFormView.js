@@ -120,7 +120,7 @@ define([
       'programmer.barcodeScanned': function(message)
       {
         if (!message.scannerId
-          || message.scannerId <= 255
+          || parseInt(message.scannerId, 10) <= 255
           || !document.activeElement
           || document.activeElement.name !== 'bgScannerFilter')
         {
@@ -129,9 +129,9 @@ define([
 
         var serialNumbers = {};
 
-        this.$id('bgScannerFilter').val().split(/[^0-9]/).forEach(function(serialNumber)
+        this.$id('bgScannerFilter').val().split(/[^0-9A-Z]/).forEach(function(serialNumber)
         {
-          if (/^[0-9]{4,}$/.test(serialNumber))
+          if (/^[0-9A-Z]{4,}$/.test(serialNumber))
           {
             serialNumbers[serialNumber] = 1;
           }
