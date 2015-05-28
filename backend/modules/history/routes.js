@@ -9,7 +9,7 @@ var path = require('path');
 var moment = require('moment');
 var csv = require('csv');
 var step = require('h5.step');
-var lodash = require('lodash');
+var _ = require('lodash');
 
 module.exports = function setUpHistoryRoutes(app, historyModule)
 {
@@ -35,7 +35,10 @@ module.exports = function setUpHistoryRoutes(app, historyModule)
     errorCode: 'e.errorCode',
     exception: 'e.exception',
     featureFileName: 'e.featureFileName',
-    featureFileHash: 'e.featureFileHash',
+    gprsNc12: 'e.gprsNc12',
+    gprsOrderFileHash: 'e.gprsOrderFileHash',
+    gprsInputFileHash: 'e.gprsInputFileHash',
+    gprsOutputFileHash: 'e.gprsOutputFileHash',
     program: 'e.program',
     steps: 'e.steps',
     metrics: 'e.metrics',
@@ -106,10 +109,10 @@ module.exports = function setUpHistoryRoutes(app, historyModule)
   express.get('/history;export', setExportFields, prepareSql, function(req, res, next)
   {
     var sql = "SELECT " + req.sql.fields + "\
-                   FROM historyEntries e\
-                   LEFT JOIN orders o ON o._id=e._order\
-                   WHERE " + req.sql.conditions + "\
-                   ORDER BY " + req.sql.orderBy;
+               FROM historyEntries e\
+               LEFT JOIN orders o ON o._id=e._order\
+               WHERE " + req.sql.conditions + "\
+               ORDER BY " + req.sql.orderBy;
 
     db.all(sql, function(err, rows)
     {
@@ -162,6 +165,9 @@ module.exports = function setUpHistoryRoutes(app, historyModule)
 
   express.get('/history/:id;workflow', downloadFileRoute.bind(null, 'workflow'));
   express.get('/history/:id;feature', downloadFileRoute.bind(null, 'feature'));
+  express.get('/history/:id;gprsOrder', downloadFileRoute.bind(null, 'gprsOrder'));
+  express.get('/history/:id;gprsInput', downloadFileRoute.bind(null, 'gprsInput'));
+  express.get('/history/:id;gprsOutput', downloadFileRoute.bind(null, 'gprsOutput'));
 
   express.get('/history/:id', function(req, res, next)
   {
@@ -200,43 +206,53 @@ module.exports = function setUpHistoryRoutes(app, historyModule)
         row.metrics = JSON.parse(row.metrics);
       }
 
-      if (row.featureFileHash === null)
-      {
-        return res.send(row);
-      }
-
-      var featureFile = path.join(historyModule.config.featureDbPath, row.featureFileHash);
-
-      fs.readFile(featureFile, 'utf8', function(err, feature)
-      {
-        if (err)
+      step(
+        function()
         {
-          historyModule.error("Failed to read feature file data [%s]: %s", row._id, err.message);
-        }
-        else
+          readFileContents(row, 'feature', row.featureFileHash, this.group());
+          readFileContents(row, 'gprsOrderFile', row.gprsOrderFileHash, this.group());
+          readFileContents(row, 'gprsInputFile', row.gprsInputFileHash, this.group());
+          readFileContents(row, 'gprsOutputFile', row.gprsOutputFileHash, this.group());
+        },
+        function()
         {
-          row.feature = feature;
+          res.json(row);
         }
-
-        return res.send(row);
-      });
+      );
     });
   });
 
+  function readFileContents(obj, property, fileHash, done)
+  {
+    if (!fileHash)
+    {
+      return setImmediate(done);
+    }
+
+    var featureFile = path.join(historyModule.config.featureDbPath, fileHash);
+
+    fs.readFile(featureFile, 'utf8', function(err, fileContents)
+    {
+      if (err)
+      {
+        historyModule.error("Failed to read file contents of [%s]: %s", obj._id, err.message);
+      }
+      else
+      {
+        obj[property] = fileContents;
+      }
+
+      return done();
+    });
+  }
+
   function downloadFileRoute(file, req, res, next)
   {
-    var fields = "startedAt";
-
-    if (file === 'feature')
-    {
-      fields += ", featureFileName, featureFileHash";
-    }
-    else
-    {
-      fields += ", workflow";
-    }
-
-    var sql = "SELECT " + fields + " FROM historyEntries WHERE _id=$_id LIMIT 1";
+    var sql = "SELECT e.*, o.no AS orderNo\
+               FROM historyEntries e\
+               LEFT JOIN orders o ON o._id=e._order\
+               WHERE e._id=$_id\
+               LIMIT 1";
 
     db.get(sql, {$_id: req.params.id}, function(err, row)
     {
@@ -269,6 +285,7 @@ module.exports = function setUpHistoryRoutes(app, historyModule)
 
       var type;
       var filename;
+      var fileHash;
 
       if (file === 'feature')
       {
@@ -281,8 +298,31 @@ module.exports = function setUpHistoryRoutes(app, historyModule)
         }
         else
         {
-          filename = 'FEATURE_' + suffix;
+          filename = 'FEATURE' + suffix;
         }
+
+        fileHash = row.featureFileHash;
+      }
+      else if (file === 'gprsOrder')
+      {
+        type = 'txt';
+        suffix += '.dat';
+        filename = row.orderNo + suffix;
+        fileHash = row.gprsOrderFileHash;
+      }
+      else if (file === 'gprsInput')
+      {
+        type = 'json';
+        suffix += '.json';
+        filename = (row.serviceTag || '').replace(/^P0+/, '') + suffix;
+        fileHash = row.gprsInputFileHash;
+      }
+      else if (file === 'gprsOutput')
+      {
+        type = 'xml';
+        suffix += '.xml';
+        filename = (row.serviceTag || '').replace(/^P0+/, '') + suffix;
+        fileHash = row.gprsOutputFileHash;
       }
       else
       {
@@ -299,9 +339,9 @@ module.exports = function setUpHistoryRoutes(app, historyModule)
         return res.send(row.workflow);
       }
 
-      if (row.featureFileHash)
+      if (fileHash)
       {
-        return res.sendfile(path.join(historyModule.config.featureDbPath, row.featureFileHash));
+        return res.sendFile(path.join(historyModule.config.featureDbPath, fileHash));
       }
 
       res.send('?');
@@ -314,6 +354,7 @@ module.exports = function setUpHistoryRoutes(app, historyModule)
       serviceTag: 1,
       no: 1,
       nc12: 1,
+      gprsNc12: 1,
       counter: 1,
       quantity: 1,
       result: 1,
@@ -364,7 +405,7 @@ module.exports = function setUpHistoryRoutes(app, historyModule)
     });
 
     req.sql = {
-      fields: fields.length ? fields.join(', ') : lodash.values(PROPERTY_TO_FIELD).join(', '),
+      fields: fields.length ? fields.join(', ') : _.values(PROPERTY_TO_FIELD).join(', '),
       conditions: conditions.length ? conditions.join(' AND ') : '1=1',
       orderBy: orderBy.length ? orderBy.join(', ') : 'o.startedAt DESC',
       limit: req.rql.limit,

@@ -1,5 +1,6 @@
 {
   "breadcrumb": "Ustawienia",
+
   "msg:filesOnly": "Upuszczać można tylko pliki!",
   "msg:textOnly": "Upuszczać można tylko pliki tekstowe!",
   "msg:invalidFile": "Nieprawidłowa zawartość pliku!",
@@ -14,9 +15,11 @@
   "msg:restart:failure": "Nie udało się zrestartować serwera :(",
   "msg:restart:AUTH": "Nie można zrestartować serwera: nieprawidłowe hasło!",
   "msg:restart:LOCKED": "Nie można zrestartować serwera w trakcie programowania!",
+
   "form:settings": "Podstawowe ustawienia",
   "form:remote": "Tryb zdalny",
   "form:mow": "MultiOne Workflow",
+  "form:gprs": "GPRS",
   "form:sol": "Fortimo Solar",
   "form:lpt": "Petrol Station",
   "form:testing": "Tester 24V DC",
@@ -26,8 +29,10 @@
   "form:export": "Eksportuj ustawienia",
   "form:restart": "Restartuj serwer",
   "form:password": "Hasło",
+
   "mowVersion:supported": "Wspierana wersja Philips MultiOne Workflow",
   "mowVersion:installed": "Zainstalowana wersja Philips MultiOne Workflow",
+
   "setting:id": "Identyfikator instalacji",
   "setting:title": "Tytuł",
   "setting:password1": "Nowe hasło",
@@ -142,12 +147,25 @@
   "setting:programming": "Programowanie",
   "setting:programming:off": "Wyłączone",
   "setting:programming:on": "Włączone",
+  "setting:gprsOrdersPath": "Ścieżka do katalogu ze zleceniami",
+  "setting:gprsVerificationTimeout": "Timeout weryfikacji [ms]",
+  "setting:gprsVerification": "Weryfikacja wyniku programatora",
+  "setting:gprsVerification:on": "Włączona",
+  "setting:gprsVerification:off": "Wyłączona",
+  "setting:gprsVerificationInputPath": "Ścieżka do wejściowego katalogu weryfikacji",
+  "setting:gprsVerificationSuccessPath": "Ścieżka do katalogu pomyślnej weryfikacji",
+  "setting:gprsVerificationErrorPath": "Ścieżka do katalogu niepomyślnej weryfikacji",
+  "setting:gprsDaliPort": "Port DALI programatora",
+  "setting:gprsInputTemplateFile": "Ścieżka do pliku z szablonem konfiguracji programatora",
+  "setting:gprsProgrammerFile": "Ścieżka do pliku wykonywalnego programatora",
+
   "license:NO_KEY": "Brak klucza licencji.",
   "license:INVALID_ED_PEM": "Nieprawidłowy klucz odszyfrowywania.",
   "license:APP_ID": "Ustawiona licencja nie została przydzielona do uruchomionej aplikacji.",
   "license:APP_VERSION": "Ustawiona licencja nie obejmuje aktualnie uruchomionej wersji aplikacji.",
   "license:UNKNOWN_LICENSE": "Licencja nie została rozpoznana przez zewnętrzy serwer.",
   "license:DUPLICATE_LICENSE": "Zewnętrzny serwer wykrył zduplikowane licencje.",
+
   "hotkey:showDashboardPage": "Przejdź do Programowania",
   "hotkey:showHistoryPage": "Przejdź do Historii",
   "hotkey:showSettingsPage": "Przejdź do Ustawień",

@@ -120,6 +120,7 @@ define([
         orderNo: null,
         quantity: null,
         nc12: null,
+        gprs: null,
         reload: null,
         reset: null,
         printServiceTag: null,
@@ -200,11 +201,11 @@ define([
       return $el && !$el.prop('disabled') && $el.is(':visible');
     },
 
-    checkSerialNumber: function(nc12, serialNumber, scannerId)
+    checkSerialNumber: function(raw, nc12, serialNumber, scannerId)
     {
       if (this.model.get('waitingForLeds'))
       {
-        this.socket.emit('programmer.checkSerialNumber', this.$els.orderNo.val(), nc12, serialNumber, scannerId);
+        this.socket.emit('programmer.checkSerialNumber', this.$els.orderNo.val(), raw, nc12, serialNumber, scannerId);
       }
     },
 
@@ -711,6 +712,7 @@ define([
 
       var programItems = [];
       var ledItems = [];
+      var gprsItems = [];
 
       _.forEach(orderData.items, function(item)
       {
@@ -718,9 +720,13 @@ define([
         {
           programItems.push(item);
         }
-        else
+        else if (item.kind === 'led')
         {
           ledItems.push(item);
+        }
+        else if (item.kind === 'gprs')
+        {
+          gprsItems.push(item);
         }
       });
 
@@ -802,6 +808,21 @@ define([
       {
         $els.quantity.val(Math.abs(quantity)).toggleClass('is-overflow', quantity < 0);
       }
+
+      var isGprs = false;
+
+      if (isRemoteInput
+        && selectedProgramItem
+        && gprsItems.length === 1
+        && this.model.isProgrammingMode()
+        && settings.supportsFeature('gprs'))
+      {
+        isGprs = true;
+
+        this.$els.gprs.val(gprsItems[0].nc12);
+      }
+
+      this.$el.toggleClass('is-gprs', isGprs);
     },
 
     isNc12Required: function()
@@ -967,7 +988,7 @@ define([
       {
         var led = leds[i];
 
-        this.checkSerialNumber(led.nc12, led.serialNumber, led.scannerId);
+        this.checkSerialNumber(led.raw, led.nc12, led.serialNumber, led.scannerId);
       }
     },
 
@@ -1056,11 +1077,11 @@ define([
 
       if (this.model.get('waitingForLeds'))
       {
-        this.checkSerialNumber(nc12, serialNumber, scannerId);
+        this.checkSerialNumber(led, nc12, serialNumber, scannerId);
       }
       else if (this.model.get('countdown') === -1 || !this.model.get('finishedAt'))
       {
-        ledBuffer.add(nc12, serialNumber, scannerId);
+        ledBuffer.add(led, nc12, serialNumber, scannerId);
 
         this.start();
       }

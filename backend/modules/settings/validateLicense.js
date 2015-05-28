@@ -108,7 +108,7 @@ module.exports = function validateLicense(app, settingsModule, rawSettings, newS
     licenseInfo.features = 0;
   }
 
-  if (!semver.satisfies(app.options.version, licenseInfo.appVersion))
+  if (!semver.satisfies(app.options.version.split('-')[0], licenseInfo.appVersion.split('-')[0]))
   {
     licenseInfo.error = 'APP_VERSION';
   }

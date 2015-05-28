@@ -35,6 +35,7 @@ exports.httpServer = {
 
 exports.programmer = {
   featureDbPath: DATA_PATH + '/features',
+  gprsOutputFile: DATA_PATH + '/gprs-output.xml',
   workflowFile: DATA_PATH + '/workflow.txt',
   lptIoFile: BIN_PATH + '/LptIo/LptIo.exe',
   lastModeFile: DATA_PATH + '/lastMode.txt',
@@ -130,6 +131,15 @@ exports.settings = {
     bgScannerFilter: '',
     ledsEnabled: 0,
     programming: 1,
+    gprsVerification: 1,
+    gprsVerificationTimeout: 60000,
+    gprsVerificationInputPath: DATA_PATH + '/gprs/input',
+    gprsVerificationSuccessPath: DATA_PATH + '/gprs/success',
+    gprsVerificationErrorPath: DATA_PATH + '/gprs/error',
+    gprsOrdersPath: DATA_PATH + '/gprs/orders',
+    gprsProgrammerFile: 'CityTouchIPT.exe',
+    gprsInputTemplateFile: DATA_PATH + '/gprs-input.json',
+    gprsDaliPort: 0,
     hotkeys: {
       focusOrderNo: 'Q',
       focusQuantity: 'W',

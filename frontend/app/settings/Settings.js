@@ -56,6 +56,39 @@ define([
       var licenseInfo = this.get('licenseInfo');
 
       return licenseInfo && !licenseInfo.error;
+    },
+
+    supportsFeature: function(feature)
+    {
+      var licenseInfo = this.get('licenseInfo');
+
+      if (!licenseInfo)
+      {
+        return false;
+      }
+
+      var supportedFeatures = licenseInfo.features;
+
+      switch (feature)
+      {
+        case 'wmes':
+          return !!(supportedFeatures & 1);
+
+        case 'sol':
+          return !!(supportedFeatures & 2);
+
+        case 't24vdc':
+          return !!(supportedFeatures & 4);
+
+        case 'led':
+          return !!(supportedFeatures & 8);
+
+        case 'gprs':
+          return !!(supportedFeatures & 16);
+
+        default:
+          return false;
+      }
     }
 
   });

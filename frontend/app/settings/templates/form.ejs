@@ -3,6 +3,7 @@
     <li data-tab="settings" class="active"><a id="<%- idPrefix %>-tab-settings" href="#<%- idPrefix %>-settings" data-toggle="tab"><%- t('settings', 'form:settings') %></a></li>
     <li data-tab="remote"><a id="<%- idPrefix %>-tab-remote" href="#<%- idPrefix %>-remote" data-toggle="tab"><%- t('settings', 'form:remote') %></a></li>
     <li data-tab="mow"><a id="<%- idPrefix %>-tab-mow" href="#<%- idPrefix %>-mow" data-toggle="tab"><%- t('settings', 'form:mow') %></a></li>
+    <li data-tab="gprs"><a id="<%- idPrefix %>-tab-gprs" href="#<%- idPrefix %>-gprs" data-toggle="tab"><%- t('settings', 'form:gprs') %></a></li>
     <li data-tab="lpt"><a id="<%- idPrefix %>-tab-lpt" href="#<%- idPrefix %>-lpt" data-toggle="tab"><%- t('settings', 'form:lpt') %></a></li>
     <li data-tab="sol"><a id="<%- idPrefix %>-tab-sol" href="#<%- idPrefix %>-sol" data-toggle="tab"><%- t('settings', 'form:sol') %></a></li>
     <li data-tab="testing"><a id="<%- idPrefix %>-tab-testing" href="#<%- idPrefix %>-testing" data-toggle="tab"><%- t('settings', 'form:testing') %></a></li>
@@ -13,6 +14,7 @@
     <% include _settings.ejs %>
     <% include _remote.ejs %>
     <% include _mow.ejs %>
+    <% include _gprs.ejs %>
     <% include _lpt.ejs %>
     <% include _sol.ejs %>
     <% include _testing.ejs %>

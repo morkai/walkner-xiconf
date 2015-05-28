@@ -28,11 +28,12 @@ function LedManager(broker, programmer)
 
 /**
  * @param {string} orderNo
+ * @param {string} raw
  * @param {string} nc12
  * @param {string} serialNumber
  * @param {string|null} scannerId
  */
-LedManager.prototype.check = function(orderNo, nc12, serialNumber, scannerId)
+LedManager.prototype.check = function(orderNo, raw, nc12, serialNumber, scannerId)
 {
   if (!this.currentState.waitingForLeds)
   {
@@ -55,7 +56,7 @@ LedManager.prototype.check = function(orderNo, nc12, serialNumber, scannerId)
 
     this.checkLocks[serialNumber] = now;
 
-    this.checkIndex(index, orderNo, nc12, serialNumber, scannerId);
+    this.checkIndex(index, orderNo, raw, nc12, serialNumber, scannerId);
   }
   else
   {
@@ -70,6 +71,7 @@ LedManager.prototype.check = function(orderNo, nc12, serialNumber, scannerId)
 LedManager.prototype.resetLed = function(index, led)
 {
   led.status = 'waiting';
+  led.raw = '';
   led.serialNumber = null;
 
   this.updateLed(index, led);
@@ -156,11 +158,12 @@ LedManager.prototype.findIndex = function(nc12, serialNumber)
  * @private
  * @param {number} index
  * @param {string} orderNo
+ * @param {string} raw
  * @param {string} nc12
  * @param {string} serialNumber
  * @param {string|null} scannerId
  */
-LedManager.prototype.checkIndex = function(index, orderNo, nc12, serialNumber, scannerId)
+LedManager.prototype.checkIndex = function(index, orderNo, raw, nc12, serialNumber, scannerId)
 {
   this.cleanUpIndex(index);
 
@@ -172,7 +175,7 @@ LedManager.prototype.checkIndex = function(index, orderNo, nc12, serialNumber, s
   }
   else
   {
-    this.checkLed(index, led, orderNo, nc12, serialNumber, scannerId);
+    this.checkLed(index, led, orderNo, raw, nc12, serialNumber, scannerId);
   }
 };
 
@@ -181,13 +184,15 @@ LedManager.prototype.checkIndex = function(index, orderNo, nc12, serialNumber, s
  * @param {number} index
  * @param {object} led
  * @param {string} orderNo
+ * @param {string} raw
  * @param {string} nc12
  * @param {string} serialNumber
  * @param {string|null} scannerId
  */
-LedManager.prototype.checkLed = function(index, led, orderNo, nc12, serialNumber, scannerId)
+LedManager.prototype.checkLed = function(index, led, orderNo, raw, nc12, serialNumber, scannerId)
 {
   led.status = null;
+  led.raw = raw;
   led.serialNumber = serialNumber;
 
   if (nc12 !== led.nc12)

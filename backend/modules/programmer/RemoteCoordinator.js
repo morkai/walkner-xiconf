@@ -78,7 +78,24 @@ RemoteCoordinator.prototype.connectToProdLine = function(forceReconnect)
  * @param {string} data.orderNo
  * @param {string} data.nc12
  * @param {Array.<({nc12: string, serialNumbers: Array.<string>})>} data.leds
- * @param {number} data.count
+ * @param {function} done
+ */
+RemoteCoordinator.prototype.generateServiceTag = function(data, done)
+{
+  if (!this.isConnected())
+  {
+    return done(new Error("No connection to the remote server: " + this.settings.get('remoteServer')));
+  }
+
+  this.sio.emit('xiconf.generateServiceTag', data, done);
+};
+
+/**
+ * @param {object} data
+ * @param {string} [data.serviceTag]
+ * @param {string} data.orderNo
+ * @param {string} data.nc12
+ * @param {Array.<({nc12: string, serialNumbers: Array.<string>})>} data.leds
  * @param {function} done
  */
 RemoteCoordinator.prototype.acquireServiceTag = function(data, done)
@@ -114,7 +131,6 @@ RemoteCoordinator.prototype.checkSerialNumber = function(data, done)
  * @param {string} data.orderNo
  * @param {string} data.nc12
  * @param {Array.<({nc12: string, serialNumbers: Array.<string>})>} data.leds
- * @param {number} data.count
  */
 RemoteCoordinator.prototype.releaseServiceTag = function(data)
 {

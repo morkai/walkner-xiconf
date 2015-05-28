@@ -21,6 +21,7 @@ exports.DEFAULT_CONFIG = {
   sioId: 'sio',
   httpServerId: 'httpServer',
   featureDbPath: './',
+  gprsOutputFile: 'gprs-output.xml',
   workflowFile: 'workflow.txt',
   lptIoFile: 'LptIo.exe',
   lastModeFile: 'lastMode.txt',
@@ -360,9 +361,9 @@ exports.start = function startProgrammerModule(app, module)
     );
   };
 
-  module.checkSerialNumber = function(orderNo, nc12, serialNumber, scannerId)
+  module.checkSerialNumber = function(orderNo, raw, nc12, serialNumber, scannerId)
   {
-    module.ledManager.check(orderNo, nc12, serialNumber, scannerId);
+    module.ledManager.check(orderNo, raw, nc12, serialNumber, scannerId);
   };
 
   setUpBlockage(app, module);

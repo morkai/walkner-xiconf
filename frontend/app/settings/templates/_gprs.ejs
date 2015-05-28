@@ -1,0 +1,51 @@
+<div id="<%- idPrefix %>-gprs" class="panel-body tab-pane settings-hasRowLast">
+  <div class="form-group">
+    <label for="<%- idPrefix %>-gprsOrdersPath" class="control-label"><%- t('settings', 'setting:gprsOrdersPath') %></label>
+    <input id="<%- idPrefix %>-gprsOrdersPath" class="form-control" name="gprsOrdersPath" type="text" required>
+  </div>
+  <div class="row">
+    <div class="form-group col-md-8">
+      <label for="<%- idPrefix %>-gprsProgrammerFile" class="control-label"><%- t('settings', 'setting:gprsProgrammerFile') %></label>
+      <input id="<%- idPrefix %>-gprsProgrammerFile" class="form-control" name="gprsProgrammerFile" type="text" required>
+    </div>
+    <div class="form-group col-md-4">
+      <label for="<%- idPrefix %>-gprsDaliPort" class="control-label"><%- t('settings', 'setting:gprsDaliPort') %></label>
+      <input id="<%- idPrefix %>-gprsDaliPort" class="form-control" name="gprsDaliPort" type="number" min="0" max="256">
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="<%- idPrefix %>-gprsInputTemplateFile" class="control-label"><%- t('settings', 'setting:gprsInputTemplateFile') %></label>
+    <input id="<%- idPrefix %>-gprsInputTemplateFile" class="form-control" name="gprsInputTemplateFile" type="text" required>
+  </div>
+  <div class="row">
+    <div class="form-group col-md-4">
+      <label for="<%- idPrefix %>-gprsVerification" class="control-label"><%- t('settings', 'setting:gprsVerification') %></label>
+      <div>
+        <label class="radio-inline">
+          <input id="<%- idPrefix %>-gprsVerification" name="gprsVerification" type="radio" value="1" required> <%- t('settings', 'setting:gprsVerification:on') %>
+        </label>
+        <label class="radio-inline">
+          <input name="gprsVerification" type="radio" value="0" required> <%- t('settings', 'setting:gprsVerification:off') %>
+        </label>
+      </div>
+    </div>
+    <div class="form-group col-md-8">
+      <label for="<%- idPrefix %>-gprsVerificationTimeout" class="control-label"><%- t('settings', 'setting:gprsVerificationTimeout') %></label>
+      <input id="<%- idPrefix %>-gprsVerificationTimeout" class="form-control" name="gprsVerificationTimeout" type="number" min="5000" max="3600000">
+    </div>
+  </div>
+  <div class="row">
+    <div class="form-group col-md-4">
+      <label for="<%- idPrefix %>-gprsVerificationInputPath" class="control-label"><%- t('settings', 'setting:gprsVerificationInputPath') %></label>
+      <input id="<%- idPrefix %>-gprsVerificationInputPath" class="form-control" name="gprsVerificationInputPath" type="text" required>
+    </div>
+    <div class="form-group col-md-4">
+      <label for="<%- idPrefix %>-gprsVerificationSuccessPath" class="control-label"><%- t('settings', 'setting:gprsVerificationSuccessPath') %></label>
+      <input id="<%- idPrefix %>-gprsVerificationSuccessPath" class="form-control" name="gprsVerificationSuccessPath" type="text" required>
+    </div>
+    <div class="form-group col-md-4">
+      <label for="<%- idPrefix %>-gprsVerificationErrorPath" class="control-label"><%- t('settings', 'setting:gprsVerificationErrorPath') %></label>
+      <input id="<%- idPrefix %>-gprsVerificationErrorPath" class="form-control" name="gprsVerificationErrorPath" type="text" required>
+    </div>
+  </div>
+</div>

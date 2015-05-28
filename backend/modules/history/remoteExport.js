@@ -177,6 +177,21 @@ module.exports = function setUpRemoteExport(app, historyModule)
           ctx.featureFileHashes[row.featureFileHash] = true;
         }
 
+        if (row.gprsOrderFileHash !== null)
+        {
+          ctx.featureFileHashes[row.gprsOrderFileHash] = true;
+        }
+
+        if (row.gprsInputFileHash !== null)
+        {
+          ctx.featureFileHashes[row.gprsInputFileHash] = true;
+        }
+
+        if (row.gprsOutputFileHash !== null)
+        {
+          ctx.featureFileHashes[row.gprsOutputFileHash] = true;
+        }
+
         if (row._order)
         {
           ctx.orderIds[row._order] = true;

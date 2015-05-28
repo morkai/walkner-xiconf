@@ -157,6 +157,9 @@ exports.start = function startSettingsModule(app, module, done)
       case 'led':
         return !!(supportedFeatures & 8);
 
+      case 'gprs':
+        return !!(supportedFeatures & 16);
+
       default:
         return false;
     }
@@ -282,14 +285,20 @@ exports.start = function startSettingsModule(app, module, done)
     validateStringSetting(rawSettings, newSettings, 'supportedDevicesFile', 0);
     validateStringSetting(rawSettings, newSettings, 'programmerFile');
     validateStringSetting(rawSettings, newSettings, 'remoteServer', 0);
-    validateStringSetting(rawSettings, newSettings, 'solComPattern', 1);
-    validateStringSetting(rawSettings, newSettings, 'solFilePattern', 1);
+    validateStringSetting(rawSettings, newSettings, 'solComPattern');
+    validateStringSetting(rawSettings, newSettings, 'solFilePattern');
     validateStringSetting(rawSettings, newSettings, 'lptFilePattern', 0);
-    validateStringSetting(rawSettings, newSettings, 'testingComPattern', 1);
+    validateStringSetting(rawSettings, newSettings, 'testingComPattern');
     validateStringSetting(rawSettings, newSettings, 'testingModbusHost', 1, /^([0-9]{1,3}\.){3}[0-9]{1,3}$/);
     validateStringSetting(rawSettings, newSettings, 'prodLine', 0);
     validateStringSetting(rawSettings, newSettings, 'serviceTagPrinter', 0);
     validateStringSetting(rawSettings, newSettings, 'serviceTagLabelCode', 0);
+    validateStringSetting(rawSettings, newSettings, 'gprsVerificationInputPath');
+    validateStringSetting(rawSettings, newSettings, 'gprsVerificationSuccessPath');
+    validateStringSetting(rawSettings, newSettings, 'gprsVerificationErrorPath');
+    validateStringSetting(rawSettings, newSettings, 'gprsOrdersPath');
+    validateStringSetting(rawSettings, newSettings, 'gprsProgrammerFile');
+    validateStringSetting(rawSettings, newSettings, 'gprsInputTemplateFile');
     validateNumericSetting(rawSettings, newSettings, 'syncInterval', 1);
     validateNumericSetting(rawSettings, newSettings, 'searchTimeout1', 100);
     validateNumericSetting(rawSettings, newSettings, 'searchTimeout2', 100);
@@ -314,6 +323,8 @@ exports.start = function startSettingsModule(app, module, done)
     validateNumericSetting(rawSettings, newSettings, 'bgScannerBeepGood', -1, 26);
     validateNumericSetting(rawSettings, newSettings, 'bgScannerBeepBad', -1, 26);
     validateNumericSetting(rawSettings, newSettings, 'bgScannerBeepDone', -1, 26);
+    validateNumericSetting(rawSettings, newSettings, 'gprsVerificationTimeout', 5 * 1000, 3600 * 1000);
+    validateNumericSetting(rawSettings, newSettings, 'gprsDaliPort', 0, 256);
     validateEnum(rawSettings, newSettings, 'solReset', Number, [0, 1]);
     validateEnum(rawSettings, newSettings, 'backupPath', Number, [1, 2]);
     validateEnum(rawSettings, newSettings, 'orders', String, ['disabled', 'optional', 'required']);
@@ -339,6 +350,7 @@ exports.start = function startSettingsModule(app, module, done)
     validateEnum(rawSettings, newSettings, 'bgScanner', Number, [0, 1]);
     validateEnum(rawSettings, newSettings, 'ledsEnabled', Number, [0, 1, 2]);
     validateEnum(rawSettings, newSettings, 'programming', Number, [0, 1]);
+    validateEnum(rawSettings, newSettings, 'gprsVerification', Number, [0, 1]);
     validateBgScannerFilter(rawSettings, newSettings);
     validateHotkeys(rawSettings, newSettings);
 

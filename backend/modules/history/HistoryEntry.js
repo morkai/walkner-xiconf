@@ -4,13 +4,30 @@
 
 'use strict';
 
-var crypto = require('crypto');
+var createHash = require('crypto').createHash;
 var fs = require('fs');
 var path = require('path');
 var _ = require('lodash');
+var step = require('h5.step');
 var Order = require('./Order');
 
 module.exports = HistoryEntry;
+
+var TELEMANAGEMENT_MODES = {
+  F: 'FutureProof',
+  T: 'Telemanaged'
+};
+var SWITCH_REGIMES = {
+  A: 'AlwaysOn',
+  P: 'PhotoCell'
+};
+var PHOTO_CELL_LEVELS = {
+  _: 'Levels_Unknown',
+  A: 'Levels_38_18',
+  B: 'Levels_55_28',
+  C: 'Levels_70_35',
+  D: 'Levels_35_18'
+};
 
 function HistoryEntry(db, broker, settings)
 {
@@ -47,15 +64,7 @@ HistoryEntry.prototype.toJSON = function()
     duration: this.duration,
     log: Array.isArray(this.log) ? [].concat(this.log) : null,
     result: this.result,
-    errorCode: this.errorCode,
-    exception: this.exception,
-    output: this.output,
-    featureFile: this.featureFile,
     featureFileName: this.featureFileName,
-    featureFileHash: this.featureFileHash,
-    feature: this.feature,
-    workflowFile: this.workflowFile,
-    workflow: this.workflow,
     countdown: this.countdown,
     program: this.program,
     steps: this.steps,
@@ -166,6 +175,7 @@ HistoryEntry.prototype.createServiceTagRequestData = function()
   }
 
   return {
+    serviceTag: this.serviceTag,
     orderNo: this.order.no,
     nc12: this.nc12,
     multi: _.isString(this.workflow) && /multidevice\s*=\s*true/i.test(this.workflow),
@@ -212,6 +222,29 @@ HistoryEntry.prototype.clear = function(clearOrder, clearProgram)
   this.waitingForContinue = null;
   this.inProgress = false;
   this.overallProgress = 0;
+
+  this.clearGprs();
+};
+
+HistoryEntry.prototype.clearGprs = function()
+{
+  this.gprs = {
+    item: null,
+    orderData: null,
+    driverData: null,
+    gprsData: null,
+    inputData: null,
+    orderFile: null,
+    inputTemplateFile: null,
+    outputFile: null,
+    orderFileContents: null,
+    inputTemplateFileContents: null,
+    inputFileContents: null,
+    outputFileContents: null,
+    orderFileHash: null,
+    inputFileHash: null,
+    outputFileHash: null
+  };
 };
 
 HistoryEntry.prototype.reset = function(orderNo, quantity, nc12)
@@ -247,6 +280,8 @@ HistoryEntry.prototype.reset = function(orderNo, quantity, nc12)
   this.waitingForContinue = null;
   this.inProgress = true;
   this.overallProgress = 1;
+
+  this.setUpGprs();
 
   if (orderNo === null)
   {
@@ -293,6 +328,29 @@ HistoryEntry.prototype.reset = function(orderNo, quantity, nc12)
   }
 };
 
+HistoryEntry.prototype.setUpProgram = function()
+{
+  if (!this.program)
+  {
+    return;
+  }
+
+  this.steps = this.program.steps.map(function()
+  {
+    return {
+      status: 'idle',
+      progress: 0,
+      value: 0
+    };
+  });
+
+  this.metrics = {
+    uSet: [],
+    uGet: [],
+    i: []
+  };
+};
+
 HistoryEntry.prototype.setUpLeds = function()
 {
   if (this.inputMode !== 'remote')
@@ -321,6 +379,7 @@ HistoryEntry.prototype.setUpLeds = function()
     for (var ii = 0; ii < ledsPerResult; ++ii)
     {
       this.leds.push({
+        raw: '',
         nc12: item.nc12,
         name: item.name,
         serialNumber: null,
@@ -330,33 +389,58 @@ HistoryEntry.prototype.setUpLeds = function()
   }
 };
 
-HistoryEntry.prototype.setUpProgram = function()
+HistoryEntry.prototype.setUpGprs = function()
 {
-  if (!this.program)
+  this.clearGprs();
+
+  if (!this.waitingForLeds || this.inputMode !== 'remote' || !this.settings.supportsFeature('gprs'))
   {
     return;
   }
 
-  this.steps = this.program.steps.map(function()
-  {
-    return {
-      status: 'idle',
-      progress: 0,
-      value: 0
-    };
-  });
+  var orderData = this.getSelectedOrderData();
 
-  this.metrics = {
-    uSet: [],
-    uGet: [],
-    i: []
-  };
+  if (!orderData)
+  {
+    return;
+  }
+
+  var gprsItem = null;
+
+  for (var i = 0; i < orderData.items.length; ++i)
+  {
+    var item = orderData.items[i];
+
+    if (item.kind === 'gprs')
+    {
+      gprsItem = item;
+
+      break;
+    }
+  }
+
+  if (gprsItem === null)
+  {
+    return;
+  }
+
+  var matches = gprsItem.name.match(/(F|T)(P|A)(_|A|B|C|D)/);
+
+  if (matches !== null)
+  {
+    this.gprs.item = gprsItem;
+    this.gprs.gprsData = {
+      telemanagementMode: TELEMANAGEMENT_MODES[matches[1]],
+      switchRegime: SWITCH_REGIMES[matches[2]],
+      photoCellLevels: PHOTO_CELL_LEVELS[matches[3]]
+    };
+  }
 };
 
 HistoryEntry.prototype.hashFeatureFile = function()
 {
   this.featureFileHash = typeof this.feature === 'string'
-    ? crypto.createHash('md5').update(this.feature, 'utf8').digest('hex')
+    ? createHash('md5').update(this.feature, 'utf8').digest('hex')
     : null;
 
   return this.featureFileHash;
@@ -382,26 +466,53 @@ HistoryEntry.prototype.save = function(featureDbPath, done)
       return done(err);
     }
 
-    if (historyEntry.featureFileHash === null)
-    {
-      return saveInDb(done);
-    }
+    step(
+      function()
+      {
+        if (historyEntry.featureFileHash)
+        {
+          saveOnDisk(
+            path.join(featureDbPath, historyEntry.featureFileHash),
+            historyEntry.feature,
+            this.group()
+          );
+        }
 
-    return saveOnDisk(done);
+        if (historyEntry.gprs.orderFileContents)
+        {
+          var orderFileHash = createHash('md5').update(historyEntry.gprs.orderFileContents).digest('hex');
+
+          historyEntry.gprs.orderFileHash = orderFileHash;
+
+          saveOnDisk(
+            path.join(featureDbPath, orderFileHash),
+            historyEntry.gprs.orderFileContents,
+            this.group()
+          );
+        }
+      },
+      function(err)
+      {
+        if (err)
+        {
+          return done(err);
+        }
+
+        return saveInDb(done);
+      }
+    );
   }
 
-  function saveOnDisk(done)
+  function saveOnDisk(file, contents, done)
   {
-    var file = path.join(featureDbPath, historyEntry.featureFileHash);
-
-    fs.writeFile(file, historyEntry.feature, {flag: 'wx'}, function(err)
+    fs.writeFile(file, contents, {flag: 'wx'}, function(err)
     {
       if (err && err.code !== 'EEXIST')
       {
         return done(err);
       }
 
-      return saveInDb(done);
+      return done();
     });
   }
 
@@ -412,12 +523,14 @@ HistoryEntry.prototype.save = function(featureDbPath, done)
         _id, _order, nc12, counter, startedAt, finishedAt, duration,\
         log, result, errorCode, exception, output, featureFile,\
         featureFileName, featureFileHash, workflowFile, workflow,\
-        program, steps, metrics, serviceTag, leds, prodLine\
+        program, steps, metrics, serviceTag, leds, prodLine,\
+        gprsNc12, gprsOrderFileHash, gprsInputFileHash, gprsOutputFileHash\
       ) VALUES (\
         $_id, $_order, $nc12, $counter, $startedAt, $finishedAt, $duration,\
         $log, $result, $errorCode, $exception, $output, $featureFile,\
         $featureFileName, $featureFileHash, $workflowFile, $workflow,\
-        $program, $steps, $metrics, $serviceTag, $leds, $prodLine\
+        $program, $steps, $metrics, $serviceTag, $leds, $prodLine,\
+        $gprsNc12, $gprsOrderFileHash, $gprsInputFileHash, $gprsOutputFileHash\
       )";
     var params = {
       $_id: historyEntry._id,
@@ -442,7 +555,11 @@ HistoryEntry.prototype.save = function(featureDbPath, done)
       $metrics: historyEntry.metrics ? JSON.stringify(historyEntry.metrics) : null,
       $serviceTag: historyEntry.serviceTag,
       $leds: Array.isArray(historyEntry.leds) && historyEntry.leds.length ? JSON.stringify(historyEntry.leds) : null,
-      $prodLine: historyEntry.settings.get('prodLine') || null
+      $prodLine: historyEntry.settings.get('prodLine') || null,
+      $gprsNc12: historyEntry.gprs.item ? historyEntry.gprs.item.nc12 : null,
+      $gprsOrderFileHash: historyEntry.gprs.orderFileHash,
+      $gprsInputFileHash: historyEntry.gprs.inputFileHash,
+      $gprsOutputFileHash: historyEntry.gprs.outputFileHash
     };
 
     historyEntry.db.run(sql, params, done);

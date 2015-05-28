@@ -5,6 +5,7 @@
 'use strict';
 
 var fs = require('fs');
+var path = require('path');
 var _ = require('lodash');
 var step = require('h5.step');
 var findFeatureFile = require('./findFeatureFile');
@@ -13,6 +14,7 @@ var programAndTest = require('./programAndTest');
 var programSolDriver = require('./programSolDriver');
 var programMowDriver = require('./programMowDriver');
 var LptIo = require('./LptIo');
+var gprs = require('./gprs');
 
 module.exports = function program(app, programmerModule, data, done)
 {
@@ -42,8 +44,15 @@ module.exports = function program(app, programmerModule, data, done)
     .setLimit(1)
     .on('message', function() { thisProgrammingCancelled = true; });
 
-  app.broker.subscribe('programmer.finished', function() { thisProgrammingCancelledSub.cancel(); });
+  app.broker.subscribe('programmer.finished')
+    .setLimit(1)
+    .on('message', function()
+    {
+      thisProgrammingCancelledSub.cancel();
+      thisProgrammingCancelledSub = null;
+    });
 
+  var serviceTagAcquired = false;
   var shouldAcquireServiceTag = !_.isEmpty(data.orderNo)
     && (currentState.inputMode === 'remote' || settings.get('serviceTagInLocalMode') !== 'disabled');
   var shouldPrintServiceTag = shouldAcquireServiceTag
@@ -67,7 +76,7 @@ module.exports = function program(app, programmerModule, data, done)
 
   programmerModule.changeState();
 
-  programmerModule.OVERALL_SETUP_PROGRESS = currentState.waitingForLeds ? 25 : 20;
+  programmerModule.OVERALL_SETUP_PROGRESS = currentState.waitingForLeds ? 28 : 23;
   programmerModule.OVERALL_PROGRAMMING_PROGRESS = shouldPrintServiceTag ? 90 : 100;
 
   step(
@@ -81,6 +90,10 @@ module.exports = function program(app, programmerModule, data, done)
     handleFindFeatureFile2ResultStep,
     readFeatureFile2Step,
     handleReadFeatureFile2ResultStep,
+    readGprsOrderFileStep,
+    handleReadGprsOrderFileResultStep,
+    readGprsInputTemplateFileStep,
+    handleReadGprsInputTemplateFileResultStep,
     checkSolProgramStep,
     writeWorkflowFileStep,
     handleWriteWorkflowFileResultStep,
@@ -383,18 +396,28 @@ module.exports = function program(app, programmerModule, data, done)
       programmerModule.log('FEATURE_FILE_READ', {
         length: Buffer.byteLength(feature, 'utf8')
       });
+
+      if (currentState.gprs.item)
+      {
+        return gprs.parseDriverFile(feature, this.next());
+      }
     }
 
     setImmediate(this.next());
   }
 
-  function findFeatureFile2Step()
+  function findFeatureFile2Step(err, driverData)
   {
     /*jshint validthis:true*/
 
-    if (thisProgrammingCancelled)
+    if (thisProgrammingCancelled || err)
     {
-      return this.skip();
+      return this.skip(err);
+    }
+
+    if (driverData)
+    {
+      currentState.gprs.driverData = driverData;
     }
 
     if (!currentState.nc12 || this.foundFeature1)
@@ -556,6 +579,199 @@ module.exports = function program(app, programmerModule, data, done)
       length: Buffer.byteLength(feature, 'utf8')
     });
 
+    if (currentState.gprs.item)
+    {
+      return gprs.parseDriverFile(feature, this.next());
+    }
+
+    setImmediate(this.next());
+  }
+
+  function readGprsOrderFileStep(err, driverData)
+  {
+    /*jshint validthis:true*/
+
+    if (thisProgrammingCancelled || err)
+    {
+      return this.skip(err);
+    }
+
+    if (!currentState.gprs.item)
+    {
+      return;
+    }
+
+    if (driverData)
+    {
+      currentState.gprs.driverData = driverData;
+    }
+
+    currentState.gprs.orderFile = path.join(settings.get('gprsOrdersPath'), currentState.order.no + '.dat');
+
+    programmerModule.updateOverallProgress(15);
+
+    programmerModule.log('GPRS:READING_ORDER_FILE', {
+      orderFile: currentState.gprs.orderFile
+    });
+
+    this.sub = app.broker.subscribe(
+      'programmer.cancelled',
+      readFeatureFile(
+        currentState.gprs.orderFile,
+        settings.get('readTimeout1'),
+        this.next()
+      )
+    );
+  }
+
+  function handleReadGprsOrderFileResultStep(err, orderFileContents)
+  {
+    /*jshint validthis:true*/
+
+    if (thisProgrammingCancelled)
+    {
+      return this.skip();
+    }
+
+    if (!currentState.gprs.item)
+    {
+      return;
+    }
+
+    if (this.sub)
+    {
+      this.sub.cancel();
+      this.sub = null;
+    }
+
+    programmerModule.updateOverallProgress(16);
+
+    if (err)
+    {
+      err.code = 'GPRS:READING_ORDER_FILE_FAILURE';
+
+      return this.skip(err);
+    }
+
+    if (orderFileContents === false)
+    {
+      return this.skip('GPRS:READING_ORDER_FILE_TIMEOUT');
+    }
+
+    programmerModule.log('GPRS:ORDER_FILE_READ', {
+      length: Buffer.byteLength(orderFileContents, 'utf8')
+    });
+
+    currentState.gprs.orderFileContents = orderFileContents;
+
+    try
+    {
+      currentState.gprs.orderData = gprs.parseOrderFile(orderFileContents);
+    }
+    catch (err)
+    {
+      return this.skip(err);
+    }
+
+    setImmediate(this.next());
+  }
+
+  function readGprsInputTemplateFileStep(err)
+  {
+    /*jshint validthis:true*/
+
+    if (thisProgrammingCancelled || err)
+    {
+      return this.skip(err);
+    }
+
+    if (!currentState.gprs.orderFileContents)
+    {
+      return;
+    }
+
+    currentState.gprs.inputTemplateFile = settings.get('gprsInputTemplateFile');
+
+    programmerModule.updateOverallProgress(17);
+
+    programmerModule.log('GPRS:READING_INPUT_TEMPLATE_FILE', {
+      inputTemplateFile: currentState.gprs.inputTemplateFile
+    });
+
+    this.sub = app.broker.subscribe(
+      'programmer.cancelled',
+      readFeatureFile(
+        currentState.gprs.inputTemplateFile,
+        settings.get('readTimeout1'),
+        this.next()
+      )
+    );
+  }
+
+  function handleReadGprsInputTemplateFileResultStep(err, inputTemplateFileContents)
+  {
+    /*jshint validthis:true*/
+
+    if (thisProgrammingCancelled)
+    {
+      return this.skip();
+    }
+
+    if (!currentState.gprs.item)
+    {
+      return;
+    }
+
+    if (this.sub)
+    {
+      this.sub.cancel();
+      this.sub = null;
+    }
+
+    programmerModule.updateOverallProgress(18);
+
+    if (err)
+    {
+      err.code = 'GPRS:READING_INPUT_TEMPLATE_FILE_FAILURE';
+
+      return this.skip(err);
+    }
+
+    if (inputTemplateFileContents === false)
+    {
+      return this.skip('GPRS:READING_INPUT_TEMPLATE_FILE_TIMEOUT');
+    }
+
+    programmerModule.log('GPRS:INPUT_TEMPLATE_FILE_READ', {
+      length: Buffer.byteLength(inputTemplateFileContents, 'utf8')
+    });
+
+    currentState.gprs.inputTemplateFileContents = inputTemplateFileContents;
+
+    programmerModule.log('GPRS:PARSING_INPUT_TEMPLATE');
+
+    var inputData;
+
+    try
+    {
+      inputData = JSON.parse(inputTemplateFileContents);
+
+      if (!_.isObject(inputData))
+      {
+        inputData = {};
+      }
+    }
+    catch (err)
+    {
+      err.code = 'GPRS:PARSING_INPUT_TEMPLATE_FAILURE';
+
+      return this.skip(err);
+    }
+
+    programmerModule.log('GPRS:PARSING_INPUT_TEMPLATE_SUCCESS');
+
+    currentState.gprs.inputData = inputData;
+
     setImmediate(this.next());
   }
 
@@ -570,7 +786,7 @@ module.exports = function program(app, programmerModule, data, done)
 
     var featureFile = currentState.featureFile;
 
-    if (_.isEmpty(featureFile))
+    if (_.isEmpty(featureFile) || currentState.gprs.item)
     {
       return;
     }
@@ -579,7 +795,7 @@ module.exports = function program(app, programmerModule, data, done)
 
     this.isSolProgram = solFilePattern.length && featureFile.indexOf(solFilePattern) !== -1;
 
-    programmerModule.updateOverallProgress(15);
+    programmerModule.updateOverallProgress(19);
 
     if (!this.isSolProgram && currentState.workMode === 'testing')
     {
@@ -596,7 +812,7 @@ module.exports = function program(app, programmerModule, data, done)
       return this.skip();
     }
 
-    if (this.isSolProgram || _.isEmpty(currentState.featureFile))
+    if (this.isSolProgram || _.isEmpty(currentState.featureFile) || currentState.gprs.item)
     {
       return;
     }
@@ -617,7 +833,7 @@ module.exports = function program(app, programmerModule, data, done)
     });
 
     programmerModule.changeState({
-      overallProgress: 16,
+      overallProgress: 20,
       workflowFile: workflowFile,
       workflow: workflow.trim()
     });
@@ -634,7 +850,7 @@ module.exports = function program(app, programmerModule, data, done)
       return this.skip();
     }
 
-    if (!currentState.nc12 || this.isSolProgram)
+    if (!currentState.nc12 || this.isSolProgram || currentState.gprs.item)
     {
       return;
     }
@@ -646,7 +862,7 @@ module.exports = function program(app, programmerModule, data, done)
       return this.skip(err);
     }
 
-    programmerModule.updateOverallProgress(17);
+    programmerModule.updateOverallProgress(21);
 
     programmerModule.log('WORKFLOW_FILE_WRITTEN', {
       length: Buffer.byteLength(programmerModule.currentState.workflow, 'utf8')
@@ -671,7 +887,7 @@ module.exports = function program(app, programmerModule, data, done)
       return;
     }
 
-    programmerModule.updateOverallProgress(20);
+    programmerModule.updateOverallProgress(22);
 
     if (!currentState.waitingForLeds)
     {
@@ -747,7 +963,7 @@ module.exports = function program(app, programmerModule, data, done)
 
         _.forEach(leds, function(led)
         {
-          programmerModule.checkSerialNumber(currentState.order.no, led.nc12, led.serialNumber);
+          programmerModule.checkSerialNumber(currentState.order.no, led.raw, led.nc12, led.serialNumber);
         });
       });
     }
@@ -807,7 +1023,7 @@ module.exports = function program(app, programmerModule, data, done)
       return this.skip();
     }
 
-    if (!currentState.nc12 || this.isSolProgram || !settings.get('lptEnabled'))
+    if (!currentState.nc12 || this.isSolProgram || !settings.get('lptEnabled') || currentState.gprs.item)
     {
       return;
     }
@@ -858,6 +1074,11 @@ module.exports = function program(app, programmerModule, data, done)
     }
 
     programmerModule.updateOverallProgress(programmerModule.OVERALL_SETUP_PROGRESS);
+
+    if (currentState.gprs.item)
+    {
+      return gprs.program(app, programmerModule, onProgress, this.next());
+    }
 
     if (currentState.program)
     {
@@ -925,7 +1146,9 @@ module.exports = function program(app, programmerModule, data, done)
       {
         if (serviceTag)
         {
-          remoteCoordinator.releaseServiceTag(serviceTagRequestData, serviceTag);
+          serviceTagRequestData.serviceTag = serviceTag;
+
+          remoteCoordinator.releaseServiceTag(serviceTagRequestData);
         }
 
         return;
@@ -946,6 +1169,8 @@ module.exports = function program(app, programmerModule, data, done)
       {
         programmerModule.changeState({serviceTag: serviceTag});
         programmerModule.log('SERVICE_TAG_ACQUIRED', {serviceTag: serviceTag});
+
+        serviceTagAcquired = true;
       }
 
       next(err);
@@ -1056,9 +1281,9 @@ module.exports = function program(app, programmerModule, data, done)
         });
       }
 
-      if (currentState.serviceTag !== null)
+      if (serviceTagAcquired)
       {
-        remoteCoordinator.releaseServiceTag(currentState.createServiceTagRequestData(), currentState.serviceTag);
+        remoteCoordinator.releaseServiceTag(currentState.createServiceTagRequestData());
       }
     }
     else

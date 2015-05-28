@@ -21,13 +21,19 @@
       </div>
     </div>
   </div>
-  <div class="dashboard-input-nc12 kbd-container">
-    <label for="<%- idPrefix %>-nc12" class="dashboard-header"><%- t('dashboard', 'input:nc12') %></label>
-    <span class="dashboard-input-ledOnly"><%- t('dashboard', 'input:nc12:ledOnly').replace('\n', '<br>') %></span>
-    <span class="dashboard-input-noProgramming"><%- t('dashboard', 'input:nc12:noProgramming').replace('\n', '<br>') %></span>
-    <span class="dashboard-input-multiNc12"><%- t('dashboard', 'input:nc12:multi').replace('\n', '<br>') %></span>
-    <input id="<%- idPrefix %>-nc12" class="form-control" type="text" maxlength="12">
-    <kbd data-hotkey="focusNc12" class="is-inside">?</kbd>
+  <div class="dashboard-input-nc12AndGprs">
+    <div class="dashboard-input-nc12 kbd-container">
+      <label for="<%- idPrefix %>-nc12" class="dashboard-header"><%- t('dashboard', 'input:nc12') %></label>
+      <span class="dashboard-input-ledOnly"><%- t('dashboard', 'input:nc12:ledOnly').replace('\n', '<br>') %></span>
+      <span class="dashboard-input-noProgramming"><%- t('dashboard', 'input:nc12:noProgramming').replace('\n', '<br>') %></span>
+      <span class="dashboard-input-multiNc12"><%- t('dashboard', 'input:nc12:multi').replace('\n', '<br>') %></span>
+      <input id="<%- idPrefix %>-nc12" class="form-control" type="text" maxlength="12">
+      <kbd data-hotkey="focusNc12" class="is-inside">?</kbd>
+    </div>
+    <div class="dashboard-input-gprs">
+      <label for="<%- idPrefix %>-gprs" class="dashboard-header"><%- t('dashboard', 'input:gprs') %></label>
+      <input id="<%- idPrefix %>-gprs" class="form-control" type="text" disabled>
+    </div>
   </div>
   <div class="dashboard-input-buttons">
     <button id="<%- idPrefix %>-start" class="btn btn-primary dashboard-input-start kbd-container" type="submit">

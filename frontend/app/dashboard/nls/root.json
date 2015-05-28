@@ -33,10 +33,11 @@
 
     "input:orderNo": "Order no",
     "input:quantity": "Quantity",
-    "input:nc12": "12NC",
+    "input:nc12": "Program 12NC",
     "input:nc12:ledOnly": "The order doesn't have any programs.\nLED boards scanning active.",
     "input:nc12:noProgramming": "Work station without programming.\nLED boards scanning active.",
     "input:nc12:multi": "Multiple program 12NCs are available.\nClick to pick a program.",
+    "input:gprs": "GPRS 12NC",
     "input:start": "Start",
     "input:cancel": "Cancel",
     "input:continue": "Continue",

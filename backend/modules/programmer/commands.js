@@ -113,14 +113,16 @@ module.exports = function setUpProgrammerCommands(app, programmerModule)
     }
   }
 
-  function checkSerialNumber(orderNo, nc12, serialNumber, scannerId)
+  function checkSerialNumber(orderNo, raw, nc12, serialNumber, scannerId)
   {
     if (_.isString(orderNo) && /^[0-9]{1,9}$/.test(orderNo)
+      && _.isString(raw) && !_.isEmpty(raw)
       && _.isString(nc12) && /^[0-9]{12}$/.test(nc12)
       && _.isString(serialNumber) && /^[0-9A-Z]+$/i.test(serialNumber))
     {
       programmerModule.checkSerialNumber(
         orderNo,
+        raw,
         nc12,
         serialNumber,
         _.isString(scannerId) && /^[A-Z0-9]+$/.test(scannerId) ? scannerId : null

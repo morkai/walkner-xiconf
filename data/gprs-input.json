@@ -1,0 +1,83 @@
+{
+  "serviceTag": "${input.serviceTag}",
+  "productDefinition": "${order.Material number}",
+  "configurationDesignation": "${order.Commercial designation}",
+  "productName": "${order.Product family name}",
+  "productionDate": "${productionDate}",
+  "productionLocation": "${order.Country of origin/ made in}",
+  "systemPower": "${order.Special Designation}",
+  "productClass": "${order.Commercial designation.productClass}",
+  "luminaireColor": "RAL",
+  "supplyVoltage": "Universal_120V_to_277V",
+  "supplyFrequency": "Universal_50Hz_to_60Hz",
+  "luminaireMaterial": "Aluminium",
+  "luminousFlux": "${order.Lamptype.luminousFlux}",
+  "colorRenderingIndex": "${order.Lamptype.colorRenderingIndex}",
+  "optics": "${order.Lamptype.Commercial designation.optics}",
+  "numberLeds": 30,
+  "salesOrder": {
+    "orderNumber": "${order.Sales Order Number}",
+    "orderLineNumber": "${order.Sales Order Item Number}",
+    "orderLineQty": "${order.Production order quantity}",
+    "customerID": 10
+  },
+  "cloEnabled": "${driver.SaveData.Features.FeatureData.CLO.Enabled}",
+  "cloProfile": "${driver.SaveData.Features.FeatureData.CLO.Values}",
+  "drivers": [
+    {
+      "current": "${driver.SaveData.Features.FeatureData.AOC.Value}",
+      "startupDelay": "${driver.SaveData.Features.FeatureData.StartFadeUpTime.StartUpFadeTimeLevel}",
+      "ntcSelection": "${driver.SaveData.Features.FeatureData.InterfaceSelection.SelectedResistance}",
+      "moduleThermalProtection": {
+        "warningTemperature": "${driver.SaveData.Features.FeatureData.MTPOutdoor.Values.HighTempPerc}",
+        "maxTemperature": "${driver.SaveData.Features.FeatureData.MTPOutdoor.Values.DimStart}",
+        "minDimLevel": "${driver.SaveData.Features.FeatureData.MTPOutdoor.Values.DimStop}"
+      },
+      "lightSources": [
+        {
+          "serialNumber": "${input.led}",
+          "productName": "LED GINE",
+          "lightColor": "${order.Commercial designation.lightColor}",
+          "lifeTimeHours": 100000,
+          "ledType": "Lumileds"
+        }
+      ]
+    }
+  ],
+  "olc": {
+    "switchRegime": "${gprs.switchRegime}",
+    "photoCellLevels": "${gprs.photoCellLevels}",
+    "telemanagementMode": "${gprs.telemanagementMode}",
+    "dynaDimmerEnabled": false,
+    "dynaDimmerProfile": {
+      "level1": {
+        "startHour": "${driver.SavedData.Features.FeatureData.DynadimmerLED.Scenes.0.Values.0}",
+        "startMinute": "${driver.SavedData.Features.FeatureData.DynadimmerLED.Scenes.0.Values.1}",
+        "percentage": "${driver.SavedData.Features.FeatureData.DynadimmerLED.Scenes.0.Values.3}"
+      },
+      "level2": {
+        "startHour": "${driver.SavedData.Features.FeatureData.DynadimmerLED.Scenes.1.Values.0}",
+        "startMinute": "${driver.SavedData.Features.FeatureData.DynadimmerLED.Scenes.1.Values.1}",
+        "percentage": "${driver.SavedData.Features.FeatureData.DynadimmerLED.Scenes.1.Values.3}"
+      },
+      "level3": {
+        "startHour": "${driver.SavedData.Features.FeatureData.DynadimmerLED.Scenes.2.Values.0}",
+        "startMinute": "${driver.SavedData.Features.FeatureData.DynadimmerLED.Scenes.2.Values.1}",
+        "percentage": "${driver.SavedData.Features.FeatureData.DynadimmerLED.Scenes.2.Values.3}"
+      },
+      "level4": {
+        "startHour": "${driver.SavedData.Features.FeatureData.DynadimmerLED.Scenes.3.Values.0}",
+        "startMinute": "${driver.SavedData.Features.FeatureData.DynadimmerLED.Scenes.3.Values.1}",
+        "percentage": "${driver.SavedData.Features.FeatureData.DynadimmerLED.Scenes.3.Values.3}"
+      },
+      "level5": {
+        "startHour": "${driver.SavedData.Features.FeatureData.DynadimmerLED.Scenes.4.Values.0}",
+        "startMinute": "${driver.SavedData.Features.FeatureData.DynadimmerLED.Scenes.4.Values.1}",
+        "percentage": "${driver.SavedData.Features.FeatureData.DynadimmerLED.Scenes.4.Values.3}"
+      }
+    },
+    "midPointShift": 1,
+    "locationIndex": 0
+  },
+  "ambientTemperatureRating": "${order.Temperature}"
+}
