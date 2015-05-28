@@ -1,3 +1,11 @@
+2.11.5 @ 2015-05-25
+===================
+
+  * Changed the barcode scanner ID from a number to a string, so the 1D scanners with A-Z0-9 serial numbers
+    are recognized.
+  * Added an HTTP port to data that is being sent to the remote server during connection to the production line.
+    That port is then used to properly redirect the user from the Client list page to the application.
+
 2.11.4 @ 2015-05-24
 ===================
 
