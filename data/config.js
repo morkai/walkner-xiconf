@@ -3,10 +3,11 @@
 'use strict';
 
 var path = require('path');
-var _ = require('lodash');
 
 var BIN_PATH = path.join(__dirname, '..', 'bin');
 var DATA_PATH = path.join(__dirname, '..', 'data');
+
+var _ = require(path.join(BIN_PATH, 'walkner-xiconf/node_modules/lodash'));
 
 var config = module.exports = require(path.join(BIN_PATH, 'walkner-xiconf/config/frontend.js'));
 
