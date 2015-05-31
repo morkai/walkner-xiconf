@@ -1,3 +1,8 @@
+2.12.0 @ 2015-05-31
+===================
+
+  * Added a new option: GPRS (functionality of the walkner-icpo project).
+
 2.11.5 @ 2015-05-25
 ===================
 
