@@ -111,6 +111,10 @@ exports.copy = {
         dest: DEST_INSTALLER + '/config/walkner-xiconf.leds.js'
       },
       {
+        src: './data/gprs-input.json',
+        dest: DEST_INSTALLER + '/data/gprs-input.json'
+      },
+      {
         src: installerConfig.node,
         dest: DEST_INSTALLER + '/bin/node.exe'
       },
