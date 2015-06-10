@@ -152,6 +152,10 @@ RemoteCoordinator.prototype.setUpSio = function()
     this.sio = null;
   }
 
+  var programmer = this.programmer;
+
+  programmer.changeState({remoteConnected: false});
+
   var remoteServer = this.settings.get('remoteServer');
 
   if (_.isEmpty(remoteServer))
@@ -160,7 +164,6 @@ RemoteCoordinator.prototype.setUpSio = function()
   }
 
   var remoteCoordinator = this;
-  var programmer = this.programmer;
   var sio = socketIoClient.connect(remoteServer, {
     path: '/sio',
     transports: ['websocket'],
