@@ -1,3 +1,14 @@
+2.12.1 @ 2015-06-11
+===================
+
+  * Fixed a path to the `lodash` module in the custom config file.
+  * Fixed the installer missing the `gprs-input.json` file.
+  * Fixed a few GPRS error messages incorrectly using the `{error}` variable resulting in the History details page not
+    rendering.
+  * Changed the remote coordinator to reset the remote connection flag before recreating the connection.
+  * Changed the item quantity validation to not stop the programming process if any LED item is invalid and LED scanning
+    is disabled.
+
 2.12.0 @ 2015-05-31
 ===================
 
