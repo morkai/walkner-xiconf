@@ -137,6 +137,11 @@ module.exports = function program(app, programmerModule, data, done)
 
       if (isNaN(quantityPerResult) || quantityPerResult < 1 || quantityPerResult % 1 !== 0)
       {
+        if (item.kind === 'led' && !currentState.waitingForLeds)
+        {
+          continue;
+        }
+
         var err = new Error(
           "12NC " + item.nc12 + " has an invalid quantity (" + item.quantityTodo + "). Order's quantity is "
           + orderData.quantityTodo + "."
