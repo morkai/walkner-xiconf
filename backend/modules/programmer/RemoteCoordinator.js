@@ -199,9 +199,17 @@ RemoteCoordinator.prototype.setUpSio = function()
     programmer.changeState({remoteConnected: false});
   });
 
-  sio.on('reconnecting', function()
+  sio.on('reconnecting', function(reconnectCount)
   {
-    programmer.debug("[remote] Reconnecting...");
+    if (reconnectCount === 1)
+    {
+      programmer.debug("[remote] Reconnecting...");
+
+      sio.once('reconnect_error', function(err)
+      {
+        programmer.debug("[remote] Failed to reconnect: %s", err.message || err);
+      });
+    }
   });
 
   sio.on('reconnect', function()
@@ -213,11 +221,6 @@ RemoteCoordinator.prototype.setUpSio = function()
     remoteCoordinator.connectToProdLine();
 
     programmer.changeState({remoteConnected: true});
-  });
-
-  sio.on('reconnect_error', function(err)
-  {
-    programmer.debug("[remote] Failed to reconnect: %s", err.message || err);
   });
 
   sio.on('error', function(err)
