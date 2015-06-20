@@ -87,6 +87,7 @@
 .dashboard-input kbd.is-inside {
   bottom: 1px;
   right: 1px;
+  z-index: 2;
 }
 .dashboard-input-buttons kbd.is-inside {
   bottom: 0;
