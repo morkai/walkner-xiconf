@@ -957,6 +957,6 @@ module.exports = function programAndTestGlp2(app, programmerModule, programmerTy
       return setImmediate(done, testStepFailureErr);
     }
 
-    setImmediate(done, testStepFailureErr);
+    setImmediate(done, 'GLP2:TEST_STEP_FAILURE');
   }
 };
