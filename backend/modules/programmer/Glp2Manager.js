@@ -466,6 +466,7 @@ Glp2Manager.prototype.monitorActualValues = function()
   }
 
   var manager = this;
+  var timeouts = 0;
 
   this.master.getActualValues(function(err, res)
   {
@@ -476,10 +477,24 @@ Glp2Manager.prototype.monitorActualValues = function()
 
     if (err)
     {
-      manager.programmer.error("[glp2] Failed to monitor actual values: %s", err.message);
+      if (err instanceof glp2.ResponseTimeoutError)
+      {
+        ++timeouts;
+      }
+      else
+      {
+        timeouts = 0;
+      }
+
+      if (timeouts < 5)
+      {
+        manager.programmer.error("[glp2] Failed to monitor actual values: %s", err.message);
+      }
 
       return setTimeout(manager.monitorActualValues, 1337);
     }
+
+    timeouts = 0;
 
     if (res && res.faultStatus === glp2.FaultStatus.NO_TEST_STEP_DEFINED)
     {
