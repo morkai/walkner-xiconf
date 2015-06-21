@@ -667,7 +667,7 @@ module.exports = function programAndTestGlp2(app, programmerModule, programmerTy
 
           this.cancelMonitor = getActualValues(function(err, res)
           {
-            if (err)
+            if (programmerModule.cancelled || err)
             {
               return nextStep(err);
             }
