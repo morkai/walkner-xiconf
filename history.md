@@ -1,3 +1,10 @@
+2.13.0 @ 2015-06-21
+===================
+
+  * Fixed a hotkey of the 12NC field not being visible on the Programmer page.
+  * Added license features to the License settings tab.
+  * Added a new option: GLP2.
+
 2.12.1 @ 2015-06-11
 ===================
 
