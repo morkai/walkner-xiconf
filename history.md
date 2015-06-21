@@ -1,3 +1,9 @@
+2.13.1 @ 2015-06-21
+===================
+
+  * Fixed a crash if the programming process is cancelled during a Visual check test.
+  * Fixed a Visual check test not failing if not acknowledged in the allowed time.
+
 2.13.0 @ 2015-06-21
 ===================
 
