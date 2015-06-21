@@ -51,6 +51,20 @@ define([
       });
     },
 
+    getLicenseFeatures: function()
+    {
+      var licenseInfo = this.get('licenseInfo');
+
+      if (!licenseInfo || !licenseInfo.features)
+      {
+        return '';
+      }
+
+      return ['WMES', 'SOL', 'T24VDC', 'LED', 'GPRS']
+        .filter(function(feature) { return this.supportsFeature(feature); }, this)
+        .join(', ');
+    },
+
     isValidLicense: function()
     {
       var licenseInfo = this.get('licenseInfo');
@@ -69,7 +83,7 @@ define([
 
       var supportedFeatures = licenseInfo.features;
 
-      switch (feature)
+      switch (feature.toLowerCase())
       {
         case 'wmes':
           return !!(supportedFeatures & 1);

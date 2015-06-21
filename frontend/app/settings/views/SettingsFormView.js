@@ -195,6 +195,8 @@ define([
       this.$id('licenseError').parent().toggleClass('has-error', !!newSettings.licenseError);
 
       js2form(this.el, newSettings);
+
+      this.$id('licenseInfo-features').val(settings.getLicenseFeatures());
     },
 
     onSettingsChange: function()

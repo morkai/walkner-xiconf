@@ -6,7 +6,7 @@
 }
 .settings-form textarea[name="licenseKey"] {
   font-family: Consolas, Menlo, Monaco, monospace;
-  height: 182px;
+  height: 256px;
 }
 .settings-form input[readonly] {
   cursor: default;
