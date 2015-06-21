@@ -1,0 +1,33 @@
+<div id="<%- idPrefix %>-glp2" class="panel-body tab-pane settings-hasRowLast">
+  <div class="form-group">
+    <label for="<%- idPrefix %>-glp2Enabled" class="control-label"><%- t('settings', 'setting:glp2Enabled') %></label>
+    <div>
+      <label class="radio-inline">
+        <input id="<%- idPrefix %>-glp2Enabled" name="glp2Enabled" type="radio" value="1" required> <%- t('settings', 'setting:glp2Enabled:on') %>
+      </label>
+      <label class="radio-inline">
+        <input name="glp2Enabled" type="radio" value="0" required> <%- t('settings', 'setting:glp2Enabled:off') %>
+      </label>
+    </div>
+  </div>
+  <div class="row">
+    <div class="form-group col-md-3">
+      <label for="<%- idPrefix %>-glp2ComPattern" class="control-label"><%- t('settings', 'setting:glp2ComPattern') %></label>
+      <input id="<%- idPrefix %>-glp2ComPattern" class="form-control" name="glp2ComPattern" type="text" required>
+    </div>
+    <div class="form-group col-md-3">
+      <label for="<%- idPrefix %>-glp2ComAddress" class="control-label"><%- t('settings', 'setting:glp2ComAddress') %></label>
+      <input id="<%- idPrefix %>-glp2ComAddress" class="form-control" name="glp2ComAddress" type="number" required min="1" max="255">
+    </div>
+  </div>
+  <div class="row">
+    <div class="form-group col-md-3">
+      <label for="<%- idPrefix %>-glp2ProgrammingDelay" class="control-label"><%- t('settings', 'setting:glp2ProgrammingDelay') %></label>
+      <input id="<%- idPrefix %>-glp2ProgrammingDelay" class="form-control" name="glp2ProgrammingDelay" type="number" required min="0" max="60000">
+    </div>
+    <div class="form-group col-md-3">
+      <label for="<%- idPrefix %>-glp2CancelDelay" class="control-label"><%- t('settings', 'setting:glp2CancelDelay') %></label>
+      <input id="<%- idPrefix %>-glp2CancelDelay" class="form-control" name="glp2CancelDelay" type="number" required min="1" max="10000">
+    </div>
+  </div>
+</div>

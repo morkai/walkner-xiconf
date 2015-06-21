@@ -10,7 +10,8 @@ var _ = require('lodash');
 var step = require('h5.step');
 var findFeatureFile = require('./findFeatureFile');
 var readFeatureFile = require('./readFeatureFile');
-var programAndTest = require('./programAndTest');
+var programAndTestSdp = require('./programAndTestSdp');
+var programAndTestGlp2 = require('./programAndTestGlp2');
 var programSolDriver = require('./programSolDriver');
 var programMowDriver = require('./programMowDriver');
 var LptIo = require('./LptIo');
@@ -346,7 +347,7 @@ module.exports = function program(app, programmerModule, data, done)
 
     if (currentState.featureFile.indexOf('FAKE') === 1)
     {
-      return setImmediate(this.next(), null, 'FAKE FEATURE FILE');
+      return setImmediate(this.next(), null, fs.readFileSync(programmerModule.config.fakeFeatureFile));
     }
 
     this.sub = app.broker.subscribe(
@@ -801,11 +802,6 @@ module.exports = function program(app, programmerModule, data, done)
     this.isSolProgram = solFilePattern.length && featureFile.indexOf(solFilePattern) !== -1;
 
     programmerModule.updateOverallProgress(19);
-
-    if (!this.isSolProgram && currentState.workMode === 'testing')
-    {
-      return this.skip('TESTING_NOT_SOL');
-    }
   }
 
   function writeWorkflowFileStep()
@@ -1078,29 +1074,45 @@ module.exports = function program(app, programmerModule, data, done)
       this.sub = null;
     }
 
+    var programmerType = currentState.gprs.item
+      ? 'gprs'
+      : this.isSolProgram
+        ? 'sol'
+        : !_.isEmpty(currentState.workflow)
+          ? 'mow'
+          : null;
+
     programmerModule.updateOverallProgress(programmerModule.OVERALL_SETUP_PROGRESS);
 
-    if (currentState.gprs.item)
+    if (currentState.program)
+    {
+      if (currentState.program.type === 't24vdc')
+      {
+        return programAndTestSdp(app, programmerModule, this.next());
+      }
+
+      if (currentState.program.type === 'glp2')
+      {
+        return programAndTestGlp2(app, programmerModule, programmerType, this.next());
+      }
+    }
+
+    if (programmerType === 'gprs')
     {
       return gprs.program(app, programmerModule, onProgress, this.next());
     }
 
-    if (currentState.program)
-    {
-      return programAndTest(app, programmerModule, this.next());
-    }
-
-    if (this.isSolProgram)
+    if (programmerType === 'sol')
     {
       return programSolDriver(app, programmerModule, null, onProgress, this.next());
     }
 
-    if (_.isEmpty(currentState.workflow))
+    if (programmerType === 'mow')
     {
+      this.sub = programMowDriver(app, programmerModule, onProgress, this.next());
+
       return;
     }
-
-    this.sub = programMowDriver(app, programmerModule, onProgress, this.next());
 
     function onProgress(progress)
     {
@@ -1268,7 +1280,15 @@ module.exports = function program(app, programmerModule, data, done)
         changes.exception = err.message;
       }
 
-      if (currentState.nc12)
+      if (currentState.program)
+      {
+        programmerModule.log('TESTING_FAILURE', {
+          time: changes.finishedAt,
+          duration: changes.duration,
+          errorCode: changes.errorCode
+        });
+      }
+      else if (currentState.nc12)
       {
         programmerModule.log('PROGRAMMING_FAILURE', {
           time: changes.finishedAt,
@@ -1295,7 +1315,14 @@ module.exports = function program(app, programmerModule, data, done)
     {
       changes.counter = currentState.counter + 1;
 
-      if (currentState.nc12)
+      if (currentState.program)
+      {
+        programmerModule.log('TESTING_SUCCESS', {
+          time: changes.finishedAt,
+          duration: changes.duration
+        });
+      }
+      else if (currentState.nc12)
       {
         programmerModule.log('PROGRAMMING_SUCCESS', {
           time: changes.finishedAt,

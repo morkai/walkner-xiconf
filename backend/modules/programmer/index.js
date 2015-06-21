@@ -13,6 +13,7 @@ var program = require('./program');
 var printServiceTag = require('./printServiceTag');
 var RemoteCoordinator = require('./RemoteCoordinator');
 var LedManager = require('./LedManager');
+var Glp2Manager = require('./Glp2Manager');
 
 exports.DEFAULT_CONFIG = {
   settingsId: 'settings',
@@ -27,6 +28,7 @@ exports.DEFAULT_CONFIG = {
   lastModeFile: 'lastMode.txt',
   spoolFile: 'spool.exe',
   motoBarScanFile: 'MotoBarScan.exe',
+  fakeFeatureFile: 'fake-feature.xml',
   httpPort: 80
 };
 
@@ -63,6 +65,8 @@ exports.start = function startProgrammerModule(app, module)
   module.remoteCoordinator = new RemoteCoordinator(app, module);
 
   module.ledManager = new LedManager(app.broker.sandbox(), module);
+
+  module.glp2Manager = new Glp2Manager(app, module);
 
   module.newProgram = null;
 
@@ -113,7 +117,7 @@ exports.start = function startProgrammerModule(app, module)
       return done(new Error('INPUT'));
     }
 
-    if (workMode === 'testing' && !settings.get('testingEnabled'))
+    if (workMode === 'testing' && !settings.get('testingEnabled') && !settings.get('glp2Enabled'))
     {
       return done(new Error('TESTING_DISABLED'));
     }

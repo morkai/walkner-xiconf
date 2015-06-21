@@ -13,7 +13,7 @@ exports.modules = [
   'sqlite3',
   'settings',
   'history',
-  'programs',
+  'xiconfPrograms',
   'programmer',
   'featureSync',
   'imWorkin',
@@ -41,6 +41,7 @@ exports.programmer = {
   lastModeFile: DATA_PATH + '/lastMode.txt',
   spoolFile: BIN_PATH + '/spool.exe',
   motoBarScanFile: BIN_PATH + '/MotoBarScan/MotoBarScan.exe',
+  fakeFeatureFile: BIN_PATH + '/fake-feature.xml',
   httpPort: exports.httpServer.port
 };
 
@@ -117,6 +118,11 @@ exports.settings = {
     testingModbusEnabled: false,
     testingModbusHost: '127.0.0.1',
     testingModbusPort: 502,
+    glp2Enabled: 0,
+    glp2ComPattern: 'COM3',
+    glp2ComAddress: 0x01,
+    glp2ProgrammingDelay: 2000,
+    glp2CancelDelay: 2000,
     prodLine: '',
     serviceTagPrint: 1,
     serviceTagPrinter: 'ServiceTagPrinterZPL',
@@ -171,6 +177,7 @@ exports.pubsub = {
     'settings.changed',
     'programmer.finished',
     'programmer.barcodeScanned',
+    'programmer.glp2.startRequested',
     'history.orderUpdated',
     'programs.*'
   ]

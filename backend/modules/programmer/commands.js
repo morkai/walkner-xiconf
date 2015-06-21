@@ -142,18 +142,21 @@ module.exports = function setUpProgrammerCommands(app, programmerModule)
       return reply(new Error('INPUT'));
     }
 
+    var currentState = programmerModule.currentState;
+
     if (!/^[0-9]{12}$/.test(data.nc12))
     {
-      var isLedOnly = programmerModule.currentState.isLedOnly();
-      var hasSolProgramStep = programmerModule.currentState.hasProgramStep('sol');
+      var isLedOnly = currentState.isLedOnly();
+      var hasSolProgramStep = currentState.hasProgramStep('sol');
+      var hasGlp2ProgramStep = currentState.hasProgramStep('program');
 
-      if (hasSolProgramStep && !isLedOnly && settings.get('programming'))
+      if ((hasSolProgramStep || hasGlp2ProgramStep) && !isLedOnly && settings.get('programming'))
       {
         return reply(new Error('INPUT'));
       }
     }
 
-    var orders = programmerModule.currentState.inputMode === 'remote' ? 'required' : settings.get('orders');
+    var orders = currentState.inputMode === 'remote' ? 'required' : settings.get('orders');
 
     if (orders === 'required')
     {

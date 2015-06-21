@@ -1,0 +1,603 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SaveData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Version="2">
+  <Features>
+    <FeatureData>
+      <FeatureName>AOC</FeatureName>
+      <ItemKeys>
+        <string>Enabled</string>
+        <string>Value</string>
+      </ItemKeys>
+      <ItemValues>
+        <FeatureItemData>
+          <ItemName>Enabled</ItemName>
+          <Data>
+            <Columns>
+              <SerializeDataColumn>
+                <Name>Enabled</Name>
+                <Type>System.Boolean</Type>
+              </SerializeDataColumn>
+            </Columns>
+            <Rows>
+              <SerializeDataRow>
+                <Values>
+                  <anyType xsi:type="xsd:boolean">true</anyType>
+                </Values>
+              </SerializeDataRow>
+            </Rows>
+          </Data>
+        </FeatureItemData>
+        <FeatureItemData>
+          <ItemName>Value</ItemName>
+          <Data>
+            <Columns>
+              <SerializeDataColumn>
+                <Name>Value</Name>
+                <Type>System.Int32</Type>
+              </SerializeDataColumn>
+            </Columns>
+            <Rows>
+              <SerializeDataRow>
+                <Values>
+                  <anyType xsi:type="xsd:int">1050</anyType>
+                </Values>
+              </SerializeDataRow>
+            </Rows>
+          </Data>
+        </FeatureItemData>
+      </ItemValues>
+    </FeatureData>
+    <FeatureData>
+      <FeatureName>CLO</FeatureName>
+      <ItemKeys>
+        <string>Enabled</string>
+        <string>Values</string>
+      </ItemKeys>
+      <ItemValues>
+        <FeatureItemData>
+          <ItemName>Enabled</ItemName>
+          <Data>
+            <Columns>
+              <SerializeDataColumn>
+                <Name>Enabled</Name>
+                <Type>System.Boolean</Type>
+              </SerializeDataColumn>
+            </Columns>
+            <Rows>
+              <SerializeDataRow>
+                <Values>
+                  <anyType xsi:type="xsd:boolean">false</anyType>
+                </Values>
+              </SerializeDataRow>
+            </Rows>
+          </Data>
+        </FeatureItemData>
+        <FeatureItemData>
+          <ItemName>Values</ItemName>
+          <Data>
+            <Columns>
+              <SerializeDataColumn>
+                <Name>CLOTime</Name>
+                <Type>System.Int32</Type>
+              </SerializeDataColumn>
+              <SerializeDataColumn>
+                <Name>CLOPerc</Name>
+                <Type>System.Int32</Type>
+              </SerializeDataColumn>
+            </Columns>
+            <Rows>
+              <SerializeDataRow>
+                <Values>
+                  <anyType xsi:type="xsd:int">0</anyType>
+                  <anyType xsi:type="xsd:int">100</anyType>
+                </Values>
+              </SerializeDataRow>
+              <SerializeDataRow>
+                <Values>
+                  <anyType xsi:type="xsd:int">8</anyType>
+                  <anyType xsi:type="xsd:int">101</anyType>
+                </Values>
+              </SerializeDataRow>
+              <SerializeDataRow>
+                <Values>
+                  <anyType xsi:type="xsd:int">16</anyType>
+                  <anyType xsi:type="xsd:int">103</anyType>
+                </Values>
+              </SerializeDataRow>
+              <SerializeDataRow>
+                <Values>
+                  <anyType xsi:type="xsd:int">24</anyType>
+                  <anyType xsi:type="xsd:int">104</anyType>
+                </Values>
+              </SerializeDataRow>
+              <SerializeDataRow>
+                <Values>
+                  <anyType xsi:type="xsd:int">32</anyType>
+                  <anyType xsi:type="xsd:int">105</anyType>
+                </Values>
+              </SerializeDataRow>
+              <SerializeDataRow>
+                <Values>
+                  <anyType xsi:type="xsd:int">40</anyType>
+                  <anyType xsi:type="xsd:int">107</anyType>
+                </Values>
+              </SerializeDataRow>
+              <SerializeDataRow>
+                <Values>
+                  <anyType xsi:type="xsd:int">48</anyType>
+                  <anyType xsi:type="xsd:int">109</anyType>
+                </Values>
+              </SerializeDataRow>
+              <SerializeDataRow>
+                <Values>
+                  <anyType xsi:type="xsd:int">56</anyType>
+                  <anyType xsi:type="xsd:int">112</anyType>
+                </Values>
+              </SerializeDataRow>
+              <SerializeDataRow>
+                <Values>
+                  <anyType xsi:type="xsd:int">64</anyType>
+                  <anyType xsi:type="xsd:int">115</anyType>
+                </Values>
+              </SerializeDataRow>
+              <SerializeDataRow>
+                <Values>
+                  <anyType xsi:type="xsd:int">72</anyType>
+                  <anyType xsi:type="xsd:int">116</anyType>
+                </Values>
+              </SerializeDataRow>
+              <SerializeDataRow>
+                <Values>
+                  <anyType xsi:type="xsd:int">80</anyType>
+                  <anyType xsi:type="xsd:int">117</anyType>
+                </Values>
+              </SerializeDataRow>
+              <SerializeDataRow>
+                <Values>
+                  <anyType xsi:type="xsd:int">88</anyType>
+                  <anyType xsi:type="xsd:int">118</anyType>
+                </Values>
+              </SerializeDataRow>
+              <SerializeDataRow>
+                <Values>
+                  <anyType xsi:type="xsd:int">96</anyType>
+                  <anyType xsi:type="xsd:int">119</anyType>
+                </Values>
+              </SerializeDataRow>
+              <SerializeDataRow>
+                <Values>
+                  <anyType xsi:type="xsd:int">104</anyType>
+                  <anyType xsi:type="xsd:int">120</anyType>
+                </Values>
+              </SerializeDataRow>
+              <SerializeDataRow>
+                <Values>
+                  <anyType xsi:type="xsd:int">112</anyType>
+                  <anyType xsi:type="xsd:int">120</anyType>
+                </Values>
+              </SerializeDataRow>
+              <SerializeDataRow>
+                <Values>
+                  <anyType xsi:type="xsd:int">120</anyType>
+                  <anyType xsi:type="xsd:int">120</anyType>
+                </Values>
+              </SerializeDataRow>
+            </Rows>
+          </Data>
+        </FeatureItemData>
+      </ItemValues>
+    </FeatureData>
+    <FeatureData>
+      <FeatureName>InterfaceSelection</FeatureName>
+      <ItemKeys>
+        <string>SelectedInterface</string>
+        <string>DaliDimmingCurve</string>
+      </ItemKeys>
+      <ItemValues>
+        <FeatureItemData>
+          <ItemName>SelectedInterface</ItemName>
+          <Data>
+            <Columns>
+              <SerializeDataColumn>
+                <Name>SelectedInterface</Name>
+                <Type>System.Int32</Type>
+              </SerializeDataColumn>
+            </Columns>
+            <Rows>
+              <SerializeDataRow>
+                <Values>
+                  <anyType xsi:type="xsd:int">2</anyType>
+                </Values>
+              </SerializeDataRow>
+            </Rows>
+          </Data>
+        </FeatureItemData>
+        <FeatureItemData>
+          <ItemName>DaliDimmingCurve</ItemName>
+          <Data>
+            <Columns>
+              <SerializeDataColumn>
+                <Name>DaliDimmingCurve</Name>
+                <Type>System.Int32</Type>
+              </SerializeDataColumn>
+            </Columns>
+            <Rows>
+              <SerializeDataRow>
+                <Values>
+                  <anyType xsi:type="xsd:int">0</anyType>
+                </Values>
+              </SerializeDataRow>
+            </Rows>
+          </Data>
+        </FeatureItemData>
+      </ItemValues>
+    </FeatureData>
+    <FeatureData>
+      <FeatureName>StartFadeUpTime</FeatureName>
+      <ItemKeys>
+        <string>StartUpFadeTimeLevel</string>
+      </ItemKeys>
+      <ItemValues>
+        <FeatureItemData>
+          <ItemName>StartUpFadeTimeLevel</ItemName>
+          <Data>
+            <Columns>
+              <SerializeDataColumn>
+                <Name>StartUpFadeTimeLevel</Name>
+                <Type>System.Int32</Type>
+              </SerializeDataColumn>
+            </Columns>
+            <Rows>
+              <SerializeDataRow>
+                <Values>
+                  <anyType xsi:type="xsd:int">1000</anyType>
+                </Values>
+              </SerializeDataRow>
+            </Rows>
+          </Data>
+        </FeatureItemData>
+      </ItemValues>
+    </FeatureData>
+    <FeatureData>
+      <FeatureName>MTPOutdoor</FeatureName>
+      <ItemKeys>
+        <string>Values</string>
+        <string>Enabled</string>
+        <string>SelectedResistance</string>
+      </ItemKeys>
+      <ItemValues>
+        <FeatureItemData>
+          <ItemName>Values</ItemName>
+          <Data>
+            <Columns>
+              <SerializeDataColumn>
+                <Name>HighTempPerc</Name>
+                <Type>System.Int32</Type>
+              </SerializeDataColumn>
+              <SerializeDataColumn>
+                <Name>DimStart</Name>
+                <Type>System.Int32</Type>
+              </SerializeDataColumn>
+              <SerializeDataColumn>
+                <Name>DimStop</Name>
+                <Type>System.Int32</Type>
+              </SerializeDataColumn>
+            </Columns>
+            <Rows>
+              <SerializeDataRow>
+                <Values>
+                  <anyType xsi:type="xsd:int">10</anyType>
+                  <anyType xsi:type="xsd:int">75</anyType>
+                  <anyType xsi:type="xsd:int">85</anyType>
+                </Values>
+              </SerializeDataRow>
+            </Rows>
+          </Data>
+        </FeatureItemData>
+        <FeatureItemData>
+          <ItemName>Enabled</ItemName>
+          <Data>
+            <Columns>
+              <SerializeDataColumn>
+                <Name>Enabled</Name>
+                <Type>System.Boolean</Type>
+              </SerializeDataColumn>
+            </Columns>
+            <Rows>
+              <SerializeDataRow>
+                <Values>
+                  <anyType xsi:type="xsd:boolean">true</anyType>
+                </Values>
+              </SerializeDataRow>
+            </Rows>
+          </Data>
+        </FeatureItemData>
+        <FeatureItemData>
+          <ItemName>SelectedResistance</ItemName>
+          <Data>
+            <Columns>
+              <SerializeDataColumn>
+                <Name>SelectedResistance</Name>
+                <Type>System.Int32</Type>
+              </SerializeDataColumn>
+            </Columns>
+            <Rows>
+              <SerializeDataRow>
+                <Values>
+                  <anyType xsi:type="xsd:int">0</anyType>
+                </Values>
+              </SerializeDataRow>
+            </Rows>
+          </Data>
+        </FeatureItemData>
+      </ItemValues>
+    </FeatureData>
+    <FeatureData>
+      <FeatureName>OLI</FeatureName>
+      <ItemKeys>
+        <string>Enabled</string>
+        <string>Value</string>
+      </ItemKeys>
+      <ItemValues>
+        <FeatureItemData>
+          <ItemName>Enabled</ItemName>
+          <Data>
+            <Columns>
+              <SerializeDataColumn>
+                <Name>Enabled</Name>
+                <Type>System.Boolean</Type>
+              </SerializeDataColumn>
+            </Columns>
+            <Rows>
+              <SerializeDataRow>
+                <Values>
+                  <anyType xsi:type="xsd:boolean">false</anyType>
+                </Values>
+              </SerializeDataRow>
+            </Rows>
+          </Data>
+        </FeatureItemData>
+        <FeatureItemData>
+          <ItemName>Value</ItemName>
+          <Data>
+            <Columns>
+              <SerializeDataColumn>
+                <Name>Value</Name>
+                <Type>System.Int32</Type>
+              </SerializeDataColumn>
+            </Columns>
+            <Rows>
+              <SerializeDataRow>
+                <Values>
+                  <anyType xsi:type="xsd:int">65000</anyType>
+                </Values>
+              </SerializeDataRow>
+            </Rows>
+          </Data>
+        </FeatureItemData>
+      </ItemValues>
+    </FeatureData>
+    <FeatureData>
+      <FeatureName>DynadimmerLED</FeatureName>
+      <ItemKeys>
+        <string>Scenes</string>
+        <string>TimeBased</string>
+        <string>Override</string>
+        <string>MidnightLine</string>
+      </ItemKeys>
+      <ItemValues>
+        <FeatureItemData>
+          <ItemName>Scenes</ItemName>
+          <Data>
+            <Columns>
+              <SerializeDataColumn>
+                <Name>Hour</Name>
+                <Type>System.Int32</Type>
+              </SerializeDataColumn>
+              <SerializeDataColumn>
+                <Name>Minute</Name>
+                <Type>System.Int32</Type>
+              </SerializeDataColumn>
+              <SerializeDataColumn>
+                <Name>Fade</Name>
+                <Type>System.Int32</Type>
+              </SerializeDataColumn>
+              <SerializeDataColumn>
+                <Name>DimLevel</Name>
+                <Type>System.Int32</Type>
+              </SerializeDataColumn>
+            </Columns>
+            <Rows>
+              <SerializeDataRow>
+                <Values>
+                  <anyType xsi:type="xsd:int">15</anyType>
+                  <anyType xsi:type="xsd:int">0</anyType>
+                  <anyType xsi:type="xsd:int">0</anyType>
+                  <anyType xsi:type="xsd:int">100</anyType>
+                </Values>
+              </SerializeDataRow>
+              <SerializeDataRow>
+                <Values>
+                  <anyType xsi:type="xsd:int">19</anyType>
+                  <anyType xsi:type="xsd:int">0</anyType>
+                  <anyType xsi:type="xsd:int">0</anyType>
+                  <anyType xsi:type="xsd:int">70</anyType>
+                </Values>
+              </SerializeDataRow>
+              <SerializeDataRow>
+                <Values>
+                  <anyType xsi:type="xsd:int">22</anyType>
+                  <anyType xsi:type="xsd:int">0</anyType>
+                  <anyType xsi:type="xsd:int">0</anyType>
+                  <anyType xsi:type="xsd:int">50</anyType>
+                </Values>
+              </SerializeDataRow>
+              <SerializeDataRow>
+                <Values>
+                  <anyType xsi:type="xsd:int">4</anyType>
+                  <anyType xsi:type="xsd:int">0</anyType>
+                  <anyType xsi:type="xsd:int">0</anyType>
+                  <anyType xsi:type="xsd:int">70</anyType>
+                </Values>
+              </SerializeDataRow>
+              <SerializeDataRow>
+                <Values>
+                  <anyType xsi:type="xsd:int">6</anyType>
+                  <anyType xsi:type="xsd:int">0</anyType>
+                  <anyType xsi:type="xsd:int">0</anyType>
+                  <anyType xsi:type="xsd:int">100</anyType>
+                </Values>
+              </SerializeDataRow>
+            </Rows>
+          </Data>
+        </FeatureItemData>
+        <FeatureItemData>
+          <ItemName>TimeBased</ItemName>
+          <Data>
+            <Columns>
+              <SerializeDataColumn>
+                <Name>TimeBased</Name>
+                <Type>System.Boolean</Type>
+              </SerializeDataColumn>
+            </Columns>
+            <Rows>
+              <SerializeDataRow>
+                <Values>
+                  <anyType xsi:type="xsd:boolean">false</anyType>
+                </Values>
+              </SerializeDataRow>
+            </Rows>
+          </Data>
+        </FeatureItemData>
+        <FeatureItemData>
+          <ItemName>Override</ItemName>
+          <Data>
+            <Columns>
+              <SerializeDataColumn>
+                <Name>Override</Name>
+                <Type>System.Boolean</Type>
+              </SerializeDataColumn>
+            </Columns>
+            <Rows>
+              <SerializeDataRow>
+                <Values>
+                  <anyType xsi:type="xsd:boolean">false</anyType>
+                </Values>
+              </SerializeDataRow>
+            </Rows>
+          </Data>
+        </FeatureItemData>
+        <FeatureItemData>
+          <ItemName>MidnightLine</ItemName>
+          <Data>
+            <Columns>
+              <SerializeDataColumn>
+                <Name>MidnightLine</Name>
+                <Type>System.Int32</Type>
+              </SerializeDataColumn>
+            </Columns>
+            <Rows>
+              <SerializeDataRow>
+                <Values>
+                  <anyType xsi:type="xsd:int">28</anyType>
+                </Values>
+              </SerializeDataRow>
+            </Rows>
+          </Data>
+        </FeatureItemData>
+      </ItemValues>
+    </FeatureData>
+    <FeatureData>
+      <FeatureName>AmpDimLED</FeatureName>
+      <ItemKeys>
+        <string>Values</string>
+      </ItemKeys>
+      <ItemValues>
+        <FeatureItemData>
+          <ItemName>Values</ItemName>
+          <Data>
+            <Columns>
+              <SerializeDataColumn>
+                <Name>StopLevel</Name>
+                <Type>System.Int32</Type>
+              </SerializeDataColumn>
+              <SerializeDataColumn>
+                <Name>StopVoltage</Name>
+                <Type>System.Int32</Type>
+              </SerializeDataColumn>
+              <SerializeDataColumn>
+                <Name>StartLevel</Name>
+                <Type>System.Int32</Type>
+              </SerializeDataColumn>
+              <SerializeDataColumn>
+                <Name>StartVoltage</Name>
+                <Type>System.Int32</Type>
+              </SerializeDataColumn>
+            </Columns>
+            <Rows>
+              <SerializeDataRow>
+                <Values>
+                  <anyType xsi:type="xsd:int">30</anyType>
+                  <anyType xsi:type="xsd:int">170</anyType>
+                  <anyType xsi:type="xsd:int">100</anyType>
+                  <anyType xsi:type="xsd:int">220</anyType>
+                </Values>
+              </SerializeDataRow>
+            </Rows>
+          </Data>
+        </FeatureItemData>
+      </ItemValues>
+    </FeatureData>
+    <FeatureData>
+      <FeatureName>WorkingHours</FeatureName>
+      <ItemKeys>
+        <string>Value</string>
+      </ItemKeys>
+      <ItemValues>
+        <FeatureItemData>
+          <ItemName>Value</ItemName>
+          <Data>
+            <Columns>
+              <SerializeDataColumn>
+                <Name>Value</Name>
+                <Type>System.Int32</Type>
+              </SerializeDataColumn>
+            </Columns>
+            <Rows>
+              <SerializeDataRow>
+                <Values>
+                  <anyType xsi:type="xsd:int">0</anyType>
+                </Values>
+              </SerializeDataRow>
+            </Rows>
+          </Data>
+        </FeatureItemData>
+      </ItemValues>
+    </FeatureData>
+    <FeatureData>
+      <FeatureName>MinDimLevel1To10V</FeatureName>
+      <ItemKeys>
+        <string>MinDimLevel</string>
+      </ItemKeys>
+      <ItemValues>
+        <FeatureItemData>
+          <ItemName>MinDimLevel</ItemName>
+          <Data>
+            <Columns>
+              <SerializeDataColumn>
+                <Name>MinDimLevel</Name>
+                <Type>System.Int32</Type>
+              </SerializeDataColumn>
+            </Columns>
+            <Rows>
+              <SerializeDataRow>
+                <Values>
+                  <anyType xsi:type="xsd:int">10</anyType>
+                </Values>
+              </SerializeDataRow>
+            </Rows>
+          </Data>
+        </FeatureItemData>
+      </ItemValues>
+    </FeatureData>
+  </Features>
+</SaveData>

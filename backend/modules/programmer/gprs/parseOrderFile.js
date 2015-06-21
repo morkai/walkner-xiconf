@@ -177,13 +177,13 @@ module.exports = function parseOrderFile(orderFileContents)
     );
   }
 
-  orderData.ambientTemperatureRating = parseInt((rawOrderData['temperature'] || '').replace(/[^0-9]/g, ''), 10);
+  orderData.ambientTemperatureRating = parseInt((rawOrderData.temperature || '').replace(/[^0-9]/g, ''), 10);
 
   if (isNaN(orderData.ambientTemperatureRating))
   {
     throw new InvalidOptionError(
       'temperature => ambientTemperatureRating',
-      rawOrderData['temperature']
+      rawOrderData.temperature
     );
   }
 

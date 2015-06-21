@@ -9,7 +9,7 @@ define([
   'app/highcharts',
   'app/core/View',
   'app/dashboard/views/LedsView',
-  'app/programs/views/ProgramStepsView',
+  'app/xiconfPrograms/views/XiconfProgramStepsView',
   'app/history/templates/details'
 ], function(
   _,
@@ -18,7 +18,7 @@ define([
   Highcharts,
   View,
   LedsView,
-  ProgramStepsView,
+  XiconfProgramStepsView,
   detailsTemplate
 ) {
   'use strict';
@@ -69,7 +69,7 @@ define([
       this.metricsChart = null;
 
       this.setView('.history-details-leds', new LedsView({model: this.model}));
-      this.setView('.history-details-steps', new ProgramStepsView({model: this.model}));
+      this.setView('.history-details-steps', new XiconfProgramStepsView({model: this.model}));
     },
 
     destroy: function()
@@ -145,11 +145,13 @@ define([
         return;
       }
 
-      var metrics = this.model.get('metrics') || {
-        uSet: [],
-        uGet: [],
-        i: []
-      };
+      var metrics = this.model.get('metrics');
+
+      if (!metrics)
+      {
+        return;
+      }
+
       var chartData = {
         uSet: metrics.uSet,
         uGet: metrics.uGet,

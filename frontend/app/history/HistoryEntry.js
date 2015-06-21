@@ -147,6 +147,26 @@ define([
       return false;
     },
 
+    getActiveProgramStep: function()
+    {
+      var steps = this.get('steps');
+
+      if (!Array.isArray(steps))
+      {
+        return false;
+      }
+
+      for (var i = 0; i < steps.length; ++i)
+      {
+        if (steps[i].status === 'active')
+        {
+          return this.get('program').steps[i];
+        }
+      }
+
+      return null;
+    },
+
     isOrderFinished: function()
     {
       if (this.isRemoteInput())

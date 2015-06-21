@@ -46,3 +46,7 @@
 .history-details-leds .dashboard-leds-led {
   border-right: 0;
 }
+.history-details-steps .xiconfPrograms-steps {
+  border-left: 1px solid #ccc;
+  border-right: 1px solid #ccc;
+}

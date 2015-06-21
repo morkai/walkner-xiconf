@@ -60,7 +60,7 @@ define([
         return '';
       }
 
-      return ['WMES', 'SOL', 'T24VDC', 'LED', 'GPRS']
+      return ['WMES', 'SOL', 'T24VDC', 'LED', 'GPRS', 'GLP2']
         .filter(function(feature) { return this.supportsFeature(feature); }, this)
         .join(', ');
     },
@@ -99,6 +99,9 @@ define([
 
         case 'gprs':
           return !!(supportedFeatures & 16);
+
+        case 'glp2':
+          return !!(supportedFeatures & 32);
 
         default:
           return false;

@@ -114,3 +114,6 @@ input.no-controls::-webkit-inner-spin-button {
   height: 34px;
   padding-top: 8px;
 }
+.control-label + .radio-inline-group {
+  margin-top: -5px;
+}

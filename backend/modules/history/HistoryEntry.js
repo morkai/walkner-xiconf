@@ -318,6 +318,13 @@ HistoryEntry.prototype.reset = function(orderNo, quantity, nc12)
       text: 'LED_CHECKING_STARTED'
     });
   }
+  else if (this.program)
+  {
+    this.log.push({
+      time: this.startedAt,
+      text: 'TESTING_WITH_PROGRAM_STARTED'
+    });
+  }
   else
   {
     this.log.push({
@@ -344,11 +351,16 @@ HistoryEntry.prototype.setUpProgram = function()
     };
   });
 
-  this.metrics = {
-    uSet: [],
-    uGet: [],
-    i: []
-  };
+  this.metrics = null;
+
+  if (this.program.type === 't24vdc')
+  {
+    this.metrics = {
+      uSet: [],
+      uGet: [],
+      i: []
+    };
+  }
 };
 
 HistoryEntry.prototype.setUpLeds = function()

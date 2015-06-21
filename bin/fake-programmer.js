@@ -3,7 +3,7 @@
 'use strict';
 
 var chunks = '\
-INFO	Philips MultiOne Workflow version 1.1.3.18406\r\n\
+INFO	Philips MultiOne Workflow version 1.2.3.45678\r\n\
 INFO	OS: Microsoft Windows 7 Enterprise. Computer name: QQ000CZC3484Q2F. Application path: C:\\Program Files (x86)\\Philips MultiOne Workflow\\MultiOneWorkflow.exe. Running as administrator: yes. Format: Polski (Polska) [pl-PL], date format: yyyy-MM-dd, right to left: no, decimal separator: [,].\r\n\
 INFO	On warnings: halt\r\n\
 INFO	Using Write without Verify.\r\n\
@@ -65,4 +65,21 @@ function next(i)
   setTimeout(next, Math.round(delay), i + 1);
 }
 
-next(0);
+var versionCheck = false;
+
+for (var i = 0; i < process.argv.length; ++i)
+{
+  if (process.argv[i] === 'dummy')
+  {
+    versionCheck = true;
+  }
+}
+
+if (versionCheck)
+{
+  process.stdout.write(chunks[0]);
+}
+else
+{
+  next(0);
+}

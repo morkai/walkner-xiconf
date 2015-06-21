@@ -10,8 +10,9 @@ define([
   'app/viewport',
   'app/core/View',
   'app/data/hotkeys',
-  'app/programs/ProgramCollection',
-  'app/programs/views/ProgramStepsView',
+  'app/data/settings',
+  'app/xiconfPrograms/XiconfProgramCollection',
+  'app/xiconfPrograms/views/XiconfProgramStepsView',
   './ProgramPickerView',
   'app/dashboard/templates/program'
 ], function(
@@ -22,8 +23,9 @@ define([
   viewport,
   View,
   hotkeys,
-  ProgramCollection,
-  ProgramStepsView,
+  settings,
+  XiconfProgramCollection,
+  XiconfProgramStepsView,
   ProgramPickerView,
   template
 ) {
@@ -63,7 +65,7 @@ define([
     initialize: function()
     {
       this.programPickerView = null;
-      this.programStepsView = new ProgramStepsView({
+      this.programStepsView = new XiconfProgramStepsView({
         model: this.model
       });
 
@@ -145,9 +147,23 @@ define([
 
       hotkeys.stop();
 
+      var supportsT24vdc = settings.supportsFeature('t24vdc') && settings.get('testingEnabled');
+      var supportsGlp2 = settings.supportsFeature('glp2') && settings.get('glp2Enabled');
+      var type = '';
+
+      if (supportsT24vdc && !supportsGlp2)
+      {
+        type = '&type=t24vdc';
+      }
+
+      if (!supportsT24vdc && supportsGlp2)
+      {
+        type = '&type=glp2';
+      }
+
       this.programPickerView = new ProgramPickerView({
-        collection: new ProgramCollection(null, {
-          rqlQuery: 'select(_id,name)&sort(name)'
+        collection: new XiconfProgramCollection(null, {
+          rqlQuery: 'select(_id,name)&sort(name)' + type
         })
       });
 

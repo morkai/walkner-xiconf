@@ -1,0 +1,33 @@
+<div class="xiconfPrograms-steps">
+  <% steps.forEach(function(step) { %>
+  <div class="xiconfPrograms-step <%- step.stepClassName %>" data-type="<%- step.type %>" data-index="<%- step.index %>">
+    <div class="xiconfPrograms-step-status">
+      <% if (step.unit !== null) { %>
+      <div class="xiconfPrograms-step-unit xiconfPrograms-step-cornerBox"><%- step.unit %></div>
+      <% } %>
+      <% if (step.minValue !== null) { %>
+      <div class="xiconfPrograms-step-minValue xiconfPrograms-step-cornerBox"><%- step.minValue %></div>
+      <% } %>
+      <% if (step.maxValue !== null) { %>
+      <div class="xiconfPrograms-step-maxValue xiconfPrograms-step-cornerBox"><%- step.maxValue %></div>
+      <% } %>
+      <% if (step.value !== null) { %>
+      <div class="xiconfPrograms-step-value" data-length="<%- step.value.length %>"><%- step.value %></div>
+      <% } %>
+    </div>
+    <div class="xiconfPrograms-step-nameAndProgress">
+      <h3 class="xiconfPrograms-step-name"><%- step.label || t('xiconfPrograms', 'step:' + step.type) %></h3>
+      <div class="xiconfPrograms-step-details">
+        <% step.props.forEach(function(prop) { %>
+        <% if (prop.key) { %>
+        <span class="xiconfPrograms-step-details-prop"><%- prop.key %><%- prop.sub ? ('<sub>' + prop.sub + '</sub>') : '' %>=<%- prop.value %><%- prop.unit || '' %></span>
+        <% } %>
+        <% }) %>
+      </div>
+      <div class="progress">
+        <div class="progress-bar <%- step.progressBarClassName %>" style="width: <%- step.progressBarWidth %>"></div>
+      </div>
+    </div>
+  </div>
+  <% }) %>
+</div>

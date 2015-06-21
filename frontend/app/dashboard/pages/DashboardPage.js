@@ -59,7 +59,7 @@ define([
 
     events: {
       'click #-toggleInputMode': function() { this.toggleInputMode(); },
-      'click #-continue': function() { this.broker.publish('hotkeys.continue'); },
+      'click .dashboard-continue': function() { this.broker.publish('hotkeys.continue'); },
       'submit #-inputModeForm': function()
       {
         var $password = this.$id('password');
@@ -166,7 +166,7 @@ define([
         licenseError: !settings.isValidLicense(),
         workMode: currentState.get('workMode'),
         inputMode: currentState.get('inputMode'),
-        workModeChangeEnabled: !!settings.get('testingEnabled'),
+        workModeChangeEnabled: !!settings.get('testingEnabled') || !!settings.get('glp2Enabled'),
         waitingForLeds: currentState.get('waitingForLeds'),
         waitingForContinue: currentState.get('waitingForContinue'),
         progressBarClassName: this.getProgressBarClassName(),
@@ -437,7 +437,10 @@ define([
 
     onTestingEnabledChange: function()
     {
-      this.$el.toggleClass('is-workModeChangeEnabled', !!settings.get('testingEnabled'));
+      this.$el.toggleClass(
+        'is-workModeChangeEnabled',
+        !!settings.get('testingEnabled') || !!settings.get('glp2Enabled')
+      );
     },
 
     onInProgressChange: function()
@@ -492,6 +495,15 @@ define([
       this.$el
         .toggleClass('is-waitingForContinue', waitingForContinue !== null)
         .attr('data-waiting', waitingForContinue);
+
+      if (waitingForContinue === 'vis')
+      {
+        var activeProgramStep = currentState.getActiveProgramStep();
+
+        this.$('.dashboard-continue-vis').find('p').first().text(
+          activeProgramStep ? activeProgramStep.label : t('dashboard', 'continue:vis:p1')
+        );
+      }
     }
 
   });

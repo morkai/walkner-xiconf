@@ -160,6 +160,9 @@ exports.start = function startSettingsModule(app, module, done)
       case 'gprs':
         return !!(supportedFeatures & 16);
 
+      case 'glp2':
+        return !!(supportedFeatures & 32);
+
       default:
         return false;
     }
@@ -275,84 +278,99 @@ exports.start = function startSettingsModule(app, module, done)
   {
     var newSettings = {};
 
-    validateLicense(app, module, rawSettings, newSettings, settings);
-    validateStringSetting(rawSettings, newSettings, 'password1');
-    validateStringSetting(rawSettings, newSettings, 'id', 0, /^[a-zA-Z0-9-_]*$/);
+    // General settings
     validateStringSetting(rawSettings, newSettings, 'title', 0);
+    validateStringSetting(rawSettings, newSettings, 'password1');
+    validateEnum(rawSettings, newSettings, 'protectInputMode', Number, [0, 1]);
+    validateEnum(rawSettings, newSettings, 'orders', String, ['disabled', 'optional', 'required']);
+    validateEnum(rawSettings, newSettings, 'imWorkin', Number, [0, 1]);
+    validateEnum(rawSettings, newSettings, 'bgScanner', Number, [0, 1]);
+    validateBgScannerFilter(rawSettings, newSettings);
+    validateNumericSetting(rawSettings, newSettings, 'bgScannerBeepGood', -1, 26);
+    validateNumericSetting(rawSettings, newSettings, 'bgScannerBeepBad', -1, 26);
+    validateNumericSetting(rawSettings, newSettings, 'bgScannerBeepDone', -1, 26);
+    validateNumericSetting(rawSettings, newSettings, 'programDelay', 0);
+    validateNumericSetting(rawSettings, newSettings, 'cancelDelay', 0);
+    validateNumericSetting(rawSettings, newSettings, 'blockageInterval', 0);
+    validateNumericSetting(rawSettings, newSettings, 'blockageDuration', 0);
     validateStringSetting(rawSettings, newSettings, 'featurePath1');
     validateStringSetting(rawSettings, newSettings, 'featurePath2', 0);
-    validateStringSetting(rawSettings, newSettings, 'schedulerFile', 0);
-    validateStringSetting(rawSettings, newSettings, 'supportedDevicesFile', 0);
-    validateStringSetting(rawSettings, newSettings, 'programmerFile');
-    validateStringSetting(rawSettings, newSettings, 'remoteServer', 0);
-    validateStringSetting(rawSettings, newSettings, 'solComPattern');
-    validateStringSetting(rawSettings, newSettings, 'solFilePattern');
-    validateStringSetting(rawSettings, newSettings, 'lptFilePattern', 0);
-    validateStringSetting(rawSettings, newSettings, 'testingComPattern');
-    validateStringSetting(rawSettings, newSettings, 'testingModbusHost', 1, /^([0-9]{1,3}\.){3}[0-9]{1,3}$/);
-    validateStringSetting(rawSettings, newSettings, 'prodLine', 0);
-    validateStringSetting(rawSettings, newSettings, 'serviceTagPrinter', 0);
-    validateStringSetting(rawSettings, newSettings, 'serviceTagLabelCode', 0);
-    validateStringSetting(rawSettings, newSettings, 'gprsVerificationInputPath');
-    validateStringSetting(rawSettings, newSettings, 'gprsVerificationSuccessPath');
-    validateStringSetting(rawSettings, newSettings, 'gprsVerificationErrorPath');
-    validateStringSetting(rawSettings, newSettings, 'gprsOrdersPath');
-    validateStringSetting(rawSettings, newSettings, 'gprsProgrammerFile');
-    validateStringSetting(rawSettings, newSettings, 'gprsInputTemplateFile');
-    validateNumericSetting(rawSettings, newSettings, 'syncInterval', 1);
     validateNumericSetting(rawSettings, newSettings, 'searchTimeout1', 100);
     validateNumericSetting(rawSettings, newSettings, 'searchTimeout2', 100);
     validateNumericSetting(rawSettings, newSettings, 'readTimeout1', 100);
     validateNumericSetting(rawSettings, newSettings, 'readTimeout2', 100);
     validateNumericSetting(rawSettings, newSettings, 'backupDelay', 5);
-    validateNumericSetting(rawSettings, newSettings, 'programDelay', 0);
-    validateNumericSetting(rawSettings, newSettings, 'cancelDelay', 0);
-    validateNumericSetting(rawSettings, newSettings, 'blockageInterval', 0);
-    validateNumericSetting(rawSettings, newSettings, 'blockageDuration', 0);
-    validateNumericSetting(rawSettings, newSettings, 'solResetDelay', 333);
-    validateNumericSetting(rawSettings, newSettings, 'lptStartTimeout', 1000);
-    validateNumericSetting(rawSettings, newSettings, 'lptReadPort', 0);
-    validateNumericSetting(rawSettings, newSettings, 'lptReadBit', 0);
-    validateNumericSetting(rawSettings, newSettings, 'lptWritePort', 0);
-    validateNumericSetting(rawSettings, newSettings, 'lptWriteBit', 0);
-    validateNumericSetting(rawSettings, newSettings, 'testingComAddress', 0, 255);
-    validateNumericSetting(rawSettings, newSettings, 'testingComTimeout', 100, 5000);
-    validateNumericSetting(rawSettings, newSettings, 'testingMaxVoltage', 0.1, 99.9);
-    validateNumericSetting(rawSettings, newSettings, 'testingCurrent', 0.01, 10);
-    validateNumericSetting(rawSettings, newSettings, 'testingModbusPort', 1, 65535);
-    validateNumericSetting(rawSettings, newSettings, 'bgScannerBeepGood', -1, 26);
-    validateNumericSetting(rawSettings, newSettings, 'bgScannerBeepBad', -1, 26);
-    validateNumericSetting(rawSettings, newSettings, 'bgScannerBeepDone', -1, 26);
-    validateNumericSetting(rawSettings, newSettings, 'gprsVerificationTimeout', 5 * 1000, 3600 * 1000);
-    validateNumericSetting(rawSettings, newSettings, 'gprsDaliPort', 0, 256);
-    validateEnum(rawSettings, newSettings, 'solReset', Number, [0, 1]);
     validateEnum(rawSettings, newSettings, 'backupPath', Number, [1, 2]);
-    validateEnum(rawSettings, newSettings, 'orders', String, ['disabled', 'optional', 'required']);
-    validateEnum(rawSettings, newSettings, 'interface', String, ['d', 's']);
-    validateEnum(rawSettings, newSettings, 'logVerbosity', String, ['info', 'error', 'fatal']);
-    validateEnum(rawSettings, newSettings, 'continueOnWarnings', String, ['continue', 'halt']);
-    validateEnum(rawSettings, newSettings, 'schedulerEnabled', Number, [0, 1]);
-    validateEnum(rawSettings, newSettings, 'supportedDevicesEnabled', Number, [0, 1]);
-    validateEnum(rawSettings, newSettings, 'imWorkin', Number, [0, 1]);
+    // Remote
+    validateStringSetting(rawSettings, newSettings, 'prodLine', 0);
+    validateEnum(rawSettings, newSettings, 'serviceTagInLocalMode', String, ['disabled', 'optional', 'required']);
+    validateEnum(rawSettings, newSettings, 'serviceTagPrint', Number, [0, 1]);
+    validateEnum(rawSettings, newSettings, 'ledsEnabled', Number, [0, 1, 2]);
+    validateEnum(rawSettings, newSettings, 'programming', Number, [0, 1]);
+    validateStringSetting(rawSettings, newSettings, 'serviceTagPrinter', 0);
+    validateEnum(rawSettings, newSettings, 'serviceTagLabelType', String, ['zpl', 'dpl']);
+    validateStringSetting(rawSettings, newSettings, 'serviceTagLabelCode', 0);
+    // MultiOne Workflow
     validateEnum(rawSettings, newSettings, 'workflowVerify', Number, [0, 1]);
     validateEnum(rawSettings, newSettings, 'workflowIdentifyAlways', Number, [0, 1]);
     validateEnum(rawSettings, newSettings, 'workflowMultiDevice', Number, [0, 1]);
     validateEnum(rawSettings, newSettings, 'workflowCheckDeviceModel', Number, [0, 1]);
     validateEnum(rawSettings, newSettings, 'workflowCommissionAll', Number, [0, 1]);
-    validateEnum(rawSettings, newSettings, 'lptEnabled', Number, [0, 1]);
-    validateEnum(rawSettings, newSettings, 'lptReadInverted', Number, [0, 1]);
-    validateEnum(rawSettings, newSettings, 'testingEnabled', Number, [0, 1]);
-    validateEnum(rawSettings, newSettings, 'testingModbusEnabled', Number, [0, 1]);
-    validateEnum(rawSettings, newSettings, 'serviceTagPrint', Number, [0, 1]);
-    validateEnum(rawSettings, newSettings, 'serviceTagLabelType', String, ['zpl', 'dpl']);
-    validateEnum(rawSettings, newSettings, 'serviceTagInLocalMode', String, ['disabled', 'optional', 'required']);
-    validateEnum(rawSettings, newSettings, 'protectInputMode', Number, [0, 1]);
-    validateEnum(rawSettings, newSettings, 'bgScanner', Number, [0, 1]);
-    validateEnum(rawSettings, newSettings, 'ledsEnabled', Number, [0, 1, 2]);
-    validateEnum(rawSettings, newSettings, 'programming', Number, [0, 1]);
+    validateEnum(rawSettings, newSettings, 'interface', String, ['d', 's']);
+    validateEnum(rawSettings, newSettings, 'continueOnWarnings', String, ['continue', 'halt']);
+    validateEnum(rawSettings, newSettings, 'logVerbosity', String, ['info', 'error', 'fatal']);
+    validateStringSetting(rawSettings, newSettings, 'programmerFile');
+    validateEnum(rawSettings, newSettings, 'schedulerEnabled', Number, [0, 1]);
+    validateStringSetting(rawSettings, newSettings, 'schedulerFile', 0);
+    validateEnum(rawSettings, newSettings, 'supportedDevicesEnabled', Number, [0, 1]);
+    validateStringSetting(rawSettings, newSettings, 'supportedDevicesFile', 0);
+    // GPRS
+    validateStringSetting(rawSettings, newSettings, 'gprsOrdersPath');
+    validateStringSetting(rawSettings, newSettings, 'gprsProgrammerFile');
+    validateNumericSetting(rawSettings, newSettings, 'gprsDaliPort', 0, 256);
+    validateStringSetting(rawSettings, newSettings, 'gprsInputTemplateFile');
     validateEnum(rawSettings, newSettings, 'gprsVerification', Number, [0, 1]);
-    validateBgScannerFilter(rawSettings, newSettings);
+    validateNumericSetting(rawSettings, newSettings, 'gprsVerificationTimeout', 5 * 1000, 3600 * 1000);
+    validateStringSetting(rawSettings, newSettings, 'gprsVerificationInputPath');
+    validateStringSetting(rawSettings, newSettings, 'gprsVerificationSuccessPath');
+    validateStringSetting(rawSettings, newSettings, 'gprsVerificationErrorPath');
+    // Petrol Station
+    validateEnum(rawSettings, newSettings, 'lptEnabled', Number, [0, 1]);
+    validateStringSetting(rawSettings, newSettings, 'lptFilePattern', 0);
+    validateNumericSetting(rawSettings, newSettings, 'lptStartTimeout', 1000);
+    validateNumericSetting(rawSettings, newSettings, 'lptReadPort', 0);
+    validateNumericSetting(rawSettings, newSettings, 'lptReadBit', 0);
+    validateEnum(rawSettings, newSettings, 'lptReadInverted', Number, [0, 1]);
+    validateNumericSetting(rawSettings, newSettings, 'lptWritePort', 0);
+    validateNumericSetting(rawSettings, newSettings, 'lptWriteBit', 0);
+    // Fortimo Solar
+    validateStringSetting(rawSettings, newSettings, 'solComPattern');
+    validateStringSetting(rawSettings, newSettings, 'solFilePattern');
+    validateEnum(rawSettings, newSettings, 'solReset', Number, [0, 1]);
+    validateNumericSetting(rawSettings, newSettings, 'solResetDelay', 333);
+    // Tester 24V DC
+    validateEnum(rawSettings, newSettings, 'testingEnabled', Number, [0, 1]);
+    validateStringSetting(rawSettings, newSettings, 'testingComPattern');
+    validateNumericSetting(rawSettings, newSettings, 'testingComAddress', 0, 255);
+    validateNumericSetting(rawSettings, newSettings, 'testingComTimeout', 100, 5000);
+    validateNumericSetting(rawSettings, newSettings, 'testingCurrent', 0.01, 10);
+    validateEnum(rawSettings, newSettings, 'testingModbusEnabled', Number, [0, 1]);
+    validateStringSetting(rawSettings, newSettings, 'testingModbusHost', 1, /^([0-9]{1,3}\.){3}[0-9]{1,3}$/);
+    validateNumericSetting(rawSettings, newSettings, 'testingModbusPort', 1, 65535);
+    validateNumericSetting(rawSettings, newSettings, 'testingMaxVoltage', 0.1, 99.9);
+    // Tester GLP2-I
+    validateEnum(rawSettings, newSettings, 'glp2Enabled', Number, [0, 1]);
+    validateStringSetting(rawSettings, newSettings, 'glp2ComPattern');
+    validateNumericSetting(rawSettings, newSettings, 'glp2ComAddress', 1, 255);
+    validateNumericSetting(rawSettings, newSettings, 'glp2ProgrammingDelay', 0, 60000);
+    validateNumericSetting(rawSettings, newSettings, 'glp2CancelDelay', 1, 10000);
+    // Hotkeys
     validateHotkeys(rawSettings, newSettings);
+    // License
+    validateStringSetting(rawSettings, newSettings, 'id', 0, /^[a-zA-Z0-9-_]*$/);
+    validateStringSetting(rawSettings, newSettings, 'remoteServer', 0);
+    validateNumericSetting(rawSettings, newSettings, 'syncInterval', 1);
+    validateLicense(app, module, rawSettings, newSettings, settings);
 
     if (newSettings.password1)
     {

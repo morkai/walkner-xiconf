@@ -43,6 +43,18 @@ define([
 
     template: inputTemplate,
 
+    remoteTopics: function()
+    {
+      var topics = {};
+
+      if (user.isLocal())
+      {
+        topics['programmer.glp2.startRequested'] = this.clickElement.bind(this, 'start');
+      }
+
+      return topics;
+    },
+
     localTopics: {
       'hotkeys.closeDialog': function() { viewport.closeDialog(); },
       'hotkeys.focusOrderNo': function()
@@ -607,6 +619,7 @@ define([
         var hasOrder = model.hasOrder();
         var orderFieldDisabled = isInProgress || isRemoteInput || hasOrder || ordersDisabled;
         var countdown = model.get('countdown') >= 0;
+        var waitingForContinue = model.get('waitingForContinue');
 
         $els.orderNo
           .prop('disabled', orderFieldDisabled || countdown)
@@ -617,7 +630,7 @@ define([
         $els.nc12.prop('disabled', isInProgress || isRemoteInput || hasOrder || countdown);
         $els.start.prop('disabled', countdown);
         $els.toggleWorkMode.prop('disabled', isInProgress || countdown);
-        $els.continue.prop('disabled', this.model.get('waitingForContinue') === null);
+        $els.continue.prop('disabled', waitingForContinue === null || waitingForContinue === 'glp2');
         $els.reset.prop('disabled', isInProgress || countdown);
         $els.reload.prop('disabled', isInProgress || hasOrder || countdown);
       }

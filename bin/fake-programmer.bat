@@ -1,2 +1,2 @@
 @echo off
-node %~dp0fake-programmer.js
+node %~dp0fake-programmer.js %*
