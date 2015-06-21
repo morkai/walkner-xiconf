@@ -458,15 +458,19 @@ Glp2Manager.prototype.checkReadyState = function()
 /**
  * @private
  */
-Glp2Manager.prototype.monitorActualValues = function()
+Glp2Manager.prototype.monitorActualValues = function(timeouts)
 {
   if (this.readyState !== Glp2Manager.ReadyState.READY)
   {
     return;
   }
 
+  if (!timeouts)
+  {
+    timeouts = 0;
+  }
+
   var manager = this;
-  var timeouts = 0;
 
   this.master.getActualValues(function(err, res)
   {
@@ -491,17 +495,15 @@ Glp2Manager.prototype.monitorActualValues = function()
         manager.programmer.error("[glp2] Failed to monitor actual values: %s", err.message);
       }
 
-      return setTimeout(manager.monitorActualValues, 1337);
+      return setTimeout(manager.monitorActualValues, 1337, timeouts);
     }
-
-    timeouts = 0;
 
     if (res && res.faultStatus === glp2.FaultStatus.NO_TEST_STEP_DEFINED)
     {
       manager.requestStart();
     }
 
-    return setImmediate(manager.monitorActualValues);
+    return setImmediate(manager.monitorActualValues, 0);
   });
 };
 
