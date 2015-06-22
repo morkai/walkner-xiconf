@@ -24,7 +24,7 @@ module.exports = function syncPrograms(app, programsModule, done)
     return done(null, {type: 'warning', text: 'inProgress'});
   }
 
-  if (!settings.supportsFeature('wmes') || !settings.supportsFeature('t24vdc'))
+  if (!settings.supportsFeature('wmes') || (!settings.supportsFeature('t24vdc') && !settings.supportsFeature('glp2')))
   {
     return done(null, {type: 'error', text: 'invalidLicense'});
   }
