@@ -73,7 +73,7 @@ module.exports = function setProgramsRoutes(app, programsModule)
 
         if (!fields.length)
         {
-          fields = ['_id', 'name', 'type', 'updatedAt', 'steps'];
+          fields = ['_id', 'name', 'prodLines', 'type', 'updatedAt', 'steps'];
         }
 
         var sql = "SELECT " + fields + "\
@@ -111,7 +111,7 @@ module.exports = function setProgramsRoutes(app, programsModule)
 
   function addProgramRoute(req, res, next)
   {
-    var program = _.pick(req.body, ['type', 'name', 'steps']);
+    var program = _.pick(req.body, ['type', 'name', 'prodLines', 'steps']);
 
     if (!validateProgram(program))
     {
@@ -123,7 +123,7 @@ module.exports = function setProgramsRoutes(app, programsModule)
     program._id = program.createdAt.toString(36).toUpperCase()
       + Math.round(1000 + Math.random() * 8999).toString(36).toUpperCase();
 
-    var fieldNames = ['_id', 'createdAt', 'updatedAt', 'deleted', 'type', 'name', 'steps'];
+    var fieldNames = ['_id', 'createdAt', 'updatedAt', 'deleted', 'type', 'name', 'prodLines', 'steps'];
     var params = {};
 
     _.forEach(fieldNames, function(fieldName)
@@ -175,7 +175,7 @@ module.exports = function setProgramsRoutes(app, programsModule)
 
   function editProgramRoute(req, res, next)
   {
-    var program = _.pick(req.body, ['type', 'name', 'steps']);
+    var program = _.pick(req.body, ['type', 'name', 'prodLines', 'steps']);
 
     if (!validateProgram(program))
     {
@@ -209,10 +209,11 @@ module.exports = function setProgramsRoutes(app, programsModule)
 
         model.updatedAt = Date.now();
         model.name = program.name;
+        model.prodLines = program.prodLines;
         model.steps = program.steps;
 
-        var sql = 'UPDATE programs SET updatedAt=?, name=?, steps=? WHERE _id=?';
-        var params = [model.updatedAt, model.name, JSON.stringify(model.steps), model._id];
+        var sql = 'UPDATE programs SET updatedAt=?, name=?, prodLines=?, steps=? WHERE _id=?';
+        var params = [model.updatedAt, model.name, model.prodLines, JSON.stringify(model.steps), model._id];
 
         db.run(sql, params, this.next());
       },
@@ -299,6 +300,7 @@ module.exports = function setProgramsRoutes(app, programsModule)
     return (program.type === 't24vdc' || program.type === 'glp2')
       && _.isString(program.name)
       && !_.isEmpty(program.name)
+      && _.isString(program.prodLines)
       && _.isArray(program.steps)
       && !_.isEmpty(program.steps)
       && _.every(program.steps, validateProgramStep.bind(null, program.type));

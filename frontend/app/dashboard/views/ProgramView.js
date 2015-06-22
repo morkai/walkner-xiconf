@@ -162,8 +162,9 @@ define([
       }
 
       this.programPickerView = new ProgramPickerView({
+        prodLineId: settings.get('prodLine'),
         collection: new XiconfProgramCollection(null, {
-          rqlQuery: 'select(_id,name)&sort(name)' + type
+          rqlQuery: 'select(_id,name,prodLines)&sort(name)' + type
         })
       });
 

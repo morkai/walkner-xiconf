@@ -3,9 +3,11 @@
 // Part of the walkner-xiconf project <http://lukasz.walukiewicz.eu/p/walkner-xiconf>
 
 define([
+  'underscore',
   '../core/Collection',
-    './XiconfProgram'
+  './XiconfProgram'
 ], function(
+  _,
   Collection,
   XiconfProgram
 ) {
@@ -19,7 +21,7 @@ define([
 
     sortNaturally: function()
     {
-      this.models.forEach(function(program)
+      _.forEach(this.models, function(program)
       {
         program.attributes.name$ = program.attributes.name
           .trim()
@@ -54,6 +56,44 @@ define([
       });
 
       return this;
+    },
+
+    filterByProdLine: function(prodLineId)
+    {
+      if (!_.isString(prodLineId) || _.isEmpty(prodLineId))
+      {
+        return this.toJSON();
+      }
+
+      var programs = [];
+
+      _.forEach(this.models, function(program)
+      {
+        var prodLines = program.get('prodLines');
+
+        if (_.isEmpty(prodLines))
+        {
+          programs.push(program.toJSON());
+
+          return;
+        }
+
+        var patterns = prodLines.split(';');
+
+        for (var i = 0; i < patterns.length; ++i)
+        {
+          var pattern = new RegExp('^' + patterns[i].trim().replace(/\*/g, '.*?') + '$', 'i');
+
+          if (pattern.test(prodLineId))
+          {
+            programs.push(program.toJSON());
+
+            return;
+          }
+        }
+      });
+
+      return programs;
     }
 
   });

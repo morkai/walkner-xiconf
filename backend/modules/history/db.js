@@ -114,6 +114,13 @@ COMMIT TRANSACTION;';
         sql += 'ALTER TABLE historyEntries ADD COLUMN gprsOutputFileHash TEXT;\n';
       }
 
+      if (row.user_version < 5)
+      {
+        userVersion = 5;
+
+        sql += 'ALTER TABLE programs ADD COLUMN prodLines TEXT;\n';
+      }
+
       if (sql === '')
       {
         return sqlite3Module.info("Database user version: %d", userVersion);

@@ -86,7 +86,7 @@ define([
     {
       return {
         idPrefix: this.idPrefix,
-        programs: this.collection.sortNaturally().toJSON()
+        programs: this.collection.sortNaturally().filterByProdLine(this.options.prodLineId)
       };
     },
 
