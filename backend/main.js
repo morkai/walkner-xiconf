@@ -6,7 +6,31 @@
 
 var startTime = Date.now();
 
+if (!process.env.NODE_ENV)
+{
+  process.env.NODE_ENV = 'development';
+}
+
 require('./extensions');
+
+var fs = require('fs');
+var requireCache = require('./requireCache');
+
+if (process.env.NODE_ENV === 'production')
+{
+  requireCache.path = __dirname + '/../require-cache.json';
+
+  try
+  {
+    requireCache.cache = JSON.parse(fs.readFileSync(requireCache.path, 'utf8'));
+    requireCache.use();
+  }
+  catch (err)
+  {
+    requireCache.built = true;
+    requireCache.build();
+  }
+}
 
 var main = require('h5.main');
 var config = require(process.argv[2]);
@@ -66,3 +90,11 @@ var app = {
 };
 
 main(app, modules);
+
+app.broker.subscribe('app.started').setLimit(1).on('message', function()
+{
+  if (requireCache.built)
+  {
+    requireCache.save();
+  }
+});
