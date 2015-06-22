@@ -225,12 +225,12 @@ define([
         $modalBody.empty().append(dialogView.el);
       }
 
-      viewport.$dialog.modal('show');
-
       if (_.isFunction(afterRender))
       {
         afterRender.apply(dialogView, arguments);
       }
+
+      viewport.$dialog.modal('show');
     };
 
     this.currentDialog = dialogView;

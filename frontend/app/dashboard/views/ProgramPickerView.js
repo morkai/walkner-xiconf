@@ -115,6 +115,8 @@ define([
         filter: this.$id('filter'),
         list: this.$id('list')
       };
+
+      this.$els.filter.focus();
     },
 
     resize: function()
