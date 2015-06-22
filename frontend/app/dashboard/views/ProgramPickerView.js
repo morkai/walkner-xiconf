@@ -84,16 +84,20 @@ define([
 
     serialize: function()
     {
+      var programs = this.collection.sortNaturally().filterByProdLine(this.options.prodLineId);
       return {
         idPrefix: this.idPrefix,
-        programs: this.collection.sortNaturally().filterByProdLine(this.options.prodLineId)
+        programs: programs.concat(programs).concat(programs).concat(programs)
       };
     },
 
     afterRender: function()
     {
+      var $dialog = this.$el.closest('.modal-dialog');
+
       this.$els = {
-        header: this.$el.closest('.modal-content').find('.modal-header'),
+        dialog: $dialog,
+        header: $dialog.find('.modal-content').find('.modal-header'),
         filter: this.$id('filter'),
         list: this.$id('list')
       };
@@ -103,7 +107,11 @@ define([
     {
       if (this.$els)
       {
-        var height = window.innerHeight - this.$els.header.outerHeight() - this.$els.filter.outerHeight();
+        var marginTop = parseInt(this.$els.dialog.css('margin-top'), 10);
+        var height = window.innerHeight
+          - this.$els.header.outerHeight()
+          - this.$els.filter.outerHeight()
+          - marginTop * 2;
 
         this.$els.list.css('max-height', height + 'px');
       }
