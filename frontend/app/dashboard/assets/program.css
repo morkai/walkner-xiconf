@@ -99,3 +99,21 @@
   background: #337ab7;
   outline: none;
 }
+.dashboard-programPicker kbd > span {
+  display: none;
+}
+.dashboard-programPicker.is-alt kbd > span {
+  display: inline-block;
+}
+.dashboard-programPicker-typeAndSteps {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+}
+.dashboard-programPicker-type {
+  display: inline-block;
+  min-width: 50px;
+}
+.dashboard-programPicker-steps > .label {
+  padding-top: .3em;
+}

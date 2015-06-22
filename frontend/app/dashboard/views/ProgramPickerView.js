@@ -50,15 +50,29 @@ define([
 
         return false;
       },
+      'focus #-filter': 'toggleAlt',
+      'blur #-filter': 'toggleAlt',
       'input #-filter': function(e)
       {
+        this.toggleAlt();
+
         var filter = e.target.value.trim().toLowerCase();
+        var hotkey = 1;
 
         _.forEach(this.$els.list[0].children, function(programEl)
         {
-          programEl.style.display = filter === '' || programEl.innerText.toLowerCase().indexOf(filter) !== -1
-            ? 'block'
-            : 'none';
+          var $program = $(programEl);
+          var display = filter === '' || $program.text().toLowerCase().indexOf(filter) !== -1 ? 'block' : 'none';
+
+          $program.find('kbd').remove();
+          $program.css('display', display);
+
+          if (display === 'block' && hotkey < 10)
+          {
+            $program.prepend('<kbd data-hotkey="' + hotkey + '"><span>ALT+</span>' + hotkey + '</kbd>');
+
+            ++hotkey;
+          }
         });
       }
     },
@@ -71,6 +85,7 @@ define([
       this.listenTo(this.collection, 'reset', this.render);
 
       $(window).on('resize.programPickerView', this.onResize);
+      $(window).on('keydown.programPickerView', this.onKeyDown.bind(this));
 
       this.promised(this.collection.fetch({reset: true}));
     },
@@ -84,10 +99,9 @@ define([
 
     serialize: function()
     {
-      var programs = this.collection.sortNaturally().filterByProdLine(this.options.prodLineId);
       return {
         idPrefix: this.idPrefix,
-        programs: programs.concat(programs).concat(programs).concat(programs)
+        programs: this.collection.sortNaturally().filterByProdLine(this.options.prodLineId)
       };
     },
 
@@ -117,11 +131,31 @@ define([
       }
     },
 
+    toggleAlt: function()
+    {
+      this.$el.toggleClass('is-alt', document.activeElement === this.$els.filter[0] && this.$els.filter.val() !== '');
+    },
+
     onDialogShown: function()
     {
       this.resize();
 
       this.$id('filter').focus();
+    },
+
+    onKeyDown: function(e)
+    {
+      if (e.keyCode < 49 || e.keyCode > 57)
+      {
+        return;
+      }
+
+      if (e.altKey || !this.$el.hasClass('is-alt'))
+      {
+        this.$('kbd[data-hotkey="' + String.fromCharCode(e.keyCode) + '"]').closest('a').click();
+
+        return false;
+      }
     }
 
   });

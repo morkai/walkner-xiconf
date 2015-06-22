@@ -4,11 +4,9 @@
 
 define([
   'app/i18n',
-  'app/time',
   'app/core/views/ListView'
 ], function(
   t,
-  time,
   ListView
 ) {
   'use strict';
@@ -28,32 +26,6 @@ define([
     serializeActions: function()
     {
       return ListView.actions.viewEditDelete(this.collection, false);
-    },
-
-    serializeRow: function(model)
-    {
-      var obj = model.serialize();
-
-      obj.steps = obj.steps
-        .filter(function(step) { return step.enabled; })
-        .map(function(step)
-        {
-          var label = step.type;
-
-          if (step.type === 'wait')
-          {
-            label = step.kind === 'auto' ? time.toString(step.duration) : 'W8';
-          }
-          else if (t.has('xiconfPrograms', 'step:' + step.type + ':label'))
-          {
-            label = t('xiconfPrograms', 'step:' + step.type + ':label');
-          }
-
-          return '<span class="label label-info label-' + step.type + '">' + label + '</span>';
-        })
-        .join(' ');
-
-      return obj;
     }
 
   });

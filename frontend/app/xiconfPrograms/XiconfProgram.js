@@ -42,6 +42,7 @@ define([
       if (typeof obj.steps === 'string')
       {
         obj.steps = JSON.parse(obj.steps);
+        obj.stepLabels = this.prepareStepLabels(obj.steps);
       }
 
       return obj;
@@ -57,6 +58,39 @@ define([
       obj.updatedAt = time.format(obj.updatedAt, 'LLLL');
 
       return obj;
+    },
+
+    serializeRow: function()
+    {
+      var obj = this.serialize();
+
+      obj.steps = obj.stepLabels;
+
+      return obj;
+    },
+
+    prepareStepLabels: function(steps)
+    {
+      return steps
+        .filter(function(step) { return step.enabled; })
+        .map(function(step)
+        {
+          var label = step.type;
+
+          if (step.type === 'wait')
+          {
+            label = step.kind === 'auto' ? time.toString(step.duration) : 'W8';
+          }
+          else if (t.has('xiconfPrograms', 'step:' + step.type + ':label'))
+          {
+            label = t('xiconfPrograms', 'step:' + step.type + ':label');
+          }
+
+          return '<span class="label label-info xiconfPrograms-label xiconfPrograms-label-' + step.type + '">'
+            + label
+            + '</span>';
+        })
+        .join(' ');
     }
 
   }, {
