@@ -1,3 +1,15 @@
+2.13.2 @ 2015-06-22
+===================
+
+  * Fixed not being able to sync programs with the remote server if the current license has WMES and GLP2 options,
+    but doesn't have the T24VDC option.
+  * Fixed the Program picker on the Programmer page not fitting the window's height.
+  * Removed the fade effect from the modals.
+  * Added a new property to programs: Production lines - a semicolon separated list of production line ID patterns used
+    on the Programmer page to show programs matching the current client's production line ID setting.
+  * Added type and steps of each program on the Program picker's list.
+  * Added an ability to quickly pick a program from the Program picker's list using 1-9 (or ALT+1-9) hotkeys.
+
 2.13.1 @ 2015-06-21
 ===================
 
