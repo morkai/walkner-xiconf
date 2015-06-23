@@ -141,7 +141,7 @@ util.inherits(ActualValuesResponse, Response);
  */
 ActualValuesResponse.fromResponseBuffer = function(type, responseBuffer)
 {
-  var data = responseBuffer.slice(4, -3).toString('utf8').trim().split(' ');
+  var data = util.decodeResponseBuffer(responseBuffer);
 
   if (data.length === 0)
   {

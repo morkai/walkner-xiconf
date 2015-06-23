@@ -33,10 +33,10 @@ util.inherits(DeviceOptionsResponse, Response);
  */
 DeviceOptionsResponse.fromResponseBuffer = function(responseBuffer)
 {
-  var deviceOptions = responseBuffer.slice(4, -3).toString('utf8').trim().split('_').filter(function(deviceOption)
-  {
-    return deviceOption.length > 0;
-  });
+  var deviceOptions = util.decodeResponseBuffer(responseBuffer)
+    .join(' ')
+    .split('_')
+    .filter(function(deviceOption) { return deviceOption.length > 0; });
 
   return new DeviceOptionsResponse(deviceOptions);
 };

@@ -71,7 +71,7 @@ util.inherits(InterimActualValuesResponse, Response);
  */
 InterimActualValuesResponse.fromResponseBuffer = function(responseBuffer)
 {
-  var data = responseBuffer.slice(4, -3).toString('utf8').trim().split(' ');
+  var data = util.decodeResponseBuffer(responseBuffer);
 
   if (data.length < 4)
   {

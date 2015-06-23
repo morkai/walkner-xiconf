@@ -33,7 +33,5 @@ util.inherits(OrderDataDemandResponse, Response);
  */
 OrderDataDemandResponse.fromResponseBuffer = function(responseBuffer)
 {
-  return new OrderDataDemandResponse(
-    responseBuffer.slice(4, -3).toString('utf8').trim().split(' ').map(util.decodeStringValue)
-  );
+  return new OrderDataDemandResponse(util.decodeResponseBuffer(responseBuffer).map(util.decodeStringValue));
 };

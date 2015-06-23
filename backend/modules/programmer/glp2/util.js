@@ -303,7 +303,7 @@ exports.decodeValueAndUnit = function(rawValueAndUnit)
 
   var integer = parseInt(matches[2], 10);
   var fractions = parseInt(matches[3] || '0', 10);
-  var unit = (matches[4] || '').replace('OHM', 'Ω');
+  var unit = (matches[4] || '').replace('OHM', '?');
   var value = integer;
 
   if (fractions > 0)
@@ -315,4 +315,13 @@ exports.decodeValueAndUnit = function(rawValueAndUnit)
     value: parseFloat(value),
     unit: unit
   };
+};
+
+/**
+ * @param {Buffer} responseBuffer
+ * @returns {Array.<string>}
+ */
+exports.decodeResponseBuffer = function(responseBuffer)
+{
+  return responseBuffer.slice(4, -3).toString('utf8').trim().replace(/\s+/g, ' ').split(' ');
 };
