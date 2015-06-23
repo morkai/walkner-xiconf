@@ -28,7 +28,7 @@ define([
     events: {
       'click .list-group-item': function(e)
       {
-        this.socket.emit('programmer.setProgram', e.target.dataset.id, function(err)
+        this.socket.emit('programmer.setProgram', e.currentTarget.dataset.id, function(err)
         {
           if (err)
           {

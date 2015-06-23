@@ -191,6 +191,11 @@ exports.start = function startProgrammerModule(app, module)
         return done(err);
       }
 
+      if (!program)
+      {
+        return done(new Error('NOT_FOUND'));
+      }
+
       done(null);
 
       program.steps = JSON.parse(program.steps);
