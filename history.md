@@ -1,3 +1,14 @@
+2.13.3 @ 2015-06-24
+===================
+
+  * Fixed the Functional test's Apparent power being mistakenly displayed as Active power (and vice versa)
+    in the Program steps view.
+  * Fixed a crash if a program was picked by clicking on the program type or program steps (and not program name).
+  * Fixed the Functional test that is sent to the GLP2 tester having absolute tolerance parameters specified
+    in a wrong order.
+  * Fixed the GLP2 tester's response parsing resulting in the Invalid response error, because of additional spaces
+    that are sent by the tester if the response is split into multiple parts.
+
 2.13.2 @ 2015-06-22
 ===================
 
