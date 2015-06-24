@@ -1,6 +1,6 @@
 <div class="dashboard-program">
   <h3 id="<%- idPrefix %>-name" class="dashboard-header dashboard-program-name <%- program ? '' : 'hidden' %>">
-    <span><%= program ? program.name : '' %></span>
+    <a href="#xiconf/programs/<%- program._id %>"><%= program ? program.name : '' %></a>
     <button id="<%- idPrefix %>-change" class="btn btn-link" type="button" title="<%- t('dashboard', 'program:pick:title') %>">
       <i class="fa fa-exchange"></i>
       <kbd data-hotkey="setProgram">?</kbd>
