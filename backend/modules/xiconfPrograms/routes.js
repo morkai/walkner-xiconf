@@ -17,6 +17,13 @@ module.exports = function setProgramsRoutes(app, programsModule)
   var cachedFilteredPrograms = null;
 
   app.broker.subscribe('programs.*', function() { cachedFilteredPrograms = null; });
+  app.broker.subscribe('settings.changed', function(changes)
+  {
+    if (changes.prodLine !== undefined)
+    {
+      cachedFilteredPrograms = null;
+    }
+  });
 
   express.get('/xiconf/programs', browseProgramsRoute);
 
