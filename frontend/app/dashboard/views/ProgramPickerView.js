@@ -117,6 +117,7 @@ define([
       };
 
       this.$els.filter.focus();
+      this.resize();
     },
 
     resize: function()
