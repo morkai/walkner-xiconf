@@ -150,7 +150,7 @@ FctTest.Execution = {
   AUTO: 0,
   HOLD_START: 1,
   STOP_BEFORE_TEST: 2,
-  STOP_AFTER_TEST: 3
+  STOP_AFTER_TEST: 4
 };
 
 /**
