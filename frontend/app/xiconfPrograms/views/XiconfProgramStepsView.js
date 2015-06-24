@@ -186,7 +186,7 @@ define([
 
           if (step.mode !== 5)
           {
-            var relTolerance = step.lowerToleranceRel === 0 && step.upperToleranceRel === 0;
+            var relTolerance = step.lowerToleranceRel !== 0 || step.upperToleranceRel !== 0;
             var minValue = relTolerance
               ? (Math.round(step.setValue * ((100 - step.lowerToleranceRel) / 100) * 100) / 100)
               : step.lowerToleranceAbs;
