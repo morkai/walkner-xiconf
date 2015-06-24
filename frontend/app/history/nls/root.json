@@ -116,6 +116,7 @@
     "log:TESTING_PLC_SETUP": "Setting up the PLC...",
     "log:TESTING_PLC_TEARDOWN": "Tearing down the PLC...",
     "log:TESTING_EXECUTING_STEP": "{type, select, wait{Waiting} pe{Executing the protective earth test} iso{Executing the isolation resistance test} sol{Executing the Fortimo Solar programming} program{Executing the programming step} fn{Executing the functional test} vis{Executing the visual test} other{Executing the <em>{type}</em> program step}}...",
+    "log:TESTING_SKIPPING_PROGRAMMING": "Skipping the programming step...",
     "log:ACQUIRING_SERVICE_TAG": "Acquiring a new Service Tag...",
     "log:SERVICE_TAG_ACQUIRED": "Acquired Service Tag: <code>{serviceTag}</code>",
     "log:ACQUIRING_SERVICE_TAG_FAILURE": "Failed to acquire a new Service Tag: <code>{error}</code>",

@@ -416,6 +416,18 @@ module.exports = function programAndTestGlp2(app, programmerModule, programmerTy
         return this.skip(err);
       }
 
+      if (programmerType === null)
+      {
+        programmerModule.log('TESTING_SKIPPING_PROGRAMMING');
+
+        programmerModule.updateStepProgress(stepIndex, {
+          status: 'success',
+          progress: 100
+        });
+
+        return setImmediate(this.next());
+      }
+
       programmerModule.log('TESTING_EXECUTING_STEP', {
         type: programStep.type,
         index: stepIndex
@@ -538,8 +550,6 @@ module.exports = function programAndTestGlp2(app, programmerModule, programmerTy
           if (programmerType === 'mow')
           {
             this.sub = programMowDriver(app, programmerModule, onProgrammingProgress, nextStep);
-
-            return;
           }
         },
         function cleaUpProgramStep(err)

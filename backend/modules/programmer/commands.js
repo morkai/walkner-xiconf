@@ -148,9 +148,8 @@ module.exports = function setUpProgrammerCommands(app, programmerModule)
     {
       var isLedOnly = currentState.isLedOnly();
       var hasSolProgramStep = currentState.hasProgramStep('sol');
-      var hasGlp2ProgramStep = currentState.hasProgramStep('program');
 
-      if ((hasSolProgramStep || hasGlp2ProgramStep) && !isLedOnly && settings.get('programming'))
+      if (hasSolProgramStep && !isLedOnly && settings.get('programming'))
       {
         return reply(new Error('INPUT'));
       }
