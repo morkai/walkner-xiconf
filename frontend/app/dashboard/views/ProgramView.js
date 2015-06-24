@@ -193,7 +193,11 @@ define([
       {
         this.hideProgramPicker();
         this.$id('pick').addClass('hidden');
-        this.$id('name').removeClass('hidden').find('span').text(program.name);
+        this.$id('name')
+          .removeClass('hidden')
+          .find('a')
+          .text(program.name)
+          .attr('href', '#xiconf/programs/' + program._id);
         this.$id('steps').removeClass('hidden');
       }
 
