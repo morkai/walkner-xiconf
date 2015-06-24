@@ -106,21 +106,24 @@ module.exports = function syncPrograms(app, programsModule, done)
 
       for (i = 0; i < changes.created.length; ++i)
       {
-        sql = "INSERT INTO programs(createdAt, updatedAt, deleted, type, name, steps, _id) VALUES(?, ?, ?, ?, ?, ?, ?)";
+        sql = "INSERT INTO programs(createdAt, updatedAt, deleted, type, name, steps, prodLines, _id)"
+          + " VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
 
         db.run(sql, createQueryParams(changes.created[i]), this.parallel());
       }
 
       for (i = 0; i < changes.updated.length; ++i)
       {
-        sql = "UPDATE programs SET createdAt=?, updatedAt=?, deleted=?, type=?, name=?, steps=? WHERE _id=?";
+        sql = "UPDATE programs SET createdAt=?, updatedAt=?, deleted=?, type=?, name=?, steps=?, prodLines=?"
+          + "WHERE _id=?";
 
         db.run(sql, createQueryParams(changes.updated[i]), this.parallel());
       }
 
       for (i = 0; i < changes.deleted.length; ++i)
       {
-        sql = "UPDATE programs SET createdAt=?, updatedAt=?, deleted=?, type=?, name=?, steps=? WHERE _id=?";
+        sql = "UPDATE programs SET createdAt=?, updatedAt=?, deleted=?, type=?, name=?, steps=?, prodLines=?"
+          + "WHERE _id=?";
 
         db.run(sql, createQueryParams(changes.deleted[i]), this.parallel());
       }
@@ -181,6 +184,7 @@ function createQueryParams(program)
     program.type,
     program.name,
     JSON.stringify(program.steps),
+    program.prodLines || '',
     program._id
   ];
 }
