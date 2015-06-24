@@ -14,6 +14,10 @@ module.exports = function setProgramsRoutes(app, programsModule)
   var express = app[programsModule.config.expressId];
   var db = app[programsModule.config.sqlite3Id].db;
 
+  var cachedFilteredPrograms = null;
+
+  app.broker.subscribe('programs.*', function() { cachedFilteredPrograms = null; });
+
   express.get('/xiconf/programs', browseProgramsRoute);
 
   express.post('/xiconf/programs', addProgramRoute);
@@ -28,6 +32,13 @@ module.exports = function setProgramsRoutes(app, programsModule)
 
   function browseProgramsRoute(req, res, next)
   {
+    var prodLineId = req.query.prodLine || '';
+
+    if (prodLineId && cachedFilteredPrograms !== null)
+    {
+      return res.type('json').send(cachedFilteredPrograms);
+    }
+
     var where = 'deleted=0';
     var typeTerm = _.find(req.rql.selector.args, function(term)
     {
@@ -91,14 +102,9 @@ module.exports = function setProgramsRoutes(app, programsModule)
           return next(err);
         }
 
-        if (req.rql.fields.steps)
+        if (prodLineId)
         {
-          rows = rows.map(function(row)
-          {
-            row.steps = JSON.parse(row);
-
-            return row;
-          });
+          return res.type('json').send(cacheAndFilterPrograms(prodLineId, rows));
         }
 
         res.send({
@@ -408,5 +414,83 @@ module.exports = function setProgramsRoutes(app, programsModule)
     }
 
     return true;
+  }
+
+  function cacheAndFilterPrograms(prodLineId, programs)
+  {
+    var filteredPrograms = [];
+
+    for (var i = 0; i < programs.length; ++i)
+    {
+      var program = programs[i];
+
+      if (!filterProgramByProdLine(prodLineId, program))
+      {
+        continue;
+      }
+
+      program.steps = JSON.parse(program.steps).map(function(step) { return _.pick(step, 'type', 'duration'); });
+      program.name$ = program.name
+        .trim()
+        .toLowerCase()
+        .split(/(-?\d*\.?\d+)/g)
+        .map(function(part)
+        {
+          var num = parseFloat(part);
+
+          return isNaN(num) ? part : num;
+        });
+
+      filteredPrograms.push(program);
+    }
+
+    cachedFilteredPrograms = JSON.stringify({
+      totalCount: filteredPrograms.length,
+      collection: filteredPrograms.sort(sortProgramByName)
+    });
+
+    return cachedFilteredPrograms;
+  }
+
+  function filterProgramByProdLine(prodLineId, program)
+  {
+    if (_.isEmpty(program.prodLines))
+    {
+      return true;
+    }
+
+    var patterns = program.prodLines.split(';');
+
+    for (var i = 0; i < patterns.length; ++i)
+    {
+      var pattern = new RegExp('^' + patterns[i].trim().replace(/\*/g, '.*?') + '$', 'i');
+
+      if (pattern.test(prodLineId))
+      {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  function sortProgramByName(a, b)
+  {
+    a = a.name$;
+    b = b.name$;
+
+    for (var i = 0, l = Math.min(a.length, b.length); i < l; ++i)
+    {
+      if (a[i] < b[i])
+      {
+        return -1;
+      }
+      else if (a[i] > b[i])
+      {
+        return 1;
+      }
+    }
+
+    return 0;
   }
 };

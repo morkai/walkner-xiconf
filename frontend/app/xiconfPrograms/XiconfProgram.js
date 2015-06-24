@@ -42,6 +42,10 @@ define([
       if (typeof obj.steps === 'string')
       {
         obj.steps = JSON.parse(obj.steps);
+      }
+
+      if (obj.steps)
+      {
         obj.stepLabels = this.prepareStepLabels(obj.steps);
       }
 
@@ -72,7 +76,7 @@ define([
     prepareStepLabels: function(steps)
     {
       return steps
-        .filter(function(step) { return step.enabled; })
+        .filter(function(step) { return step.enabled !== false; })
         .map(function(step)
         {
           var label = step.type;

@@ -2,14 +2,14 @@
   <input id="<%- idPrefix %>-filter" class="form-control" type="text" tabindex="99" placeholder="<%- t('dashboard', 'program:picker:filter') %>">
   <div id="<%- idPrefix %>-list" class="dashboard-programPicker-list list-group is-scrollable">
     <% programs.forEach(function(program, i) { %>
-    <a class="list-group-item" href="#programs/<%- program._id %>" tabindex="100" data-id="<%- program._id %>">
+    <a class="list-group-item" href="#programs/<%- program.id %>" tabindex="100" data-id="<%- program.id %>">
       <% if (i < 9) { %>
       <kbd data-hotkey="<%- i + 1 %>"><span>ALT+</span><%- i  + 1 %></kbd>
       <% } %>
-      <%= program.name %>
+      <%= program.get('name') %>
       <span class="dashboard-programPicker-typeAndSteps">
-        <span class="dashboard-programPicker-type"><%= t('xiconfPrograms', 'type:' + program.type) %></span>
-        <span class="dashboard-programPicker-steps"><%- program.stepLabels %></span>
+        <span class="dashboard-programPicker-type"><%= t('xiconfPrograms', 'type:' + program.get('type')) %></span>
+        <span class="dashboard-programPicker-steps"><%- program.get('stepLabels') %></span>
       </span>
     </a>
     <% }) %>
