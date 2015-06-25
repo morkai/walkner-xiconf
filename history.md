@@ -1,3 +1,14 @@
+2.13.4 @ 2015-06-25
+===================
+
+  * Fixed the Program picker view not being resized to fit the window height on the first render.
+  * Fixed values of the Production lines properties being ignored while synchronizing programs with the remote server.
+  * Fixed the GLP2 Functional test's lower and upper bounds being incorrectly calculated for display.
+  * Changed the GLP2 programming process to skip the Programming step if no program 12NC was specified.
+  * Changed the current program name on the Programmer page to be a link to the program's details page.
+  * Changed the Program picker view to fetch program data already filtered and sorted by the server and not do it
+    client-side every time.
+
 2.13.3 @ 2015-06-24
 ===================
 
