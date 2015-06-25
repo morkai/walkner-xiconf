@@ -87,11 +87,14 @@ define([
 
     initialize: function()
     {
+      this.loading = false;
       this.$els = null;
       this.onResize = _.debounce(this.resize.bind(this), 33);
       this.filter = this.filter.bind(this);
 
       this.listenTo(this.collection, 'reset', this.render);
+      this.listenTo(this.collection, 'request', this.onLoadingStarted);
+      this.listenTo(this.collection, 'sync error', this.onLoadingStopped);
 
       $(window).on('resize.programPickerView', this.onResize);
       $(window).on('keydown.programPickerView', this.onKeyDown.bind(this));
@@ -110,6 +113,7 @@ define([
     {
       return {
         idPrefix: this.idPrefix,
+        loading: this.loading,
         programs: this.collection
       };
     },
@@ -183,6 +187,68 @@ define([
 
     closeDialog: function() {},
 
+    moveDown: function()
+    {
+      var activeEl = document.activeElement;
+      var filterEl = this.$els.filter[0];
+
+      if (activeEl === filterEl)
+      {
+        var firstProgramEl = this.$els.list[0].firstElementChild;
+
+        if (firstProgramEl)
+        {
+          firstProgramEl.focus();
+        }
+      }
+      else if (activeEl.classList.contains('list-group-item'))
+      {
+        if (activeEl.nextElementSibling)
+        {
+          activeEl.nextElementSibling.focus();
+        }
+        else
+        {
+          filterEl.focus();
+        }
+      }
+      else
+      {
+        filterEl.focus();
+      }
+    },
+
+    moveUp: function()
+    {
+      var activeEl = document.activeElement;
+      var filterEl = this.$els.filter[0];
+
+      if (activeEl === filterEl)
+      {
+        var lastProgramEl = this.$els.list[0].lastElementChild;
+
+        if (lastProgramEl)
+        {
+          lastProgramEl.focus();
+        }
+      }
+      else if (activeEl.classList.contains('list-group-item'))
+      {
+        if (activeEl.previousElementSibling)
+        {
+          activeEl.previousElementSibling.focus();
+        }
+        else
+        {
+          filterEl.focus();
+        }
+      }
+      else
+      {
+        filterEl.focus();
+      }
+    },
+
     onDialogShown: function(viewport)
     {
       this.closeDialog = viewport.closeDialog.bind(viewport);
@@ -194,11 +260,93 @@ define([
 
     onKeyDown: function(e)
     {
-      if (e.altKey && e.keyCode >= 49 && e.keyCode <= 57)
+      var keyCode = e.keyCode;
+
+      if (e.altKey && keyCode >= 49 && keyCode <= 57)
       {
         this.$('kbd[data-hotkey="' + String.fromCharCode(e.keyCode) + '"]').closest('a').click();
 
         return false;
+      }
+
+      if (keyCode === 32 && document.activeElement.classList.contains('list-group-item'))
+      {
+        document.activeElement.click();
+
+        return false;
+      }
+
+      if (keyCode === 70 && document.activeElement !== this.$els.filter[0])
+      {
+        this.$els.filter.focus();
+
+        return false;
+      }
+
+      if (keyCode === 40)
+      {
+        this.moveDown();
+
+        return false;
+      }
+
+      if (keyCode === 38)
+      {
+        this.moveUp();
+
+        return false;
+      }
+
+      if (keyCode === 36 || keyCode === 37)
+      {
+        var firstProgramEl = this.$els.list[0].firstElementChild;
+
+        if (firstProgramEl)
+        {
+          firstProgramEl.focus();
+        }
+        else
+        {
+          this.$els.filter.focus();
+        }
+
+        return false;
+      }
+
+      if (keyCode === 35 || keyCode === 39)
+      {
+        var lastProgramEl = this.$els.list[0].lastElementChild;
+
+        if (lastProgramEl)
+        {
+          lastProgramEl.focus();
+        }
+        else
+        {
+          this.$els.filter.focus();
+        }
+
+        return false;
+      }
+    },
+
+    onLoadingStarted: function()
+    {
+      this.loading = true;
+
+      if (this.$els)
+      {
+        this.$els.spinner.addClass('fa-spin');
+      }
+    },
+
+    onLoadingStopped: function()
+    {
+      this.loading = false;
+
+      if (this.$els)
+      {
+        this.$els.spinner.removeClass('fa-spin');
       }
     }
 

@@ -1,6 +1,6 @@
 <div class="dashboard-programPicker">
   <input id="<%- idPrefix %>-filter" class="form-control" type="text" tabindex="99" placeholder="<%- t('dashboard', 'program:picker:filter') %>">
-  <span id="<%- idPrefix %>-spinner" class="fa fa-spinner"></span>
+  <span id="<%- idPrefix %>-spinner" class="fa fa-spinner <%- loading ? 'fa-spin' : '' %>"></span>
   <div id="<%- idPrefix %>-list" class="dashboard-programPicker-list list-group is-scrollable">
     <% programs.forEach(function(program, i) { %>
     <a class="list-group-item" href="#programs/<%- program.id %>" tabindex="100" data-id="<%- program.id %>">
