@@ -1,3 +1,17 @@
+2.13.5 @ 2015-06-26
+===================
+
+  * Changed a number of fractional digits for the GLP2 Functional test's Power modes from 0 to 1.
+  * Changed the Program picker view:
+    * changed the program selection hotkeys to always require holding down the ALT key,
+    * changed the filtering so that all words are matched separately in any order against the program name
+      (but all must still exist),
+    * improved keyboard navigation (handlers for F, Home, End and directional arrows),
+    * added a 300 ms delay before the filtering is started if there is more than 20 programs.
+  * Added an additional GLP2 test steps execution mode: all in one - all test steps are uploaded at once and started
+    only once (instead of each test step being uploaded and started separately). Execution mode can be changed
+    in the settings.
+
 2.13.4 @ 2015-06-25
 ===================
 
