@@ -436,17 +436,8 @@ module.exports = function setProgramsRoutes(app, programsModule)
         continue;
       }
 
-      program.steps = JSON.parse(program.steps).map(function(step) { return _.pick(step, 'type', 'duration'); });
-      program.name$ = program.name
-        .trim()
-        .toLowerCase()
-        .split(/(-?\d*\.?\d+)/g)
-        .map(function(part)
-        {
-          var num = parseFloat(part);
-
-          return isNaN(num) ? part : num;
-        });
+      program.steps = parseSteps(program.steps);
+      program.name$ = parseName(program.name);
 
       filteredPrograms.push(program);
     }
@@ -457,6 +448,24 @@ module.exports = function setProgramsRoutes(app, programsModule)
     });
 
     return cachedFilteredPrograms;
+  }
+
+  function parseSteps(steps)
+  {
+    return JSON.parse(steps).map(function(step)
+    {
+      return _.pick(step, 'kind', 'type', 'duration');
+    });
+  }
+
+  function parseName(name)
+  {
+    return name.trim().toLowerCase().split(/(-?\d*\.?\d+)/g).map(function(part)
+    {
+      var num = parseFloat(part);
+
+      return isNaN(num) ? part : num;
+    });
   }
 
   function filterProgramByProdLine(prodLineId, program)
