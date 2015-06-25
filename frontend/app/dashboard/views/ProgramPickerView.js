@@ -19,6 +19,21 @@ define([
 ) {
   'use strict';
 
+  function matchName(name, filter)
+  {
+    name = name.toLowerCase();
+
+    for (var i = 0; i < filter.length; ++i)
+    {
+      if (name.indexOf(filter[i]) === -1)
+      {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
   return View.extend({
 
     dialogClassName: 'dashboard-programPickerDialog',
@@ -52,13 +67,15 @@ define([
       },
       'input #-filter': function(e)
       {
-        var filter = e.target.value.trim().toLowerCase();
+        var filter = e.target.value.trim().toLowerCase().split('');
         var hotkey = 1;
 
         _.forEach(this.$els.list[0].children, function(programEl)
         {
           var $program = $(programEl);
-          var display = filter === '' || $program.text().toLowerCase().indexOf(filter) !== -1 ? 'block' : 'none';
+          var display = (filter.length === 1 && filter[0] === '') || matchName($program.text(), filter)
+            ? 'block'
+            : 'none';
 
           $program.find('kbd').remove();
           $program.css('display', display);
