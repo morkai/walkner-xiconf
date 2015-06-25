@@ -436,8 +436,9 @@ module.exports = function setProgramsRoutes(app, programsModule)
         continue;
       }
 
-      program.steps = parseSteps(program.steps);
-      program.name$ = parseName(program.name);
+      program.steps = prepareSteps(program.steps);
+      program.name$s = prepareSearchName(program.name);
+      program.name$f = program.name$s.join('');
 
       filteredPrograms.push(program);
     }
@@ -450,7 +451,7 @@ module.exports = function setProgramsRoutes(app, programsModule)
     return cachedFilteredPrograms;
   }
 
-  function parseSteps(steps)
+  function prepareSteps(steps)
   {
     return JSON.parse(steps).map(function(step)
     {
@@ -458,7 +459,7 @@ module.exports = function setProgramsRoutes(app, programsModule)
     });
   }
 
-  function parseName(name)
+  function prepareSearchName(name)
   {
     return name.trim().toLowerCase().split(/(-?\d*\.?\d+)/g).map(function(part)
     {
@@ -492,8 +493,8 @@ module.exports = function setProgramsRoutes(app, programsModule)
 
   function sortProgramByName(a, b)
   {
-    a = a.name$;
-    b = b.name$;
+    a = a.name$s;
+    b = b.name$s;
 
     for (var i = 0, l = Math.min(a.length, b.length); i < l; ++i)
     {

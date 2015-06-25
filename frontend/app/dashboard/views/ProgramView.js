@@ -161,8 +161,11 @@ define([
         type = '&type=glp2';
       }
 
+      var currentProgram = this.model.get('program');
+
       this.programPickerView = new ProgramPickerView({
         prodLineId: settings.get('prodLine'),
+        currentProgramId: currentProgram ? currentProgram._id : null,
         collection: new XiconfProgramCollection(null, {
           rqlQuery: 'sort(name)&prodLine=' + encodeURIComponent(settings.get('prodLine')) + type
         })

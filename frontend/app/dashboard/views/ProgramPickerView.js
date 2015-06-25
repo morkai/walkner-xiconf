@@ -19,13 +19,11 @@ define([
 ) {
   'use strict';
 
-  function matchName(name, filter)
+  function matchName(name, words)
   {
-    name = name.toLowerCase();
-
-    for (var i = 0; i < filter.length; ++i)
+    for (var i = 0; i < words.length; ++i)
     {
-      if (name.indexOf(filter[i]) === -1)
+      if (name.indexOf(words[i]) === -1)
       {
         return false;
       }
@@ -43,7 +41,16 @@ define([
     events: {
       'click .list-group-item': function(e)
       {
-        this.socket.emit('programmer.setProgram', e.currentTarget.dataset.id, function(err)
+        var programId = e.currentTarget.dataset.id;
+
+        if (programId === this.options.currentProgramId)
+        {
+          this.closeDialog();
+
+          return false;
+        }
+
+        this.socket.emit('programmer.setProgram', programId, function(err)
         {
           if (err)
           {
@@ -67,26 +74,14 @@ define([
       },
       'input #-filter': function(e)
       {
-        var filter = e.target.value.trim().toLowerCase().split('');
-        var hotkey = 1;
-
-        _.forEach(this.$els.list[0].children, function(programEl)
+        if (this.timers.filter)
         {
-          var $program = $(programEl);
-          var display = (filter.length === 1 && filter[0] === '') || matchName($program.text(), filter)
-            ? 'block'
-            : 'none';
+          clearTimeout(this.timers.filter);
+        }
 
-          $program.find('kbd').remove();
-          $program.css('display', display);
+        this.$els.spinner.addClass('fa-spin');
 
-          if (display === 'block' && hotkey < 10)
-          {
-            $program.prepend('<kbd data-hotkey="' + hotkey + '">ALT+' + hotkey + '</kbd>');
-
-            ++hotkey;
-          }
-        });
+        this.timers.filter = setTimeout(this.filter, this.collection.length < 20 ? 0 : 300, e.target.value);
       }
     },
 
@@ -94,6 +89,7 @@ define([
     {
       this.$els = null;
       this.onResize = _.debounce(this.resize.bind(this), 33);
+      this.filter = this.filter.bind(this);
 
       this.listenTo(this.collection, 'reset', this.render);
 
@@ -126,6 +122,7 @@ define([
         dialog: $dialog,
         header: $dialog.find('.modal-content').find('.modal-header'),
         filter: this.$id('filter'),
+        spinner: this.$id('spinner'),
         list: this.$id('list')
       };
 
@@ -147,8 +144,49 @@ define([
       }
     },
 
-    onDialogShown: function()
+    filter: function(phrase)
     {
+      if (this.timers.filter)
+      {
+        clearTimeout(this.timers.filter);
+        this.timers.filter = null;
+      }
+
+      var words = phrase.trim().toLowerCase().split(' ');
+      var empty = words.length === 1 && words[0] === '';
+      var hotkey = 1;
+      var programs = this.collection;
+
+      _.forEach(this.$els.list[0].children, function(programEl)
+      {
+        var display = empty || matchName(programs.get(programEl.dataset.id).attributes.name$f, words)
+          ? 'block'
+          : 'none';
+
+        if (programEl.firstElementChild.tagName === 'KBD')
+        {
+          programEl.removeChild(programEl.firstElementChild);
+        }
+
+        programEl.style.display = display;
+
+        if (display === 'block' && hotkey < 10)
+        {
+          $(programEl).prepend('<kbd data-hotkey="' + hotkey + '">ALT+' + hotkey + '</kbd>');
+
+          ++hotkey;
+        }
+      });
+
+      this.$els.spinner.removeClass('fa-spin');
+    },
+
+    closeDialog: function() {},
+
+    onDialogShown: function(viewport)
+    {
+      this.closeDialog = viewport.closeDialog.bind(viewport);
+
       this.resize();
 
       this.$id('filter').focus();

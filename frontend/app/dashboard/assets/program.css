@@ -117,3 +117,9 @@
 .dashboard-programPicker-steps > .label {
   padding-top: .3em;
 }
+.dashboard-programPicker > .fa-spinner {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 42px;
+}
