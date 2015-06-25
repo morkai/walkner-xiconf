@@ -97,7 +97,7 @@ module.exports = function programSolDriver(app, programmerModule, onProgress, do
     programmer.kill();
 
     finalize('CANCELLED');
-  });
+  }).setLimit(1);
 
   function onProcessData(data)
   {

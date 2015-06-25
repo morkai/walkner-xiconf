@@ -46,6 +46,9 @@ function VisTest(options)
 
 util.inherits(VisTest, ProgramStep);
 
+/**
+ * @enum {number}
+ */
 VisTest.Mode = {
   NORMAL: 0,
   CONDITION: 1
@@ -62,6 +65,14 @@ VisTest.fromObject = function(obj)
   }
 
   return new VisTest(obj);
+};
+
+/**
+ * @returns {number}
+ */
+VisTest.prototype.getTotalTime = function()
+{
+  return this.maxDuration * 1000;
 };
 
 /**

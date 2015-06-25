@@ -381,17 +381,22 @@ Glp2Manager.prototype.requestStart = function()
 
 /**
  * @param {string} programName
- * @param {ProgramStep} programStep
+ * @param {ProgramStep|Array.<ProgramStep>} programSteps
  * @param {function(Error|string|null, Response|null): void} done
  */
-Glp2Manager.prototype.setTestProgram = function(programName, programStep, done)
+Glp2Manager.prototype.setTestProgram = function(programName, programSteps, done)
 {
   if (this.readyState !== Glp2Manager.ReadyState.READY)
   {
     return done('GLP2:TESTER_NOT_READY', null);
   }
 
-  this.master.setTestProgram(programName, [programStep], done);
+  if (!Array.isArray(programSteps))
+  {
+    programSteps = [programSteps];
+  }
+
+  this.master.setTestProgram(programName, programSteps, done);
 };
 
 /**

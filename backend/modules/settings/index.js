@@ -360,6 +360,7 @@ exports.start = function startSettingsModule(app, module, done)
     validateNumericSetting(rawSettings, newSettings, 'testingMaxVoltage', 0.1, 99.9);
     // Tester GLP2-I
     validateEnum(rawSettings, newSettings, 'glp2Enabled', Number, [0, 1]);
+    validateEnum(rawSettings, newSettings, 'glp2AllInOne', Number, [0, 1]);
     validateStringSetting(rawSettings, newSettings, 'glp2ComPattern');
     validateNumericSetting(rawSettings, newSettings, 'glp2ComAddress', 1, 255);
     validateNumericSetting(rawSettings, newSettings, 'glp2ProgrammingDelay', 0, 60000);

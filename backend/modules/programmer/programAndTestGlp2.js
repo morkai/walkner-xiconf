@@ -78,6 +78,11 @@ module.exports = function programAndTestGlp2(app, programmerModule, programmerTy
         return this.skip();
       }
 
+      if (settings.get('glp2AllInOne'))
+      {
+        return executeAioProgram(currentState.program.steps, this.next());
+      }
+
       var steps = [];
 
       _.forEach(currentState.program.steps, function(step, i)
@@ -137,6 +142,538 @@ module.exports = function programAndTestGlp2(app, programmerModule, programmerTy
     {
       prevRxNak = false;
     }
+  }
+
+  function executeAioProgram(steps, done)
+  {
+    var sharedContext = {
+      cleanUp: [],
+      finished: false,
+      finalizeOnError: finalizeOnError
+    };
+    var currentStepIndex = -1;
+    var completedStepsCount = 0;
+    var stepIndexes = [];
+    var programSteps = [];
+
+    _.forEach(steps, function(step, stepIndex)
+    {
+      if (step.enabled)
+      {
+        stepIndexes.push(stepIndex);
+
+        programSteps.push(createAioProgramStep(step));
+      }
+    });
+
+    var isFirstVisTest = programSteps[0] instanceof glp2.VisTest;
+
+    step(
+      createEmptyActualValuesStep(),
+      createSetTestProgramStep(programSteps),
+      createStartTestStep(isFirstVisTest),
+      function monitorProgressStep(err, res)
+      {
+        if (programmerModule.cancelled || err)
+        {
+          return this.skip(err);
+        }
+
+        if (res)
+        {
+          handleProgressResponse(null, res, this.next());
+        }
+        else if (isFirstVisTest)
+        {
+          handleInterimProgressResponse(
+            new glp2.InterimActualValuesResponse(1, 0, 0, '', 0, '', -1),
+            this.next()
+          );
+        }
+        else
+        {
+          monitorProgress(this.next());
+        }
+      },
+      finalize
+    );
+
+    function finalize(err)
+    {
+      sharedContext.finished = true;
+
+      doCleanUp();
+
+      return setImmediate(done, err);
+    }
+
+    function finalizeOnError(err)
+    {
+      if (err)
+      {
+        programmerModule.updateStepProgress(completedStepsCount, {
+          status: 'failure'
+        });
+
+        finalize(err);
+      }
+    }
+
+    function doCleanUp()
+    {
+      _.forEach(sharedContext.cleanUp, function(func) { func(); });
+
+      sharedContext.cleanUp = [];
+    }
+
+    function monitorProgress(done)
+    {
+      getActualValues(function(err, res)
+      {
+        handleProgressResponse(err, res, done);
+      });
+    }
+
+    function handleProgressResponse(err, res, done)
+    {
+      if (sharedContext.finished)
+      {
+        return;
+      }
+
+      if (programmerModule.cancelled || err)
+      {
+        return done(err);
+      }
+
+      if (res.type === glp2.ResponseType.INTERIM_ACTUAL_VALUES)
+      {
+        return handleInterimProgressResponse(res, done);
+      }
+
+      if (res.type === glp2.ResponseType.ACTUAL_VALUES)
+      {
+        return handleFinalProgressResponse(res, done);
+      }
+
+      return done('GLP2:UNEXPECTED_RESPONSE');
+    }
+
+    function handleInterimProgressResponse(res, done)
+    {
+      var progressStepIndex = stepIndexes[res.stepNumber - 1];
+      var step = steps[progressStepIndex];
+      var programStep = programSteps[res.stepNumber - 1];
+      var progress = Math.round((res.time / programStep.getTotalTime()) * 100);
+
+      if (progressStepIndex !== currentStepIndex)
+      {
+        currentStepIndex = progressStepIndex;
+
+        programmerModule.log('TESTING_EXECUTING_STEP', {
+          type: step.type,
+          index: currentStepIndex
+        });
+
+        if (step.type === 'program')
+        {
+          setUpAioProgramStep(step, currentStepIndex, sharedContext);
+        }
+        else if (step.type === 'vis')
+        {
+          setUpAioVisStep(step, currentStepIndex, sharedContext);
+        }
+        else if (step.type === 'wait')
+        {
+          setUpAioWaitStep(step, currentStepIndex, sharedContext);
+        }
+        else
+        {
+          programmerModule.updateStepProgress(currentStepIndex, {
+            status: 'active',
+            value: res.value1,
+            unit: res.unit1,
+            progress: progress
+          });
+        }
+      }
+      else
+      {
+        programmerModule.updateStepProgress(progressStepIndex, {
+          value: res.value1,
+          unit: res.unit1,
+          progress: progress
+        });
+      }
+
+      return setImmediate(monitorProgress, done);
+    }
+
+    function handleFinalProgressResponse(res, done)
+    {
+      doCleanUp();
+
+      var programStep = programSteps[completedStepsCount];
+      var stepIndex = stepIndexes[completedStepsCount];
+
+      ++completedStepsCount;
+
+      handleActualValuesResponse(programStep, stepIndex, res, function(err)
+      {
+        if (err)
+        {
+          return done(err);
+        }
+
+        if (completedStepsCount === programSteps.length)
+        {
+          sharedContext.finished = true;
+
+          return done();
+        }
+
+        var nextStep = steps[stepIndexes[completedStepsCount]];
+
+        if (nextStep && (nextStep.type === 'vis' || nextStep.type === 'wait'))
+        {
+          return setImmediate(
+            handleInterimProgressResponse,
+            new glp2.InterimActualValuesResponse(completedStepsCount + 1, 0, 0, '', 0, '', -1),
+            done
+          );
+        }
+
+        return setImmediate(monitorProgress, done);
+      });
+    }
+  }
+
+  function createAioProgramStep(step)
+  {
+    if (step.type === 'pe')
+    {
+      return glp2.PeTest.fromObject(step);
+    }
+
+    if (step.type === 'iso')
+    {
+      return glp2.IsoTest.fromObject(step);
+    }
+
+    if (step.type === 'fn')
+    {
+      return glp2.FctTest.fromObject(step);
+    }
+
+    if (step.type === 'vis')
+    {
+      return glp2.VisTest.fromObject(step);
+    }
+
+    if (step.type === 'wait')
+    {
+      return new glp2.VisTest({
+        label: 'W8',
+        duration: step.kind === 'auto' ? step.duration : 0,
+        maxDuration: 86400,
+        mode: glp2.VisTest.Mode.NORMAL,
+        goInput: 0,
+        noGoInput: 0,
+        cancelOnFailure: true,
+        enabled: true
+      });
+    }
+
+    if (step.type === 'program')
+    {
+      return new glp2.FctTest({
+        label: step.label,
+        setValue: 0,
+        upperToleranceRel: 100,
+        startTime: 0,
+        duration: 120,
+        execution: glp2.FctTest.Execution.AUTO,
+        range: 0,
+        voltage: 230,
+        lowerToleranceAbs: 0,
+        upperToleranceAbs: 0,
+        correction: false,
+        mode: glp2.FctTest.Mode.VISUAL_CHECK,
+        leaveOn: false,
+        uTolerance: 100,
+        retries: 0,
+        lowerToleranceRel: 100,
+        cancelOnFailure: true,
+        visMode: glp2.FctTest.VisMode.NORMAL,
+        goInput: 0,
+        noGoInput: 0,
+        enabled: true,
+        rsvChannel: glp2.FctTest.RsvChannel.L1_N,
+        rsvNumber: 1,
+        multi: false,
+        trigger: glp2.FctTest.Trigger.START_TIME
+      });
+    }
+  }
+
+  function setUpAioProgramStep(step, stepIndex, aioContext)
+  {
+    programmerModule.updateStepProgress(stepIndex, {
+      status: 'active',
+      progress: 0,
+      value: -1
+    });
+
+    if (programmerType === null)
+    {
+      programmerModule.log('TESTING_SKIPPING_PROGRAMMING');
+
+      glp2Manager.ackVisTest(true, aioContext.finalizeOnError);
+
+      return;
+    }
+
+    var programmingFinished = false;
+    var doProgrammingTimer = setTimeout(doProgramming, settings.get('glp2ProgrammingDelay') || 0);
+    var cancelMowProgrammingSub = null;
+    var cancelProgrammingSub = broker.subscribe(
+      'programmer.cancelled',
+      function()
+      {
+        programmingFinished = true;
+
+        aioContext.finalizeOnError('CANCELLED');
+      }
+    );
+
+    aioContext.cleanUp.push(function()
+    {
+      if (doProgrammingTimer)
+      {
+        clearTimeout(doProgrammingTimer);
+        doProgrammingTimer = null;
+      }
+
+      cancelProgrammingSub.cancel();
+
+      if (!programmingFinished && !programmerModule.cancelled)
+      {
+        programmingFinished = true;
+        aioContext.finished = true;
+        programmerModule.cancelled = true;
+
+        app.broker.publish('programmer.cancelled');
+      }
+    });
+
+    function doProgramming()
+    {
+      if (programmerType === 'gprs')
+      {
+        return gprs.program(app, programmerModule, onProgrammingProgress, onProgrammingFinished);
+      }
+
+      if (programmerType === 'sol')
+      {
+        return programSolDriver(app, programmerModule, null, onProgrammingProgress, onProgrammingFinished);
+      }
+
+      if (programmerType === 'mow')
+      {
+        cancelMowProgrammingSub = programMowDriver(app, programmerModule, onProgrammingProgress, onProgrammingFinished);
+      }
+    }
+
+    function onProgrammingFinished(err)
+    {
+      if (cancelMowProgrammingSub)
+      {
+        cancelMowProgrammingSub.cancel();
+        cancelMowProgrammingSub = null;
+      }
+
+      if (programmingFinished)
+      {
+        return;
+      }
+
+      programmingFinished = true;
+
+      if (_.isString(currentState.output) && currentState.output.length)
+      {
+        output.push(currentState.output.trim());
+      }
+
+      if (err)
+      {
+        aioContext.finalizeOnError(err);
+      }
+      else
+      {
+        glp2Manager.ackVisTest(true, aioContext.finalizeOnError);
+      }
+    }
+
+    function onProgrammingProgress(progress)
+    {
+      programmerModule.updateStepProgress(stepIndex, {progress: progress});
+    }
+  }
+
+  function setUpAioVisStep(step, stepIndex, aioContext)
+  {
+    var cancelSub = broker.subscribe('programmer.cancelled', aioContext.finalizeOnError.bind(null, 'CANCELLED'));
+    var waitingSub = null;
+    var waitingTimer = null;
+    var progressTimer = null;
+
+    aioContext.cleanUp.push(function()
+    {
+      if (cancelSub)
+      {
+        cancelSub.cancel();
+        cancelSub = null;
+      }
+
+      if (waitingSub)
+      {
+        waitingSub.cancel();
+        waitingSub = null;
+      }
+
+      if (waitingTimer)
+      {
+        clearTimeout(waitingTimer);
+        waitingTimer = null;
+      }
+
+      if (progressTimer)
+      {
+        clearInterval(progressTimer);
+        progressTimer = null;
+      }
+    });
+
+    programmerModule.updateStepProgress(stepIndex, {
+      status: 'active',
+      progress: 0,
+      value: -1
+    });
+
+    var totalTime = step.maxDuration * 1000;
+    var startTime = Date.now();
+
+    progressTimer = setInterval(function()
+    {
+      programmerModule.updateStepProgress(stepIndex, {
+        progress: (Date.now() - startTime) * 100 / totalTime
+      });
+    }, 250);
+
+    waitingTimer = setTimeout(function()
+    {
+      programmerModule.changeState({waitingForContinue: 'vis'});
+
+      waitingSub = broker.subscribe('programmer.stateChanged', function(changes)
+      {
+        if (changes.waitingForContinue === null)
+        {
+          glp2Manager.ackVisTest(true, aioContext.finalizeOnError);
+        }
+      });
+
+      aioContext.cleanUp.push(function()
+      {
+        if (currentState.waitingForContinue !== null)
+        {
+          programmerModule.changeState({waitingForContinue: null});
+        }
+      });
+    }, step.duration * 1000);
+  }
+
+  function setUpAioWaitStep(step, stepIndex, aioContext)
+  {
+    var cancelSub = broker.subscribe('programmer.cancelled', aioContext.finalizeOnError.bind(null, 'CANCELLED'));
+    var waitingSub = null;
+    var successTimer = null;
+    var progressTimer = null;
+
+    aioContext.cleanUp.push(function()
+    {
+      if (cancelSub)
+      {
+        cancelSub.cancel();
+        cancelSub = null;
+      }
+
+      if (waitingSub)
+      {
+        waitingSub.cancel();
+        waitingSub = null;
+      }
+
+      if (successTimer)
+      {
+        clearTimeout(successTimer);
+        successTimer = null;
+      }
+
+      if (progressTimer)
+      {
+        clearInterval(progressTimer);
+        progressTimer = null;
+      }
+    });
+
+    if (step.kind === 'auto')
+    {
+      programmerModule.updateStepProgress(stepIndex, {
+        status: 'active',
+        progress: 0,
+        value: -1
+      });
+
+      var totalTime = step.duration * 1000;
+      var startTime = Date.now();
+
+      successTimer = setTimeout(
+        glp2Manager.ackVisTest.bind(glp2Manager, true, aioContext.finalizeOnError),
+        totalTime + 1
+      );
+      progressTimer = setInterval(function()
+      {
+        programmerModule.updateStepProgress(stepIndex, {
+          progress: (Date.now() - startTime) * 100 / totalTime
+        });
+      }, 250);
+
+      return;
+    }
+
+    programmerModule.updateStepProgress(stepIndex, {
+      status: 'active',
+      progress: 50,
+      value: -1
+    });
+
+    programmerModule.changeState({waitingForContinue: 'test'});
+
+    waitingSub = broker.subscribe('programmer.stateChanged', function(changes)
+    {
+      if (changes.waitingForContinue === null)
+      {
+        glp2Manager.ackVisTest(true, aioContext.finalizeOnError);
+      }
+    });
+
+    aioContext.cleanUp.push(function()
+    {
+      if (currentState.waitingForContinue !== null)
+      {
+        programmerModule.changeState({waitingForContinue: null});
+      }
+    });
   }
 
   function createExecuteProgramStepStep(step, stepIndex)
@@ -549,7 +1086,7 @@ module.exports = function programAndTestGlp2(app, programmerModule, programmerTy
 
           if (programmerType === 'mow')
           {
-            this.sub = programMowDriver(app, programmerModule, onProgrammingProgress, nextStep);
+            this.cancelSub = programMowDriver(app, programmerModule, onProgrammingProgress, nextStep);
           }
         },
         function cleaUpProgramStep(err)
@@ -887,19 +1424,45 @@ module.exports = function programAndTestGlp2(app, programmerModule, programmerTy
     return done('GLP2:UNEXPECTED_RESPONSE');
   }
 
-  function handleInterimActualValuesResponse(programStep, stepIndex, res, done)
+  function handleInterimActualValuesResponse(programSteps, stepIndexes, res, done)
   {
+    var programStep;
+    var stepIndex;
+
+    if (_.isObject(stepIndexes))
+    {
+      programStep = programSteps[res.stepNumber - 1];
+      stepIndex = stepIndexes[res.stepNumber - 1];
+    }
+    else
+    {
+      programStep = programSteps;
+      stepIndex = stepIndexes;
+    }
+
     programmerModule.updateStepProgress(stepIndex, {
       value: res.value1,
       unit: res.unit1,
       progress: Math.round((res.time / programStep.getTotalTime()) * 100)
     });
 
-    setImmediate(monitorActualValues, programStep, stepIndex, done);
+    setImmediate(monitorActualValues, programSteps, stepIndexes, done);
   }
 
-  function handleActualValuesResponse(programStep, stepIndex, res, done)
+  function handleActualValuesResponse(programSteps, stepIndexes, res, done)
   {
+    var stepNumber = res.steps.length ? (res.steps[0].stepNumber - 1) : -1;
+    var stepIndex = _.isObject(stepIndexes) ? stepIndexes[stepNumber] : stepIndexes;
+
+    if (programmerModule.cancelled)
+    {
+      programmerModule.updateStepProgress(stepIndex, {
+        status: 'failure'
+      });
+
+      return setImmediate(done, 'GLP2:FAULT:' + glp2.FaultStatus.CANCELLED);
+    }
+
     if (res.faultStatus)
     {
       programmerModule.updateStepProgress(stepIndex, {
@@ -916,6 +1479,10 @@ module.exports = function programAndTestGlp2(app, programmerModule, programmerTy
       // No test results and completed? Operator cancelled the test using the tester's panel.
       if (res.completed)
       {
+        programmerModule.updateStepProgress(stepIndex, {
+          status: 'failure'
+        });
+
         return setImmediate(done, 'GLP2:FAULT:' + glp2.FaultStatus.CANCELLED);
       }
 
@@ -936,37 +1503,26 @@ module.exports = function programAndTestGlp2(app, programmerModule, programmerTy
       status: 'failure'
     });
 
-    var testStepFailureErr;
-
-    if (testResult.actualValue > testResult.setValue)
+    if (testResult.setValue === undefined)
     {
-      programmerModule.log('GLP2:TEST_STEP_FAILURE', {
-        setValue: testResult.setValue,
-        actualValue: testResult.actualValue
-      });
-
-      testStepFailureErr = new Error(
-        "Expected set value: `" + testResult.setValue2 + "`, got actual value: `" + testResult.actualValue2 + "`."
-      );
-      testStepFailureErr.code = 'GLP2:TEST_STEP_FAILURE';
-
-      return setImmediate(done, testStepFailureErr);
-    }
-    else if (testResult.actualValue2 > testResult.setValue2)
-    {
-      programmerModule.log('GLP2:TEST_STEP_FAILURE', {
-        setValue: testResult.setValue2,
-        actualValue: testResult.actualValue2
-      });
-
-      testStepFailureErr = new Error(
-        "Expected set value: `" + testResult.setValue2 + "`, got actual value: `" + testResult.actualValue2 + "`."
-      );
-      testStepFailureErr.code = 'GLP2:TEST_STEP_FAILURE';
-
-      return setImmediate(done, testStepFailureErr);
+      return setImmediate(done, 'GLP2:TEST_STEP_FAILURE');
     }
 
-    setImmediate(done, 'GLP2:TEST_STEP_FAILURE');
+    programmerModule.log('GLP2:TEST_STEP_FAILURE', {
+      setValue: testResult.setValue,
+      actualValue: testResult.actualValue,
+      setValue2: testResult.setValue2,
+      actualValue2: testResult.actualValue2
+    });
+
+    var testStepFailureErr = new Error(
+      "Expected set value 1: `" + testResult.setValue
+        + "`, got actual value 1: `" + testResult.actualValue + "`."
+        + " Expected set value 2: `" + testResult.setValue2
+        + "`, got actual value 2: `" + testResult.actualValue2 + "`."
+    );
+    testStepFailureErr.code = 'GLP2:TEST_STEP_FAILURE';
+
+    return setImmediate(done, testStepFailureErr);
   }
 };

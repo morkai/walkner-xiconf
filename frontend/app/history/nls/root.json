@@ -233,7 +233,7 @@
     "error:GPRS:EXIT_CODE:-1": "CityTouchIPT (-1): general application failure.",
 
     "log:GLP2:RESETTING_TESTER": "Resetting the GLP2-I tester...",
-    "log:GLP2:TEST_STEP_FAILURE": "Exceeded a limit value of <code>{setValue}</code>: <code>{actualValue}</code>",
+    "log:GLP2:TEST_STEP_FAILURE": "Exceeded set value 1 <code>{setValue}</code>: <code>{actualValue}</code> or set value 2: <code>{setValue2}</code>: <code>{actualValue2}</code>",
 
     "error:GLP2:SETTING_DISABLED": "GLP2: Option is disabled in the settings.",
     "error:GLP2:FEATURE_DISABLED": "The current license doesn't have the Tester GLP2-I option.",
