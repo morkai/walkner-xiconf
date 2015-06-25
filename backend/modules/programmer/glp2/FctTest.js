@@ -11,8 +11,8 @@ module.exports = FctTest;
 
 var SET_VALUE_BOUNDRIES = {
   0: [0.01, 64, 100],
-  1: [1, 15000, 1],
-  2: [1, 15000, 1],
+  1: [1, 15000, 10],
+  2: [1, 15000, 10],
   3: [0.01, 1, 100],
   6: [20, 300, 1],
   7: [10, 9999, 1],
@@ -90,8 +90,8 @@ function FctTest(options)
   this.execution = options.execution;
   this.range = Math.floor(options.range);
   this.voltage = Math.floor(options.voltage);
-  this.lowerToleranceAbs = Math.floor(options.lowerToleranceAbs);
-  this.upperToleranceAbs = Math.floor(options.upperToleranceAbs);
+  this.lowerToleranceAbs = Math.round(options.lowerToleranceAbs * setValueBoundries[2]) / setValueBoundries[2];
+  this.upperToleranceAbs = Math.round(options.upperToleranceAbs * setValueBoundries[2]) / setValueBoundries[2];
   this.correction = util.bool(options.correction);
   this.mode = options.mode;
   this.leaveOn = util.bool(options.leaveOn);
@@ -211,17 +211,19 @@ FctTest.prototype.getTotalTime = function()
  */
 FctTest.prototype.serializeCommand = function(step)
 {
+  var fractionalDigits = Math.log10((SET_VALUE_BOUNDRIES[this.mode] || [0, 0, 1])[2]);
+
   return 'F9-' + [
     step || this.step,
-    this.setValue.toFixed(Math.log10((SET_VALUE_BOUNDRIES[this.mode] || [0, 0, 1])[2])),
+    this.setValue.toFixed(fractionalDigits),
     this.upperToleranceRel,
     Math.floor(this.startTime * 1000),
     Math.floor(this.duration * 1000),
     this.execution,
     this.range,
     this.voltage,
-    this.upperToleranceAbs,
-    this.lowerToleranceAbs,
+    this.upperToleranceAbs.toFixed(fractionalDigits),
+    this.lowerToleranceAbs.toFixed(fractionalDigits),
     this.correction,
     this.mode,
     this.leaveOn,
