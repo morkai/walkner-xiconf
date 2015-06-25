@@ -65,7 +65,7 @@ ProgramStep.prototype.toString = function(step)
 
   if (this.label.length > 0)
   {
-    dataString += 'D' + this.step + '_' + util.encodeStringValue(this.label) + ' ';
+    dataString += 'D' + (step || this.step) + '_' + util.encodeStringValue(this.label) + ' ';
   }
 
   return dataString;
