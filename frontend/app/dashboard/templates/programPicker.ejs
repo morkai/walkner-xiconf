@@ -4,7 +4,7 @@
     <% programs.forEach(function(program, i) { %>
     <a class="list-group-item" href="#programs/<%- program.id %>" tabindex="100" data-id="<%- program.id %>">
       <% if (i < 9) { %>
-      <kbd data-hotkey="<%- i + 1 %>"><span>ALT+</span><%- i  + 1 %></kbd>
+      <kbd data-hotkey="<%- i + 1 %>">ALT+<%- i  + 1 %></kbd>
       <% } %>
       <%= program.get('name') %>
       <span class="dashboard-programPicker-typeAndSteps">

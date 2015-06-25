@@ -50,12 +50,8 @@ define([
 
         return false;
       },
-      'focus #-filter': 'toggleAlt',
-      'blur #-filter': 'toggleAlt',
       'input #-filter': function(e)
       {
-        this.toggleAlt();
-
         var filter = e.target.value.trim().toLowerCase();
         var hotkey = 1;
 
@@ -69,7 +65,7 @@ define([
 
           if (display === 'block' && hotkey < 10)
           {
-            $program.prepend('<kbd data-hotkey="' + hotkey + '"><span>ALT+</span>' + hotkey + '</kbd>');
+            $program.prepend('<kbd data-hotkey="' + hotkey + '">ALT+' + hotkey + '</kbd>');
 
             ++hotkey;
           }
@@ -134,11 +130,6 @@ define([
       }
     },
 
-    toggleAlt: function()
-    {
-      this.$el.toggleClass('is-alt', document.activeElement === this.$els.filter[0] && this.$els.filter.val() !== '');
-    },
-
     onDialogShown: function()
     {
       this.resize();
@@ -148,12 +139,7 @@ define([
 
     onKeyDown: function(e)
     {
-      if (e.keyCode < 49 || e.keyCode > 57)
-      {
-        return;
-      }
-
-      if (e.altKey || !this.$el.hasClass('is-alt'))
+      if (e.altKey && e.keyCode >= 49 && e.keyCode <= 57)
       {
         this.$('kbd[data-hotkey="' + String.fromCharCode(e.keyCode) + '"]').closest('a').click();
 
