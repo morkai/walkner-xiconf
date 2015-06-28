@@ -68,6 +68,12 @@ function Glp2Manager(app, programmer)
    */
   this.readyStateTimer = setInterval(this.checkReadyState.bind(this), 10000);
 
+  /**
+   * @private
+   * @type {object|null}
+   */
+  this.closeAfterErrorTimer = null;
+
   this.broker.subscribe('app.started', this.onAppStarted.bind(this)).setLimit(1);
   this.broker.subscribe('settings.changed', this.onSettingsChanged.bind(this));
   this.broker.subscribe('programmer.finished', this.onProgrammerFinished.bind(this));
@@ -584,6 +590,8 @@ Glp2Manager.prototype.onProgrammerFinished = function()
  */
 Glp2Manager.prototype.onMasterOpen = function()
 {
+  this.stopCloseAfterErrorTimer();
+
   this.emit('open');
 
   var manager = this;
@@ -599,10 +607,36 @@ Glp2Manager.prototype.onMasterOpen = function()
 
 /**
  * @private
+ */
+Glp2Manager.prototype.startCloseAfterErrorTimer = function()
+{
+  if (this.closeAfterErrorTimer === null)
+  {
+    this.closeAfterErrorTimer = setTimeout(this.onMasterClose.bind(this), 1000);
+  }
+};
+
+/**
+ * @private
+ */
+Glp2Manager.prototype.stopCloseAfterErrorTimer = function()
+{
+  if (this.closeAfterErrorTimer !== null)
+  {
+    clearTimeout(this.closeAfterErrorTimer);
+    this.closeAfterErrorTimer = null;
+  }
+};
+
+/**
+ * @private
  * @param {Error} err
  */
 Glp2Manager.prototype.onMasterError = function(err)
 {
+  this.stopCloseAfterErrorTimer();
+  this.startCloseAfterErrorTimer();
+
   this.programmer.error("[glp2] %s", err.message);
 
   this.emit('error', err);
@@ -613,6 +647,8 @@ Glp2Manager.prototype.onMasterError = function(err)
  */
 Glp2Manager.prototype.onMasterClose = function()
 {
+  this.stopCloseAfterErrorTimer();
+
   if (this.readyState !== Glp2Manager.ReadyState.STOPPED)
   {
     this.readyState = Glp2Manager.ReadyState.DISCONNECTED;
