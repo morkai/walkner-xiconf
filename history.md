@@ -1,3 +1,14 @@
+2.13.6 @ 2015-06-29
+===================
+
+  * Fixed the Program picker's directional hotkeys not working correctly if the programs list is filtered.
+  * Added a safe-guard to the GLP2 manager so that it tries to reopen the serial port connection after the first open
+    call fails and the close event is not fired (which happens when the application starts before the serial port
+    is plugged in).
+  * Added a new Waiting for continue message after a GLP2 Programming step finishes and the tester's software version
+    is below 4.6. It appears that a remote acknowledgement of a Visual FCT test (using the `&sprio` command) doesn't
+    work in versions <4.6. The operator has to use a button on a probe to confirm the test.
+
 2.13.5 @ 2015-06-26
 ===================
 
