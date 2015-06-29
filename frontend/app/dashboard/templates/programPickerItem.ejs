@@ -1,0 +1,10 @@
+<a class="list-group-item" href="#programs/<%- program.id %>" tabindex="100" data-id="<%- program.id %>">
+  <% if (i < 9) { %>
+  <kbd data-hotkey="<%- i + 1 %>">ALT+<%- i  + 1 %></kbd>
+  <% } %>
+  <%= program.get('name') %>
+  <span class="dashboard-programPicker-typeAndSteps">
+    <span class="dashboard-programPicker-type"><%= t('xiconfPrograms', 'type:' + program.get('type')) %></span>
+    <span class="dashboard-programPicker-steps"><%- program.get('stepLabels') %></span>
+  </span>
+</a>

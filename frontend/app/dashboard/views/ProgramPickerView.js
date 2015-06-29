@@ -8,6 +8,7 @@ define([
   'app/i18n',
   'app/viewport',
   'app/core/View',
+  'app/dashboard/templates/programPickerItem',
   'app/dashboard/templates/programPicker'
 ], function(
   _,
@@ -15,6 +16,7 @@ define([
   t,
   viewport,
   View,
+  renderProgramPickerItem,
   template
 ) {
   'use strict';
@@ -77,16 +79,24 @@ define([
         if (this.timers.filter)
         {
           clearTimeout(this.timers.filter);
+          this.timers.filter = null;
+        }
+
+        if (this.loading)
+        {
+          return;
         }
 
         this.$els.spinner.addClass('fa-spin');
 
-        this.timers.filter = setTimeout(this.filter, this.collection.length < 20 ? 0 : 300, e.target.value);
+        this.timers.filter = setTimeout(this.filter, this.collection.length < 20 ? 0 : 300, e.target.value, true);
       }
     },
 
     initialize: function()
     {
+      this.visiblePrograms = [];
+      this.lastPhrase = '';
       this.loading = false;
       this.$els = null;
       this.onResize = _.debounce(this.resize.bind(this), 33);
@@ -114,7 +124,7 @@ define([
       return {
         idPrefix: this.idPrefix,
         loading: this.loading,
-        programs: this.collection
+        programs: this.visiblePrograms
       };
     },
 
@@ -134,6 +144,19 @@ define([
       this.resize();
     },
 
+    renderVisiblePrograms: function()
+    {
+      var html = _.map(this.visiblePrograms, function(program, i)
+      {
+        return renderProgramPickerItem({
+          i: i,
+          program: program
+        });
+      });
+
+      this.$els.list.html(html.join(''));
+    },
+
     resize: function()
     {
       if (this.$els)
@@ -148,7 +171,7 @@ define([
       }
     },
 
-    filter: function(phrase)
+    filter: function(phrase, render)
     {
       if (this.timers.filter)
       {
@@ -156,33 +179,36 @@ define([
         this.timers.filter = null;
       }
 
-      var words = phrase.trim().toLowerCase().split(' ');
-      var empty = words.length === 1 && words[0] === '';
-      var hotkey = 1;
-      var programs = this.collection;
+      var lastPhrase = this.lastPhrase;
+      var newPhrase = phrase.trim().toLowerCase();
+      var words = phrase.split(' ');
 
-      _.forEach(this.$els.list[0].children, function(programEl)
+      if (newPhrase.length === 0)
       {
-        var display = empty || matchName(programs.get(programEl.dataset.id).attributes.name$f, words)
-          ? 'block'
-          : 'none';
+        this.visiblePrograms = this.collection.models;
+      }
+      else if (lastPhrase.length > 0 && lastPhrase.length < newPhrase.length && newPhrase.indexOf(lastPhrase) === 0)
+      {
+        this.visiblePrograms = _.filter(this.visiblePrograms, filterByName);
+      }
+      else
+      {
+        this.visiblePrograms = _.filter(this.collection.models, filterByName);
+      }
 
-        if (programEl.firstElementChild.tagName === 'KBD')
-        {
-          programEl.removeChild(programEl.firstElementChild);
-        }
-
-        programEl.style.display = display;
-
-        if (display === 'block' && hotkey < 10)
-        {
-          $(programEl).prepend('<kbd data-hotkey="' + hotkey + '">ALT+' + hotkey + '</kbd>');
-
-          ++hotkey;
-        }
-      });
+      this.lastPhrase = newPhrase;
 
       this.$els.spinner.removeClass('fa-spin');
+
+      if (render !== false)
+      {
+        this.renderVisiblePrograms();
+      }
+
+      function filterByName(program)
+      {
+        return matchName(program.attributes.name$f, words);
+      }
     },
 
     closeDialog: function() {},
@@ -346,8 +372,14 @@ define([
 
       if (this.$els)
       {
-        this.$els.spinner.removeClass('fa-spin');
+        this.filter(this.$els.filter.val(), false);
       }
+      else
+      {
+        this.visiblePrograms = this.collection.models;
+      }
+
+      this.renderVisiblePrograms();
     }
 
   });
