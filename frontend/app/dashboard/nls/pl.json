@@ -98,7 +98,9 @@
   "continue:test:p1": "Testowanie wstrzymane!",
   "continue:test:p2": "Wciśnij <kbd data-hotkey=continue>?</kbd> lub zeskanuj kod startu,<br>aby kontynuować testowanie.",
   "continue:glp2:p1": "Test gotowy do startu!",
-  "continue:glp2:p2": "Wciśnij przycisk na sondzie,<br> aby kontynuować testowanie.",
+  "continue:glp2:p2": "Wciśnij przycisk na sondzie,<br>aby kontynuować testowanie.",
   "continue:vis:p1": "Test wizualny",
-  "continue:vis:p2": "Wciśnij <kbd data-hotkey=continue>?</kbd> lub zeskanuj kod startu<br>lub użyj sondy, aby kontynuować testowanie."
+  "continue:vis:p2": "Wciśnij <kbd data-hotkey=continue>?</kbd> lub zeskanuj kod startu<br>lub użyj sondy, aby kontynuować testowanie.",
+  "continue:programmed:p1": "Programowanie zakończone!",
+  "continue:programmed:p2": "Wciśnij przycisk na sondzie,<br>aby kontynuować testowanie."
 }

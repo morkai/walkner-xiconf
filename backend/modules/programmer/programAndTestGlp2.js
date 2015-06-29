@@ -424,17 +424,10 @@ module.exports = function programAndTestGlp2(app, programmerModule, programmerTy
       value: -1
     });
 
-    if (programmerType === null)
-    {
-      programmerModule.log('TESTING_SKIPPING_PROGRAMMING');
-
-      glp2Manager.ackVisTest(true, aioContext.finalizeOnError);
-
-      return;
-    }
-
-    var programmingFinished = false;
-    var doProgrammingTimer = setTimeout(doProgramming, settings.get('glp2ProgrammingDelay') || 0);
+    var programmingFinished = programmerType === null;
+    var doProgrammingTimer = programmerType === null
+      ? null
+      : setTimeout(doProgramming, settings.get('glp2ProgrammingDelay') || 0);
     var cancelMowProgrammingSub = null;
     var cancelProgrammingSub = broker.subscribe(
       'programmer.cancelled',
@@ -445,9 +438,27 @@ module.exports = function programAndTestGlp2(app, programmerModule, programmerTy
         aioContext.finalizeOnError('CANCELLED');
       }
     );
+    var waitForContinue = glp2Manager.getSoftwareVersion() < 4.6;
+
+    if (programmerType === null)
+    {
+      programmerModule.log('TESTING_SKIPPING_PROGRAMMING');
+
+      if (waitForContinue)
+      {
+        programmerModule.changeState({waitingForContinue: 'programmed'});
+      }
+
+      glp2Manager.ackVisTest(true, aioContext.finalizeOnError);
+    }
 
     aioContext.cleanUp.push(function()
     {
+      if (waitForContinue)
+      {
+        programmerModule.changeState({waitingForContinue: null});
+      }
+
       if (doProgrammingTimer)
       {
         clearTimeout(doProgrammingTimer);
@@ -510,6 +521,11 @@ module.exports = function programAndTestGlp2(app, programmerModule, programmerTy
       }
       else
       {
+        if (waitForContinue)
+        {
+          programmerModule.changeState({waitingForContinue: 'programmed'});
+        }
+
         glp2Manager.ackVisTest(true, aioContext.finalizeOnError);
       }
     }

@@ -30,20 +30,12 @@
       <p><%- t('dashboard', 'continue:led:p1') %></p>
       <p><%- t('dashboard', 'continue:led:p2') %></p>
     </button>
-    <button class="dashboard-continue dashboard-continue-test btn btn-warning">
+    <% ['test', 'glp2', 'vis', 'programmed'].forEach(function(type) { %>
+    <button class="dashboard-continue dashboard-continue-<%- type %> btn btn-warning">
       <i class="fa fa-arrow-right"></i>
-      <p><%- t('dashboard', 'continue:test:p1') %></p>
-      <p><%- t('dashboard', 'continue:test:p2') %></p>
+      <p><%- t('dashboard', 'continue:' + type + ':p1') %></p>
+      <p><%- t('dashboard', 'continue:' + type + ':p2') %></p>
     </button>
-    <button class="dashboard-continue dashboard-continue-glp2 btn btn-warning">
-      <i class="fa fa-arrow-right"></i>
-      <p><%- t('dashboard', 'continue:glp2:p1') %></p>
-      <p><%- t('dashboard', 'continue:glp2:p2') %></p>
-    </button>
-    <button class="dashboard-continue dashboard-continue-vis btn btn-warning">
-      <i class="fa fa-arrow-right"></i>
-      <p><%- t('dashboard', 'continue:vis:p1') %></p>
-      <p><%- t('dashboard', 'continue:vis:p2') %></p>
-    </button>
+    <% }) %>
   </div>
 </div>

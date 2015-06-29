@@ -74,6 +74,18 @@ function Glp2Manager(app, programmer)
    */
   this.closeAfterErrorTimer = null;
 
+  /**
+   * @private
+   * @type {Array.<string>}
+   */
+  this.deviceOptions = [];
+
+  /**
+   * @private
+   * @type {Number}
+   */
+  this.softwareVersion = NaN;
+
   this.broker.subscribe('app.started', this.onAppStarted.bind(this)).setLimit(1);
   this.broker.subscribe('settings.changed', this.onSettingsChanged.bind(this));
   this.broker.subscribe('programmer.finished', this.onProgrammerFinished.bind(this));
@@ -100,6 +112,14 @@ Glp2Manager.ReadyState = {
   CONNECTING: 2,
   RESETTING: 3,
   READY: 4
+};
+
+/**
+ * @returns {number}
+ */
+Glp2Manager.prototype.getSoftwareVersion = function()
+{
+  return this.softwareVersion;
 };
 
 /**
@@ -602,6 +622,33 @@ Glp2Manager.prototype.onMasterOpen = function()
     {
       manager.programmer.error("[glp2] Failed to reset the tester after connecting: %s", err.message);
     }
+    else
+    {
+      manager.getDeviceOptions();
+    }
+  });
+};
+
+Glp2Manager.prototype.getDeviceOptions = function()
+{
+  if (!this.master)
+  {
+    return;
+  }
+
+  var manager = this;
+
+  this.master.getDeviceOptions(function(err, res)
+  {
+    if (err)
+    {
+      return manager.programmer.error("[GLP2] Failed to get device options: %s", err.message);
+    }
+
+    manager.deviceOptions = res.deviceOptions;
+    manager.softwareVersion = res.getSoftwareVersion();
+
+    manager.programmer.debug("[GLP2] Device options:", manager.deviceOptions);
   });
 };
 

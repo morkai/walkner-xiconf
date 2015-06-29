@@ -101,7 +101,9 @@
     "continue:glp2:p1": "Test ready to start!",
     "continue:glp2:p2": "Press the button on the probe,<br>to continue the testing.",
     "continue:vis:p1": "Visual test",
-    "continue:vis:p2": "Press <kbd data-hotkey=continue>?</kbd> or use the start barcode<br>or the probe, to continue the testing."
+    "continue:vis:p2": "Press <kbd data-hotkey=continue>?</kbd> or use the start barcode<br>or the probe, to continue the testing.",
+    "continue:programmed:p1": "Programming finished!",
+    "continue:programmed:p2": "Press the button on the probe,<br>to continue the testing."
   },
   "pl": true
 }

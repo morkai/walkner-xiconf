@@ -40,3 +40,23 @@ DeviceOptionsResponse.fromResponseBuffer = function(responseBuffer)
 
   return new DeviceOptionsResponse(deviceOptions);
 };
+
+/**
+ * @returns {number}
+ */
+DeviceOptionsResponse.prototype.getSoftwareVersion = function()
+{
+  var versionRe = /^V[0-9]\.[0-9]+$/;
+
+  for (var i = 0; i < this.deviceOptions.length; ++i)
+  {
+    var option = this.deviceOptions[i];
+
+    if (versionRe.test(option))
+    {
+      return parseFloat(option.substring(1));
+    }
+  }
+
+  return NaN;
+};
