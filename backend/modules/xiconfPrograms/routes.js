@@ -19,7 +19,9 @@ module.exports = function setProgramsRoutes(app, programsModule)
   app.broker.subscribe('programs.*', function() { cachedFilteredPrograms = null; });
   app.broker.subscribe('settings.changed', function(changes)
   {
-    if (changes.prodLine !== undefined)
+    if (changes.prodLine !== undefined
+      || changes.testingEnabled !== undefined
+      || changes.glp2Enabled !== undefined)
     {
       cachedFilteredPrograms = null;
     }
