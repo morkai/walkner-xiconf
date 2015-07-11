@@ -96,6 +96,8 @@ RemoteCoordinator.prototype.generateServiceTag = function(data, done)
  * @param {string} data.orderNo
  * @param {string} data.nc12
  * @param {Array.<({nc12: string, serialNumbers: Array.<string>})>} data.leds
+ * @param {string} [data.programId]
+ * @param {string} [data.programName]
  * @param {function} done
  */
 RemoteCoordinator.prototype.acquireServiceTag = function(data, done)
@@ -131,6 +133,8 @@ RemoteCoordinator.prototype.checkSerialNumber = function(data, done)
  * @param {string} data.orderNo
  * @param {string} data.nc12
  * @param {Array.<({nc12: string, serialNumbers: Array.<string>})>} data.leds
+ * @param {string} [data.programId]
+ * @param {string} [data.programName]
  */
 RemoteCoordinator.prototype.releaseServiceTag = function(data)
 {

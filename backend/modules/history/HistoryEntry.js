@@ -179,7 +179,9 @@ HistoryEntry.prototype.createServiceTagRequestData = function()
     orderNo: this.order.no,
     nc12: this.nc12,
     multi: _.isString(this.workflow) && /multidevice\s*=\s*true/i.test(this.workflow),
-    leds: ledsList
+    leds: ledsList,
+    programId: this.program ? this.program._id : null,
+    programName: this.program ? this.program.name : null
   };
 };
 
