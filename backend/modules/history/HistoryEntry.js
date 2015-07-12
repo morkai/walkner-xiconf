@@ -36,7 +36,7 @@ function HistoryEntry(db, broker, settings)
   this.settings = settings;
 
   this.inputMode = 'local';
-  this.workMode = 'programming';
+  this.workMode = null;
   this.inProgress = false;
   this.overallProgress = 0;
   this.remoteConnected = false;

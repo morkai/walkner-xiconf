@@ -620,6 +620,8 @@ define([
         var orderFieldDisabled = isInProgress || isRemoteInput || hasOrder || ordersDisabled;
         var countdown = model.get('countdown') >= 0;
         var waitingForContinue = model.get('waitingForContinue');
+        var t24vdcEnabled = !!settings.get('testingEnabled');
+        var glp2Enabled = !!settings.get('glp2Enabled');
 
         $els.orderNo
           .prop('disabled', orderFieldDisabled || countdown)
@@ -629,7 +631,9 @@ define([
           .prop('required', ordersRequired);
         $els.nc12.prop('disabled', isInProgress || isRemoteInput || hasOrder || countdown);
         $els.start.prop('disabled', countdown);
-        $els.toggleWorkMode.prop('disabled', isInProgress || countdown);
+        $els.toggleWorkMode
+          .prop('disabled', isInProgress || countdown || glp2Enabled)
+          .css('display', glp2Enabled && !t24vdcEnabled ? 'none' : '');
         $els.continue.prop('disabled', waitingForContinue === null || waitingForContinue === 'glp2');
         $els.reset.prop('disabled', isInProgress || countdown);
         $els.reload.prop('disabled', isInProgress || hasOrder || countdown);

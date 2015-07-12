@@ -122,6 +122,11 @@ exports.start = function startProgrammerModule(app, module)
       return done(new Error('TESTING_DISABLED'));
     }
 
+    if (settings.get('glp2Enabled'))
+    {
+      workMode = 'testing';
+    }
+
     module.currentState.clear(false);
     module.currentState.workMode = workMode;
     done();
@@ -394,15 +399,9 @@ exports.start = function startProgrammerModule(app, module)
 
   app.broker.subscribe('settings.changed', function(changes)
   {
-    if (changes.testingEnabled === 0)
+    if (changes.glp2Enabled !== undefined || changes.testingEnabled !== undefined)
     {
-      module.setWorkMode('programming', function(err)
-      {
-        if (err)
-        {
-          module.error("Failed to switch the work mode to programming after testing was disabled: %s", err.message);
-        }
-      });
+      updateWorkMode();
     }
 
     lastFeatureFile = null;
@@ -505,6 +504,38 @@ exports.start = function startProgrammerModule(app, module)
       if (err)
       {
         return module.error("Failed to save the last mode: %s", err.message);
+      }
+    });
+  }
+
+  function updateWorkMode()
+  {
+    var t24vdcEnabled = !!settings.get('testingEnabled');
+    var glp2Enabled = !!settings.get('glp2Enabled');
+    var newWorkMode;
+
+    if (glp2Enabled)
+    {
+      newWorkMode = 'testing';
+    }
+    else if (!t24vdcEnabled && !glp2Enabled)
+    {
+      newWorkMode = 'programming';
+    }
+    else
+    {
+      return;
+    }
+
+    module.setWorkMode(newWorkMode, function(err)
+    {
+      if (err)
+      {
+        module.error(
+          "Failed to switch the work mode to [%s] after settings were changed: %s",
+          newWorkMode,
+          err.message
+        );
       }
     });
   }
