@@ -1,3 +1,13 @@
+2.13.7 @ 2015-07-12
+===================
+
+  * Fixed the cached programs not being refiltered if the 24V DC Tester or the GLP2 Tester settings are changed.
+  * Changed the Service Tag acquisition so that the current program ID and name are sent to the remote server.
+    The remote server uses this data to create a new order item of type `test`.
+  * Changed the work mode to always be `testing` if the GLP2 Tester is enabled. If the GLP2 Tester is enabled
+    and the 24V DC Tester is disabled, then the Toggle work mode button is hidden. If both testers are enabled,
+    then the Toggle work mode button is visible, but disabled.
+
 2.13.6 @ 2015-06-29
 ===================
 
