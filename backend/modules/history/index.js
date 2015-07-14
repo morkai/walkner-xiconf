@@ -59,10 +59,10 @@ exports.start = function startProgrammerModule(app, module, done)
       return done(null, ids);
     }
 
-    var sql = "SELECT e.leds\
-               FROM historyEntries e\
-               WHERE _id IN(" + ids + ") AND e.leds IS NOT NULL\
-               ORDER BY e.startedAt DESC\
+    var sql = "SELECT leds\
+               FROM historyEntries\
+               WHERE _id IN(" + ids + ") AND leds IS NOT NULL\
+               ORDER BY startedAt DESC\
                LIMIT 1";
 
     sqlite3Module.db.get(sql, {}, function(err, row)
@@ -72,7 +72,7 @@ exports.start = function startProgrammerModule(app, module, done)
         return done(err);
       }
 
-      return done(null, row.leds ? JSON.parse(row.leds) : []);
+      return done(null, row && row.leds ? JSON.parse(row.leds) : ids);
     });
   };
 
