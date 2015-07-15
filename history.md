@@ -1,3 +1,8 @@
+2.13.8 @ 2015-07-15
+===================
+
+  * Fixed a crash that may happen while fetching LEDs from the last failed result.
+
 2.13.7 @ 2015-07-12
 ===================
 
