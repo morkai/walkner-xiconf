@@ -592,6 +592,11 @@ Glp2Manager.prototype.onSettingsChanged = function(changes)
  */
 Glp2Manager.prototype.onProgrammerFinished = function()
 {
+  if (!this.settings.get('glp2Enabled'))
+  {
+    return;
+  }
+
   this.readyState = Glp2Manager.ReadyState.READY;
 
   var manager = this;
