@@ -163,6 +163,9 @@ exports.start = function startSettingsModule(app, module, done)
       case 'glp2':
         return !!(supportedFeatures & 32);
 
+      case 'fl':
+        return !!(supportedFeatures & 64);
+
       default:
         return false;
     }
@@ -365,6 +368,9 @@ exports.start = function startSettingsModule(app, module, done)
     validateNumericSetting(rawSettings, newSettings, 'glp2ComAddress', 1, 255);
     validateNumericSetting(rawSettings, newSettings, 'glp2ProgrammingDelay', 0, 60000);
     validateNumericSetting(rawSettings, newSettings, 'glp2CancelDelay', 1, 10000);
+    // Fluorescent Lamps
+    validateStringSetting(rawSettings, newSettings, 'flResource1', 0, /^coap/);
+    validateStringSetting(rawSettings, newSettings, 'flResource2', 0, /^coap/);
     // Hotkeys
     validateHotkeys(rawSettings, newSettings);
     // License

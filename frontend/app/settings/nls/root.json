@@ -25,6 +25,7 @@
     "form:lpt": "Petrol Station",
     "form:testing": "Tester 24V DC",
     "form:glp2": "Tester GLP2-I",
+    "form:fl": "Fluorescent Lamps",
     "form:hotkeys": "Hotkeys",
     "form:license": "License settings",
     "form:submit": "Save settings",
@@ -170,6 +171,8 @@
     "setting:gprsDaliPort": "DALI port",
     "setting:gprsInputTemplateFile": "Path to the programmer input template file",
     "setting:gprsProgrammerFile": "Path to the programmer executable file",
+    "setting:flResource1": "First lamp URL",
+    "setting:flResource2": "Second lamp URL",
 
     "license:NO_KEY": "No license key.",
     "license:INVALID_ED_PEM": "Invalid license decryption key.",

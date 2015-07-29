@@ -278,7 +278,13 @@
     "error:GLP2:FAULT:28": "GLP2 (28): No test object.",
     "error:GLP2:FAULT:29": "GLP2 (29): Test sequence has reported an error.",
     "error:GLP2:FAULT:30": "GLP2 (30): Temperature regulation error (test step TMP).",
-    "error:GLP2:FAULT:31": "GLP2 (31): FI reference test error."
+    "error:GLP2:FAULT:31": "GLP2 (31): FI reference test error.",
+
+    "log:FL:MONITORING": "Monitoring the lighting time of <code>{count}</code> {count, plural, one{lamp} other{lamps}}...",
+    "log:FL:LIGHTING_TIME": "{no}. lamp shone continuously for <code>{duration}</code> ms.",
+
+    "error:FL:FEATURE_DISABLED": "The current license doesn't have the Fluorescent Lamps option.",
+    "error:FL:LIGHTING_TIME_TOO_SHORT": "FL: Lighting time too short."
   },
   "pl": true
 }

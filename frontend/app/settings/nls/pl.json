@@ -24,6 +24,7 @@
   "form:lpt": "Petrol Station",
   "form:testing": "Tester 24V DC",
   "form:glp2": "Tester GLP2-I",
+  "form:fl": "Świetlówki",
   "form:hotkeys": "Skróty klawiszowe",
   "form:license": "Ustawienia licencji",
   "form:submit": "Zapisz ustawienia",
@@ -169,6 +170,8 @@
   "setting:gprsDaliPort": "Port DALI programatora",
   "setting:gprsInputTemplateFile": "Ścieżka do pliku z szablonem konfiguracji programatora",
   "setting:gprsProgrammerFile": "Ścieżka do pliku wykonywalnego programatora",
+  "setting:flResource1": "Adres stanu pierwszej lampy",
+  "setting:flResource2": "Adres stanu drugiej lampy",
 
   "license:NO_KEY": "Brak klucza licencji.",
   "license:INVALID_ED_PEM": "Nieprawidłowy klucz odszyfrowywania.",

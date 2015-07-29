@@ -11,6 +11,8 @@ var gprs = require('./gprs');
 var programMowDriver = require('./programMowDriver');
 var programSolDriver = require('./programSolDriver');
 
+var FL_LAMP_COUNT = 2;
+
 module.exports = function programAndTestGlp2(app, programmerModule, programmerType, done)
 {
   var settings = app[programmerModule.config.settingsId];
@@ -22,6 +24,16 @@ module.exports = function programAndTestGlp2(app, programmerModule, programmerTy
   if (!settings.supportsFeature('glp2'))
   {
     return done('GLP2:FEATURE_DISABLED');
+  }
+
+  var hasFluorescentLampCheck = currentState.program.steps.some(function(step)
+  {
+    return step.enabled && step.type === 'fn' && step.lampCount > 0;
+  });
+
+  if (hasFluorescentLampCheck && !settings.supportsFeature('fl'))
+  {
+    return done('FL:FEATURE_DISABLED');
   }
 
   var broker = app.broker.sandbox();
@@ -289,6 +301,11 @@ module.exports = function programAndTestGlp2(app, programmerModule, programmerTy
         }
         else
         {
+          if (step.type === 'fn')
+          {
+            setUpAioFnStep(step, currentStepIndex, sharedContext);
+          }
+
           programmerModule.updateStepProgress(currentStepIndex, {
             status: 'active',
             value: res.value1,
@@ -304,6 +321,17 @@ module.exports = function programAndTestGlp2(app, programmerModule, programmerTy
           unit: res.unit1,
           progress: progress
         });
+
+        var remainingTime = programStep.getTotalTime() - res.time;
+
+        if (remainingTime <= 1000)
+        {
+          app.broker.publish('programmer.glp2.stepNearlyCompleted', {
+            stepIndex: progressStepIndex,
+            step: programStep,
+            remainingTime: remainingTime
+          });
+        }
       }
 
       return setImmediate(monitorProgress, done);
@@ -362,7 +390,14 @@ module.exports = function programAndTestGlp2(app, programmerModule, programmerTy
 
     if (step.type === 'fn')
     {
-      return glp2.FctTest.fromObject(step);
+      var fctTest = glp2.FctTest.fromObject(step);
+
+      if (step.lampCount > 0)
+      {
+        fctTest.duration += 1;
+      }
+
+      return fctTest;
     }
 
     if (step.type === 'vis')
@@ -689,6 +724,32 @@ module.exports = function programAndTestGlp2(app, programmerModule, programmerTy
       {
         programmerModule.changeState({waitingForContinue: null});
       }
+    });
+  }
+
+  function setUpAioFnStep(step, stepIndex, aioContext)
+  {
+    if (!step.lampCount)
+    {
+      return;
+    }
+
+    var flDurations = {};
+    var cancelFlMonitor = monitorFluorescentLamps(step.lampCount, flDurations);
+    var stepNearlyCompletedSub = app.broker.subscribe('programmer.glp2.stepNearlyCompleted')
+      .setLimit(1)
+      .on('message', function(m)
+      {
+        if (!checkFlDurations(step.lampCount, step.lampDuration, flDurations))
+        {
+          aioContext.finalizeOnError('FL:LIGHTING_TIME_TOO_SHORT');
+        }
+      });
+
+    aioContext.cleanUp.push(function()
+    {
+      cancelFlMonitor();
+      stepNearlyCompletedSub.cancel();
     });
   }
 
@@ -1147,7 +1208,58 @@ module.exports = function programAndTestGlp2(app, programmerModule, programmerTy
         progress: 0
       });
 
-      executeTestStep(glp2.FctTest.fromObject(programStep), stepIndex, this.next());
+      var lightingTimeTooShort = false;
+
+      step(
+        function executeTestStepStep()
+        {
+          var fctTest = glp2.FctTest.fromObject(programStep);
+          var nextStep = _.once(this.next());
+
+          if (programStep.lampCount > 0)
+          {
+            fctTest.duration += 1;
+
+            var lampCount = programStep.lampCount;
+            var lampDuration = programStep.lampDuration;
+            var flDurations = {};
+
+            this.cancelFlMonitor = monitorFluorescentLamps(lampCount, flDurations);
+
+            this.stepNearlyCompletedSub = app.broker.subscribe('programmer.glp2.stepNearlyCompleted')
+              .setLimit(1)
+              .on('message', function()
+              {
+                if (!checkFlDurations(lampCount, lampDuration, flDurations))
+                {
+                  nextStep('FL:LIGHTING_TIME_TOO_SHORT');
+                }
+              });
+          }
+
+          executeTestStep(fctTest, stepIndex, nextStep);
+        },
+        function checkFlResultsStep(err)
+        {
+          if (this.stepNearlyCompletedSub)
+          {
+            this.stepNearlyCompletedSub.cancel();
+            this.stepNearlyCompletedSub = null;
+          }
+
+          if (this.cancelFlMonitor)
+          {
+            this.cancelFlMonitor();
+            this.cancelFlMonitor = null;
+          }
+
+          if (err)
+          {
+            return this.skip(err);
+          }
+        },
+        this.next()
+      );
     };
   }
 
@@ -1462,6 +1574,17 @@ module.exports = function programAndTestGlp2(app, programmerModule, programmerTy
       progress: Math.round((res.time / programStep.getTotalTime()) * 100)
     });
 
+    var remainingTime = programStep.getTotalTime() - res.time;
+
+    if (remainingTime <= 1000)
+    {
+      app.broker.publish('programmer.glp2.stepNearlyCompleted', {
+        stepIndex: stepIndex,
+        step: programStep,
+        remainingTime: remainingTime
+      });
+    }
+
     setImmediate(monitorActualValues, programSteps, stepIndexes, done);
   }
 
@@ -1540,5 +1663,166 @@ module.exports = function programAndTestGlp2(app, programmerModule, programmerTy
     testStepFailureErr.code = 'GLP2:TEST_STEP_FAILURE';
 
     return setImmediate(done, testStepFailureErr);
+  }
+
+  function monitorFluorescentLamps(lampCount, flDurations)
+  {
+    programmerModule.log('FL:MONITORING', {
+      count: lampCount
+    });
+
+    var coap = require('h5.coap');
+    var coapClient = new coap.Client({
+      socket4: false,
+      socket6: true,
+      ackTimeout: 100,
+      ackRandomFactor: 1,
+      maxRetransmit: 1
+    });
+    var resources = new Array(FL_LAMP_COUNT);
+    var cancelled = false;
+    var onAt = {};
+
+    for (var i = 0; i < FL_LAMP_COUNT; ++i)
+    {
+      resources[i] = settings.get('flResource' + (i + 1));
+      flDurations[i] = 0;
+      onAt[i] = -1;
+    }
+
+    setImmediate(monitorState);
+
+    return function() { cancelled = true; };
+
+    function monitorState()
+    {
+      if (cancelled)
+      {
+        coapClient.destroy();
+
+        return;
+      }
+
+      step(
+        function()
+        {
+          this.startedAt = Date.now();
+
+          for (var i = 0; i < FL_LAMP_COUNT; ++i)
+          {
+            if (_.isEmpty(resources[i]))
+            {
+              setImmediate(this.group(), null, null);
+            }
+            else
+            {
+              request(resources[i], this.group());
+            }
+          }
+        },
+        function(err, states)
+        {
+          if (cancelled)
+          {
+            return;
+          }
+
+          var now = Date.now();
+
+          for (var i = 0; i < FL_LAMP_COUNT; ++i)
+          {
+            var state = states[i];
+            var lastOnAt = onAt[i];
+
+            if (state === null || (state === false && lastOnAt === -1))
+            {
+              continue;
+            }
+
+            if (lastOnAt === -1)
+            {
+              onAt[i] = now;
+
+              continue;
+            }
+
+            var onDuration = now - lastOnAt;
+
+            if (onDuration > flDurations[i])
+            {
+              flDurations[i] = onDuration;
+            }
+
+            if (!state)
+            {
+              onAt[i] = -1;
+            }
+          }
+
+          setTimeout(monitorState, Math.max(33 - (now - this.startedAt), 1));
+        }
+      )
+    }
+
+    function request(uri, done)
+    {
+      if (cancelled)
+      {
+        return done(null, null);
+      }
+
+      var req = coapClient.get(uri, {type: 'NON'});
+      var complete = _.once(done);
+
+      req.on('timeout', complete.bind(null, null, null));
+      req.on('error', complete.bind(null, null, null));
+      req.on('response', function(res)
+      {
+        var state = null;
+
+        if (res.getCode() === coap.Message.Code.CONTENT)
+        {
+          var payload = res.getPayload().toString();
+
+          if (payload.indexOf('ON') !== -1)
+          {
+            state = true;
+          }
+          else if (payload.indexOf('OFF') !== -1)
+          {
+            state = false;
+          }
+        }
+
+        complete(null, state);
+      });
+    }
+  }
+
+  function checkFlDurations(lampCount, requiredDuration, flDurations)
+  {
+    if (!lampCount || !requiredDuration)
+    {
+      return true;
+    }
+
+    var validCount = 0;
+
+    for (var i = 0; i < FL_LAMP_COUNT; ++i)
+    {
+      var actualDuration = flDurations[i];
+
+      if ((actualDuration / 1000) >= requiredDuration)
+      {
+        ++validCount;
+      }
+
+      programmerModule.log('FL:LIGHTING_TIME', {
+        no: i + 1,
+        duration: actualDuration
+      });
+    }
+
+    return validCount === lampCount;
   }
 };

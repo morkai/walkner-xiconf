@@ -38,6 +38,7 @@
     "h5.main": "git+http://github.com/morkai/h5.main.git#775f3a9ba7",
     "h5.buffers": "~0.1.1",
     "h5.modbus": "git+http://github.com/morkai/h5.modbus.git#0993906e41",
+    "h5.coap": "git+http://github.com/morkai/h5.coap.git#51c3b2a4cb",
     "sqlite3": "~3.0.5",
     "ursa": "~0.8.4",
     "semver": "~4.3.3",

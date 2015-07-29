@@ -147,6 +147,8 @@ exports.settings = {
     gprsProgrammerFile: 'CityTouchIPT.exe',
     gprsInputTemplateFile: DATA_PATH + '/gprs-input.json',
     gprsDaliPort: 0,
+    flResource1: '',
+    flResource2: '',
     hotkeys: {
       focusOrderNo: 'Q',
       focusQuantity: 'W',
