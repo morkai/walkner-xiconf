@@ -100,7 +100,8 @@ define([
         msg: null,
         navbar: null,
         progressBar: null,
-        hotkeys: null
+        hotkeys: null,
+        continue: null
       };
 
       this.defineViews();
@@ -185,6 +186,7 @@ define([
 
       this.$els.navbar = $('.navbar');
       this.$els.progressBar = this.$id('progressBar');
+      this.$els.continue = this.$('.dashboard-continue');
 
       this.$('.dashboard-leftColumn').append('<kbd class="is-inside" data-hotkey="focusLog">?</kbd>');
 
@@ -205,6 +207,14 @@ define([
       this.carouselView.resize(width, height);
       this.programView.resize(width, height);
       this.ledsView.resize(height);
+
+      var shrinked = this.$els.window[0].innerWidth <= 1024;
+
+      this.inputView.el.style.marginBottom = shrinked
+        ? ((height + this.$els.progressBar.outerHeight(true) + 3 * 14) + 'px')
+        : '';
+
+      this.$els.continue.css(shrinked ? {width: width, height: height} : {width: '', height: ''});
     },
 
     toggleConnectionIndicator: function()
@@ -307,7 +317,7 @@ define([
       return this.$els.window[0].innerHeight
         - this.$els.navbar.outerHeight(true)
         - this.$els.progressBar.outerHeight(true)
-        - this.inputView.$el.outerHeight(true)
+        - this.inputView.$el.outerHeight(false)
         - 14 * 4;
     },
 
@@ -465,7 +475,7 @@ define([
 
     onWindowWheel: function(e)
     {
-      return this.$(e.target).closest('.is-scrollable').length === 1;
+      return this.$els.window[0].innerWidth <= 1024 || this.$(e.target).closest('.is-scrollable').length === 1;
     },
 
     onKeyDown: function(e)
