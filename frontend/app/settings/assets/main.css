@@ -1,5 +1,27 @@
-.settings-form .panel {
-  border-top: none;
+.settings-form {
+  display: flex;
+  flex: 1 0 auto;
+  align-items: stretch;
+}
+.settings-form > .list-group {
+  margin-bottom: 0;
+}
+.settings-form .list-group-item {
+  white-space: nowrap;
+  border-right: 0;
+}
+.settings-form > .panel {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  margin-bottom: 0;
+}
+.settings-form > .panel > .panel-body {
+  display: none;
+  flex: 1 1 auto;
+}
+.settings-form > .panel > .panel-body.active {
+  display: block;
 }
 .settings-hasRowLast {
   padding-bottom: 0;

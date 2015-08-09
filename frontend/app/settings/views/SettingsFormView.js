@@ -70,17 +70,19 @@ define([
     template: formTemplate,
 
     events: {
-      'click .nav-tabs a': function(e)
+      'click a[data-tab]': function(e)
       {
         e.preventDefault();
 
-        var tab = this.$(e.target).tab('show').parent().attr('data-tab');
+        var tab = e.target.dataset.tab;
 
         this.broker.publish('router.navigate', {
           url: '/settings?tab=' + tab,
           trigger: false,
           replace: true
         });
+
+        this.changeTab(tab);
       },
       'paste #-serviceTagLabelCode': function(e)
       {
@@ -180,8 +182,18 @@ define([
     afterRender: function()
     {
       this.importSettings(settings.toJSON());
+      this.changeTab(this.options.tab || this.$('.list-group-item[data-tab]').first().attr('data-tab'));
+    },
 
-      this.$('.nav-tabs > li[data-tab="' + (this.options.tab || 'log') + '"] > a').tab('show');
+    changeTab: function(tab)
+    {
+      var $oldTab = this.$('.list-group-item.active');
+      var $newTab = this.$('.list-group-item[data-tab="' + tab + '"]');
+
+      $oldTab.removeClass('active');
+      $newTab.addClass('active');
+      this.$('.panel-body.active').removeClass('active');
+      this.$id(tab).addClass('active');
     },
 
     importSettings: function(newSettings)
