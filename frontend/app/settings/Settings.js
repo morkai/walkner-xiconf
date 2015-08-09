@@ -11,6 +11,8 @@ define([
 ) {
   'use strict';
 
+  var AVAILABLE_FEATURES = window.AVAILABLE_FEATURES || [];
+
   return Model.extend({
 
     urlRoot: '/settings',
@@ -60,9 +62,10 @@ define([
         return '';
       }
 
-      return ['WMES', 'SOL', 'T24VDC', 'LED', 'GPRS', 'GLP2', 'FL']
+      return AVAILABLE_FEATURES
         .filter(function(feature) { return this.supportsFeature(feature); }, this)
-        .join(', ');
+        .join(', ')
+        .toUpperCase();
     },
 
     isValidLicense: function()
@@ -82,33 +85,9 @@ define([
       }
 
       var supportedFeatures = licenseInfo.features;
+      var featureIndex = AVAILABLE_FEATURES.indexOf(feature.toLowerCase());
 
-      switch (feature.toLowerCase())
-      {
-        case 'wmes':
-          return !!(supportedFeatures & 1);
-
-        case 'sol':
-          return !!(supportedFeatures & 2);
-
-        case 't24vdc':
-          return !!(supportedFeatures & 4);
-
-        case 'led':
-          return !!(supportedFeatures & 8);
-
-        case 'gprs':
-          return !!(supportedFeatures & 16);
-
-        case 'glp2':
-          return !!(supportedFeatures & 32);
-
-        case 'fl':
-          return !!(supportedFeatures & 64);
-
-        default:
-          return false;
-      }
+      return featureIndex !== -1 && !!(supportedFeatures & Math.pow(2, featureIndex));
     }
 
   });

@@ -29,6 +29,8 @@ exports.start = function startSettingsModule(app, module, done)
     coreScannerDriver: false
   };
 
+  module.availableFeatures = ['wmes', 'sol', 't24vdc', 'led', 'gprs', 'glp2', 'fl', 'ft'];
+
   module.has = function(name)
   {
     return name !== 'password' && name !== 'licenseKey' && typeof settings[name] !== 'undefined';
@@ -142,33 +144,9 @@ exports.start = function startSettingsModule(app, module, done)
     }
 
     var supportedFeatures = licenseInfo.features;
+    var featureIndex = module.availableFeatures.indexOf(feature.toLowerCase());
 
-    switch (feature)
-    {
-      case 'wmes':
-        return !!(supportedFeatures & 1);
-
-      case 'sol':
-        return !!(supportedFeatures & 2);
-
-      case 't24vdc':
-        return !!(supportedFeatures & 4);
-
-      case 'led':
-        return !!(supportedFeatures & 8);
-
-      case 'gprs':
-        return !!(supportedFeatures & 16);
-
-      case 'glp2':
-        return !!(supportedFeatures & 32);
-
-      case 'fl':
-        return !!(supportedFeatures & 64);
-
-      default:
-        return false;
-    }
+    return featureIndex !== -1 && !!(supportedFeatures & Math.pow(2, featureIndex));
   };
 
   module.getInstallationId = function()
