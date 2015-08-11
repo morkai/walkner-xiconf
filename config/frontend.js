@@ -115,7 +115,7 @@ exports.settings = {
     testingComTimeout: 500,
     testingMaxVoltage: 24,
     testingCurrent: 10,
-    testingModbusEnabled: false,
+    testingModbusEnabled: 0,
     testingModbusHost: '127.0.0.1',
     testingModbusPort: 502,
     glp2Enabled: 0,
