@@ -34,6 +34,7 @@ define([
           serviceTag: 1,
           nc12: 1,
           featureFileName: 1,
+          program: 1,
           no: 1,
           quantity: 1,
           counter: 1,

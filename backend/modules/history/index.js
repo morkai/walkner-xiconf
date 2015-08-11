@@ -107,6 +107,10 @@ exports.start = function startProgrammerModule(app, module, done)
 
   function saveRecentEntry(historyEntry)
   {
+    var program = typeof historyEntry.program === 'string'
+      ? JSON.parse(historyEntry.program)
+      : (historyEntry.program || null);
+
     module.recent.unshift({
       _id: historyEntry._id,
       _order: historyEntry.order ? historyEntry.order._id : (historyEntry.orderId || null),
@@ -118,7 +122,10 @@ exports.start = function startProgrammerModule(app, module, done)
       counter: historyEntry.counter,
       result: historyEntry.result,
       errorCode: historyEntry.errorCode,
-      featureFileName: historyEntry.featureFileName
+      featureFileName: historyEntry.featureFileName,
+      program: !program ? null : {
+        name: program.name
+      }
     });
 
     if (module.recent.length > 50)

@@ -54,11 +54,23 @@ define([
         data.leds = JSON.parse(data.leds);
       }
 
+      if (typeof data.program === 'string')
+      {
+        data.program = JSON.parse(data.program);
+      }
+
       return data;
     },
 
     getProgramName: function()
     {
+      var program = this.get('program');
+
+      if (program)
+      {
+        return program.name;
+      }
+
       var featureFileName = this.get('featureFileName');
 
       if (typeof featureFileName !== 'string')
