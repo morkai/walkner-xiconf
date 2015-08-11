@@ -35,6 +35,7 @@ define([
           nc12: 1,
           featureFileName: 1,
           program: 1,
+          steps: 1,
           no: 1,
           quantity: 1,
           counter: 1,

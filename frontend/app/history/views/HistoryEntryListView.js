@@ -5,11 +5,13 @@
 define([
   'app/i18n',
   'app/time',
-  'app/core/views/ListView'
+  'app/core/views/ListView',
+  'app/xiconfPrograms/util/buildStepLabels'
 ], function(
   t,
   time,
-  ListView
+  ListView,
+  buildStepLabels
 ) {
   'use strict';
 
@@ -48,7 +50,8 @@ define([
       {id: 'quantity', className: 'is-min'},
       {id: 'startedAt', className: 'is-min'},
       {id: 'duration', className: 'is-min'},
-      'programName'
+      {id: 'programName', className: 'is-min'},
+      'programSteps'
     ],
 
     serializeActions: function()
@@ -59,16 +62,18 @@ define([
     serializeRow: function(model)
     {
       var order = model.get('order');
+      var program = model.get('program');
 
       return {
         _id: model.id,
         className: 'history-entry ' + (model.get('result') === 'success' ? 'success' : 'danger'),
-        serviceTag: model.get('serviceTag'),
-        order: order ? order.no : null,
-        programName: model.getProgramName(),
-        nc12: model.get('nc12') || null,
+        serviceTag: model.get('serviceTag') || '-',
+        order: order ? order.no : '-',
+        programName: model.getProgramName() || '-',
+        programSteps: program ? buildStepLabels(program.steps, model.get('steps')) : '-',
+        nc12: model.get('nc12') || '-',
         counter: model.get('counter'),
-        quantity: order ? order.quantity : null,
+        quantity: order ? order.quantity : '-',
         startedAt: time.format(model.get('startedAt'), 'YYYY-MM-DD, HH:mm:ss.SSS'),
         duration: time.toString(model.get('duration') / 1000, false, true)
       };

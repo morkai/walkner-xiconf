@@ -5,11 +5,13 @@
 define([
   '../i18n',
   '../time',
-  '../core/Model'
+  '../core/Model',
+  './util/buildStepLabels'
 ], function(
   t,
   time,
-  Model
+  Model,
+  buildStepLabels
 ) {
   'use strict';
 
@@ -46,7 +48,7 @@ define([
 
       if (obj.steps)
       {
-        obj.stepLabels = this.prepareStepLabels(obj.steps);
+        obj.stepLabels = buildStepLabels(obj.steps);
       }
 
       return obj;
@@ -71,30 +73,6 @@ define([
       obj.steps = obj.stepLabels;
 
       return obj;
-    },
-
-    prepareStepLabels: function(steps)
-    {
-      return steps
-        .filter(function(step) { return step.enabled !== false; })
-        .map(function(step)
-        {
-          var label = step.type;
-
-          if (step.type === 'wait')
-          {
-            label = step.kind === 'auto' ? time.toString(step.duration) : 'W8';
-          }
-          else if (t.has('xiconfPrograms', 'step:' + step.type + ':label'))
-          {
-            label = t('xiconfPrograms', 'step:' + step.type + ':label');
-          }
-
-          return '<span class="label label-info xiconfPrograms-label xiconfPrograms-label-' + step.type + '">'
-            + label
-            + '</span>';
-        })
-        .join(' ');
     }
 
   }, {

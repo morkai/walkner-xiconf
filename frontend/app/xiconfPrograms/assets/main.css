@@ -4,6 +4,15 @@
   font-size: 100%;
   text-transform: uppercase;
 }
+.xiconfPrograms-label.is-idle {
+  border: 2px solid #000;
+}
+.xiconfPrograms-label.is-failure {
+  border: 2px solid #d9534f;
+}
+.xiconfPrograms-label.is-success {
+  border: 2px solid #5cb85c;
+}
 .xiconfPrograms-label-pe,
 .xiconfPrograms-stepPanel-pe > .panel-heading {
   background-color: #0af;

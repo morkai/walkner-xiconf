@@ -59,6 +59,11 @@ define([
         data.program = JSON.parse(data.program);
       }
 
+      if (typeof data.steps === 'string')
+      {
+        data.steps = JSON.parse(data.steps);
+      }
+
       return data;
     },
 
