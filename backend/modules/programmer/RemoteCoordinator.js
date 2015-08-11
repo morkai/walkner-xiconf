@@ -67,7 +67,8 @@ RemoteCoordinator.prototype.connectToProdLine = function(forceReconnect)
     mowVersion: this.settings.get('multiOneWorkflowVersion'),
     coreScannerDriver: this.settings.get('coreScannerDriver'),
     httpPort: this.programmer.config.httpPort,
-    selectedOrderNo: this.selectedOrderNo
+    selectedOrderNo: this.selectedOrderNo,
+    inputMode: this.programmer.currentState.inputMode
   };
 
   this.sio.emit('xiconf.connect', data);
@@ -352,14 +353,22 @@ RemoteCoordinator.prototype.onSettingsChanged = function(changes)
  */
 RemoteCoordinator.prototype.onProgrammerStateChanged = function(changes)
 {
+  var stateChanges = {};
+
   if (changes.selectedOrderNo !== undefined && changes.selectedOrderNo !== this.selectedOrderNo)
   {
     this.selectedOrderNo = changes.selectedOrderNo;
+    stateChanges.order = changes.selectedOrderNo;
+  }
 
-    if (this.isConnected())
-    {
-      this.sio.emit('xiconf.selectedOrderNoChanged', this.selectedOrderNo);
-    }
+  if (changes.inputMode !== undefined)
+  {
+    stateChanges.inputMode = changes.inputMode;
+  }
+
+  if (this.isConnected() && !_.isEmpty(stateChanges))
+  {
+    this.sio.emit('xiconf.stateChanged', stateChanges);
   }
 };
 
