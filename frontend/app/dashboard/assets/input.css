@@ -24,11 +24,13 @@
   position: relative;
   z-index: 2;
 }
+.dashboard-input-nc12.is-frameOnly > .form-control,
 .dashboard-input-nc12.is-ledOnly > .form-control,
 .dashboard-input-nc12.is-noProgramming > .form-control {
   outline: 4px solid #5cb85c;
   background-color: rgba(92, 184, 92, .25);
 }
+.dashboard-input-frameOnly,
 .dashboard-input-ledOnly,
 .dashboard-input-noProgramming,
 .dashboard-input-multiNc12 {
@@ -42,6 +44,7 @@
   line-height: 35px;
   z-index: 1;
 }
+.is-frameOnly > .dashboard-input-frameOnly,
 .is-ledOnly > .dashboard-input-ledOnly,
 .is-noProgramming > .dashboard-input-noProgramming,
 .is-multi > .dashboard-input-multiNc12 {

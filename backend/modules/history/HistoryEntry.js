@@ -108,22 +108,22 @@ HistoryEntry.prototype.isLedOnly = function()
     return false;
   }
 
-  var programs = 0;
+  var other = 0;
   var leds = 0;
 
   _.forEach(selectedOrderData.items, function(item)
   {
-    if (item.kind === 'program')
-    {
-      ++programs;
-    }
-    else if (item.kind === 'led')
+    if (item.kind === 'led')
     {
       ++leds;
     }
+    else
+    {
+      ++other;
+    }
   });
 
-  return programs === 0 && leds > 0;
+  return other === 0 && leds > 0;
 };
 
 HistoryEntry.prototype.hasProgramStep = function(type)
@@ -313,7 +313,14 @@ HistoryEntry.prototype.reset = function(orderNo, quantity, nc12)
     });
   }
 
-  if (_.isEmpty(this.nc12) && this.waitingForLeds && !this.program)
+  if (this.settings.get('ftEnabled'))
+  {
+    this.log.push({
+      time: this.startedAt,
+      text: 'FT:STARTED'
+    });
+  }
+  else if (_.isEmpty(this.nc12) && this.waitingForLeds && !this.program)
   {
     this.log.push({
       time: this.startedAt,
@@ -339,6 +346,29 @@ HistoryEntry.prototype.reset = function(orderNo, quantity, nc12)
 
 HistoryEntry.prototype.setUpProgram = function()
 {
+  if (this.settings.get('ftEnabled'))
+  {
+    this.program = {
+      _id: '__FT__',
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+      deleted: 0,
+      type: 't24vdc',
+      name: 'FT',
+      steps: [
+        {
+          type: 'pe',
+          enabled: true,
+          startTime: 0,
+          duration: this.settings.get('ftDuration') / 1000,
+          voltage: this.settings.get('ftSetVoltage'),
+          resistanceMax: this.settings.get('ftMaxResistance')
+        }
+      ],
+      prodLines: ''
+    };
+  }
+
   if (!this.program)
   {
     return;
@@ -355,7 +385,7 @@ HistoryEntry.prototype.setUpProgram = function()
 
   this.metrics = null;
 
-  if (this.program.type === 't24vdc')
+  if (this.program.type === 't24vdc' && !this.settings.get('ftEnabled'))
   {
     this.metrics = {
       uSet: [],
@@ -367,7 +397,7 @@ HistoryEntry.prototype.setUpProgram = function()
 
 HistoryEntry.prototype.setUpLeds = function()
 {
-  if (this.inputMode !== 'remote')
+  if (this.inputMode !== 'remote' || this.settings.get('ftEnabled'))
   {
     return;
   }

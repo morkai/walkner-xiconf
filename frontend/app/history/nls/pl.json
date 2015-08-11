@@ -84,7 +84,7 @@
   "log:DUPLICATE_FEATURE_FILE_2": "W ścieżce zapasowej wykryto {fileCount} {fileCount, plural, one{plik konfiguracyjny drivera} few{pliki konfiguracje driverów} other{plików konfiguracyjnych driverów}} dla danego kodu 12NC.",
   "log:FEATURE_FILE_FOUND": "Znaleziono plik konfiguracyjny drivera: <code>{featureFile}</code>",
   "log:SKIPPING_FEATURE_FILE_2": "Pomijanie wyszukiwania pliku konfiguracyjnego drivera w ścieżce zapasowej...",
-  "log:CANCELLING": "Anulowanie programowania...",
+  "log:CANCELLING": "Anulowanie...",
   "log:PROGRAMMING_SUCCESS": "Pomyślnie ukończono programowanie 12NC <code>{nc12}</code> w ciągu <code>{duration}</code>.",
   "log:PROGRAMMING_FAILURE": "Zakończono programowanie 12NC <code>{nc12}</code> w ciągu <code>{duration}</code> z powodu błędu: <code>{error}</code>",
   "log:LED_SCANNING_SUCCESS": "Pomyślnie ukończono sprawdzanie płytek LED w ciągu <code>{duration}</code>.",
@@ -283,5 +283,19 @@
   "log:FL:LIGHTING_TIME": "{no}. świetlówka świeciła nieprzerwanie przez <code>{duration}</code> ms.",
 
   "error:FL:FEATURE_DISABLED": "Aktualna licencja nie ma opcji sprawdzania świetlówek.",
-  "error:FL:LIGHTING_TIME_TOO_SHORT": "FL: Zbyt krótki czas świecenia."
+  "error:FL:LIGHTING_TIME_TOO_SHORT": "FL: Zbyt krótki czas świecenia.",
+
+  "log:FT:STARTED": "Rozpoczynanie testowania ramki...",
+  "log:FT:SUCCESS": "Pomyślnie ukończono testowanie ramki w ciągu <code>{duration}</code>.",
+  "log:FT:FAILURE": "Zakończono testowanie ramki w ciągu <code>{duration}</code> z powodu błędu: <code>{error}</code>",
+  "log:FT:CONNECTING": "Nawiązywanie połączenia z testerem...",
+  "log:FT:RESETTING": "Resetowanie testera...",
+  "log:FT:PROGRAMMING": "Programowanie testera...",
+  "log:FT:CHECKING": "Sprawdzanie obwodu ochronnego...",
+
+  "error:FT:INVALID_SERIAL_PROXY_ADDRESS": "FT: Nieprawidłowy adres serwera ser2net.",
+  "error:FT:CONNECTING_FAILURE": "FT: Błąd połączenia z testerem.",
+  "error:FT:SDP_TIMEOUT": "FT: Upłynięcie limitu czasu oczekiwania na odpowiedź testera.",
+  "error:FT:SDP_INVALID_RESPONSE": "FT: Otrzymano nieprawidłową odpowiedź od testera.",
+  "error:FT:PE_FAILURE": "FT: Nieprawidłowy obwód ochronny."
 }

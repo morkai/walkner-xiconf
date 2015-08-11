@@ -167,7 +167,8 @@ define([
         licenseError: !settings.isValidLicense(),
         workMode: currentState.get('workMode'),
         inputMode: currentState.get('inputMode'),
-        workModeChangeEnabled: !!settings.get('testingEnabled') || !!settings.get('glp2Enabled'),
+        workModeChangeEnabled: !settings.get('ftEnabled')
+          && (settings.get('testingEnabled') || settings.get('glp2Enabled')),
         waitingForLeds: currentState.get('waitingForLeds'),
         waitingForContinue: currentState.get('waitingForContinue'),
         progressBarClassName: this.getProgressBarClassName(),
@@ -449,7 +450,7 @@ define([
     {
       this.$el.toggleClass(
         'is-workModeChangeEnabled',
-        !!settings.get('testingEnabled') || !!settings.get('glp2Enabled')
+        !settings.get('ftEnabled') && (settings.get('testingEnabled') || settings.get('glp2Enabled'))
       );
     },
 
@@ -475,7 +476,7 @@ define([
 
     onWindowWheel: function(e)
     {
-      return this.$els.window[0].innerWidth <= 1024 || this.$(e.target).closest('.is-scrollable').length === 1;
+      return window.innerWidth <= 1024 || this.$(e.target).closest('.is-scrollable').length === 1;
     },
 
     onKeyDown: function(e)

@@ -49,7 +49,7 @@ define([
 
       if (user.isLocal())
       {
-        topics['programmer.glp2.startRequested'] = this.clickElement.bind(this, 'start');
+        topics['programmer.startRequested'] = this.clickElement.bind(this, 'start');
       }
 
       return topics;
@@ -622,6 +622,7 @@ define([
         var waitingForContinue = model.get('waitingForContinue');
         var t24vdcEnabled = !!settings.get('testingEnabled');
         var glp2Enabled = !!settings.get('glp2Enabled');
+        var ftEnabled = !!settings.get('ftEnabled');
 
         $els.orderNo
           .prop('disabled', orderFieldDisabled || countdown)
@@ -629,7 +630,7 @@ define([
         $els.quantity
           .prop('disabled', orderFieldDisabled || countdown)
           .prop('required', ordersRequired);
-        $els.nc12.prop('disabled', isInProgress || isRemoteInput || hasOrder || countdown);
+        $els.nc12.prop('disabled', isInProgress || isRemoteInput || hasOrder || countdown || ftEnabled);
         $els.start.prop('disabled', countdown);
         $els.toggleWorkMode
           .prop('disabled', isInProgress || countdown || glp2Enabled)
@@ -730,6 +731,7 @@ define([
       var programItems = [];
       var ledItems = [];
       var gprsItems = [];
+      var ftItem = null;
 
       _.forEach(orderData.items, function(item)
       {
@@ -745,11 +747,16 @@ define([
         {
           gprsItems.push(item);
         }
+        else if (item.kind === 'ft')
+        {
+          ftItem = item;
+        }
       });
 
       var selectedProgramItem = _.findWhere(programItems, {nc12: this.model.get('selectedNc12')});
       var isLedsEnabled = !!settings.get('ledsEnabled');
-      var isNoProgramming = this.model.isNoProgramming();
+      var isFtEnabled = !!settings.get('ftEnabled');
+      var isNoProgramming = !isFtEnabled && this.model.isNoProgramming();
       var isMultiNc12 = programItems.length > 1;
       var isLedOnly = user.isLocal()
         && isRemoteInput
@@ -757,6 +764,7 @@ define([
         && !programItems.length
         && ledItems.length > 0
         && isLedsEnabled;
+      var isFrameOnly = user.isLocal() && isFtEnabled;
       var quantityTodo = orderData.quantityTodo;
       var quantityDone = orderData.quantityDone;
       var nc12 = '';
@@ -772,7 +780,12 @@ define([
         nc12 = selectedProgramItem ? selectedProgramItem.nc12 : '';
       }
 
-      if (isNoProgramming)
+      if (isFrameOnly)
+      {
+        nc12 = '';
+        nc12Title = t('dashboard', 'input:nc12:frameOnly');
+      }
+      else if (isNoProgramming)
       {
         nc12 = '';
         nc12Title = t('dashboard', 'input:nc12:noProgramming');
@@ -788,14 +801,18 @@ define([
 
       $els.nc12
         .val(nc12)
-        .attr('title', nc12Title)
         .parent('div')
         .toggleClass('is-ledOnly', isLedOnly)
+        .toggleClass('is-frameOnly', isFrameOnly)
         .toggleClass('is-noProgramming', isNoProgramming)
         .toggleClass('is-multi', user.isLocal() && !this.model.isInProgress() && isMultiNc12)
         .toggleClass('is-picked', nc12 !== '');
 
-      if (isNoProgramming && ledItems.length)
+      if (isFtEnabled && ftItem)
+      {
+        quantityDone = ftItem.quantityDone;
+      }
+      else if (isNoProgramming && ledItems.length)
       {
         quantityDone = 0;
 
@@ -844,6 +861,11 @@ define([
 
     isNc12Required: function()
     {
+      if (settings.get('ftEnabled'))
+      {
+        return false;
+      }
+
       if (this.model.isNoProgramming())
       {
         return false;

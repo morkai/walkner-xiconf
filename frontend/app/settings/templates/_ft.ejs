@@ -1,0 +1,47 @@
+<div id="<%- idPrefix %>-ft" class="panel-body settings-hasRowLast">
+  <div class="form-group">
+    <label for="<%- idPrefix %>-ftEnabled" class="control-label"><%- t('settings', 'setting:ftEnabled') %></label>
+    <div>
+      <label class="radio-inline">
+        <input id="<%- idPrefix %>-ftEnabled" name="ftEnabled" type="radio" value="1" required> <%- t('settings', 'setting:ftEnabled:on') %>
+      </label>
+      <label class="radio-inline">
+        <input name="ftEnabled" type="radio" value="0" required> <%- t('settings', 'setting:ftEnabled:off') %>
+      </label>
+    </div>
+  </div>
+  <div class="row">
+    <div class="form-group col-md-3">
+      <label for="<%- idPrefix %>-ftSerialProxyAddress" class="control-label"><%- t('settings', 'setting:ftSerialProxyAddress') %></label>
+      <input id="<%- idPrefix %>-ftSerialProxyAddress" class="form-control" name="ftSerialProxyAddress" type="text" placeholder="0.0.0.0">
+    </div>
+  </div>
+  <div class="row">
+    <div class="form-group col-md-3">
+      <label for="<%- idPrefix %>-ftStartResource1" class="control-label"><%- t('settings', 'setting:ftStartResource1') %></label>
+      <input id="<%- idPrefix %>-ftStartResource1" class="form-control" name="ftStartResource1" type="url" placeholder="coap://">
+    </div>
+    <div class="form-group col-md-3">
+      <label for="<%- idPrefix %>-ftStartResource2" class="control-label"><%- t('settings', 'setting:ftStartResource2') %></label>
+      <input id="<%- idPrefix %>-ftStartResource2" class="form-control" name="ftStartResource2" type="url" placeholder="coap://">
+    </div>
+  </div>
+  <div class="row">
+    <div class="form-group col-md-3">
+      <label for="<%- idPrefix %>-ftDuration" class="control-label"><%- t('settings', 'setting:ftDuration') %></label>
+      <input id="<%- idPrefix %>-ftDuration" class="form-control" name="ftDuration" type="number" required min="1000" max="60000" step="1">
+    </div>
+    <div class="form-group col-md-3">
+      <label for="<%- idPrefix %>-ftSetCurrent" class="control-label"><%- t('settings', 'setting:ftSetCurrent') %></label>
+      <input id="<%- idPrefix %>-ftSetCurrent" class="form-control" name="ftSetCurrent" type="number" required min="0.01" max="10" step="0.01">
+    </div>
+    <div class="form-group col-md-3">
+      <label for="<%- idPrefix %>-ftSetVoltage" class="control-label"><%- t('settings', 'setting:ftSetVoltage') %></label>
+      <input id="<%- idPrefix %>-ftSetVoltage" class="form-control" name="ftSetVoltage" type="number" required min="0.1" max="99.9" step="0.1">
+    </div>
+    <div class="form-group col-md-3">
+      <label for="<%- idPrefix %>-ftMaxResistance" class="control-label"><%- t('settings', 'setting:ftMaxResistance') %></label>
+      <input id="<%- idPrefix %>-ftMaxResistance" class="form-control" name="ftMaxResistance" type="number" required min="0.001" step="0.001">
+    </div>
+  </div>
+</div>

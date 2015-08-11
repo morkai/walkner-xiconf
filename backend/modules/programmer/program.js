@@ -12,6 +12,7 @@ var findFeatureFile = require('./findFeatureFile');
 var readFeatureFile = require('./readFeatureFile');
 var programAndTestSdp = require('./programAndTestSdp');
 var programAndTestGlp2 = require('./programAndTestGlp2');
+var programAndTestFrame = require('./programAndTestFrame');
 var programSolDriver = require('./programSolDriver');
 var programMowDriver = require('./programMowDriver');
 var LptIo = require('./LptIo');
@@ -1084,6 +1085,11 @@ module.exports = function program(app, programmerModule, data, done)
 
     programmerModule.updateOverallProgress(programmerModule.OVERALL_SETUP_PROGRESS);
 
+    if (settings.get('ftEnabled'))
+    {
+      return programAndTestFrame(app, programmerModule, this.next());
+    }
+
     if (currentState.program)
     {
       if (currentState.program.type === 't24vdc')
@@ -1280,7 +1286,15 @@ module.exports = function program(app, programmerModule, data, done)
         changes.exception = err.message;
       }
 
-      if (currentState.program)
+      if (settings.get('ftEnabled'))
+      {
+        programmerModule.log('FT:FAILURE', {
+          time: changes.finishedAt,
+          duration: changes.duration,
+          errorCode: changes.errorCode
+        });
+      }
+      else if (currentState.program)
       {
         programmerModule.log('TESTING_FAILURE', {
           time: changes.finishedAt,
@@ -1315,7 +1329,14 @@ module.exports = function program(app, programmerModule, data, done)
     {
       changes.counter = currentState.counter + 1;
 
-      if (currentState.program)
+      if (settings.get('ftEnabled'))
+      {
+        programmerModule.log('FT:SUCCESS', {
+          time: changes.finishedAt,
+          duration: changes.duration
+        });
+      }
+      else if (currentState.program)
       {
         programmerModule.log('TESTING_SUCCESS', {
           time: changes.finishedAt,

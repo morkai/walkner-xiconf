@@ -9,6 +9,7 @@ var _ = require('lodash');
 var setUpCommands = require('./commands');
 var setUpBlockage = require('./blockage');
 var setUpBarcodeScanner = require('./barcodeScanner');
+var setUpFtStartMonitor = require('./ftStartMonitor');
 var program = require('./program');
 var printServiceTag = require('./printServiceTag');
 var RemoteCoordinator = require('./RemoteCoordinator');
@@ -382,6 +383,7 @@ exports.start = function startProgrammerModule(app, module)
 
   setUpBlockage(app, module);
   setUpBarcodeScanner(app, module);
+  setUpFtStartMonitor(app, module);
 
   app.onModuleReady(
     [
@@ -399,7 +401,9 @@ exports.start = function startProgrammerModule(app, module)
 
   app.broker.subscribe('settings.changed', function(changes)
   {
-    if (changes.glp2Enabled !== undefined || changes.testingEnabled !== undefined)
+    if (changes.glp2Enabled !== undefined
+      || changes.testingEnabled !== undefined
+      || changes.ftEnabled !== undefined)
     {
       updateWorkMode();
     }
@@ -512,9 +516,14 @@ exports.start = function startProgrammerModule(app, module)
   {
     var t24vdcEnabled = !!settings.get('testingEnabled');
     var glp2Enabled = !!settings.get('glp2Enabled');
+    var ftEnabled = !!settings.get('ftEnabled');
     var newWorkMode;
 
-    if (glp2Enabled)
+    if (ftEnabled)
+    {
+      newWorkMode = 'programming';
+    }
+    else if (glp2Enabled)
     {
       newWorkMode = 'testing';
     }

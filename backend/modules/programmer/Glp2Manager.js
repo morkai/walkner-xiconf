@@ -401,7 +401,7 @@ Glp2Manager.prototype.requestStart = function()
 {
   if (this.readyState === Glp2Manager.ReadyState.READY && !this.currentState.isInProgress())
   {
-    this.broker.publish('programmer.glp2.startRequested');
+    this.broker.publish('programmer.startRequested');
   }
 };
 

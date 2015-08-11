@@ -149,6 +149,15 @@ exports.settings = {
     gprsDaliPort: 0,
     flResource1: '',
     flResource2: '',
+    ftEnabled: false,
+    ftDuration: 2000,
+    ftMaxVoltage: 24,
+    ftMaxResistance: 1,
+    ftSetCurrent: 10,
+    ftSetVoltage: 10,
+    ftStartResource1: '',
+    ftStartResource2: '',
+    ftSerialProxyAddress: '',
     hotkeys: {
       focusOrderNo: 'Q',
       focusQuantity: 'W',
@@ -180,7 +189,7 @@ exports.pubsub = {
     'settings.changed',
     'programmer.finished',
     'programmer.barcodeScanned',
-    'programmer.glp2.startRequested',
+    'programmer.startRequested',
     'history.orderUpdated',
     'programs.*'
   ]

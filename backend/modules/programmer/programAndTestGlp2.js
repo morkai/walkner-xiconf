@@ -1727,6 +1727,11 @@ module.exports = function programAndTestGlp2(app, programmerModule, programmerTy
             return;
           }
 
+          if (!Array.isArray(states))
+          {
+            states = [];
+          }
+
           var now = Date.now();
 
           for (var i = 0; i < FL_LAMP_COUNT; ++i)

@@ -257,6 +257,9 @@ exports.start = function startSettingsModule(app, module, done)
 
   function validateSettings(rawSettings)
   {
+    var IPV4_ADDRESS_RE = /^([0-9]{1,3}\.){3}[0-9]{1,3}$/;
+    var COAP_RESOURCE_RE = /^coap:\/\//;
+
     var newSettings = {};
 
     // General settings
@@ -336,7 +339,7 @@ exports.start = function startSettingsModule(app, module, done)
     validateNumericSetting(rawSettings, newSettings, 'testingComTimeout', 100, 5000);
     validateNumericSetting(rawSettings, newSettings, 'testingCurrent', 0.01, 10);
     validateEnum(rawSettings, newSettings, 'testingModbusEnabled', Number, [0, 1]);
-    validateStringSetting(rawSettings, newSettings, 'testingModbusHost', 1, /^([0-9]{1,3}\.){3}[0-9]{1,3}$/);
+    validateStringSetting(rawSettings, newSettings, 'testingModbusHost', 1, IPV4_ADDRESS_RE);
     validateNumericSetting(rawSettings, newSettings, 'testingModbusPort', 1, 65535);
     validateNumericSetting(rawSettings, newSettings, 'testingMaxVoltage', 0.1, 99.9);
     // Tester GLP2-I
@@ -347,8 +350,18 @@ exports.start = function startSettingsModule(app, module, done)
     validateNumericSetting(rawSettings, newSettings, 'glp2ProgrammingDelay', 0, 60000);
     validateNumericSetting(rawSettings, newSettings, 'glp2CancelDelay', 1, 10000);
     // Fluorescent Lamps
-    validateStringSetting(rawSettings, newSettings, 'flResource1', 0, /^coap/);
-    validateStringSetting(rawSettings, newSettings, 'flResource2', 0, /^coap/);
+    validateStringSetting(rawSettings, newSettings, 'flResource1', 0, COAP_RESOURCE_RE);
+    validateStringSetting(rawSettings, newSettings, 'flResource2', 0, COAP_RESOURCE_RE);
+    // Frame Tester
+    validateEnum(rawSettings, newSettings, 'ftEnabled', Number, [0, 1]);
+    validateNumericSetting(rawSettings, newSettings, 'ftDuration', 1000, 60000);
+    validateNumericSetting(rawSettings, newSettings, 'ftSetCurrent', 0.01, 10);
+    validateNumericSetting(rawSettings, newSettings, 'ftSetVoltage', 0.1, 99.9);
+    validateNumericSetting(rawSettings, newSettings, 'ftMaxVoltage', 0.1, 99.9);
+    validateNumericSetting(rawSettings, newSettings, 'ftMaxResistance', 0.001);
+    validateStringSetting(rawSettings, newSettings, 'ftStartResource1', 0, COAP_RESOURCE_RE);
+    validateStringSetting(rawSettings, newSettings, 'ftStartResource2', 0, COAP_RESOURCE_RE);
+    validateStringSetting(rawSettings, newSettings, 'ftSerialProxyAddress', 0, IPV4_ADDRESS_RE);
     // Hotkeys
     validateHotkeys(rawSettings, newSettings);
     // License
@@ -402,7 +415,7 @@ exports.start = function startSettingsModule(app, module, done)
       max = Number.MAX_VALUE;
     }
 
-    var value = parseInt(rawSettings[setting], 10);
+    var value = parseFloat(rawSettings[setting]);
 
     if (!isNaN(value) && value >= min && value <= max && value !== settings[setting])
     {
