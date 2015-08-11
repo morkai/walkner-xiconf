@@ -251,6 +251,11 @@ define([
         return;
       }
 
+      if (this.model.isTestingMode() && !this.model.hasProgram())
+      {
+        return this.showMessage('warning', 'start:requiredProgram');
+      }
+
       if (!this.model.isRemoteInput() && this.model.isOrderFinished())
       {
         return this.showOrderFinishedDialog();

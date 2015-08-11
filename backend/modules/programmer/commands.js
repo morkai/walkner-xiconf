@@ -144,6 +144,11 @@ module.exports = function setUpProgrammerCommands(app, programmerModule)
 
     var currentState = programmerModule.currentState;
 
+    if (currentState.workMode === 'testing' && !currentState.program)
+    {
+      return reply(new Error('NO_PROGRAM'));
+    }
+
     if (!/^[0-9]{12}$/.test(data.nc12))
     {
       var isLedOnly = currentState.isLedOnly();

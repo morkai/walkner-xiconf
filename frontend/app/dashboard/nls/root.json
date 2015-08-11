@@ -12,6 +12,7 @@
     "msg:reset:success": "The current state was reset successfully :)",
     "msg:start:failure": "Failed to start the {workMode, select, programming{programming} testing{testing} other{process}} :(",
     "msg:start:NO_REMOTE_CONNECTION": "No connection to the remote server :(",
+    "msg:start:requiredProgram": "A test program is required!",
     "msg:start:requiredOrderNo": "A valid order no is required!",
     "msg:start:requiredQuantity": "A valid quantity is required!",
     "msg:start:requiredNc12": "A valid 12NC is required!",

@@ -11,6 +11,7 @@
   "msg:reset:success": "Aktualny stan został zresetowany :)",
   "msg:start:failure": "Nie udało się rozpocząć {workMode, select, programming{programowania} testing{testowania} other{procesu}} :(",
   "msg:start:NO_REMOTE_CONNECTION": "Brak połączenia z zewnętrznym serwerem :(",
+  "msg:start:requiredProgram": "Należy wybrać program!",
   "msg:start:requiredOrderNo": "Wymagany jest poprawny nr zlecenia!",
   "msg:start:requiredQuantity": "Wymagana jest poprawna ilość!",
   "msg:start:requiredNc12": "Wymagany jest poprawny kod 12NC!",
