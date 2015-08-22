@@ -26,7 +26,7 @@ module.exports = function setUpProgrammerCommands(app, programmerModule)
 
   sio.on('connection', function(socket)
   {
-    var isLocal = socket.conn.remoteAddress === '127.0.0.1';
+    var isLocal = socket.conn.remoteAddress === '127.0.0.1' || _.includes(socket.handshake.headers.cookie, 'LOCAL=1');
 
     socket.emit('programmer.stateChanged', programmerModule.currentState.toJSON());
 

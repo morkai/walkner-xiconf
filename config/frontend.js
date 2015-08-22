@@ -9,6 +9,8 @@ var BIN_PATH = __dirname + '/../bin';
 
 exports.id = 'walkner-xiconf';
 
+exports.localSecretKey = null;
+
 exports.modules = [
   'sqlite3',
   'settings',

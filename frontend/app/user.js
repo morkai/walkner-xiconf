@@ -23,12 +23,13 @@ function(
   'use strict';
 
   var computerName = null;
-  var localhost = window.location.hostname === 'localhost'
-    || window.location.hostname === '127.0.0.1';
+  var localhost = location.hostname === 'localhost'
+    || location.hostname === '127.0.0.1'
+    || window.LOCAL === true;
 
-  if (window.location.search.indexOf('COMPUTERNAME=') !== -1)
+  if (location.search.indexOf('COMPUTERNAME=') !== -1)
   {
-    window.location.search.substr(1).split('&').forEach(function(keyValue)
+    location.search.substr(1).split('&').forEach(function(keyValue)
     {
       keyValue = keyValue.split('=');
 

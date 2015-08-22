@@ -32,6 +32,7 @@ if (process.env.NODE_ENV === 'production')
   }
 }
 
+var _ = require('lodash');
 var main = require('h5.main');
 var config = require(process.argv[2]);
 
@@ -70,14 +71,13 @@ var modules = (config.modules || []).map(function(module)
 });
 
 var app = {
-  options: {
-    id: config.id,
+  options: _.merge({}, config, {
     version: require('../package.json').version,
     startTime: startTime,
     env: process.env.NODE_ENV,
     rootPath: __dirname,
     moduleStartTimeout: process.env.NODE_ENV === 'production' ? 10000 : 3000
-  },
+  }),
   exit: function(code, err)
   {
     app.error(err.message);

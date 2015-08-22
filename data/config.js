@@ -11,6 +11,10 @@ var _ = require(path.join(BIN_PATH, 'walkner-xiconf/node_modules/lodash'));
 
 var config = module.exports = require(path.join(BIN_PATH, 'walkner-xiconf/config/frontend.js'));
 
+_.assign(config, {
+  localSecretKey: null
+});
+
 _.assign(config.httpServer, {
   port: /^[0-9]+$/.test(process.env.XICONF_PORT) ? +process.env.XICONF_PORT : 1337
 });

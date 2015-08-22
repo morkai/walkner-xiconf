@@ -4,6 +4,8 @@
 
 'use strict';
 
+var _ = require('lodash');
+
 module.exports = function startCoreRoutes(app, express)
 {
   var requirejsPaths;
@@ -19,9 +21,20 @@ module.exports = function startCoreRoutes(app, express)
 
   function showIndex(req, res)
   {
+    var local = req.ip === '127.0.0.1'
+      || (!_.isEmpty(app.options.localSecretKey) && req.query.LOCAL === app.options.localSecretKey)
+      || (req.query.LOCAL === undefined && _.includes(req.headers.cookie, 'LOCAL=1'));
+
+    res.cookie('LOCAL', local ? '1' : '0', {
+      httpOnly: true,
+      signed: false,
+      expires: 0
+    });
+
     res.render('index', {
       appCache: false,
       appData: {
+        LOCAL: local,
         APP_VERSION: JSON.stringify(app.options.version),
         TIME: JSON.stringify(Date.now()),
         SETTINGS: JSON.stringify(app.settings.export(null, true)),
