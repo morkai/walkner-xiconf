@@ -136,7 +136,7 @@ define([
     {
       barcodeScanner.stop();
 
-      this.$els.body.css('overflow', '');
+      this.$els.body.css('overflow', '').removeClass('is-dashboard');
       this.$els.window.off('.dashboard');
 
       if (this.$els.msg)
@@ -190,6 +190,7 @@ define([
       this.$els.continue = this.$('.dashboard-continue');
 
       this.$('.dashboard-leftColumn').append('<kbd class="is-inside" data-hotkey="focusLog">?</kbd>');
+      this.$els.body.addClass('is-dashboard');
 
       this.toggleConnectionIndicator();
       this.animateLicenseError();

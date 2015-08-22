@@ -10,6 +10,11 @@
 @import url(./leds.css);
 @import url(./continue.css);
 
+.is-dashboard > .message {
+  top: 17px;
+  font-size: 32px;
+}
+
 @media (max-width: 1024px) {
   body {
     overflow-x: hidden!important;
