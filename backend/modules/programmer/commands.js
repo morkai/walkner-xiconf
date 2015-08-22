@@ -10,6 +10,7 @@ module.exports = function setUpProgrammerCommands(app, programmerModule)
 {
   var settings = app[programmerModule.config.settingsId];
   var sio = app[programmerModule.config.sioId];
+  var localSocketCounter = 0;
 
   [
     'programmer.stateChanged',
@@ -35,6 +36,10 @@ module.exports = function setUpProgrammerCommands(app, programmerModule)
 
     if (isLocal)
     {
+      ++localSocketCounter;
+
+      socket.on('disconnect', function() { --localSocketCounter; });
+
       socket.on('programmer.setWorkMode', setWorkMode);
       socket.on('programmer.setProgram', setProgram);
       socket.on('programmer.selectOrderNo', selectOrderNo);
@@ -50,6 +55,11 @@ module.exports = function setUpProgrammerCommands(app, programmerModule)
       socket.on('programmer.reconnectToProdLine', reconnectToProdLine);
     }
   });
+
+  function isSingleLocalSocket()
+  {
+    return localSocketCounter === 1;
+  }
 
   function getCurrentState(reply)
   {
@@ -78,44 +88,78 @@ module.exports = function setUpProgrammerCommands(app, programmerModule)
       return reply(new Error('INVALID_PASSWORD'));
     }
 
+    if (isLocal && !isSingleLocalSocket())
+    {
+      return reply(new Error('MULTIPLE_LOCAL_SOCKETS'));
+    }
+
     programmerModule.setInputMode(inputMode, reply);
   }
 
   function setWorkMode(workMode, reply)
   {
-    if (_.isFunction(reply))
+    if (!_.isFunction(reply))
     {
-      programmerModule.setWorkMode(workMode, reply);
+      return;
     }
+
+    if (!isSingleLocalSocket())
+    {
+      return reply(new Error('MULTIPLE_LOCAL_SOCKETS'));
+    }
+
+    programmerModule.setWorkMode(workMode, reply);
   }
 
   function setProgram(programId, reply)
   {
-    if (_.isFunction(reply))
+    if (!_.isFunction(reply))
     {
-      programmerModule.setProgram(programId, reply);
+      return;
     }
+
+    if (!isSingleLocalSocket())
+    {
+      return reply(new Error('MULTIPLE_LOCAL_SOCKETS'));
+    }
+
+    programmerModule.setProgram(programId, reply);
   }
 
   function selectOrderNo(orderNo, reply)
   {
-    if (_.isFunction(reply))
+    if (!_.isFunction(reply))
     {
-      programmerModule.selectOrderNo(orderNo, reply);
+      return;
     }
+
+    if (!isSingleLocalSocket())
+    {
+      return reply(new Error('MULTIPLE_LOCAL_SOCKETS'));
+    }
+
+    programmerModule.selectOrderNo(orderNo, reply);
   }
 
   function selectNc12(nc12, password, reply)
   {
-    if (_.isFunction(reply))
+    if (!_.isFunction(reply))
     {
-      programmerModule.selectNc12(nc12, password, reply);
+      return;
     }
+
+    if (!isSingleLocalSocket())
+    {
+      return reply(new Error('MULTIPLE_LOCAL_SOCKETS'));
+    }
+
+    programmerModule.selectNc12(nc12, password, reply);
   }
 
   function checkSerialNumber(orderNo, raw, nc12, serialNumber, scannerId)
   {
-    if (_.isString(orderNo) && /^[0-9]{1,9}$/.test(orderNo)
+    if (isSingleLocalSocket()
+      && _.isString(orderNo) && /^[0-9]{1,9}$/.test(orderNo)
       && _.isString(raw) && !_.isEmpty(raw)
       && _.isString(nc12) && /^[0-9]{12}$/.test(nc12)
       && _.isString(serialNumber) && /^[0-9A-Z]+$/i.test(serialNumber))
@@ -135,6 +179,11 @@ module.exports = function setUpProgrammerCommands(app, programmerModule)
     if (!_.isFunction(reply))
     {
       return;
+    }
+
+    if (!isSingleLocalSocket())
+    {
+      return reply(new Error('MULTIPLE_LOCAL_SOCKETS'));
     }
 
     if (!_.isObject(data))
@@ -198,6 +247,11 @@ module.exports = function setUpProgrammerCommands(app, programmerModule)
       return;
     }
 
+    if (!isSingleLocalSocket())
+    {
+      return reply(new Error('MULTIPLE_LOCAL_SOCKETS'));
+    }
+
     reply();
 
     programmerModule.log('CANCELLING');
@@ -217,6 +271,11 @@ module.exports = function setUpProgrammerCommands(app, programmerModule)
       return;
     }
 
+    if (!isSingleLocalSocket())
+    {
+      return reply(new Error('MULTIPLE_LOCAL_SOCKETS'));
+    }
+
     reply();
 
     programmerModule.changeState({waitingForContinue: null});
@@ -224,26 +283,47 @@ module.exports = function setUpProgrammerCommands(app, programmerModule)
 
   function reset(reply)
   {
-    if (_.isFunction(reply))
+    if (!_.isFunction(reply))
     {
-      programmerModule.reset(reply);
+      return;
     }
+
+    if (!isSingleLocalSocket())
+    {
+      return reply(new Error('MULTIPLE_LOCAL_SOCKETS'));
+    }
+
+    programmerModule.reset(reply);
   }
 
   function resetLeds(reply)
   {
-    if (_.isFunction(reply))
+    if (!_.isFunction(reply))
     {
-      programmerModule.resetLeds(reply);
+      return;
     }
+
+    if (!isSingleLocalSocket())
+    {
+      return reply(new Error('MULTIPLE_LOCAL_SOCKETS'));
+    }
+
+    programmerModule.resetLeds(reply);
   }
 
   function reload(reply)
   {
-    if (_.isFunction(reply))
+    if (!_.isFunction(reply))
     {
-      programmerModule.reload(reply);
+      return;
     }
+
+    if (!isSingleLocalSocket())
+    {
+      return reply(new Error('MULTIPLE_LOCAL_SOCKETS'));
+    }
+
+    programmerModule.reload(reply);
   }
 
   function printServiceTags(orderNo, items, reply)
@@ -251,6 +331,11 @@ module.exports = function setUpProgrammerCommands(app, programmerModule)
     if (!_.isFunction(reply))
     {
       return;
+    }
+
+    if (!isSingleLocalSocket())
+    {
+      return reply(new Error('MULTIPLE_LOCAL_SOCKETS'));
     }
 
     if (!_.isString(orderNo) || !/^[0-9]+$/.test(orderNo) || !_.isString(items) || _.isEmpty(items))
@@ -357,12 +442,19 @@ module.exports = function setUpProgrammerCommands(app, programmerModule)
 
   function reconnectToProdLine(reply)
   {
-    if (_.isFunction(reply))
+    if (!_.isFunction(reply))
     {
-      programmerModule.remoteCoordinator.connectToProdLine(true);
-
-      setTimeout(reply, 5000);
+      return;
     }
+
+    if (!isSingleLocalSocket())
+    {
+      return reply(new Error('MULTIPLE_LOCAL_SOCKETS'));
+    }
+
+    programmerModule.remoteCoordinator.connectToProdLine(true);
+
+    setTimeout(reply, 5000);
   }
 
   function validateOrder(data)
