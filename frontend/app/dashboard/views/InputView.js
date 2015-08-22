@@ -773,7 +773,6 @@ define([
       var quantityTodo = orderData.quantityTodo;
       var quantityDone = orderData.quantityDone;
       var nc12 = '';
-      var nc12Title = '';
 
       if (!isNoProgramming && programItems.length)
       {
@@ -785,23 +784,9 @@ define([
         nc12 = selectedProgramItem ? selectedProgramItem.nc12 : '';
       }
 
-      if (isFrameOnly)
+      if (isFrameOnly || isNoProgramming)
       {
         nc12 = '';
-        nc12Title = t('dashboard', 'input:nc12:frameOnly');
-      }
-      else if (isNoProgramming)
-      {
-        nc12 = '';
-        nc12Title = t('dashboard', 'input:nc12:noProgramming');
-      }
-      else if (isLedOnly)
-      {
-        nc12Title = t('dashboard', 'input:nc12:ledOnly');
-      }
-      else if (isMultiNc12)
-      {
-        nc12Title = t('dashboard', 'input:nc12:multi');
       }
 
       $els.nc12
@@ -809,7 +794,7 @@ define([
         .parent('div')
         .toggleClass('is-ledOnly', isLedOnly)
         .toggleClass('is-frameOnly', isFrameOnly)
-        .toggleClass('is-noProgramming', isNoProgramming)
+        .toggleClass('is-noProgramming', isNoProgramming && !isLedOnly)
         .toggleClass('is-multi', user.isLocal() && !this.model.isInProgress() && isMultiNc12)
         .toggleClass('is-picked', nc12 !== '');
 

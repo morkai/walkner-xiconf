@@ -4,6 +4,7 @@
 
 'use strict';
 
+var _ = require('lodash');
 var setUpDb = require('./db');
 var setUpRoutes = require('./routes');
 var setUpRemoteExport = require('./remoteExport');
@@ -17,6 +18,9 @@ exports.DEFAULT_CONFIG = {
   lastExportTimeFile: './lastExportAt.txt'
 };
 
+var MAX_RECENT_HISTORY_ENTRIES = 50;
+var MAX_RECENT_SN_HISTORY_ENTRIES = 25;
+
 exports.start = function startProgrammerModule(app, module, done)
 {
   var sqlite3Module = app[module.config.sqlite3Id];
@@ -27,6 +31,8 @@ exports.start = function startProgrammerModule(app, module, done)
   }
 
   module.recent = [];
+
+  module.recentSerialNumbers = [];
 
   module.createEntry = function()
   {
@@ -76,6 +82,31 @@ exports.start = function startProgrammerModule(app, module, done)
     });
   };
 
+  module.checkRecentSerialNumber = function(orderNo, serialNumber, done)
+  {
+    var error = null;
+    var xiconfOrder = null;
+
+    for (var i = 0; i < module.recentSerialNumbers.length; ++i)
+    {
+      var serialNumbers = module.recentSerialNumbers[i];
+      var candidate = serialNumbers[serialNumber];
+
+      if (candidate === orderNo)
+      {
+        error = {message: 'SERIAL_NUMBER_USED'};
+        xiconfOrder = {
+          _id: orderNo,
+          name: null
+        };
+
+        break;
+      }
+    }
+
+    setTimeout(done, 1, error, xiconfOrder);
+  };
+
   app.onModuleReady(module.config.expressId, setUpRoutes.bind(null, app, module));
 
   app.onModuleReady(module.config.settingsId, setUpRemoteExport.bind(null, app, module));
@@ -107,14 +138,15 @@ exports.start = function startProgrammerModule(app, module, done)
 
   function saveRecentEntry(historyEntry)
   {
-    var program = typeof historyEntry.program === 'string'
+    var program = _.isString(historyEntry.program)
       ? JSON.parse(historyEntry.program)
       : (historyEntry.program || null);
+    var orderNo = historyEntry.order ? historyEntry.order.no : (historyEntry.orderNo || null);
 
     module.recent.unshift({
       _id: historyEntry._id,
       _order: historyEntry.order ? historyEntry.order._id : (historyEntry.orderId || null),
-      no: historyEntry.order ? historyEntry.order.no : (historyEntry.orderNo || null),
+      no: orderNo,
       quantity: historyEntry.order ? historyEntry.order.quantity : (historyEntry.orderQuantity || null),
       serviceTag: historyEntry.serviceTag,
       nc12: historyEntry.nc12,
@@ -128,9 +160,39 @@ exports.start = function startProgrammerModule(app, module, done)
       }
     });
 
-    if (module.recent.length > 50)
+    if (module.recent.length > MAX_RECENT_HISTORY_ENTRIES)
     {
       module.recent.pop();
+    }
+
+    if (historyEntry.result === 'success' && !_.isEmpty(historyEntry.leds))
+    {
+      if (_.isString(historyEntry.leds))
+      {
+        historyEntry.leds = JSON.parse(historyEntry.leds);
+      }
+
+      if (module.recentSerialNumbers.length > MAX_RECENT_SN_HISTORY_ENTRIES)
+      {
+        module.recentSerialNumbers.pop();
+      }
+
+      var serialNumbers = {};
+
+      for (var i = 0; i < historyEntry.leds.length; ++i)
+      {
+        var led = historyEntry.leds[i];
+
+        if (led.status === 'checked')
+        {
+          serialNumbers[led.serialNumber] = orderNo;
+        }
+      }
+
+      if (!_.isEmpty(serialNumbers))
+      {
+        module.recentSerialNumbers.unshift(serialNumbers);
+      }
     }
   }
 };

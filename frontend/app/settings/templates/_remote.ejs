@@ -5,6 +5,47 @@
   </div>
   <div class="row">
     <div class="col-md-3 form-group">
+      <label for="<%- idPrefix %>-programming" class="control-label"><%- t('settings', 'setting:programming') %></label>
+      <div>
+        <label class="radio-inline">
+          <input id="<%- idPrefix %>-programming" name="programming" type="radio" value="0" required> <%- t('settings', 'setting:programming:off') %>
+        </label>
+        <label class="radio-inline">
+          <input name="programming" type="radio" value="1" required> <%- t('settings', 'setting:programming:on') %>
+        </label>
+      </div>
+    </div>
+    <div class="col-md-3 form-group">
+      <label for="<%- idPrefix %>-ledsEnabled" class="control-label"><%- t('settings', 'setting:ledsEnabled') %></label>
+      <div>
+        <label class="radio-inline">
+          <input id="<%- idPrefix %>-ledsEnabled" name="ledsEnabled" type="radio" value="0" required> <%- t('settings', 'setting:ledsEnabled:off') %>
+        </label>
+        <label class="radio-inline">
+          <input name="ledsEnabled" type="radio" value="1" required> <%- t('settings', 'setting:ledsEnabled:auto') %>
+        </label>
+        <label class="radio-inline">
+          <input name="ledsEnabled" type="radio" value="2" required> <%- t('settings', 'setting:ledsEnabled:manual') %>
+        </label>
+      </div>
+    </div>
+    <div class="col-md-6 form-group">
+      <label for="<%- idPrefix %>-ledsCheckingMode" class="control-label"><%- t('settings', 'setting:ledsCheckingMode') %></label>
+      <div>
+        <label class="radio-inline">
+          <input id="<%- idPrefix %>-ledsCheckingMode" name="ledsCheckingMode" type="radio" value="pass" required> <%- t('settings', 'setting:ledsCheckingMode:pass') %>
+        </label>
+        <label class="radio-inline">
+          <input name="ledsCheckingMode" type="radio" value="recent" required> <%- t('settings', 'setting:ledsCheckingMode:recent') %>
+        </label>
+        <label class="radio-inline">
+          <input name="ledsCheckingMode" type="radio" value="remote" required> <%- t('settings', 'setting:ledsCheckingMode:remote') %>
+        </label>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-3 form-group">
       <label for="<%- idPrefix %>-serviceTagInLocalMode" class="control-label"><%- t('settings', 'setting:serviceTagInLocalMode') %></label>
       <div>
         <label class="radio-inline">
@@ -26,31 +67,6 @@
         </label>
         <label class="radio-inline">
           <input name="serviceTagPrint" type="radio" value="0" required> <%- t('settings', 'setting:serviceTagPrint:off') %>
-        </label>
-      </div>
-    </div>
-    <div class="col-md-3 form-group">
-      <label for="<%- idPrefix %>-ledsEnabled" class="control-label"><%- t('settings', 'setting:ledsEnabled') %></label>
-      <div>
-        <label class="radio-inline">
-          <input id="<%- idPrefix %>-ledsEnabled" name="ledsEnabled" type="radio" value="0" required> <%- t('settings', 'setting:ledsEnabled:off') %>
-        </label>
-        <label class="radio-inline">
-          <input name="ledsEnabled" type="radio" value="1" required> <%- t('settings', 'setting:ledsEnabled:auto') %>
-        </label>
-        <label class="radio-inline">
-          <input name="ledsEnabled" type="radio" value="2" required> <%- t('settings', 'setting:ledsEnabled:manual') %>
-        </label>
-      </div>
-    </div>
-    <div class="col-md-3 form-group">
-      <label for="<%- idPrefix %>-programming" class="control-label"><%- t('settings', 'setting:programming') %></label>
-      <div>
-        <label class="radio-inline">
-          <input id="<%- idPrefix %>-programming" name="programming" type="radio" value="0" required> <%- t('settings', 'setting:programming:off') %>
-        </label>
-        <label class="radio-inline">
-          <input name="programming" type="radio" value="1" required> <%- t('settings', 'setting:programming:on') %>
         </label>
       </div>
     </div>

@@ -65,7 +65,7 @@ exports.start = function startProgrammerModule(app, module)
 
   module.remoteCoordinator = new RemoteCoordinator(app, module);
 
-  module.ledManager = new LedManager(app.broker.sandbox(), module);
+  module.ledManager = new LedManager(app.broker.sandbox(), settings, historyModule, module);
 
   module.glp2Manager = new Glp2Manager(app, module);
 

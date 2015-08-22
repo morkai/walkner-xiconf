@@ -139,6 +139,7 @@ exports.settings = {
     bgScannerBeepDone: -1,
     bgScannerFilter: '',
     ledsEnabled: 0,
+    ledsCheckingMode: 'pass',
     programming: 1,
     gprsVerification: 1,
     gprsVerificationTimeout: 60000,

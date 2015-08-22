@@ -8,12 +8,22 @@ var _ = require('lodash');
 
 var REMOTE_CHECK_TIMEOUT_DELAY = 10 * 1000;
 var CHECK_LOCK_DURATION = 3000;
+var RECENT_RESULT_COUNT = 10;
 
 module.exports = LedManager;
 
-function LedManager(broker, programmer)
+/**
+ * @constructor
+ * @param {MessageBroker} broker
+ * @param {object} settings
+ * @param {object} history
+ * @param {object} programmer
+ */
+function LedManager(broker, settings, history, programmer)
 {
   this.broker = broker;
+  this.settings = settings;
+  this.history = history;
   this.programmer = programmer;
   this.currentState = programmer.currentState;
   this.remoteCoordinator = programmer.remoteCoordinator;
@@ -228,16 +238,91 @@ LedManager.prototype.checkLed = function(index, led, orderNo, raw, nc12, serialN
   this.callbacks[index] = callback;
   this.timers[index] = timer;
 
-  var ledManager = this;
+  this.checkSerialNumber(orderNo, nc12, serialNumber, index, callback);
+};
 
-  setTimeout(function(ledManager, callback)
+/**
+ * @private
+ * @param {string} orderNo
+ * @param {string} nc12
+ * @param {string} serialNumber
+ * @param {number} index
+ * @param {function((object|null), (object|null))} callback
+ */
+LedManager.prototype.checkSerialNumber = function(orderNo, nc12, serialNumber, index, callback)
+{
+  switch (this.settings.get('ledsCheckingMode'))
+  {
+    case 'remote':
+      return this.checkRemoteSerialNumber(orderNo, nc12, serialNumber, index, callback);
+
+    case 'recent':
+      return this.checkRecentSerialNumber(orderNo, serialNumber, index, callback);
+
+    default:
+    {
+      var ledManager = this;
+
+      setTimeout(function(ledManager, callback)
+      {
+        if (!callback.cancelled)
+        {
+          ledManager.cleanUpIndex(index);
+          callback();
+        }
+      }, 1, ledManager, callback);
+
+      break;
+    }
+  }
+};
+
+/**
+ * @private
+ * @param {string} orderNo
+ * @param {string} nc12
+ * @param {string} serialNumber
+ * @param {number} index
+ * @param {function((object|null), (object|null))} callback
+ */
+LedManager.prototype.checkRemoteSerialNumber = function(orderNo, nc12, serialNumber, index, callback)
+{
+  var ledManager = this;
+  var reqData = {
+    orderNo: orderNo,
+    nc12: nc12,
+    serialNumber: serialNumber
+  };
+
+  this.remoteCoordinator.checkSerialNumber(reqData, function(err, xiconfOrder)
   {
     if (!callback.cancelled)
     {
       ledManager.cleanUpIndex(index);
-      callback();
+      callback(err, xiconfOrder);
     }
-  }, 1, ledManager, callback);
+  });
+};
+
+/**
+ * @private
+ * @param {string} orderNo
+ * @param {string} serialNumber
+ * @param {number} index
+ * @param {function((object|null), (object|null))} callback
+ */
+LedManager.prototype.checkRecentSerialNumber = function(orderNo, serialNumber, index, callback)
+{
+  var ledManager = this;
+
+  this.history.checkRecentSerialNumber(orderNo, serialNumber, function(err, xiconfOrder)
+  {
+    if (!callback.cancelled)
+    {
+      ledManager.cleanUpIndex(index);
+      callback(err, xiconfOrder);
+    }
+  });
 };
 
 /**
