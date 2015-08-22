@@ -204,13 +204,17 @@ define([
     {
       var height = this.getRemainingHeight();
       var width = Math.max(this.historyView.$el.outerWidth(true), this.ledsView.$el.outerWidth(true));
+      var shrinked = this.$els.window[0].innerWidth <= 1024;
+
+      if (shrinked && height < 275)
+      {
+        height = 275;
+      }
 
       this.logView.resize(height);
       this.carouselView.resize(width, height);
       this.programView.resize(width, height);
       this.ledsView.resize(height);
-
-      var shrinked = this.$els.window[0].innerWidth <= 1024;
 
       this.inputView.el.style.marginBottom = shrinked
         ? ((height + this.$els.progressBar.outerHeight(true) + 3 * 14) + 'px')
