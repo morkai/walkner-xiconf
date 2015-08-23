@@ -8,7 +8,6 @@ var _ = require('lodash');
 
 var REMOTE_CHECK_TIMEOUT_DELAY = 10 * 1000;
 var CHECK_LOCK_DURATION = 3000;
-var RECENT_RESULT_COUNT = 10;
 
 module.exports = LedManager;
 

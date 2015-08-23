@@ -738,7 +738,7 @@ module.exports = function programAndTestGlp2(app, programmerModule, programmerTy
     var cancelFlMonitor = monitorFluorescentLamps(step.lampCount, flDurations);
     var stepNearlyCompletedSub = app.broker.subscribe('programmer.glp2.stepNearlyCompleted')
       .setLimit(1)
-      .on('message', function(m)
+      .on('message', function()
       {
         if (!checkFlDurations(step.lampCount, step.lampDuration, flDurations))
         {
@@ -1207,8 +1207,6 @@ module.exports = function programAndTestGlp2(app, programmerModule, programmerTy
         status: 'active',
         progress: 0
       });
-
-      var lightingTimeTooShort = false;
 
       step(
         function executeTestStepStep()
@@ -1766,7 +1764,7 @@ module.exports = function programAndTestGlp2(app, programmerModule, programmerTy
 
           setTimeout(monitorState, Math.max(33 - (now - this.startedAt), 1));
         }
-      )
+      );
     }
 
     function request(uri, done)
