@@ -1,3 +1,23 @@
+2.15.0 @ 2015-08-22
+===================
+
+  * Fixed the 'Second lamp URL' setting's label not being clickable.
+  * Changed the default settings of the installer.
+  * Changed the tabs on the Settings page from horizontal to vertical.
+  * Changed the Programmer page to respond to browser windows with a width of 1024px or less.
+  * Changed the start action to require a selection of the program if we're in the testing mode.
+  * Changed the Program name displayed on the History pages to get its value from the selected program instead
+    of the used feature file name.
+  * Changed messages on the Programmer page to be bigger.
+  * Added a new option: FT (Frame Tester).
+  * Added a new column to the history results list: Program steps.
+  * Added an ability to identify as a local user from a remote location by specifying a secret key
+    in the `LOCAL` query parameter.
+  * Added a blockage of all actions requiring a local access if there are multiple local clients connected
+    simultaneously.
+  * Added a new setting: LED board serial number checking - determines a method of checking for uniqueness
+    of the LED board serial numbers within the successful order results.
+
 2.14.0 @ 2015-07-30
 ===================
 
