@@ -152,7 +152,7 @@ exports.start = function startSettingsModule(app, module, done)
   module.getInstallationId = function()
   {
     var appId = module.get('id') || '';
-    var machineId = process.env.COMPUTERNAME || process.env.USERNAME || '';
+    var machineId = process.env.COMPUTERNAME || process.env.HOST || process.env.USERNAME || '';
 
     if (_.isEmpty(appId) && _.isEmpty(machineId))
     {
