@@ -274,9 +274,7 @@ define([
 
         if (err)
         {
-          var text = t.has('dashboard', 'msg:start:' + err.message) ? ('start:' + err.message) : 'start:failure';
-
-          view.showMessage('error', text, {
+          view.showErrorMessage('start', err.message, {
             workMode: view.model.get('workMode')
           });
 
@@ -347,7 +345,7 @@ define([
 
         if (err)
         {
-          view.showMessage('error', 'reload:failure');
+          view.showErrorMessage('reload', err.message);
         }
         else if (!lastOrder)
         {
@@ -391,7 +389,7 @@ define([
 
         if (err)
         {
-          view.showMessage('error', 'reset:failure');
+          view.showErrorMessage('reset', err.message);
         }
         else
         {
@@ -478,7 +476,7 @@ define([
 
         if (err)
         {
-          view.showMessage('error', 'setWorkMode:failure');
+          view.showErrorMessage('setWorkMode', err.message);
         }
         else
         {
@@ -529,7 +527,7 @@ define([
 
         if (err)
         {
-          view.showMessage('error', 'selectOrderNo:failure');
+          view.showErrorMessage('selectOrderNo', err.message);
         }
         else
         {
@@ -568,18 +566,7 @@ define([
 
         if (err)
         {
-          var message = 'selectNc12:';
-
-          if (t.has('dashboard', 'msg:selectNc12:' + err.message))
-          {
-            message += err.message;
-          }
-          else
-          {
-            message += 'failure';
-          }
-
-          view.showMessage('error', message);
+          view.showErrorMessage('selectNc12', err.message);
         }
         else
         {
@@ -602,6 +589,22 @@ define([
         time: type === 'success' ? 1500 : type === 'warning' ? 2000 : 2500,
         text: t('dashboard', 'msg:' + text, data)
       });
+    },
+
+    showErrorMessage: function(type, text, data)
+    {
+      var message = type + ':';
+
+      if (t.has('dashboard', 'msg:' + message + text))
+      {
+        message += text;
+      }
+      else
+      {
+        message += 'failure';
+      }
+
+      this.showMessage('error', message, data);
     },
 
     toggleControls: function()
