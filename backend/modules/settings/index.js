@@ -4,6 +4,7 @@
 
 'use strict';
 
+var os = require('os');
 var fs = require('fs');
 var exec = require('child_process').exec;
 var format = require('util').format;
@@ -149,10 +150,15 @@ exports.start = function startSettingsModule(app, module, done)
     return featureIndex !== -1 && !!(supportedFeatures & Math.pow(2, featureIndex));
   };
 
+  module.getMachineId = function()
+  {
+    return os.hostname() || process.env.COMPUTERNAME || process.env.HOST || process.env.USERNAME || '';
+  };
+
   module.getInstallationId = function()
   {
     var appId = module.get('id') || '';
-    var machineId = process.env.COMPUTERNAME || process.env.HOST || process.env.USERNAME || '';
+    var machineId = module.getMachineId();
 
     if (_.isEmpty(appId) && _.isEmpty(machineId))
     {
