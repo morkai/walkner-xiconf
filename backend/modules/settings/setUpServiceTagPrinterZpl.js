@@ -12,7 +12,7 @@ module.exports = function setUpServiceTagPrinterZpl(app, settings)
   var PRINTER_NAME = 'ServiceTagPrinterZPL';
   var PRNMNGR_FILE = 'C:/Windows/System32/Printing_Admin_Scripts/en-US/prnmngr.vbs';
 
-  if (settings.get('serviceTagPrinter') !== PRINTER_NAME)
+  if (settings.get('serviceTagPrinter') !== PRINTER_NAME || process.platform !== 'win32')
   {
     return;
   }
