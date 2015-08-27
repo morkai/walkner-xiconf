@@ -75,6 +75,16 @@ exports.start = function startFeatureSyncModule(app, module)
       return module.warn("Not syncing: invalid paths.");
     }
 
+    if (srcPath.length)
+    {
+      srcPath = srcPath.replace(/(\/|\\)$/, '') + '/';
+    }
+
+    if (dstPath.length)
+    {
+      dstPath = dstPath.replace(/(\/|\\)$/, '');
+    }
+
     if (timer !== null)
     {
       clearTimeout(timer);
