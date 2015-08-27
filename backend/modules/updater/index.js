@@ -123,7 +123,7 @@ exports.start = function startUpdaterModule(app, updaterModule)
         updaterModule.debug("Removing old update directory...");
 
         var cmd = util.format(
-          'RD /S /Q "%s"',
+          process.platform === 'win32' ? 'RD /S /Q "%s"' : 'rm -rf "%s"',
           updateDirPath
         );
 
