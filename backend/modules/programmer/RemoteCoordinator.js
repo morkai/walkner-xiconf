@@ -18,6 +18,7 @@ function RemoteCoordinator(app, programmerModule)
   this.sio = null;
 
   this.selectedOrderNo = programmerModule.currentState.selectedOrderNo;
+  this.inputMode = programmerModule.currentState.inputMode;
   this.currentData = [];
   this.newDataQueue = [];
 
@@ -361,8 +362,9 @@ RemoteCoordinator.prototype.onProgrammerStateChanged = function(changes)
     stateChanges.order = changes.selectedOrderNo;
   }
 
-  if (changes.inputMode !== undefined)
+  if (changes.inputMode !== undefined && changes.inputMode !== this.inputMode)
   {
+    this.inputMode = changes.inputMode;
     stateChanges.inputMode = changes.inputMode;
   }
 
