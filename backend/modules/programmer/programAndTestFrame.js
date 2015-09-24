@@ -41,10 +41,13 @@ module.exports = function programAndTestFrame(app, programmerModule, done)
     },
     function handleConnectToSer2NetStep(err)
     {
-      if (programmerModule.cancelled || err)
+      if (err)
       {
         err.code = 'FT:CONNECTING_FAILURE';
+      }
 
+      if (programmerModule.cancelled || err)
+      {
         return this.skip(err);
       }
     },
