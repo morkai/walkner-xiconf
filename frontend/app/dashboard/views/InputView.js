@@ -18,7 +18,8 @@ define([
   './OrderNoPickerDialogView',
   './Nc12PickerDialogView',
   'app/dashboard/templates/input',
-  'app/dashboard/templates/orderFinishedDialog'
+  'app/dashboard/templates/orderFinishedDialog',
+  'app/dashboard/templates/multipleLocalSocketsDialog'
 ], function(
   _,
   $,
@@ -35,7 +36,8 @@ define([
   OrderNoPickerDialogView,
   Nc12PickerDialogView,
   inputTemplate,
-  orderFinishedDialogTemplate
+  orderFinishedDialogTemplate,
+  multipleLocalSocketsDialogTemplate
 ) {
   'use strict';
 
@@ -604,7 +606,30 @@ define([
         message += 'failure';
       }
 
-      this.showMessage('error', message, data);
+      if (text === 'MULTIPLE_LOCAL_SOCKETS')
+      {
+        this.showMultipleLocalSocketsWarning(t('dashboard', 'msg:' + message, data));
+      }
+      else
+      {
+        this.showMessage('error', message, data);
+      }
+    },
+
+    showMultipleLocalSocketsWarning: function(message)
+    {
+      var dialogView = new View({
+        dialogClassName: 'dashboard-input-multipleLocalSocketsDialog',
+        template: function()
+        {
+          return multipleLocalSocketsDialogTemplate({
+            message: message
+          });
+        }
+      });
+
+      viewport.closeAllDialogs();
+      viewport.showDialog(dialogView, t('dashboard', 'multipleLocalSocketsDialog:title'));
     },
 
     toggleControls: function()

@@ -185,3 +185,9 @@
 .is-gprs .dashboard-input-nc12 > .form-control {
   font-size: 32px;
 }
+.dashboard-input-multipleLocalSocketsDialog .modal-content {
+  border: 5px solid #d9534f;
+}
+.dashboard-input-multipleLocalSocketsDialog .modal-body {
+  font-size: 16px;
+}
