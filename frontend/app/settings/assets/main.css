@@ -38,6 +38,7 @@
   display: inline-block;
   vertical-align: top;
 }
-.settings-form textarea[name="serviceTagLabelCode"] {
+.settings-form textarea[name="serviceTagLabelCode"],
+.settings-form textarea[name="ftOrderPattern"] {
   font-family: Consolas, Menlo, Monaco, monospace;
 }

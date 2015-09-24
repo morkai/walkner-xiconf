@@ -127,6 +127,7 @@ define([
       this.listenTo(currentState, 'change:remoteConnected', this.toggleConnectionIndicator);
       this.listenTo(currentState, 'change:waitingForLeds', this.onWaitingForLedsChange);
       this.listenTo(currentState, 'change:waitingForContinue', this.onWaitingForContinueChange);
+      this.listenTo(currentState, 'change:selectedOrderNo', this.onSelectedOrderNoChange);
       this.listenTo(settings, 'change:licenseInfo', this.onLicenseInfoChange);
       this.listenTo(settings, 'change:testingEnabled', this.onTestingEnabledChange);
       this.listenTo(settings, 'change:hotkeys', this.updateHotkeys);
@@ -519,6 +520,18 @@ define([
         this.$('.dashboard-continue-vis').find('p').first().text(
           activeProgramStep ? activeProgramStep.label : t('dashboard', 'continue:vis:p1')
         );
+      }
+    },
+
+    onSelectedOrderNoChange: function()
+    {
+      if (currentState.isFtActive())
+      {
+        currentState.set('waitingForContinue', 'ft');
+      }
+      else if (currentState.get('waitingForContinue') === 'ft')
+      {
+        currentState.set('waitingForContinue', null);
       }
     }
 

@@ -24,16 +24,17 @@
   position: relative;
   z-index: 2;
 }
-.dashboard-input-nc12.is-frameOnly > .form-control,
+.dashboard-input-nc12.is-ft-enabled > .form-control,
 .dashboard-input-nc12.is-ledOnly > .form-control,
 .dashboard-input-nc12.is-noProgramming > .form-control {
   outline: 4px solid #5cb85c;
   background-color: rgba(92, 184, 92, .25);
 }
-.dashboard-input-frameOnly,
-.dashboard-input-ledOnly,
-.dashboard-input-noProgramming,
-.dashboard-input-multiNc12 {
+.dashboard-input-nc12.is-ft-disabled > .form-control {
+  outline: 4px solid #f0ad4e;
+  background-color: rgba(240, 173, 78, .25);
+}
+.dashboard-input-nc12-overlay {
   display: none;
   position: absolute;
   bottom: 0;
@@ -44,7 +45,8 @@
   line-height: 35px;
   z-index: 1;
 }
-.is-frameOnly > .dashboard-input-frameOnly,
+.is-ft-enabled > .dashboard-input-ft-enabled,
+.is-ft-disabled > .dashboard-input-ft-disabled,
 .is-ledOnly > .dashboard-input-ledOnly,
 .is-noProgramming > .dashboard-input-noProgramming,
 .is-multi > .dashboard-input-multiNc12 {
@@ -60,7 +62,6 @@
 .is-idle .dashboard-input-nc12.is-multi > .form-control {
   cursor: pointer;
   outline: 4px solid #f0ad4e;
-  /*color: #f0ad4e;*/
   background-color: rgba(240, 173, 78, .25);
 }
 .dashboard.is-idle[data-input-mode="remote"] .dashboard-input-orderNo.is-multi > kbd,

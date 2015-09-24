@@ -132,6 +132,28 @@ define([
       return this.isRemoteInput() && settings.get('programming') === 0;
     },
 
+    isFtActive: function()
+    {
+      if (!settings.get('ftEnabled'))
+      {
+        return false;
+      }
+
+      if (!this.isRemoteInput())
+      {
+        return true;
+      }
+
+      var remoteData = this.getSelectedRemoteData();
+
+      if (!remoteData)
+      {
+        return false;
+      }
+
+      return settings.isFtOrder(remoteData.name);
+    },
+
     hasOrder: function()
     {
       return this.get('order') !== null;

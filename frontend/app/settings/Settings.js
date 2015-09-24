@@ -88,6 +88,47 @@ define([
       var featureIndex = AVAILABLE_FEATURES.indexOf(feature.toLowerCase());
 
       return featureIndex !== -1 && !!(supportedFeatures & Math.pow(2, featureIndex));
+    },
+
+    isFtOrder: function(orderName)
+    {
+      var patterns = this.get('ftOrderPattern');
+
+      if (patterns.length === 0)
+      {
+        return true;
+      }
+
+      if (typeof orderName !== 'string')
+      {
+        orderName = '';
+      }
+
+      patterns = patterns.split('\n');
+
+      for (var i = 0; i < patterns.length; ++i)
+      {
+        var pattern = patterns[i];
+
+        try
+        {
+          var re = new RegExp(pattern, 'i');
+
+          if (re.test(orderName))
+          {
+            return true;
+          }
+        }
+        catch (err)
+        {
+          if (orderName.indexOf(pattern) !== -1)
+          {
+            return true;
+          }
+        }
+      }
+
+      return false;
     }
 
   });

@@ -20,7 +20,8 @@
 .is-waitingForContinue[data-waiting="test"] .dashboard-continue-test,
 .is-waitingForContinue[data-waiting="glp2"] .dashboard-continue-glp2,
 .is-waitingForContinue[data-waiting="vis"] .dashboard-continue-vis,
-.is-waitingForContinue[data-waiting="programmed"] .dashboard-continue-programmed {
+.is-waitingForContinue[data-waiting="programmed"] .dashboard-continue-programmed,
+.is-waitingForContinue[data-waiting="ft"] .dashboard-continue-ft {
   display: block;
   -webkit-animation-name: dashboard-continue-pulse-warning;
   animation-name: dashboard-continue-pulse-warning;

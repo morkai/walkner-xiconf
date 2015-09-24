@@ -161,6 +161,7 @@ exports.settings = {
     ftStartResource1: '',
     ftStartResource2: '',
     ftSerialProxyAddress: '',
+    ftOrderPattern: '',
     hotkeys: {
       focusOrderNo: 'Q',
       focusQuantity: 'W',

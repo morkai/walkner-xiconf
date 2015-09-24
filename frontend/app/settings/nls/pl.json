@@ -187,6 +187,7 @@
   "setting:ftStartResource1": "Adres stanu pierwszego przycisku startu",
   "setting:ftStartResource2": "Adres stanu drugiego przycisku startu",
   "setting:ftSerialProxyAddress": "Adres serwera ser2net",
+  "setting:ftOrderPattern": "Test ramki aktywny dla wyrobów o nazwie pasującej do wzorców",
 
   "license:NO_KEY": "Brak klucza licencji.",
   "license:INVALID_ED_PEM": "Nieprawidłowy klucz odszyfrowywania.",

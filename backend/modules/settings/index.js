@@ -369,6 +369,7 @@ exports.start = function startSettingsModule(app, module, done)
     validateStringSetting(rawSettings, newSettings, 'ftStartResource1', 0, COAP_RESOURCE_RE);
     validateStringSetting(rawSettings, newSettings, 'ftStartResource2', 0, COAP_RESOURCE_RE);
     validateStringSetting(rawSettings, newSettings, 'ftSerialProxyAddress', 0, IPV4_ADDRESS_RE);
+    validateFtOrderPattern(rawSettings, newSettings);
     // Hotkeys
     validateHotkeys(rawSettings, newSettings);
     // License
@@ -457,6 +458,26 @@ exports.start = function startSettingsModule(app, module, done)
       .forEach(function(serialNumber) { serialNumbers[serialNumber] = 1; });
 
     newSettings.bgScannerFilter = Object.keys(serialNumbers).join(' ');
+  }
+
+  function validateFtOrderPattern(rawSettings, newSettings)
+  {
+    var newValue = rawSettings.ftOrderPattern;
+
+    if (!_.isString(newValue))
+    {
+      return;
+    }
+
+    var patterns = {};
+
+    newValue
+      .split(/;|\n/)
+      .map(function(pattern) { return pattern.trim(); })
+      .filter(function(pattern) { return pattern.length > 0; })
+      .forEach(function(pattern) { patterns[pattern] = 1; });
+
+    newSettings.ftOrderPattern = Object.keys(patterns).join('\n');
   }
 
   function validateHotkeys(rawSettings, newSettings)

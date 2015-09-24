@@ -148,7 +148,7 @@ define([
       this.listenTo(this.model, 'change', _.debounce(this.onModelChange.bind(this), 25));
       this.listenTo(this.model, 'change:remoteData', this.onRemoteDataChange);
       this.listenTo(this.model, 'change:waitingForLeds', this.onWaitingForLedsChange);
-      this.listenTo(settings, 'change:orders', this.toggleControls);
+      this.listenTo(settings, 'change', this.onSettingsChange);
 
       if (user.isLocal())
       {
@@ -656,6 +656,7 @@ define([
         var t24vdcEnabled = !!settings.get('testingEnabled');
         var glp2Enabled = !!settings.get('glp2Enabled');
         var ftEnabled = !!settings.get('ftEnabled');
+        var isFtInactive = !!this.$('.is-ft-disabled').length;
 
         $els.orderNo
           .prop('disabled', orderFieldDisabled || countdown)
@@ -664,7 +665,7 @@ define([
           .prop('disabled', orderFieldDisabled || countdown)
           .prop('required', ordersRequired);
         $els.nc12.prop('disabled', isInProgress || isRemoteInput || hasOrder || countdown || ftEnabled);
-        $els.start.prop('disabled', countdown);
+        $els.start.prop('disabled', countdown || isFtInactive);
         $els.toggleWorkMode
           .prop('disabled', isInProgress || countdown || glp2Enabled)
           .css('display', glp2Enabled && !t24vdcEnabled ? 'none' : '');
@@ -789,6 +790,7 @@ define([
       var selectedProgramItem = _.findWhere(programItems, {nc12: this.model.get('selectedNc12')});
       var isLedsEnabled = !!settings.get('ledsEnabled');
       var isFtEnabled = !!settings.get('ftEnabled');
+      var isFtActive = this.model.isFtActive();
       var isNoProgramming = !isFtEnabled && this.model.isNoProgramming();
       var isMultiNc12 = programItems.length > 1;
       var isLedOnly = user.isLocal()
@@ -797,7 +799,6 @@ define([
         && !programItems.length
         && ledItems.length > 0
         && isLedsEnabled;
-      var isFrameOnly = user.isLocal() && isFtEnabled;
       var quantityTodo = orderData.quantityTodo;
       var quantityDone = orderData.quantityDone;
       var nc12 = '';
@@ -812,7 +813,7 @@ define([
         nc12 = selectedProgramItem ? selectedProgramItem.nc12 : '';
       }
 
-      if (isFrameOnly || isNoProgramming)
+      if (isFtEnabled || isNoProgramming)
       {
         nc12 = '';
       }
@@ -821,7 +822,8 @@ define([
         .val(nc12)
         .parent('div')
         .toggleClass('is-ledOnly', isLedOnly)
-        .toggleClass('is-frameOnly', isFrameOnly)
+        .toggleClass('is-ft-enabled', isFtActive)
+        .toggleClass('is-ft-disabled', !isFtActive)
         .toggleClass('is-noProgramming', isNoProgramming && !isLedOnly)
         .toggleClass('is-multi', user.isLocal() && !this.model.isInProgress() && isMultiNc12)
         .toggleClass('is-picked', nc12 !== '');
@@ -1047,6 +1049,12 @@ define([
 
         this.checkSerialNumber(led.raw, led.nc12, led.serialNumber, led.scannerId);
       }
+    },
+
+    onSettingsChange: function()
+    {
+      this.updateValues();
+      this.toggleControls();
     },
 
     onKeyDown: function(e)

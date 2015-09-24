@@ -188,6 +188,7 @@
     "setting:ftStartResource1": "First start button URL",
     "setting:ftStartResource2": "Second start button URL",
     "setting:ftSerialProxyAddress": "Ser2net server address",
+    "setting:ftOrderPattern": "Frame test active for product names matching the following patterns",
 
     "license:NO_KEY": "No license key.",
     "license:INVALID_ED_PEM": "Invalid license decryption key.",
