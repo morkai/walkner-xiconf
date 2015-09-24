@@ -1,4 +1,13 @@
-2.15.0 @ 2015-08-22
+2.16.0 @ 2015-09-24
+===================
+
+  * Fixed the error messages on the Programmer page always using the generic failure text.
+  * Changed the multiple local clients warning from a message to a modal dialog.
+  * Added various improvements when running on Linux.
+  * Added a new setting: Frame test active for product names matching the following patterns - frame testing will be
+    inactive for orders with names not matching the specified patterns.
+
+2.15.0 @ 2015-08-23
 ===================
 
   * Fixed the 'Second lamp URL' setting's label not being clickable.
