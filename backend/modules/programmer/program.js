@@ -280,6 +280,7 @@ module.exports = function program(app, programmerModule, data, done)
 
     if (fake && !filePath)
     {
+      err = null;
       files = [currentState.nc12 + ' Program FAKE.xml'];
       filePath = '/FAKE/PATH/TO/' + files[0];
 
@@ -310,6 +311,7 @@ module.exports = function program(app, programmerModule, data, done)
     }
     else
     {
+      console.log('5');
       this.foundFeature1 = true;
 
       programmerModule.changeState({
