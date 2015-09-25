@@ -1,3 +1,8 @@
+2.16.1 @ 2015-09-25
+===================
+
+  * Fixed the start button being disabled if the frame testing is disabled.
+
 2.16.0 @ 2015-09-24
 ===================
 
