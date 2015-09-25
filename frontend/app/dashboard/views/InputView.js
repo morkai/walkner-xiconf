@@ -656,7 +656,7 @@ define([
         var t24vdcEnabled = !!settings.get('testingEnabled');
         var glp2Enabled = !!settings.get('glp2Enabled');
         var ftEnabled = !!settings.get('ftEnabled');
-        var isFtInactive = !!this.$('.is-ft-disabled').length;
+        var ftInactive = !!this.$('.is-ft-disabled').length;
 
         $els.orderNo
           .prop('disabled', orderFieldDisabled || countdown)
@@ -665,7 +665,7 @@ define([
           .prop('disabled', orderFieldDisabled || countdown)
           .prop('required', ordersRequired);
         $els.nc12.prop('disabled', isInProgress || isRemoteInput || hasOrder || countdown || ftEnabled);
-        $els.start.prop('disabled', countdown || isFtInactive);
+        $els.start.prop('disabled', countdown || (ftEnabled && ftInactive));
         $els.toggleWorkMode
           .prop('disabled', isInProgress || countdown || glp2Enabled)
           .css('display', glp2Enabled && !t24vdcEnabled ? 'none' : '');
@@ -822,8 +822,8 @@ define([
         .val(nc12)
         .parent('div')
         .toggleClass('is-ledOnly', isLedOnly)
-        .toggleClass('is-ft-enabled', isFtActive)
-        .toggleClass('is-ft-disabled', !isFtActive)
+        .toggleClass('is-ft-enabled', isFtEnabled && isFtActive)
+        .toggleClass('is-ft-disabled', isFtEnabled && !isFtActive)
         .toggleClass('is-noProgramming', isNoProgramming && !isLedOnly)
         .toggleClass('is-multi', user.isLocal() && !this.model.isInProgress() && isMultiNc12)
         .toggleClass('is-picked', nc12 !== '');
