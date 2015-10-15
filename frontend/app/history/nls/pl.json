@@ -86,6 +86,7 @@
   "log:FEATURE_FILE_FOUND": "Znaleziono plik konfiguracyjny drivera: <code>{featureFile}</code>",
   "log:SKIPPING_FEATURE_FILE_2": "Pomijanie wyszukiwania pliku konfiguracyjnego drivera w ścieżce zapasowej...",
   "log:CANCELLING": "Anulowanie...",
+  "log:GENERIC_FAILURE": "Zakończono w ciągu <code>{duration}</code> z powodu błędu: <code>{error}</code>",
   "log:PROGRAMMING_SUCCESS": "Pomyślnie ukończono programowanie 12NC <code>{nc12}</code> w ciągu <code>{duration}</code>.",
   "log:PROGRAMMING_FAILURE": "Zakończono programowanie 12NC <code>{nc12}</code> w ciągu <code>{duration}</code> z powodu błędu: <code>{error}</code>",
   "log:LED_SCANNING_SUCCESS": "Pomyślnie ukończono sprawdzanie płytek LED w ciągu <code>{duration}</code>.",
@@ -197,6 +198,7 @@
   "error:TESTING_MAX_POWER": "T24VDC: Przekroczono maksymalną wartość mocy.",
   "error:REMOTE_SERVICE_TAG_FAILURE": "Błąd podczas pobierania nowego Service Taga.",
   "error:INVALID_ITEM_QUANTITY": "Wykryto nieprawidłowe ilości komponentów w aktualnym zleceniu.",
+  "error:NOTHING_DONE": "Nie wykonano żadnej operacji (puste zlecenie?)",
 
   "log:GPRS:READING_ORDER_FILE": "Odczytywanie pliku zlecenia: <code>{orderFile}</code>",
   "log:GPRS:ORDER_FILE_READ": "Odczytano <code>{length}B</code> pliku zlecenia.",

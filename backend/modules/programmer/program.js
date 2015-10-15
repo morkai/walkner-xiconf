@@ -54,6 +54,9 @@ module.exports = function program(app, programmerModule, data, done)
       thisProgrammingCancelledSub = null;
     });
 
+  var scanned = false;
+  var programmed = false;
+  var tested = false;
   var serviceTagAcquired = false;
   var shouldAcquireServiceTag = !_.isEmpty(data.orderNo)
     && (currentState.inputMode === 'remote' || settings.get('serviceTagInLocalMode') !== 'disabled');
@@ -931,6 +934,8 @@ module.exports = function program(app, programmerModule, data, done)
         cancelSub.cancel();
         cancelSub = null;
 
+        scanned = true;
+
         setImmediate(next);
       }
     });
@@ -982,7 +987,7 @@ module.exports = function program(app, programmerModule, data, done)
       return this.skip();
     }
 
-    if (!currentState.nc12 || settings.get('ledsEnabled') !== 2 || _.isEmpty(currentState.leds))
+    if (!currentState.nc12 || ledsEnabled !== 2 || _.isEmpty(currentState.leds))
     {
       return;
     }
@@ -1089,6 +1094,8 @@ module.exports = function program(app, programmerModule, data, done)
 
     if (settings.get('ftEnabled'))
     {
+      tested = true;
+
       return programAndTestFrame(app, programmerModule, this.next());
     }
 
@@ -1096,27 +1103,39 @@ module.exports = function program(app, programmerModule, data, done)
     {
       if (currentState.program.type === 't24vdc')
       {
+        programmed = true;
+        tested = true;
+
         return programAndTestSdp(app, programmerModule, this.next());
       }
 
       if (currentState.program.type === 'glp2')
       {
+        programmed = true;
+        tested = true;
+
         return programAndTestGlp2(app, programmerModule, programmerType, this.next());
       }
     }
 
     if (programmerType === 'gprs')
     {
+      programmed = true;
+
       return gprs.program(app, programmerModule, onProgress, this.next());
     }
 
     if (programmerType === 'sol')
     {
+      programmed = true;
+
       return programSolDriver(app, programmerModule, null, onProgress, this.next());
     }
 
     if (programmerType === 'mow')
     {
+      programmed = true;
+
       this.sub = programMowDriver(app, programmerModule, onProgress, this.next());
 
       return;
@@ -1141,6 +1160,11 @@ module.exports = function program(app, programmerModule, data, done)
     {
       this.sub.cancel();
       this.sub = null;
+    }
+
+    if (!scanned && !programmed && !tested)
+    {
+      return this.skip('NOTHING_DONE');
     }
 
     if (!shouldAcquireServiceTag)
@@ -1313,9 +1337,17 @@ module.exports = function program(app, programmerModule, data, done)
           nc12: currentState.nc12 || '-'
         });
       }
-      else
+      else if (currentState.leds.length)
       {
         programmerModule.log('LED_SCANNING_FAILURE', {
+          time: changes.finishedAt,
+          duration: changes.duration,
+          errorCode: changes.errorCode
+        });
+      }
+      else
+      {
+        programmerModule.log('GENERIC_FAILURE', {
           time: changes.finishedAt,
           duration: changes.duration,
           errorCode: changes.errorCode

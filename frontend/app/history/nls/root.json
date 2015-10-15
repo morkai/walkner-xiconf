@@ -87,6 +87,7 @@
     "log:FEATURE_FILE_FOUND": "Found the driver configuration file: <code>{featureFile}</code>",
     "log:SKIPPING_FEATURE_FILE_2": "Skipping searching for the driver configuration file in the backup path...",
     "log:CANCELLING": "Cancelling...",
+    "log:GENERIC_FAILURE": "Unsuccessfully finished in <code>{duration}</code> with an error: <code>{error}</code>",
     "log:PROGRAMMING_SUCCESS": "Successfully finished the programming of the 12NC <code>{nc12}</code> in <code>{duration}</code>.",
     "log:PROGRAMMING_FAILURE": "Unsuccessfully finished the programming of the 12NC <code>{nc12}</code> in <code>{duration}</code> with an error: <code>{error}</code>",
     "log:LED_SCANNING_SUCCESS": "Successfully finished the LED boards scanning in <code>{duration}</code>.",
@@ -198,6 +199,7 @@
     "error:TESTING_MAX_POWER": "T24VDC: Exceeded the maximum power value.",
     "error:REMOTE_SERVICE_TAG_FAILURE": "Error during acquisition of a new Service Tag.",
     "error:INVALID_ITEM_QUANTITY": "Detected invalid component quantities in the current order.",
+    "error:NOTHING_DONE": "Nothing was done (empty order?)",
 
     "log:GPRS:READING_ORDER_FILE": "Reading contents of the order file: <code>{orderFile}</code>",
     "log:GPRS:ORDER_FILE_READ": "Read <code>{length}B</code> of the order file.",

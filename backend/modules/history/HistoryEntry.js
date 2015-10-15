@@ -334,12 +334,12 @@ HistoryEntry.prototype.reset = function(orderNo, quantity, nc12)
       text: 'TESTING_WITH_PROGRAM_STARTED'
     });
   }
-  else
+  else if (this.nc12)
   {
     this.log.push({
       time: this.startedAt,
       text: 'PROGRAMMING_STARTED',
-      nc12: this.nc12 || '-'
+      nc12: this.nc12
     });
   }
 };
