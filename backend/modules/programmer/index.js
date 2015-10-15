@@ -148,7 +148,7 @@ exports.start = function startProgrammerModule(app, module)
 
     done(null);
 
-    module.currentState.clear(true, false);
+    module.currentState.clear(true, true);
     module.currentState.selectedOrderNo = orderNo;
     module.currentState.selectedNc12 = null;
     module.changeState();
