@@ -828,9 +828,9 @@ define([
         .toggleClass('is-multi', user.isLocal() && !this.model.isInProgress() && isMultiNc12)
         .toggleClass('is-picked', nc12 !== '');
 
-      if (isFtEnabled && ftItem)
+      if (isFtEnabled)
       {
-        quantityDone = ftItem.quantityDone;
+        quantityDone = ftItem ? ftItem.quantityDone : 0;
       }
       else if (isNoProgramming && ledItems.length)
       {
