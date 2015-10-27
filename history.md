@@ -1,3 +1,12 @@
+2.16.2 @ 2015-10-27
+===================
+
+  * Fixed a possible race condition while saving the last mode file.
+  * Changed the select order action to also clear the currently selected program.
+  * Changed the 'empty' order programming request to end with an error and not succeed.
+  * Changed the way quantity is displayed in the Frame Tester mode. When there is no FT item yet, then the order's total
+    quantity is displayed (instead of order's total quantity remaining, calculated from all other order items).
+
 2.16.1 @ 2015-09-25
 ===================
 
