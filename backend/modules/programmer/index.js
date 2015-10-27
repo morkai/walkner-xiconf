@@ -57,6 +57,7 @@ exports.start = function startProgrammerModule(app, module)
   }
 
   var lastFeatureFile = null;
+  var savingLastMode = 0;
 
   module.OVERALL_SETUP_PROGRESS = 20;
   module.OVERALL_PROGRAMMING_PROGRESS = 100;
@@ -498,6 +499,13 @@ exports.start = function startProgrammerModule(app, module)
 
   function saveLastMode()
   {
+    ++savingLastMode;
+
+    if (savingLastMode > 1)
+    {
+      return;
+    }
+
     var lastMode = {
       input: module.currentState.inputMode,
       work: module.currentState.workMode
@@ -507,8 +515,15 @@ exports.start = function startProgrammerModule(app, module)
     {
       if (err)
       {
-        return module.error("Failed to save the last mode: %s", err.message);
+        module.error("Failed to save the last mode: %s", err.message);
       }
+
+      if (savingLastMode > 1)
+      {
+        setImmediate(saveLastMode);
+      }
+
+      savingLastMode = 0;
     });
   }
 
