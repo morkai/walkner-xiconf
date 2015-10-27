@@ -987,7 +987,7 @@ module.exports = function program(app, programmerModule, data, done)
       return this.skip();
     }
 
-    if (!currentState.nc12 || ledsEnabled !== 2 || _.isEmpty(currentState.leds))
+    if (!currentState.nc12 || settings.get('ledsEnabled') !== 2 || _.isEmpty(currentState.leds))
     {
       return;
     }
