@@ -314,7 +314,6 @@ module.exports = function program(app, programmerModule, data, done)
     }
     else
     {
-      console.log('5');
       this.foundFeature1 = true;
 
       programmerModule.changeState({
@@ -1188,8 +1187,7 @@ module.exports = function program(app, programmerModule, data, done)
     var serviceTagRequestData = currentState.createServiceTagRequestData();
 
     this.sub = app.broker.subscribe('programmer.cancelled', next);
-
-    remoteCoordinator.acquireServiceTag(serviceTagRequestData, function(err, serviceTag)
+    this.cancelReq = remoteCoordinator.acquireServiceTag(serviceTagRequestData, function(err, serviceTag)
     {
       if (thisProgrammingCancelled)
       {
@@ -1229,6 +1227,12 @@ module.exports = function program(app, programmerModule, data, done)
   function tryToPrintServiceTag(err)
   {
     /*jshint validthis:true*/
+
+    if (_.isFunction(this.cancelReq))
+    {
+      this.cancelReq();
+      this.cancelReq = null;
+    }
 
     if (thisProgrammingCancelled || err)
     {
