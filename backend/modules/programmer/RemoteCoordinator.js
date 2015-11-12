@@ -4,8 +4,13 @@
 
 'use strict';
 
-var socketIoClient = require('socket.io-client');
+var url = require('url');
 var _ = require('lodash');
+var socketIoClient = require('socket.io-client');
+var request = require('request');
+
+var REQUEST_TIMEOUT = 10000;
+var REQUEST_MAX_ATTEMPTS = 3;
 
 module.exports = RemoteCoordinator;
 
@@ -89,7 +94,7 @@ RemoteCoordinator.prototype.generateServiceTag = function(data, done)
     return done(new Error("No connection to the remote server: " + this.settings.get('remoteServer')));
   }
 
-  this.sio.emit('xiconf.generateServiceTag', data, done);
+  this.request('generateServiceTag', data, done);
 };
 
 /**
@@ -109,7 +114,88 @@ RemoteCoordinator.prototype.acquireServiceTag = function(data, done)
     return done(new Error("No connection to the remote server: " + this.settings.get('remoteServer')));
   }
 
-  this.sio.emit('xiconf.acquireServiceTag', data, done);
+  return this.request('acquireServiceTag', data, done);
+};
+
+/**
+ * @private
+ * @param {string} action
+ * @param {object} body
+ * @param {function(Error|null), *} done
+ * @param {string} [rid]
+ * @param {number} [attempt]
+ * @param {function} [cancel]
+ */
+RemoteCoordinator.prototype.request = function(action, body, done, rid, attempt, cancel)
+{
+  rid = rid || _.uniqueId(this.settings.getInstallationId() + '_' + Date.now().toString(36) + '_');
+  attempt = (attempt || 0) + 1;
+  cancel = cancel || function()
+  {
+    if (cancel.req)
+    {
+      cancel.req.abort();
+      cancel.req = null;
+    }
+  };
+
+  var remoteCoordinator = this;
+  var options = {
+    method: 'POST',
+    uri: url.format(_.assign(url.parse(this.settings.get('remoteServer')), {
+      pathname: '/xiconf;execute',
+      query: {
+        rid: rid,
+        action: action
+      }
+    })),
+    json: true,
+    body: body,
+    timeout: REQUEST_TIMEOUT
+  };
+
+  cancel.req = request(options, function(err, res, responseBody)
+  {
+    if (!cancel.req)
+    {
+      return;
+    }
+
+    cancel.req = null;
+
+    if (!err && res.statusCode >= 300)
+    {
+      if (_.isPlainObject(responseBody) && _.isPlainObject(responseBody.error))
+      {
+        err = responseBody.error;
+      }
+      else
+      {
+        err = {
+          message: "Invalid response status code: " + res.statusCode,
+          code: 'INVALID_RESPONSE_STATUS'
+        };
+      }
+    }
+
+    if (err)
+    {
+      if (attempt === REQUEST_MAX_ATTEMPTS)
+      {
+        remoteCoordinator.programmer.debug("[remote] %s failed %d times: %s", action, attempt, err.code || err.message);
+
+        return done(err);
+      }
+
+      remoteCoordinator.programmer.debug("[remote] %d. attempt at %s...", attempt + 1, action);
+
+      return setTimeout(remoteCoordinator.request.bind(this, action, body, done, rid, attempt, cancel), 500 * attempt);
+    }
+
+    return done(null, responseBody);
+  });
+
+  return cancel;
 };
 
 /**
@@ -126,7 +212,7 @@ RemoteCoordinator.prototype.checkSerialNumber = function(data, done)
     return done(new Error("No connection to the remote server: " + this.settings.get('remoteServer')));
   }
 
-  this.sio.emit('xiconf.checkSerialNumber', data, done);
+  this.request('checkSerialNumber', data, done);
 };
 
 /**
