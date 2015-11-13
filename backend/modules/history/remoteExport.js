@@ -34,26 +34,32 @@ module.exports = function setUpRemoteExport(app, historyModule)
     return !licenseInfo.error || licenseInfo.error === 'UNKNOWN_LICENSE' || licenseInfo.error === 'DUPLICATE_LICENSE';
   }
 
-  function scheduleNextSync(failed)
+  function scheduleNextSync(failed, hasMore)
   {
     if (syncTimer !== null)
     {
       clearTimeout(syncTimer);
     }
 
+    var minute = 60 * 1000;
     var syncInterval = settings.get('syncInterval');
+    var syncDelay = syncInterval * minute;
 
-    if (typeof syncInterval !== 'number' || isNaN(syncInterval) || syncInterval < 1)
+    if (isNaN(syncDelay) || syncDelay < minute)
     {
-      syncInterval = 1;
+      syncDelay = minute;
     }
 
-    if (failed)
+    if (hasMore)
     {
-      syncInterval = Math.max(Math.round(syncInterval / 2), 10);
+      syncDelay = 1337;
+    }
+    else if (failed)
+    {
+      syncDelay = Math.max(Math.round(syncDelay / 2), 10 * minute);
     }
 
-    syncTimer = setTimeout(syncNow, syncInterval * 60 * 1000);
+    syncTimer = setTimeout(syncNow, syncDelay);
   }
 
   function syncNow()
@@ -154,13 +160,20 @@ module.exports = function setUpRemoteExport(app, historyModule)
 
     var ctx = this;
     var next = this.next();
-    var sql = "SELECT * FROM historyEntries WHERE startedAt > $startedAt ORDER BY startedAt ASC";
+    var sql = "SELECT * FROM historyEntries WHERE startedAt > $startedAt ORDER BY startedAt ASC LIMIT 101";
 
     db.all(sql, {$startedAt: this.lastExportTime}, function(err, rows)
     {
       if (err)
       {
         return next(err);
+      }
+
+      if (rows.length === 101)
+      {
+        ctx.hasMore = true;
+
+        rows.pop();
       }
 
       ctx.historyEntries = JSON.stringify(rows);
@@ -431,6 +444,6 @@ module.exports = function setUpRemoteExport(app, historyModule)
       }
     }
 
-    scheduleNextSync(!!err);
+    scheduleNextSync(!!err, !!this.hasMore);
   }
 };
