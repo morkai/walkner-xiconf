@@ -17,6 +17,7 @@ var LedManager = require('./LedManager');
 var Glp2Manager = require('./Glp2Manager');
 
 exports.DEFAULT_CONFIG = {
+  safeFsId: 'safeFs',
   settingsId: 'settings',
   historyId: 'history',
   sqlite3Id: 'sqlite3',
@@ -35,6 +36,7 @@ exports.DEFAULT_CONFIG = {
 
 exports.start = function startProgrammerModule(app, module)
 {
+  var safeFs = app[module.config.safeFsId];
   var settings = app[module.config.settingsId];
 
   if (!settings)
@@ -463,7 +465,7 @@ exports.start = function startProgrammerModule(app, module)
 
   function readLastMode()
   {
-    fs.readFile(module.config.lastModeFile, {encoding: 'utf8'}, function(err, lastMode)
+    (safeFs || fs).readFile(module.config.lastModeFile, {encoding: 'utf8'}, function(err, lastMode)
     {
       if (err)
       {
@@ -511,7 +513,7 @@ exports.start = function startProgrammerModule(app, module)
       work: module.currentState.workMode
     };
 
-    fs.writeFile(module.config.lastModeFile, JSON.stringify(lastMode), function(err)
+    (safeFs || fs).writeFile(module.config.lastModeFile, JSON.stringify(lastMode), function(err)
     {
       if (err)
       {

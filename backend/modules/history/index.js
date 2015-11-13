@@ -11,6 +11,7 @@ var setUpRemoteExport = require('./remoteExport');
 var HistoryEntry = require('./HistoryEntry');
 
 exports.DEFAULT_CONFIG = {
+  safeFsId: 'safeFs',
   expressId: 'express',
   sqlite3Id: 'sqlite3',
   settingsId: 'settings',

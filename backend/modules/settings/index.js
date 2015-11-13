@@ -15,6 +15,7 @@ var validateLicense = require('./validateLicense');
 var setUpServiceTagPrinterZpl = require('./setUpServiceTagPrinterZpl');
 
 exports.DEFAULT_CONFIG = {
+  safeFsId: 'safeFs',
   expressId: 'express',
   programmerId: 'programmer',
   settingsFile: 'settings.json',
@@ -25,6 +26,7 @@ exports.DEFAULT_CONFIG = {
 
 exports.start = function startSettingsModule(app, module, done)
 {
+  var safeFs = app[module.config.safeFsId];
   var settings = {
     multiOneWorkflowVersion: '0.0.0.0',
     coreScannerDriver: false
@@ -109,7 +111,7 @@ exports.start = function startSettingsModule(app, module, done)
 
         settings = _.merge(settings, changes);
 
-        fs.writeFile(
+        (safeFs || fs).writeFile(
           module.config.settingsFile,
           JSON.stringify(settings),
           {encoding: 'utf8'},
@@ -207,7 +209,7 @@ exports.start = function startSettingsModule(app, module, done)
 
   function readInitialSettings(done)
   {
-    fs.readFile(module.config.settingsFile, {encoding: 'utf8'}, function(err, contents)
+    (safeFs || fs).readFile(module.config.settingsFile, {encoding: 'utf8'}, function(err, contents)
     {
       if (err && err.code !== 'ENOENT')
       {

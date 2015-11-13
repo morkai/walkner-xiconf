@@ -12,6 +12,7 @@ exports.id = 'walkner-xiconf';
 exports.localSecretKey = null;
 
 exports.modules = [
+  'safeFs',
   'sqlite3',
   'settings',
   'history',

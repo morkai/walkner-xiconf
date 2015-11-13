@@ -16,6 +16,7 @@ module.exports = function setUpRemoteExport(app, historyModule)
 {
   var db = app[historyModule.config.sqlite3Id].db;
   var settings = app[historyModule.config.settingsId];
+  var safeFs = app[historyModule.config.safeFsId];
 
   var syncTimer = null;
   var cachedEncryptedUuids = {};
@@ -129,7 +130,7 @@ module.exports = function setUpRemoteExport(app, historyModule)
     var ctx = this;
     var next = this.next();
 
-    fs.readFile(historyModule.config.lastExportTimeFile, 'utf8', function(err, contents)
+    (safeFs || fs).readFile(historyModule.config.lastExportTimeFile, 'utf8', function(err, contents)
     {
       if (err && err.code !== 'ENOENT')
       {
@@ -414,7 +415,7 @@ module.exports = function setUpRemoteExport(app, historyModule)
     var file = historyModule.config.lastExportTimeFile;
     var contents = this.latestStartedAt.toString();
 
-    fs.writeFile(file, contents, this.next());
+    (safeFs || fs).writeFile(file, contents, this.next());
   }
 
   function finalizeStep(err)
