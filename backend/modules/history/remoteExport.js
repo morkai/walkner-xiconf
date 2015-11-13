@@ -140,7 +140,7 @@ module.exports = function setUpRemoteExport(app, historyModule)
 
       if (isNaN(lastExportTime) || lastExportTime < 0)
       {
-        lastExportTime = 0;
+        lastExportTime = Date.now() - 3 * 24 * 3600 * 1000;
       }
 
       ctx.lastExportTime = lastExportTime;
