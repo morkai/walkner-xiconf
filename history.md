@@ -1,3 +1,14 @@
+2.16.4 @ 2015-11-13
+===================
+
+  * Changed the check/generate/acquire Service Tag commands to use plain HTTP instead of socket.io to have better
+    control in case of timeouts.
+  * Changed the history export to export at most 100 entries at once.
+  * Changed the last history export time to be the current time minus 3 days (instead of the beginning of time),
+    if the last export time file has been corrupted.
+  * Changed the reading and writing of some configuration files to use a safer method to minimize a possibility
+    of corrupting the files.
+
 2.16.3 @ 2015-10-27
 ===================
 
