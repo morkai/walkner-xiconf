@@ -1,7 +1,7 @@
 <div id="<%- idPrefix %>-mow" class="panel-body">
   <div class="form-group">
     <label class="control-label"><%- t('settings', 'mowVersion:supported') %></label>
-    <p class="form-control-static">2.0</p>
+    <p class="form-control-static">2.3</p>
   </div>
   <div class="form-group">
     <label class="control-label"><%- t('settings', 'mowVersion:installed') %></label>
@@ -25,6 +25,9 @@
       <label class="checkbox-inline">
         <input name="workflowCommissionAll" type="checkbox" value="1"> <%- t('settings', 'setting:workflowCommissionAll') %>
       </label>
+      <label class="checkbox-inline">
+        <input name="workflowDaliFactoryNew" type="checkbox" value="1"> <%- t('settings', 'setting:workflowDaliFactoryNew') %>
+      </label>
     </div>
   </div>
   <div class="row">
@@ -35,6 +38,12 @@
         <option value="s"><%- t('settings', 'setting:interface:s') %></option>
       </select>
     </div>
+    <div class="form-group col-md-4">
+      <label for="<%- idPrefix %>-mowUniqueId" class="control-label"><%- t('settings', 'setting:mowUniqueId') %></label>
+      <input id="<%- idPrefix %>-mowUniqueId" class="form-control" name="mowUniqueId" type="text">
+    </div>
+  </div>
+  <div class="row">
     <div class="form-group col-md-4">
       <label for="<%- idPrefix %>-continueOnWarnings" class="control-label"><%- t('settings', 'setting:continueOnWarnings') %></label>
       <select id="<%- idPrefix %>-continueOnWarnings" class="form-control" name="continueOnWarnings" required>
@@ -62,5 +71,9 @@
   <div class="form-group">
     <label class="control-label"><input type="checkbox" name="supportedDevicesEnabled" value="1"> <%- t('settings', 'setting:supportedDevicesFile') %></label>
     <input id="<%- idPrefix %>-supportedDevicesFile" class="form-control" name="supportedDevicesFile" type="text">
+  </div>
+  <div class="form-group">
+    <label class="control-label"><input type="checkbox" name="mowLabelDataLocationEnabled" value="1"> <%- t('settings', 'setting:mowLabelDataLocation') %></label>
+    <input id="<%- idPrefix %>-mowLabelDataLocation" class="form-control" name="mowLabelDataLocation" type="text">
   </div>
 </div>

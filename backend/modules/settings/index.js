@@ -317,6 +317,9 @@ exports.start = function startSettingsModule(app, module, done)
     validateStringSetting(rawSettings, newSettings, 'schedulerFile', 0);
     validateEnum(rawSettings, newSettings, 'supportedDevicesEnabled', Number, [0, 1]);
     validateStringSetting(rawSettings, newSettings, 'supportedDevicesFile', 0);
+    validateEnum(rawSettings, newSettings, 'mowLabelDataLocationEnabled', Number, [0, 1]);
+    validateStringSetting(rawSettings, newSettings, 'mowLabelDataLocation', 0);
+    validateStringSetting(rawSettings, newSettings, 'mowUniqueId', 0);
     // GPRS
     validateStringSetting(rawSettings, newSettings, 'gprsOrdersPath');
     validateStringSetting(rawSettings, newSettings, 'gprsProgrammerFile');

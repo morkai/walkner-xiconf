@@ -30,6 +30,8 @@ module.exports = function programSolDriver(app, programmerModule, onProgress, do
 
   var schedulerFile = settings.get('schedulerFile');
   var supportedDevicesFile = settings.get('supportedDevicesFile');
+  var labelDataLocation = settings.get('mowLabelDataLocation');
+  var uniqueId = settings.get('mowUniqueId');
   var comInterface = settings.get('interface') || 'd';
   var args = [
     '/f', programmerModule.currentState.featureFile,
@@ -47,6 +49,16 @@ module.exports = function programSolDriver(app, programmerModule, onProgress, do
   if (settings.get('supportedDevicesEnabled') && supportedDevicesFile.length)
   {
     args.push('/d', supportedDevicesFile);
+  }
+
+  if (settings.get('mowLabelDataLocationEnabled') && labelDataLocation.length)
+  {
+    args.push('/l', labelDataLocation);
+  }
+
+  if (uniqueId.length)
+  {
+    args.push('/id', uniqueId);
   }
 
   programmerModule.log('STARTING_PROGRAMMER', {

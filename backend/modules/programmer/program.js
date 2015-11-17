@@ -1426,7 +1426,8 @@ module.exports = function program(app, programmerModule, data, done)
       + buildWorkflowFileOption(settings, workflowOptions, 'IdentifyAlways')
       + buildWorkflowFileOption(settings, workflowOptions, 'MultiDevice')
       + buildWorkflowFileOption(settings, workflowOptions, 'CheckDeviceModel')
-      + buildWorkflowFileOption(settings, workflowOptions, 'CommissionAll');
+      + buildWorkflowFileOption(settings, workflowOptions, 'CommissionAll')
+      + buildWorkflowFileOption(settings, workflowOptions, 'DaliFactoryNew');
   }
 
   function buildWorkflowFileOption(settings, workflowOptions, configOption)
