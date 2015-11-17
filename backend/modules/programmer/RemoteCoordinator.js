@@ -189,7 +189,10 @@ RemoteCoordinator.prototype.request = function(action, body, done, rid, attempt,
 
       remoteCoordinator.programmer.debug("[remote] %d. attempt at %s...", attempt + 1, action);
 
-      return setTimeout(remoteCoordinator.request.bind(this, action, body, done, rid, attempt, cancel), 500 * attempt);
+      return setTimeout(
+        remoteCoordinator.request.bind(remoteCoordinator, action, body, done, rid, attempt, cancel),
+        500 * attempt
+      );
     }
 
     return done(null, responseBody);
