@@ -309,6 +309,7 @@ exports.start = function startSettingsModule(app, module, done)
     validateEnum(rawSettings, newSettings, 'workflowMultiDevice', Number, [0, 1]);
     validateEnum(rawSettings, newSettings, 'workflowCheckDeviceModel', Number, [0, 1]);
     validateEnum(rawSettings, newSettings, 'workflowCommissionAll', Number, [0, 1]);
+    validateEnum(rawSettings, newSettings, 'workflowDaliFactoryNew', Number, [0, 1]);
     validateEnum(rawSettings, newSettings, 'interface', String, ['d', 's']);
     validateEnum(rawSettings, newSettings, 'continueOnWarnings', String, ['continue', 'halt']);
     validateEnum(rawSettings, newSettings, 'logVerbosity', String, ['info', 'error', 'fatal']);
