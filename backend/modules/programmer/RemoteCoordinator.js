@@ -180,7 +180,7 @@ RemoteCoordinator.prototype.request = function(action, body, done, rid, attempt,
 
     if (err)
     {
-      if (attempt === REQUEST_MAX_ATTEMPTS)
+      if (attempt === REQUEST_MAX_ATTEMPTS || err.message === 'ORDER_NOT_FOUND')
       {
         remoteCoordinator.programmer.debug("[remote] %s failed %d times: %s", action, attempt, err.code || err.message);
 
