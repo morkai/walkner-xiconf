@@ -1,3 +1,9 @@
+2.17.1 @ 2015-11-17
+===================
+
+  * Fixed the `workflowDaliFactoryNew` setting not being saved.
+  * Fixed a crash when sending a retry of a failed remote command request.
+
 2.17.0 @ 2015-11-17
 ===================
 
