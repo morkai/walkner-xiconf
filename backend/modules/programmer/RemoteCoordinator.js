@@ -168,6 +168,7 @@ RemoteCoordinator.prototype.request = function(action, body, done, rid, attempt,
       if (_.isPlainObject(responseBody) && _.isPlainObject(responseBody.error))
       {
         err = responseBody.error;
+        attempt = REQUEST_MAX_ATTEMPTS;
       }
       else
       {
@@ -180,7 +181,7 @@ RemoteCoordinator.prototype.request = function(action, body, done, rid, attempt,
 
     if (err)
     {
-      if (attempt === REQUEST_MAX_ATTEMPTS || err.message === 'ORDER_NOT_FOUND')
+      if (attempt === REQUEST_MAX_ATTEMPTS)
       {
         remoteCoordinator.programmer.debug("[remote] %s failed %d times: %s", action, attempt, err.code || err.message);
 
