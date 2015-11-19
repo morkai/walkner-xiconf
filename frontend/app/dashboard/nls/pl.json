@@ -44,6 +44,8 @@
   "input:nc12:ft:enabled": "Stanowisko bez programowania.<br>Testowanie ramki aktywne.",
   "input:nc12:ft:disabled": "Stanowisko bez programowania.<br>Testowanie ramki nieaktywne.",
   "input:nc12:ledOnly": "Zlecenie nie zawiera programu do drivera.<br>Skanowanie płytek LED aktywne.",
+  "input:nc12:testOnly": "Stanowisko bez programowania.<br>Testowanie aktywne.",
+  "input:nc12:noProgram": "Zlecenie nie zawiera programu do drivera.<br>Testowanie aktywne.",
   "input:nc12:noProgramming": "Stanowisko bez programowania.<br>Skanowanie płytek LED aktywne.",
   "input:nc12:multi": "Dostępne kilka 12NC programowych.<br>Kliknij, aby wybrać program.",
   "input:gprs": "12NC GPRS",

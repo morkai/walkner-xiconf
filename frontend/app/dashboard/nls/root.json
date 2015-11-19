@@ -45,6 +45,8 @@
     "input:nc12:ft:enabled": "Work station without programming.<br>Frame testing is active.",
     "input:nc12:ft:disabled": "Work station without programming.<br>Frame testing is not active.",
     "input:nc12:ledOnly": "The order doesn't have any programs.<br>LED boards scanning is active.",
+    "input:nc12:testOnly": "Work station without programming.<br>Testing is active.",
+    "input:nc12:noProgram": "The order doesn't have any programs.<br>Testing is active.",
     "input:nc12:noProgramming": "Work station without programming.<br>LED boards scanning is active.",
     "input:nc12:multi": "Multiple program 12NCs are available.<br>Click to pick a program.",
     "input:gprs": "GPRS 12NC",

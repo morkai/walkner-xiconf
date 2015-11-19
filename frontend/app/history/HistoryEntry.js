@@ -67,6 +67,13 @@ define([
       return data;
     },
 
+    getProgramId: function()
+    {
+      var program = this.get('program');
+
+      return program ? program._id : null;
+    },
+
     getProgramName: function()
     {
       var program = this.get('program');

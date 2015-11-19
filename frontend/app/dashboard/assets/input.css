@@ -26,6 +26,8 @@
 }
 .dashboard-input-nc12.is-ft-enabled > .form-control,
 .dashboard-input-nc12.is-ledOnly > .form-control,
+.dashboard-input-nc12.is-testOnly > .form-control,
+.dashboard-input-nc12.is-noProgram > .form-control,
 .dashboard-input-nc12.is-noProgramming > .form-control {
   outline: 4px solid #5cb85c;
   background-color: rgba(92, 184, 92, .25);
@@ -48,6 +50,8 @@
 .is-ft-enabled > .dashboard-input-ft-enabled,
 .is-ft-disabled > .dashboard-input-ft-disabled,
 .is-ledOnly > .dashboard-input-ledOnly,
+.is-testOnly > .dashboard-input-testOnly,
+.is-noProgram > .dashboard-input-noProgram,
 .is-noProgramming > .dashboard-input-noProgramming,
 .is-multi > .dashboard-input-multiNc12 {
   display: block;

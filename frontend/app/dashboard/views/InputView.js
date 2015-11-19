@@ -765,6 +765,7 @@ define([
       var programItems = [];
       var ledItems = [];
       var gprsItems = [];
+      var testItems = [];
       var ftItem = null;
 
       _.forEach(orderData.items, function(item)
@@ -781,6 +782,10 @@ define([
         {
           gprsItems.push(item);
         }
+        else if (item.kind === 'test')
+        {
+          testItems.push(item);
+        }
         else if (item.kind === 'ft')
         {
           ftItem = item;
@@ -788,6 +793,8 @@ define([
       });
 
       var selectedProgramItem = _.findWhere(programItems, {nc12: this.model.get('selectedNc12')});
+      var selectedTestItem = _.findWhere(testItems, {nc12: this.model.getProgramId()});
+      var isTestingEnabled = !!settings.get('glp2Enabled');
       var isLedsEnabled = !!settings.get('ledsEnabled');
       var isFtEnabled = !!settings.get('ftEnabled');
       var isFtActive = this.model.isFtActive();
@@ -799,6 +806,7 @@ define([
         && !programItems.length
         && ledItems.length > 0
         && isLedsEnabled;
+      var isTestOnly = isTestingEnabled && !isLedsEnabled && isNoProgramming && !isFtEnabled;
       var quantityTodo = orderData.quantityTodo;
       var quantityDone = orderData.quantityDone;
       var nc12 = '';
@@ -824,13 +832,28 @@ define([
         .toggleClass('is-ledOnly', isLedOnly)
         .toggleClass('is-ft-enabled', isFtEnabled && isFtActive)
         .toggleClass('is-ft-disabled', isFtEnabled && !isFtActive)
-        .toggleClass('is-noProgramming', isNoProgramming && !isLedOnly)
+        .toggleClass('is-noProgramming', isNoProgramming && !isLedOnly && !isTestOnly && isLedsEnabled)
+        .toggleClass('is-testOnly', isTestOnly)
+        .toggleClass('is-noProgram', isTestingEnabled && !isLedOnly && !isNoProgramming && !selectedProgramItem)
         .toggleClass('is-multi', user.isLocal() && !this.model.isInProgress() && isMultiNc12)
         .toggleClass('is-picked', nc12 !== '');
 
       if (isFtEnabled)
       {
         quantityDone = ftItem ? ftItem.quantityDone : 0;
+      }
+      else if (isTestOnly)
+      {
+        if (selectedTestItem)
+        {
+          quantityTodo = selectedTestItem.quantityTodo;
+          quantityDone = selectedTestItem.quantityDone;
+        }
+        else
+        {
+          quantityTodo = orderData.quantityTodo;
+          quantityDone = 0;
+        }
       }
       else if (isNoProgramming && ledItems.length)
       {
@@ -844,6 +867,12 @@ define([
         });
 
         quantityDone /= ledItems.length;
+
+        if (isTestingEnabled && selectedTestItem)
+        {
+          quantityTodo += selectedTestItem.quantityTodo;
+          quantityDone += selectedTestItem.quantityDone;
+        }
       }
       else if (!isLedsEnabled && ledItems.length && selectedProgramItem)
       {
