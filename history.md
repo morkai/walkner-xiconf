@@ -1,3 +1,13 @@
+2.17.2 @ 2015-11-19
+===================
+
+  * Changed a default value of the `workflowDaliFactoryNew` setting to `1` (enabled).
+  * Changed the remote coordinator to not attempt to retry a request after receiving an error response from the server.
+    Requests are resend only on connection errors.
+  * Changed the last log message to a generic one if the order has LED boards but nothing was done.
+  * Added 'No programming. Testing active.' and 'No program. Testing active.' to messages displayed in the 12NC input
+    on the Programmer page.
+
 2.17.1 @ 2015-11-17
 ===================
 
