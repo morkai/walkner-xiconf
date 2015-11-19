@@ -1341,7 +1341,7 @@ module.exports = function program(app, programmerModule, data, done)
           nc12: currentState.nc12 || '-'
         });
       }
-      else if (currentState.leds.length)
+      else if (currentState.leds.length && changes.errorCode !== 'NOTHING_DONE')
       {
         programmerModule.log('LED_SCANNING_FAILURE', {
           time: changes.finishedAt,
