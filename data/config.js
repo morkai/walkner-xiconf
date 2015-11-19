@@ -50,6 +50,7 @@ _.assign(config.settings.defaults, {
   remoteServer: 'http://161.87.64.46:6080/',
   syncInterval: 2,
   workflowVerify: 1,
+  workflowDaliFactoryNew: 1,
   featurePath1: '\\\\code1\\plrketchr8-box1\\Dokumentacja.technologiczna\\-=- Centrum dystrybucji\\Programowanie driverow\\1. Programy\\5. Multione',
   featurePath2: 'C:\\Programy_Multione',
   searchTimeout1: 15000,
