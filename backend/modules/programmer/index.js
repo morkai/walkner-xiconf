@@ -469,33 +469,29 @@ exports.start = function startProgrammerModule(app, module)
     {
       if (err)
       {
-        return module.warn("Failed to read the last mode file: %s", err.message);
+        module.warn("Failed to read the last mode file: %s", err.message);
       }
-
-      try
+      else
       {
-        lastMode = JSON.parse(lastMode);
-      }
-      catch (err)
-      {
-        return module.warn("Failed to parse the last mode file: %s", err.message);
-      }
-
-      module.setInputMode(lastMode.input, function(err)
-      {
-        if (err)
+        try
         {
-          return module.error("Failed to set the last input mode [%s]: %s", lastMode.input, err.message);
+          lastMode = JSON.parse(lastMode);
         }
-      });
-
-      module.setWorkMode(lastMode.work, function(err)
-      {
-        if (err)
+        catch (err)
         {
-          return module.error("Failed to set the last work mode [%s]: %s", lastMode.work, err.message);
+          module.warn("Failed to parse the last mode file: %s", err.message);
         }
-      });
+      }
+
+      if (!_.isObject(lastMode))
+      {
+        lastMode = {};
+      }
+
+      module.currentState.inputMode = lastMode.input || 'remote';
+      module.currentState.workMode = lastMode.work || 'programming';
+
+      saveLastMode();
     });
   }
 
