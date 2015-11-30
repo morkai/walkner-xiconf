@@ -1,3 +1,10 @@
+2.17.3 @ 2015-11-30
+===================
+
+  * Fixed a crash when working on a GPRS order with a GPRS license and the programming is disabled.
+  * Changed the initial setting of the input and work modes to use default values if reading the values from
+    a file fails.
+
 2.17.2 @ 2015-11-19
 ===================
 
