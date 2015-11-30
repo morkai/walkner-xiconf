@@ -437,7 +437,10 @@ HistoryEntry.prototype.setUpGprs = function()
 {
   this.clearGprs();
 
-  if (!this.waitingForLeds || this.inputMode !== 'remote' || !this.settings.supportsFeature('gprs'))
+  if (!this.waitingForLeds
+    || this.inputMode !== 'remote'
+    || !this.settings.supportsFeature('gprs')
+    || !this.settings.get('programming'))
   {
     return;
   }
