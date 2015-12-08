@@ -34,6 +34,7 @@ function RemoteCoordinator(app, programmerModule)
   this.broker.subscribe('settings.changed', this.onSettingsChanged.bind(this));
   this.broker.subscribe('programmer.stateChanged', this.onProgrammerStateChanged.bind(this));
   this.broker.subscribe('programmer.finished', this.onProgrammerFinished.bind(this));
+  this.broker.subscribe('programmer.ledManager.updated', this.onLedUpdated.bind(this));
 }
 
 RemoteCoordinator.prototype.isConnected = function()
@@ -551,4 +552,27 @@ RemoteCoordinator.prototype.onConfigure = function(settings, reply)
   {
     this.settings.import(settings, reply, false, true);
   }
+};
+
+/**
+ * @private
+ * @param {{index: number, data: object}} message
+ */
+RemoteCoordinator.prototype.onLedUpdated = function(message)
+{
+  var led = message.data;
+
+  if (!led.status || led.status.message !== 'INVALID_NC12' || !this.isConnected())
+  {
+    return;
+  }
+
+  var data = {
+    orderNo: this.selectedOrderNo,
+    serialNumber: led.serialNumber,
+    requiredNc12: led.nc12,
+    actualNc12: led.status.nc12
+  };
+
+  this.request('recordInvalidLed', data, _.noop);
 };
