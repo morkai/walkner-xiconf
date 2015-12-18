@@ -41,6 +41,36 @@ define([
 ) {
   'use strict';
 
+  var LED_PATTERNS = [
+    {
+      pattern: '([A-Z0-9]{22})-.*?([0-9]{12})[^0-9]',
+      serialNumber: 1,
+      nc12: 2
+    },
+    {
+      pattern: '.([0-9]{12}).([0-9]{5,11})',
+      serialNumber: 2,
+      nc12: 1
+    },
+    {
+      pattern: '.([0-9]{5,11}).([0-9]{12})',
+      serialNumber: 1,
+      nc12: 2
+    },
+    {
+      pattern: '([0-9]{10}) [0-9]{6} [0-9]{3} [A-Z]{3} ([0-9]{12}) [A-Z]{3}',
+      serialNumber: 1,
+      nc12: 2
+    }
+  ];
+  var ALL_LEDS_PATTERN = new RegExp(LED_PATTERNS.map(function(d)
+  {
+    var pattern = d.pattern;
+    d.pattern = new RegExp(pattern, 'i');
+
+    return pattern;
+  }).join('|'), 'i');
+
   return View.extend({
 
     template: inputTemplate,
@@ -1118,7 +1148,7 @@ define([
 
       if (this.model.isRemoteInput())
       {
-        if (/([A-Z0-9]{22}-.*?[0-9]{12}[^0-9]|.[0-9]{12}.[0-9]{5,11}|.[0-9]{5,11}.[0-9]{12})/i.test(message.value))
+        if (ALL_LEDS_PATTERN.test(message.value))
         {
           this.handleLedCommand(message.value, message.scannerId);
         }
@@ -1135,38 +1165,26 @@ define([
 
     handleLedCommand: function(led, scannerId)
     {
-      var matches;
       var nc12;
       var serialNumber;
 
-      matches = led.match(/([A-Z0-9]{22})-.*?([0-9]{12})[^0-9]/i);
-
-      if (!matches)
+      for (var i = 0; i < LED_PATTERNS.length; ++i)
       {
-        matches = led.match(/.([0-9]{12}).([0-9]{5,11})/);
+        var ledPattern = LED_PATTERNS[i];
+        var matches = led.match(ledPattern.pattern);
 
-        if (!matches)
+        if (matches)
         {
-          matches = led.match(/.([0-9]{5,11}).([0-9]{12})/);
+          nc12 = matches[ledPattern.nc12];
+          serialNumber = matches[ledPattern.serialNumber].toUpperCase();
 
-          if (!matches)
-          {
-            return;
-          }
-
-          nc12 = matches[2];
-          serialNumber = matches[1].toUpperCase();
-        }
-        else
-        {
-          nc12 = matches[1];
-          serialNumber = matches[2].toUpperCase();
+          break;
         }
       }
-      else
+
+      if (!nc12)
       {
-        nc12 = matches[2];
-        serialNumber = matches[1].toUpperCase();
+        return;
       }
 
       if (this.model.get('waitingForLeds'))
