@@ -36,7 +36,7 @@ module.exports = function syncPrograms(app, programsModule, done)
     return done(null, {type: 'error', text: 'noServer'});
   }
 
-  programsModule.scheduleSync(true);
+  programsModule.scheduleSync();
 
   programsModule.syncing = true;
 
@@ -145,7 +145,7 @@ module.exports = function syncPrograms(app, programsModule, done)
 
         for (i = 0; i < changes.created.length; ++i)
         {
-          app.broker.publish('programs.added', {
+          app.broker.publish('xiconfPrograms.added', {
             model: changes.created[i],
             user: null
           });
@@ -153,7 +153,7 @@ module.exports = function syncPrograms(app, programsModule, done)
 
         for (i = 0; i < changes.updated.length; ++i)
         {
-          app.broker.publish('programs.edited', {
+          app.broker.publish('xiconfPrograms.edited', {
             model: changes.updated[i],
             user: null
           });
@@ -161,7 +161,7 @@ module.exports = function syncPrograms(app, programsModule, done)
 
         for (i = 0; i < changes.deleted.length; ++i)
         {
-          app.broker.publish('programs.deleted', {
+          app.broker.publish('xiconfPrograms.deleted', {
             model: changes.deleted[i],
             user: null
           });
@@ -170,7 +170,7 @@ module.exports = function syncPrograms(app, programsModule, done)
 
       programsModule.syncing = false;
 
-      programsModule.scheduleSync(true);
+      programsModule.scheduleSync();
     }
   );
 };

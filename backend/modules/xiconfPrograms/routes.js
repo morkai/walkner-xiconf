@@ -16,7 +16,7 @@ module.exports = function setProgramsRoutes(app, programsModule)
 
   var cachedFilteredPrograms = null;
 
-  app.broker.subscribe('programs.*', function() { cachedFilteredPrograms = null; });
+  app.broker.subscribe('xiconfPrograms.*', function() { cachedFilteredPrograms = null; });
   app.broker.subscribe('settings.changed', function(changes)
   {
     if (changes.prodLine !== undefined
@@ -159,7 +159,7 @@ module.exports = function setProgramsRoutes(app, programsModule)
 
       res.status(201).json(program);
 
-      app.broker.publish('programs.added', {
+      app.broker.publish('xiconfPrograms.added', {
         model: program,
         user: null
       });
@@ -241,7 +241,7 @@ module.exports = function setProgramsRoutes(app, programsModule)
 
         res.send(this.model);
 
-        app.broker.publish('programs.edited', {
+        app.broker.publish('xiconfPrograms.edited', {
           model: this.model,
           user: null
         });
@@ -302,7 +302,7 @@ module.exports = function setProgramsRoutes(app, programsModule)
 
         res.sendStatus(204);
 
-        app.broker.publish('programs.deleted', {
+        app.broker.publish('xiconfPrograms.deleted', {
           model: this.model,
           user: null
         });

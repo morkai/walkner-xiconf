@@ -337,6 +337,7 @@ RemoteCoordinator.prototype.setUpSio = function()
 
   sio.on('xiconf.remoteDataUpdated', this.onRemoteDataUpdated.bind(this));
   sio.on('xiconf.leaderUpdated', this.onLeaderUpdated.bind(this));
+  sio.on('xiconf.programsUpdated', this.onProgramsUpdated.bind(this));
   sio.on('xiconf.restart', this.onRestart.bind(this));
   sio.on('xiconf.update', this.onUpdate.bind(this));
   sio.on('xiconf.configure', this.onConfigure.bind(this));
@@ -510,6 +511,14 @@ RemoteCoordinator.prototype.onRemoteDataUpdated = function(newData)
 RemoteCoordinator.prototype.onLeaderUpdated = function(newLeader)
 {
   this.programmer.changeState({remoteLeader: newLeader});
+};
+
+/**
+ * @private
+ */
+RemoteCoordinator.prototype.onProgramsUpdated = function()
+{
+  this.broker.publish('xiconfPrograms.updated');
 };
 
 /**

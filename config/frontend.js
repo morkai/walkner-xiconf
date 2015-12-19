@@ -201,7 +201,7 @@ exports.pubsub = {
     'programmer.startRequested',
     'programmer.resultToggled',
     'history.orderUpdated',
-    'programs.*'
+    'xiconfPrograms.*'
   ]
 };
 

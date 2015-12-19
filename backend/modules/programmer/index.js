@@ -539,7 +539,7 @@ exports.start = function startProgrammerModule(app, module)
     }
   });
 
-  app.broker.subscribe('programs.edited', function(message)
+  app.broker.subscribe('xiconfPrograms.edited', function(message)
   {
     var newProgram = message.model;
     var currentProgram = module.currentState.program;

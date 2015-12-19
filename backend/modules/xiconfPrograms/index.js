@@ -44,16 +44,17 @@ exports.start = function startXiconfProgramsModule(app, module)
   });
 
   app.broker.subscribe('app.started', syncPrograms.bind(null, app, module)).setLimit(1);
-  app.broker.subscribe('programs.added', scheduleSyncNow);
-  app.broker.subscribe('programs.edited', scheduleSyncNow);
-  app.broker.subscribe('programs.deleted', scheduleSyncNow);
+  app.broker.subscribe('xiconfPrograms.added', scheduleSyncSoon);
+  app.broker.subscribe('xiconfPrograms.edited', scheduleSyncSoon);
+  app.broker.subscribe('xiconfPrograms.deleted', scheduleSyncSoon);
+  app.broker.subscribe('xiconfPrograms.updated', function() { scheduleSync(0.5); });
 
-  function scheduleSyncNow()
+  function scheduleSyncSoon()
   {
-    scheduleSync(false);
+    scheduleSync(1);
   }
 
-  function scheduleSync(later)
+  function scheduleSync(minutes)
   {
     if (module.syncing)
     {
@@ -62,6 +63,6 @@ exports.start = function startXiconfProgramsModule(app, module)
 
     clearTimeout(syncTimer);
 
-    syncTimer = setTimeout(syncPrograms, (later ? 30 : 1) * 60 * 1000, app, module);
+    syncTimer = setTimeout(syncPrograms, (minutes || 30) * 60 * 1000, app, module);
   }
 };
