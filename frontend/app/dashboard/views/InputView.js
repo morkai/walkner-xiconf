@@ -744,7 +744,7 @@ define([
 
         if (Array.isArray(remoteData) && remoteData.length > 1)
         {
-          multiOrderNo = true;
+          multiOrderNo = !settings.get('forceLatestOrder');
         }
 
         orderData = this.model.getSelectedRemoteData() || {
@@ -856,6 +856,8 @@ define([
         nc12 = '';
       }
 
+      var isMulti = user.isLocal() && !this.model.isInProgress() && isMultiNc12;
+
       $els.nc12
         .val(nc12)
         .parent('div')
@@ -864,8 +866,11 @@ define([
         .toggleClass('is-ft-disabled', isFtEnabled && !isFtActive)
         .toggleClass('is-noProgramming', isNoProgramming && !isLedOnly && !isTestOnly && isLedsEnabled)
         .toggleClass('is-testOnly', isTestOnly)
-        .toggleClass('is-noProgram', isTestingEnabled && !isLedOnly && !isNoProgramming && !selectedProgramItem)
-        .toggleClass('is-multi', user.isLocal() && !this.model.isInProgress() && isMultiNc12)
+        .toggleClass(
+          'is-noProgram',
+          isTestingEnabled && !isLedOnly && !isNoProgramming && !selectedProgramItem && !isMulti
+        )
+        .toggleClass('is-multi', isMulti && !isNoProgramming)
         .toggleClass('is-picked', nc12 !== '');
 
       if (isFtEnabled)

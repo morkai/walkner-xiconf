@@ -404,28 +404,39 @@ RemoteCoordinator.prototype.checkSelectedOrderNo = function()
 {
   this.selectedOrderNoTimer = null;
 
-  var currentOrderData = _.find(this.currentData, {_id: this.selectedOrderNo});
+  var forceLatestOrder = !!this.settings.get('forceLatestOrder');
+  var newSelectedOrderNo = null;
+  var currentOrderDataIndex = _.findIndex(this.currentData, {_id: this.selectedOrderNo});
 
-  if (currentOrderData)
+  if (forceLatestOrder)
   {
-    return;
-  }
+    if (currentOrderDataIndex === 0)
+    {
+      return;
+    }
 
-  var newOrderData = _.findLast(this.currentData, {status: -1});
-  var newSelectedOrderNo;
-
-  if (!newOrderData)
-  {
-    newSelectedOrderNo = this.currentData.length ? this.currentData[0]._id : null;
+    if (this.currentData.length)
+    {
+      newSelectedOrderNo = this.currentData[0]._id;
+    }
   }
   else
   {
-    newSelectedOrderNo = newOrderData._id;
-  }
+    var newOrderData = _.findLast(this.currentData, {status: -1});
 
+    if (!newOrderData)
+    {
+      newSelectedOrderNo = this.currentData.length ? this.currentData[0]._id : null;
+    }
+    else
+    {
+      newSelectedOrderNo = newOrderData._id;
+    }
+  }
+console.log('checkSelectedOrderNo old=%s new=%s', this.selectedOrderNo, newSelectedOrderNo);
   if (this.selectedOrderNo !== newSelectedOrderNo)
   {
-    this.programmer.changeState({selectedOrderNo: newSelectedOrderNo});
+    this.programmer.selectOrderNo(newSelectedOrderNo, _.noop);
   }
 };
 
@@ -441,6 +452,11 @@ RemoteCoordinator.prototype.onSettingsChanged = function(changes)
     || changes.licenseInfo !== undefined)
   {
     this.setUpSio();
+  }
+
+  if (changes.forceLatestOrder !== undefined)
+  {
+    this.scheduleSelectedOrderNoCheck();
   }
 };
 

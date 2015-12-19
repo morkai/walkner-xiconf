@@ -152,6 +152,11 @@ exports.start = function startProgrammerModule(app, module)
 
     done(null);
 
+    if (orderNo === module.currentState.selectedOrderNo)
+    {
+      return;
+    }
+
     module.currentState.clear(true, true);
     module.currentState.selectedOrderNo = orderNo;
     module.currentState.selectedNc12 = null;

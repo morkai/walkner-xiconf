@@ -299,6 +299,7 @@ exports.start = function startSettingsModule(app, module, done)
     validateEnum(rawSettings, newSettings, 'serviceTagPrint', Number, [0, 1]);
     validateEnum(rawSettings, newSettings, 'ledsEnabled', Number, [0, 1, 2]);
     validateEnum(rawSettings, newSettings, 'ledsCheckingMode', String, ['pass', 'recent', 'remote']);
+    validateEnum(rawSettings, newSettings, 'forceLatestOrder', Number, [0, 1]);
     validateEnum(rawSettings, newSettings, 'programming', Number, [0, 1]);
     validateStringSetting(rawSettings, newSettings, 'serviceTagPrinter', 0);
     validateEnum(rawSettings, newSettings, 'serviceTagLabelType', String, ['zpl', 'dpl']);

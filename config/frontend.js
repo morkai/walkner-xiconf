@@ -146,6 +146,7 @@ exports.settings = {
     ledsEnabled: 0,
     ledsCheckingMode: 'pass',
     programming: 1,
+    forceLatestOrder: 0,
     gprsVerification: 1,
     gprsVerificationTimeout: 60000,
     gprsVerificationInputPath: DATA_PATH + '/gprs/input',

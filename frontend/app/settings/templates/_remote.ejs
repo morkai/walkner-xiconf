@@ -3,6 +3,17 @@
     <label for="<%- idPrefix %>-prodLine" class="control-label"><%- t('settings', 'setting:prodLine') %></label>
     <input id="<%- idPrefix %>-prodLine" class="form-control" name="prodLine" type="text">
   </div>
+  <div class="form-group">
+    <label for="<%- idPrefix %>-forceLatestOrder" class="control-label"><%- t('settings', 'setting:forceLatestOrder') %></label>
+    <div>
+      <label class="radio-inline">
+        <input id="<%- idPrefix %>-forceLatestOrder" name="forceLatestOrder" type="radio" value="0" required> <%- t('settings', 'setting:forceLatestOrder:off') %>
+      </label>
+      <label class="radio-inline">
+        <input name="forceLatestOrder" type="radio" value="1" required> <%- t('settings', 'setting:forceLatestOrder:on') %>
+      </label>
+    </div>
+  </div>
   <div class="row">
     <div class="col-md-3 form-group">
       <label for="<%- idPrefix %>-programming" class="control-label"><%- t('settings', 'setting:programming') %></label>
