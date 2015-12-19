@@ -433,7 +433,7 @@ RemoteCoordinator.prototype.checkSelectedOrderNo = function()
       newSelectedOrderNo = newOrderData._id;
     }
   }
-console.log('checkSelectedOrderNo old=%s new=%s', this.selectedOrderNo, newSelectedOrderNo);
+
   if (this.selectedOrderNo !== newSelectedOrderNo)
   {
     this.programmer.selectOrderNo(newSelectedOrderNo, _.noop);
