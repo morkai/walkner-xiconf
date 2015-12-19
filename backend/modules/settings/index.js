@@ -240,7 +240,7 @@ exports.start = function startSettingsModule(app, module, done)
   {
     var cmd = format('"%s" /f dummy /w dummy /c Halt', programmerFile || module.get('programmerFile'));
     var options = {
-      timeout: 5000
+      timeout: 10000
     };
 
     exec(cmd, options, function(err, stdout)
@@ -255,7 +255,7 @@ exports.start = function startSettingsModule(app, module, done)
 
   function checkCoreScannerDriver(done)
   {
-    exec('sc qc CoreScanner', {timeout: 5000}, function(err, stdout)
+    exec('sc qc CoreScanner', {timeout: 10000}, function(err, stdout)
     {
       settings.coreScannerDriver = _.includes(stdout, 'SERVICE_NAME: CoreScanner');
 
