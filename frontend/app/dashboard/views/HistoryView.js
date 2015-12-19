@@ -32,6 +32,15 @@ define([
         {
           this.collection.pop();
         }
+      },
+      'programmer.resultToggled': function(message)
+      {
+        var model = this.collection.get(message.resultId);
+
+        if (model)
+        {
+          model.set('cancelled', message.cancelled);
+        }
       }
     },
 
@@ -98,6 +107,7 @@ define([
       this.listenTo(this.collection, 'reset', this.render);
       this.listenTo(this.collection, 'add', this.onCollectionAdd);
       this.listenTo(this.collection, 'remove', this.onCollectionRemove);
+      this.listenTo(this.collection, 'change:cancelled', this.onResultToggled);
       this.listenTo(settings, 'change:title', this.onTitleChange);
     },
 
@@ -123,7 +133,8 @@ define([
         quantity: order ? (model.get('counter') + '/' + order.quantity) : '&nbsp;',
         serviceTag: model.get('serviceTag') || '&nbsp;',
         nc12: model.get('nc12'),
-        programName: model.getProgramName() || '&nbsp;'
+        programName: model.getProgramName() || '&nbsp;',
+        cancelled: model.get('cancelled') === 1
       };
     },
 
@@ -173,6 +184,11 @@ define([
       {
         this.$id('title').hide();
       }
+    },
+
+    onResultToggled: function(model, cancelled)
+    {
+      this.$('[data-id="' + model.id + '"]').toggleClass('is-cancelled', cancelled === 1);
     }
 
   });

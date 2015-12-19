@@ -121,6 +121,13 @@ COMMIT TRANSACTION;';
         sql += 'ALTER TABLE programs ADD COLUMN prodLines TEXT;\n';
       }
 
+      if (row.user_version < 6)
+      {
+        userVersion = 6;
+
+        sql += 'ALTER TABLE historyEntries ADD COLUMN cancelled INT DEFAULT 0;\n';
+      }
+
       if (sql === '')
       {
         return sqlite3Module.info("Database user version: %d", userVersion);

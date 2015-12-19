@@ -21,6 +21,13 @@
   border-top-width: 0;
   font-weight: bold;
 }
+.dashboard-history .list-group-item.is-cancelled {
+  background-color: #eee;
+  color: #333;
+}
+.dashboard-history .list-group-item.is-cancelled:hover {
+  background-color: #ddd;
+}
 .dashboard-history span {
   padding: 4px;
   display: table-cell;

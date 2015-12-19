@@ -38,7 +38,7 @@
     </div>
   </div>
   <% } %>
-  <div class="panel panel-<%- model.result === 'success'  ? 'success' : 'danger' %> history-details-entry">
+  <div class="panel panel-<%- model.cancelled ? 'default' : model.result === 'success'  ? 'success' : 'danger' %> history-details-entry">
     <div class="panel-heading">
       <%- t('history', 'PANEL:TITLE:details:entry') %>
     </div>

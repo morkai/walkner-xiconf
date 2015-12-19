@@ -9,6 +9,8 @@
     "PANEL:TITLE:details:order": "Local order details",
     "PANEL:TITLE:details:entry": "Programming details",
 
+    "PAGE_ACTION:cancel": "Cancel result",
+    "PAGE_ACTION:restore": "Restore result",
     "PAGE_ACTION:export": "Export results",
     "PAGE_ACTION:download": "Download configuration",
     "PAGE_ACTION:download:workflow": "MultiOneWorkflow configuration",
@@ -16,6 +18,14 @@
     "PAGE_ACTION:download:gprsOrderFile": "Order",
     "PAGE_ACTION:download:gprsInputFile": "CityTouchIPT configuration",
     "PAGE_ACTION:download:gprsOutputFile": "CityTouchIPT result",
+
+    "toggleResultDialog:title:cancel": "Cancelling result",
+    "toggleResultDialog:title:restore": "Restoring result",
+    "toggleResultDialog:message:cancel": "Are you sure you want to cancel the chosen result?",
+    "toggleResultDialog:message:restore": "Are you sure you want to restore the chosen result?",
+    "toggleResultDialog:action:cancel": "Cancel result",
+    "toggleResultDialog:action:restore": "Restore result",
+    "toggleResultDialog:cancel": "Take no action",
 
     "PROPERTY:no": "Order no",
     "PROPERTY:totalCounter": "Total programming attempts",

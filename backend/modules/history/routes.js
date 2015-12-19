@@ -42,6 +42,7 @@ module.exports = function setUpHistoryRoutes(app, historyModule)
     program: 'e.program',
     steps: 'e.steps',
     metrics: 'e.metrics',
+    cancelled: 'e.cancelled',
     quantity: 'o.quantity',
     no: 'o.no',
     successCounter: 'o.successCounter',

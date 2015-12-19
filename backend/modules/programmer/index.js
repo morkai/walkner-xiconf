@@ -6,6 +6,7 @@
 
 var fs = require('fs');
 var _ = require('lodash');
+var step = require('h5.step');
 var setUpCommands = require('./commands');
 var setUpBlockage = require('./blockage');
 var setUpBarcodeScanner = require('./barcodeScanner');
@@ -382,6 +383,101 @@ exports.start = function startProgrammerModule(app, module)
   module.checkSerialNumber = function(orderNo, raw, nc12, serialNumber, scannerId)
   {
     module.ledManager.check(orderNo, raw, nc12, serialNumber, scannerId);
+  };
+
+  module.toggleResult = function(resultId, state, done)
+  {
+    if (!_.isString(resultId) || _.isEmpty(resultId) || !_.isBoolean(state))
+    {
+      return done(new Error('INPUT'));
+    }
+
+    var newCancelled = state ? 0 : 1;
+
+    module.info("%s result: %s...", newCancelled ? "Cancelling" : "Restoring", resultId);
+
+    step(
+      function findResultStep()
+      {
+        var sql = "SELECT * FROM historyEntries WHERE _id=? LIMIT 1";
+
+        sqlite3Module.db.get(sql, [resultId], this.next());
+      },
+      function findOrderStep(err, result)
+      {
+        if (err)
+        {
+          return this.skip(err);
+        }
+
+        if (!result)
+        {
+          return this.skip(new Error('RESULT_NOT_FOUND'));
+        }
+
+        if (newCancelled === result.cancelled)
+        {
+          return this.skip(new Error('SAME_STATE'));
+        }
+
+        if (result.result !== 'success' || _.isEmpty(result.serviceTag))
+        {
+          return this.skip(new Error('INVALID_RESULT'));
+        }
+
+        this.result = result;
+
+        var sql = "SELECT * FROM orders WHERE _id=? LIMIT 1";
+
+        sqlite3Module.db.get(sql, [result._order], this.next());
+      },
+      function toggleResultStep(err, order)
+      {
+        if (err)
+        {
+          return this.skip(err);
+        }
+
+        if (!order)
+        {
+          return this.skip(new Error('ORDER_NOT_FOUND'));
+        }
+
+        var historyEntry = historyModule.createEntry().fromDb(this.result, order);
+        var serviceTagRequestData = _.extend(historyEntry.createServiceTagRequestData(), {
+          resultId: resultId
+        });
+        var command = newCancelled ? 'releaseServiceTag' : 'acquireServiceTag';
+
+        module.remoteCoordinator[command](serviceTagRequestData, this.next());
+      },
+      function updateResultStep(err)
+      {
+        if (err)
+        {
+          return this.skip(err);
+        }
+
+        var sql = "UPDATE historyEntries SET cancelled=? WHERE _id=?";
+
+        sqlite3Module.db.run(sql, [newCancelled, resultId], this.next());
+      },
+      function finalizeStep(err)
+      {
+        if (err)
+        {
+          module.error("Failed to toggle result [%s]: %s", resultId, err.message);
+        }
+        else
+        {
+          module.info("Toggled result: %s", resultId);
+
+          app.broker.publish('programmer.resultToggled', {resultId: resultId, cancelled: newCancelled});
+        }
+
+        done(err);
+      }
+    );
   };
 
   setUpBlockage(app, module);

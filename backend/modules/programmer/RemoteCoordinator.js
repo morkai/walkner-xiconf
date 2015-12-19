@@ -228,13 +228,16 @@ RemoteCoordinator.prototype.checkSerialNumber = function(data, done)
  * @param {Array.<({nc12: string, serialNumbers: Array.<string>})>} data.leds
  * @param {string} [data.programId]
  * @param {string} [data.programName]
+ * @param {function} [done]
  */
-RemoteCoordinator.prototype.releaseServiceTag = function(data)
+RemoteCoordinator.prototype.releaseServiceTag = function(data, done)
 {
-  if (this.sio)
+  if (!this.isConnected())
   {
-    this.sio.emit('xiconf.releaseServiceTag', data);
+    return done(new Error("No connection to the remote server: " + this.settings.get('remoteServer')));
   }
+
+  this.request('releaseServiceTag', data, done);
 };
 
 /**

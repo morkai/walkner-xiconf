@@ -53,6 +53,7 @@ module.exports = function setUpProgrammerCommands(app, programmerModule)
       socket.on('programmer.resetLeds', resetLeds);
       socket.on('programmer.printServiceTags', printServiceTags);
       socket.on('programmer.reconnectToProdLine', reconnectToProdLine);
+      socket.on('programmer.toggleResult', toggleResult);
     }
   });
 
@@ -455,6 +456,14 @@ module.exports = function setUpProgrammerCommands(app, programmerModule)
     programmerModule.remoteCoordinator.connectToProdLine(true);
 
     setTimeout(reply, 5000);
+  }
+
+  function toggleResult(resultId, state, reply)
+  {
+    if (_.isFunction(reply))
+    {
+      programmerModule.toggleResult(resultId, state, reply);
+    }
   }
 
   function validateOrder(data)

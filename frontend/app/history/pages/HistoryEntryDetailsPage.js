@@ -4,18 +4,26 @@
 
 define([
   'app/i18n',
-  'app/core/util/bindLoadingMessage',
+  'app/user',
+  'app/viewport',
   'app/core/View',
+  'app/core/views/DialogView',
+  'app/core/util/bindLoadingMessage',
   '../HistoryEntry',
   '../views/HistoryEntryDetailsView',
-  'app/history/templates/downloadAction'
+  'app/history/templates/downloadAction',
+  'app/history/templates/toggleResultDialog'
 ], function(
   t,
-  bindLoadingMessage,
+  user,
+  viewport,
   View,
+  DialogView,
+  bindLoadingMessage,
   HistoryEntry,
   HistoryEntryDetailsView,
-  downloadActionTemplate
+  downloadActionTemplate,
+  toggleResultDialogTemplate
 ) {
   'use strict';
 
@@ -45,8 +53,8 @@ define([
       var gprsInputFile = model.get('gprsInputFile');
       var gprsOutputFile = model.get('gprsOutputFile');
       var url = model.url() + ';';
-
-      return [{
+      var cancelled = !!model.get('cancelled');
+      var actions = [{
         template: function()
         {
           return downloadActionTemplate({
@@ -60,6 +68,17 @@ define([
           });
         }
       }];
+
+      if (user.isLocal() && model.get('result') === 'success' && model.get('serviceTag'))
+      {
+        actions.unshift({
+          label: t('history', 'PAGE_ACTION:' + (cancelled ? 'restore' : 'cancel')),
+          icon: cancelled ? 'check' : 'ban',
+          callback: this.toggleResult.bind(this)
+        });
+      }
+
+      return actions;
     },
 
     remoteTopics: {
@@ -70,6 +89,13 @@ define([
         if (order && changes._id === order._id)
         {
           this.model.set('order', changes);
+        }
+      },
+      'programmer.resultToggled': function(message)
+      {
+        if (this.model.id === message.resultId)
+        {
+          this.model.set('cancelled', message.cancelled);
         }
       }
     },
@@ -84,9 +110,58 @@ define([
       });
     },
 
+    setUpLayout: function(layout)
+    {
+      this.listenTo(this.model, 'change:cancelled', function()
+      {
+        layout.setActions(this.actions, this);
+      });
+    },
+
     load: function(when)
     {
       return when(this.model.fetch());
+    },
+
+    toggleResult: function()
+    {
+      var cancelled = !!this.model.get('cancelled');
+      var action = cancelled ? 'restore' : 'cancel';
+      var dialogView = new DialogView({
+        template: toggleResultDialogTemplate,
+        model: {
+          message: t('history', 'toggleResultDialog:message:' + action),
+          action: t('history', 'toggleResultDialog:action:' + action),
+          buttonClassName: cancelled ? 'success' : 'danger'
+        }
+      });
+      var view = this;
+
+      this.listenTo(dialogView, 'answered', function(answer)
+      {
+        if (answer !== 'yes')
+        {
+          return;
+        }
+
+        view.socket.emit('programmer.toggleResult', view.model.id, cancelled, function(err)
+        {
+          if (err)
+          {
+            viewport.msg.show({
+              type: 'error',
+              time: 5000,
+              text: err.message
+            });
+          }
+          else
+          {
+            viewport.closeDialog();
+          }
+        });
+      });
+
+      viewport.showDialog(dialogView, t('history', 'toggleResultDialog:title:' + action));
     }
 
   });

@@ -93,7 +93,7 @@ exports.start = function startProgrammerModule(app, module, done)
       var serialNumbers = module.recentSerialNumbers[i];
       var candidate = serialNumbers[serialNumber];
 
-      if (candidate === orderNo)
+      if (!candidate.cancelled && candidate.orderNo === orderNo)
       {
         error = {message: 'SERIAL_NUMBER_USED'};
         xiconfOrder = {
@@ -115,6 +115,8 @@ exports.start = function startProgrammerModule(app, module, done)
   app.broker.subscribe('app.started', findRecentEntries).setLimit(1);
 
   app.broker.subscribe('programmer.finished', saveRecentEntry);
+
+  app.broker.subscribe('programmer.resultToggled', toggleSerialNumberState);
 
   setUpDb(sqlite3Module, done);
 
@@ -158,7 +160,8 @@ exports.start = function startProgrammerModule(app, module, done)
       featureFileName: historyEntry.featureFileName,
       program: !program ? null : {
         name: program.name
-      }
+      },
+      cancelled: historyEntry.cancelled ? 1 : 0
     });
 
     if (module.recent.length > MAX_RECENT_HISTORY_ENTRIES)
@@ -186,7 +189,11 @@ exports.start = function startProgrammerModule(app, module, done)
 
         if (led.status === 'checked')
         {
-          serialNumbers[led.serialNumber] = orderNo;
+          serialNumbers[led.serialNumber] = {
+            orderNo: orderNo,
+            resultId: historyEntry._id,
+            cancelled: historyEntry.cancelled ? 1 : 0
+          };
         }
       }
 
@@ -195,5 +202,16 @@ exports.start = function startProgrammerModule(app, module, done)
         module.recentSerialNumbers.unshift(serialNumbers);
       }
     }
+  }
+
+  function toggleSerialNumberState(message)
+  {
+    _.forEach(module.recentSerialNumbers, function(recentSerialNumber)
+    {
+      if (recentSerialNumber.resultId === message.resultId)
+      {
+        recentSerialNumber.cancelled = message.cancelled;
+      }
+    });
   }
 };

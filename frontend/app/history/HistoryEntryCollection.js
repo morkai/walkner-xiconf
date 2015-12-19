@@ -41,7 +41,8 @@ define([
           counter: 1,
           result: 1,
           startedAt: 1,
-          duration: 1
+          duration: 1,
+          cancelled: 1
         },
         sort: {
           startedAt: -1

@@ -84,6 +84,46 @@ HistoryEntry.prototype.toJSON = function()
   };
 };
 
+HistoryEntry.prototype.fromDb = function(result, order)
+{
+  _.extend(this, _.pick(result, [
+    '_id',
+    'nc12',
+    'counter',
+    'startedAt',
+    'finishedAt',
+    'duration',
+    'result',
+    'errorCode',
+    'exception',
+    'output',
+    'featureFile',
+    'featureFileName',
+    'featureFileHash',
+    'workflowFile',
+    'workflow',
+    'serviceTag'
+  ]));
+
+  [
+    'log',
+    'program',
+    'steps',
+    'metrics',
+    'leds'
+  ].forEach(function(property)
+  {
+    this[property] = _.isString(result[property]) ? JSON.parse(result[property]) : result[property];
+  }, this);
+
+  if (order)
+  {
+    this.order = _.extend(new Order(0, order.no, order.quantity), order);
+  }
+
+  return this;
+};
+
 HistoryEntry.prototype.isInProgress = function()
 {
   return this.inProgress;

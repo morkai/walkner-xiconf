@@ -1,4 +1,4 @@
-<a data-id="<%- _id %>" href="<%- href %>" class="list-group-item list-group-item-<%- className %>">
+<a data-id="<%- _id %>" href="<%- href %>" class="list-group-item list-group-item-<%- className %> <%- cancelled ? 'is-cancelled' : '' %>">
   <span class="dashboard-history-time"><%- time %></span>
   <span class="dashboard-history-orderNo"><%- orderNo %></span>
   <span class="dashboard-history-quantity"><%- quantity %></span>

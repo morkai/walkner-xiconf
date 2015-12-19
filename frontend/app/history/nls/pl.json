@@ -8,6 +8,8 @@
   "PANEL:TITLE:details:order": "Szczegóły lokalnego zlecenia",
   "PANEL:TITLE:details:entry": "Szczegóły programowania",
 
+  "PAGE_ACTION:cancel": "Anuluj wynik",
+  "PAGE_ACTION:restore": "Przywróć wynik",
   "PAGE_ACTION:export": "Eksportuj historię",
   "PAGE_ACTION:download": "Pobierz konfigurację",
   "PAGE_ACTION:download:workflow": "Konfiguracja MultiOneWorkflow",
@@ -15,6 +17,14 @@
   "PAGE_ACTION:download:gprsOrderFile": "Zlecenie",
   "PAGE_ACTION:download:gprsInputFile": "Konfiguracja CityTouchIPT",
   "PAGE_ACTION:download:gprsOutputFile": "Wynik CityTouchIPT",
+
+  "toggleResultDialog:title:cancel": "Anulowanie wyniku",
+  "toggleResultDialog:title:restore": "Przywracanie wyniku",
+  "toggleResultDialog:message:cancel": "Czy na pewno chcesz anulować wybrany wynik?",
+  "toggleResultDialog:message:restore": "Czy na pewno chcesz przywrócić wybrany wynik?",
+  "toggleResultDialog:action:cancel": "Anuluj wynik",
+  "toggleResultDialog:action:restore": "Przywróć wynik",
+  "toggleResultDialog:cancel": "Nie podejmuj akcji",
 
   "PROPERTY:no": "Nr zlecenia",
   "PROPERTY:totalCounter": "Całkowita ilość programowań",

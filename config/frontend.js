@@ -199,6 +199,7 @@ exports.pubsub = {
     'programmer.finished',
     'programmer.barcodeScanned',
     'programmer.startRequested',
+    'programmer.resultToggled',
     'history.orderUpdated',
     'programs.*'
   ]

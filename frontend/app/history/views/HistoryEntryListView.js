@@ -21,7 +21,8 @@ define([
 
     remoteTopics: {
       'history.orderUpdated': 'refreshCollection',
-      'programmer.finished': 'refreshCollection'
+      'programmer.finished': 'refreshCollection',
+      'programmer.resultToggled' : 'refreshCollection'
     },
 
     events: {
@@ -63,10 +64,16 @@ define([
     {
       var order = model.get('order');
       var program = model.get('program');
+      var className = ['history-entry', model.get('result') === 'success' ? 'success' : 'danger'];
+
+      if (model.get('cancelled'))
+      {
+        className.push('is-cancelled');
+      }
 
       return {
         _id: model.id,
-        className: 'history-entry ' + (model.get('result') === 'success' ? 'success' : 'danger'),
+        className: className.join(' '),
         serviceTag: model.get('serviceTag') || '-',
         order: order ? order.no : '-',
         programName: model.getProgramName() || '-',
