@@ -1,3 +1,15 @@
+2.18.0 @ 2015-12-20
+===================
+
+  * Changed the program synchronization to also occur 30s after a program is updated on the remote server.
+  * Changed the timeouts of the initial CoreScanner service check and the MOW version check from 5s to 10s.
+  * Added recording of invalid LED board scans: the remote server is notified about LED boards with an invalid 12NC.
+  * Added a new LED board recognition pattern.
+  * Added a result toggling functionality: a successful result with a ServiceTag can be cancelled (and restored) so
+    that it isn't counted in the remote order.
+  * Added a new setting: Force the latest order - if enabled, then the latest remote order is always automatically
+    selected and can't be changed by the operator.
+
 2.17.3 @ 2015-11-30
 ===================
 
