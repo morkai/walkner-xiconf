@@ -1,3 +1,9 @@
+2.18.1 @ 2015-12-21
+===================
+
+  * Fixed a crash when scanning a LED board with the local serial number checking enabled.
+  * Fixed the current result being cleared before it has been saved in the database.
+
 2.18.0 @ 2015-12-20
 ===================
 
