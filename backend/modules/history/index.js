@@ -116,7 +116,7 @@ exports.start = function startProgrammerModule(app, module, done)
 
   app.broker.subscribe('programmer.finished', saveRecentEntry);
 
-  app.broker.subscribe('programmer.resultToggled', toggleSerialNumberState);
+  app.broker.subscribe('programmer.resultToggled', onResultToggled);
 
   setUpDb(sqlite3Module, done);
 
@@ -204,13 +204,21 @@ exports.start = function startProgrammerModule(app, module, done)
     }
   }
 
-  function toggleSerialNumberState(message)
+  function onResultToggled(message)
   {
     _.forEach(module.recentSerialNumbers, function(recentSerialNumber)
     {
       if (recentSerialNumber.resultId === message.resultId)
       {
         recentSerialNumber.cancelled = message.cancelled;
+      }
+    });
+
+    _.forEach(module.recent, function(historyEntry)
+    {
+      if (historyEntry._id === message.resultId)
+      {
+        historyEntry.cancelled = message.cancelled;
       }
     });
   }
