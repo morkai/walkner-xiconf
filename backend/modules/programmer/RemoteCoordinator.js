@@ -422,6 +422,11 @@ RemoteCoordinator.prototype.checkSelectedOrderNo = function()
   }
   else
   {
+    if (currentOrderDataIndex !== -1)
+    {
+      return;
+    }
+
     var newOrderData = _.findLast(this.currentData, {status: -1});
 
     if (!newOrderData)
