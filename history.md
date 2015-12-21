@@ -1,3 +1,9 @@
+2.18.2 @ 2015-12-21
+===================
+
+  * Fixed the recent history results not having their 'cancelled' flag updated.
+  * Added success & failure messages to the 'Toggle result' action.
+
 2.18.1 @ 2015-12-21
 ===================
 
