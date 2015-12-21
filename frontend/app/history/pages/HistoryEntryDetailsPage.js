@@ -151,12 +151,19 @@ define([
             viewport.msg.show({
               type: 'error',
               time: 5000,
-              text: err.message
+              text: t('history', 'toggleResultDialog:msg:failure', {
+                action: action,
+                error: err.message
+              })
             });
           }
           else
           {
-            viewport.closeDialog();
+            viewport.msg.show({
+              type: 'success',
+              time: 2000,
+              text: t('history', 'toggleResultDialog:msg:success', {action: action})
+            });
           }
         });
       });

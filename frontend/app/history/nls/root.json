@@ -26,6 +26,8 @@
     "toggleResultDialog:action:cancel": "Cancel result",
     "toggleResultDialog:action:restore": "Restore result",
     "toggleResultDialog:cancel": "Take no action",
+    "toggleResultDialog:msg:success": "The result was {action, select, cancel{cancelled} other{restored}} :-)",
+    "toggleResultDialog:msg:failure": "Failed to {action, select, cancel{cancel} other{restore}} the result: {error}",
 
     "PROPERTY:no": "Order no",
     "PROPERTY:totalCounter": "Total programming attempts",

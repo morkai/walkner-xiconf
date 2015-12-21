@@ -25,6 +25,8 @@
   "toggleResultDialog:action:cancel": "Anuluj wynik",
   "toggleResultDialog:action:restore": "Przywróć wynik",
   "toggleResultDialog:cancel": "Nie podejmuj akcji",
+  "toggleResultDialog:msg:success": "Wynik został {action, select, cancel{anulowany} other{przywrócony}} :-)",
+  "toggleResultDialog:msg:failure": "Nie udało się {action, select, cancel{anulować} other{przywrócić}} wyniku: {error}",
 
   "PROPERTY:no": "Nr zlecenia",
   "PROPERTY:totalCounter": "Całkowita ilość programowań",
