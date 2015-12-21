@@ -93,7 +93,7 @@ exports.start = function startProgrammerModule(app, module, done)
       var serialNumbers = module.recentSerialNumbers[i];
       var candidate = serialNumbers[serialNumber];
 
-      if (!candidate.cancelled && candidate.orderNo === orderNo)
+      if (candidate && !candidate.cancelled && candidate.orderNo === orderNo)
       {
         error = {message: 'SERIAL_NUMBER_USED'};
         xiconfOrder = {
