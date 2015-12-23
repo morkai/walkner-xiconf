@@ -1,3 +1,8 @@
+2.18.3 @ 2015-12-23
+===================
+
+  * Changed the recently added LED board matching pattern to handle an edge case.
+
 2.18.2 @ 2015-12-21
 ===================
 
