@@ -1,3 +1,8 @@
+2.18.4 @ 2016-02-01
+===================
+
+  * Changed the recently added LED board matching pattern to also allow `[0-9]` where `[A-Z]` is allowed.
+
 2.18.3 @ 2015-12-23
 ===================
 
