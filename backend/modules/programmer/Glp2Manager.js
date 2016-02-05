@@ -6,7 +6,6 @@
 
 var inherits = require('util').inherits;
 var EventEmitter = require('events').EventEmitter;
-var _ = require('lodash');
 var step = require('h5.step');
 var serialport = require('serialport');
 var glp2 = require('./glp2');
@@ -253,7 +252,7 @@ Glp2Manager.prototype.stop = function(done)
  */
 Glp2Manager.prototype.reset = function(cancelDelay, done)
 {
-  if (_.isFunction(cancelDelay))
+  if (typeof cancelDelay === 'function')
   {
     done = cancelDelay;
     cancelDelay = this.settings.get('glp2CancelDelay') || 2000;
