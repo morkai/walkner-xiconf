@@ -27,7 +27,10 @@ function RemoteCoordinator(app, programmerModule)
   this.currentData = [];
   this.newDataQueue = [];
 
+  this.lastResponseTime = Date.now();
+  this.forceReconnectTimer = setInterval(this.checkLastResponseTime.bind(this), 5000);
   this.selectedOrderNoTimer = null;
+  this.resetRemoteOrderTimer = null;
   this.restarting = false;
 
   this.broker.subscribe('app.started', this.setUpSio.bind(this)).setLimit(1);
@@ -140,7 +143,7 @@ RemoteCoordinator.prototype.request = function(action, body, done, rid, attempt,
     }
   };
 
-  var remoteCoordinator = this;
+  var rc = this;
   var options = {
     method: 'POST',
     uri: url.format(_.assign(url.parse(this.settings.get('remoteServer')), {
@@ -184,17 +187,21 @@ RemoteCoordinator.prototype.request = function(action, body, done, rid, attempt,
     {
       if (attempt === REQUEST_MAX_ATTEMPTS)
       {
-        remoteCoordinator.programmer.debug("[remote] %s failed %d times: %s", action, attempt, err.code || err.message);
+        rc.programmer.debug("[remote] %s failed %d times: %s", action, attempt, err.code || err.message);
 
         return done(err);
       }
 
-      remoteCoordinator.programmer.debug("[remote] %d. attempt at %s...", attempt + 1, action);
+      rc.programmer.debug("[remote] %d. attempt at %s...", attempt + 1, action);
 
       return setTimeout(
-        remoteCoordinator.request.bind(remoteCoordinator, action, body, done, rid, attempt, cancel),
+        rc.request.bind(rc, action, body, done, rid, attempt, cancel),
         500 * attempt
       );
+    }
+    else
+    {
+      rc.lastResponseTime = Date.now();
     }
 
     return done(null, responseBody);
@@ -263,7 +270,7 @@ RemoteCoordinator.prototype.setUpSio = function()
     return;
   }
 
-  var remoteCoordinator = this;
+  var rc = this;
   var sio = socketIoClient.connect(remoteServer, {
     path: '/sio',
     transports: ['websocket'],
@@ -271,6 +278,11 @@ RemoteCoordinator.prototype.setUpSio = function()
     timeout: 5000,
     reconnectionDelay: 1000,
     reconnectionDelayMax: 5000
+  });
+
+  sio.on('pong', function()
+  {
+    rc.lastResponseTime = Date.now();
   });
 
   sio.once('connecting', function()
@@ -282,9 +294,15 @@ RemoteCoordinator.prototype.setUpSio = function()
   {
     programmer.debug("[remote] Connected to: %s", remoteServer);
 
-    remoteCoordinator.connectToProdLine();
+    rc.connectToProdLine();
 
     programmer.changeState({remoteConnected: true});
+
+    if (rc.resetRemoteOrderTimer)
+    {
+      clearTimeout(rc.resetRemoteOrderTimer);
+      rc.resetRemoteOrderTimer = null;
+    }
   });
 
   sio.once('connect_error', function(err)
@@ -297,6 +315,13 @@ RemoteCoordinator.prototype.setUpSio = function()
     programmer.warn("[remote] Disconnected :(");
 
     programmer.changeState({remoteConnected: false});
+
+    if (rc.resetRemoteOrderTimer)
+    {
+      clearTimeout(rc.resetRemoteOrderTimer);
+    }
+
+    rc.resetRemoteOrderTimer = setTimeout(rc.resetRemoteOrder.bind(rc), 20000);
   });
 
   sio.on('reconnecting', function(reconnectCount)
@@ -318,7 +343,7 @@ RemoteCoordinator.prototype.setUpSio = function()
 
     programmer.warn("[remote] Reconnected to: %s", remoteServer);
 
-    remoteCoordinator.connectToProdLine();
+    rc.connectToProdLine();
 
     programmer.changeState({remoteConnected: true});
   });
@@ -345,6 +370,7 @@ RemoteCoordinator.prototype.setUpSio = function()
   sio.open();
 
   this.sio = sio;
+  this.lastResponseTime = Date.now();
 };
 
 /**
@@ -523,6 +549,8 @@ RemoteCoordinator.prototype.onRemoteDataUpdated = function(newData)
   {
     this.updateCurrentData(newData);
   }
+
+  this.lastResponseTime = Date.now();
 };
 
 /**
@@ -532,6 +560,7 @@ RemoteCoordinator.prototype.onRemoteDataUpdated = function(newData)
 RemoteCoordinator.prototype.onLeaderUpdated = function(newLeader)
 {
   this.programmer.changeState({remoteLeader: newLeader});
+  this.lastResponseTime = Date.now();
 };
 
 /**
@@ -540,6 +569,7 @@ RemoteCoordinator.prototype.onLeaderUpdated = function(newLeader)
 RemoteCoordinator.prototype.onProgramsUpdated = function()
 {
   this.broker.publish('xiconfPrograms.updated');
+  this.lastResponseTime = Date.now();
 };
 
 /**
@@ -570,6 +600,7 @@ RemoteCoordinator.prototype.onRestart = function()
 RemoteCoordinator.prototype.onUpdate = function()
 {
   this.broker.publish('updater.checkRequested');
+  this.lastResponseTime = Date.now();
 };
 
 /**
@@ -585,6 +616,8 @@ RemoteCoordinator.prototype.onConfigure = function(settings, reply)
   {
     this.settings.import(settings, reply, false, true);
   }
+
+  this.lastResponseTime = Date.now();
 };
 
 /**
@@ -608,4 +641,34 @@ RemoteCoordinator.prototype.onLedUpdated = function(message)
   };
 
   this.request('recordInvalidLed', data, _.noop);
+};
+
+/**
+ * @private
+ */
+RemoteCoordinator.prototype.resetRemoteOrder = function()
+{
+  this.programmer.debug('[remote] No reconnect after 15s. Resetting remote data...');
+
+  if (this.programmer.currentState.isInProgress())
+  {
+    this.broker.subscribe('programmer.finished', this.updateCurrentData.bind(this, [])).setLimit(1);
+  }
+  else
+  {
+    this.updateCurrentData([]);
+  }
+};
+
+/**
+ * @private
+ */
+RemoteCoordinator.prototype.checkLastResponseTime = function()
+{
+  if (Date.now() - this.lastResponseTime > 45000 && (!this.sio || !this.sio.io.reconnecting))
+  {
+    this.programmer.debug('[remote] No activity for 45s. Forcing reconnect...');
+
+    this.connectToProdLine(true);
+  }
 };
