@@ -383,7 +383,7 @@ Glp2Manager.prototype.reset = function(cancelDelay, done)
         {
           return setImmediate(
             manager.onReady,
-            new Error("Failed to empty actual values buffer, bacause of tester being faulty: " + res.faultStatus),
+            new Error("Failed to empty actual values buffer, because of tester being faulty: " + res.faultStatus),
             done
           );
         }
