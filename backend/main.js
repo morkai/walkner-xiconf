@@ -96,5 +96,6 @@ app.broker.subscribe('app.started').setLimit(1).on('message', function()
   if (requireCache.built)
   {
     requireCache.save();
+    app.debug('Require cache built!');
   }
 });

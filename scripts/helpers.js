@@ -3,7 +3,6 @@
 'use strict';
 
 var path = require('path');
-var fs = require('fs');
 var pkg = require('../package.json');
 var installerConfig = require('./../config/installer');
 
@@ -58,24 +57,14 @@ exports.copy = {
       },
       {
         expand: true,
-        cwd: './node_modules',
+        cwd: './node_modules_prod',
         src: '**',
-        dest: DEST_APP + '/node_modules',
-        filter: function(file)
-        {
-          var prefixLength = 'node_modules/'.length;
-          var sepIndex = file.indexOf(path.sep, prefixLength);
-          var moduleName = sepIndex === -1
-            ? file.substr(prefixLength)
-            : file.substring(prefixLength, sepIndex);
-
-          return pkg.devDependencies[moduleName] === undefined;
-        }
+        dest: DEST_APP + '/node_modules'
       },
       {
         expand: true,
         cwd: './',
-        src: ['history.md', 'license.md', 'package.json', 'readme.md'],
+        src: ['history.md', 'license.md', 'package.json', 'readme.md', 'require-cache.json'],
         dest: DEST_APP
       },
       {
