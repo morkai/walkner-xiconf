@@ -3,25 +3,27 @@
 // Part of the walkner-xiconf project <http://lukasz.walukiewicz.eu/p/walkner-xiconf>
 
 define([
+  'require',
   'underscore',
   'highlight',
   'app/i18n',
-  'app/highcharts',
   'app/core/View',
   'app/dashboard/views/LedsView',
   'app/xiconfPrograms/views/XiconfProgramStepsView',
   'app/history/templates/details'
 ], function(
+  require,
   _,
   hljs,
   t,
-  Highcharts,
   View,
   LedsView,
   XiconfProgramStepsView,
   detailsTemplate
 ) {
   'use strict';
+
+  var Highcharts = null;
 
   return View.extend({
 
@@ -67,6 +69,8 @@ define([
         gprsOutputFile: false
       };
       this.metricsChart = null;
+      this.destroyed = false;
+      this.renderingMetrics = false;
 
       this.setView('.history-details-leds', new LedsView({model: this.model}));
       this.setView('.history-details-steps', new XiconfProgramStepsView({model: this.model}));
@@ -79,6 +83,8 @@ define([
         this.metricsChart.destroy();
         this.metricsChart = null;
       }
+
+      this.destroyed = true;
     },
 
     serialize: function()
@@ -138,11 +144,31 @@ define([
 
     renderMetrics: function()
     {
+      if (this.destroyed || this.renderingMetrics)
+      {
+        return;
+      }
+
       if (this.metricsChart !== null)
       {
         this.metricsChart.reflow();
 
         return;
+      }
+
+      if (!Highcharts)
+      {
+        var view = this;
+
+        view.renderingMetrics = true;
+
+        return require(['app/highcharts'], function()
+        {
+          Highcharts = arguments[0];
+
+          view.renderingMetrics = false;
+          view.renderMetrics();
+        });
       }
 
       var metrics = this.model.get('metrics');
