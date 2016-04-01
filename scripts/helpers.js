@@ -1,3 +1,5 @@
+// Part of <http://miracle.systems/p/walkner-xiconf> licensed under <CC BY-NC-SA 4.0>
+
 /*jshint maxlen:false*/
 
 'use strict';
