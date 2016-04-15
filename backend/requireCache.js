@@ -214,7 +214,13 @@ function loadSource(sources, path)
   {
     try
     {
-      minified = require('uglify-js').minify(source, {fromString: true}).code;
+      minified = require('uglify-js').minify(source, {
+        fromString: true,
+        compress: {
+          hoist_funs: false,
+          hoist_vars: false
+        }
+      }).code;
     }
     catch (err)
     {
