@@ -487,6 +487,15 @@ RemoteCoordinator.prototype.onSettingsChanged = function(changes)
   {
     this.scheduleSelectedOrderNoCheck();
   }
+
+  if (this.isConnected()
+    && (changes.multiOneWorkflowVersion !== undefined || changes.coreScannerDriver !== undefined))
+  {
+    this.sio.emit('xiconf.stateChanged', {
+      mowVersion: changes.multiOneWorkflowVersion,
+      coreScannerDriver: changes.coreScannerDriver
+    });
+  }
 };
 
 /**
@@ -557,6 +566,8 @@ RemoteCoordinator.prototype.onRemoteDataUpdated = function(newData)
  */
 RemoteCoordinator.prototype.onLeaderUpdated = function(newLeader)
 {
+  this.programmer.debug('[remote] Leader updated: %s', JSON.stringify(newLeader));
+
   this.programmer.changeState({remoteLeader: newLeader});
   this.lastResponseTime = Date.now();
 };
@@ -566,6 +577,8 @@ RemoteCoordinator.prototype.onLeaderUpdated = function(newLeader)
  */
 RemoteCoordinator.prototype.onProgramsUpdated = function()
 {
+  this.programmer.debug('[remote] Programs update requested...');
+
   this.broker.publish('xiconfPrograms.updated');
   this.lastResponseTime = Date.now();
 };
@@ -584,10 +597,14 @@ RemoteCoordinator.prototype.onRestart = function()
 
   if (this.programmer.currentState.isInProgress())
   {
+    this.programmer.debug('[remote] Restart requested while programming...');
+
     this.broker.subscribe('programmer.finished', process.exit.bind(process));
   }
   else
   {
+    this.programmer.debug('[remote] Restarting!');
+
     process.exit();
   }
 };
@@ -597,6 +614,8 @@ RemoteCoordinator.prototype.onRestart = function()
  */
 RemoteCoordinator.prototype.onUpdate = function()
 {
+  this.programmer.debug('[remote] Update check requested...');
+
   this.broker.publish('updater.checkRequested');
   this.lastResponseTime = Date.now();
 };
@@ -608,10 +627,14 @@ RemoteCoordinator.prototype.onConfigure = function(settings, reply)
 {
   if (this.programmer.currentState.isInProgress())
   {
+    this.programmer.debug('[remote] Settings change requested while programming...');
+
     this.broker.subscribe('programmer.finished', this.onConfigure.bind(this, settings)).setLimit(1);
   }
   else
   {
+    this.programmer.debug('[remote] Importing settings: %s', JSON.stringify(settings));
+
     this.settings.import(settings, reply, false, true);
   }
 
@@ -637,6 +660,8 @@ RemoteCoordinator.prototype.onLedUpdated = function(message)
     requiredNc12: led.nc12,
     actualNc12: led.status.nc12
   };
+
+  this.programmer.debug('[remote] Recording invalid LED: %s', JSON.stringify(data));
 
   this.request('recordInvalidLed', data, _.noop);
 };

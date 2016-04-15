@@ -33,7 +33,7 @@ exports.DEFAULT_CONFIG = {
   httpPort: 80
 };
 
-exports.start = function startProgrammerModule(app, module)
+exports.start = function startProgrammerModule(app, module, done)
 {
   var safeFs = app[module.config.safeFsId];
   var settings = app[module.config.settingsId];
@@ -97,6 +97,8 @@ exports.start = function startProgrammerModule(app, module)
       return done(new Error('INPUT'));
     }
 
+    module.debug("Changed input mode from [%s] to [%s].", module.currentState.inputMode, inputMode);
+
     module.currentState.clear();
     module.currentState.inputMode = inputMode;
     done();
@@ -130,6 +132,8 @@ exports.start = function startProgrammerModule(app, module)
       workMode = 'testing';
     }
 
+    module.debug("Changed work mode from [%s] to [%s].", module.currentState.workMode, workMode);
+
     module.currentState.clear(false);
     module.currentState.workMode = workMode;
     done();
@@ -155,6 +159,12 @@ exports.start = function startProgrammerModule(app, module)
       return;
     }
 
+    module.debug(
+      "Changed selected order from [%s] to [%s].",
+      module.currentState.selectedOrderNo,
+      orderNo
+    );
+
     module.currentState.clear(true, true);
     module.currentState.selectedOrderNo = orderNo;
     module.currentState.selectedNc12 = null;
@@ -179,6 +189,12 @@ exports.start = function startProgrammerModule(app, module)
     }
 
     done(null);
+
+    module.debug(
+      "Changed selected 12NC from [%s] to [%s].",
+      module.currentState.selectedNc12,
+      nc12
+    );
 
     module.currentState.clear(false, false);
     module.currentState.selectedNc12 = nc12;
@@ -209,6 +225,12 @@ exports.start = function startProgrammerModule(app, module)
         return done(new Error('NOT_FOUND'));
       }
 
+      module.debug(
+        "Changed selected program from [%s] to [%s].",
+        module.currentState.program ? module.currentState.program._id : null,
+        programId
+      );
+
       done(null);
 
       program.steps = JSON.parse(program.steps);
@@ -225,6 +247,8 @@ exports.start = function startProgrammerModule(app, module)
     {
       return done(new Error('IN_PROGRESS'));
     }
+
+    module.debug("Reset state.");
 
     module.currentState.clear();
     done();
@@ -253,6 +277,8 @@ exports.start = function startProgrammerModule(app, module)
       }
     });
 
+    module.debug("Reset LEDs.");
+
     setImmediate(done);
   };
 
@@ -266,6 +292,8 @@ exports.start = function startProgrammerModule(app, module)
       {
         return done(err);
       }
+
+      module.debug("Reloaded last order: %s", row ? row._id : null);
 
       if (!row)
       {
@@ -494,7 +522,7 @@ exports.start = function startProgrammerModule(app, module)
     setUpCommands.bind(null, app, module)
   );
 
-  app.broker.subscribe('app.started', readLastMode);
+  readLastMode(done);
 
   app.broker.subscribe('updater.updating', function(message)
   {
@@ -562,7 +590,7 @@ exports.start = function startProgrammerModule(app, module)
     }
   });
 
-  function readLastMode()
+  function readLastMode(done)
   {
     (safeFs || fs).readFile(module.config.lastModeFile, {encoding: 'utf8'}, function(err, lastMode)
     {
@@ -591,6 +619,8 @@ exports.start = function startProgrammerModule(app, module)
       module.currentState.workMode = lastMode.work || 'programming';
 
       saveLastMode();
+
+      setImmediate(done);
     });
   }
 

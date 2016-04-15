@@ -95,19 +95,7 @@ exports.start = function startSettingsModule(app, module, done)
     step(
       function()
       {
-        if (changes.programmerFile)
-        {
-          readMultiOneWorkflowVersion(changes.programmerFile, this.next());
-        }
-      },
-      function()
-      {
-        if (changes.programmerFile)
-        {
-          changes.multiOneWorkflowVersion = settings.multiOneWorkflowVersion;
-        }
-
-        settings = _.merge(settings, changes);
+        settings = _.extend(settings, changes);
 
         (safeFs || fs).writeFile(
           module.config.settingsFile,
@@ -128,6 +116,9 @@ exports.start = function startSettingsModule(app, module, done)
         if (!_.isEmpty(changes))
         {
           delete changes.licenseKey;
+          delete changes.password;
+
+          module.debug("Changed: %s", JSON.stringify(changes));
 
           app.broker.publish('settings.changed', changes);
         }
@@ -182,31 +173,45 @@ exports.start = function startSettingsModule(app, module, done)
     setUpRoutes.bind(null, app, module)
   );
 
-  step(
-    function()
-    {
-      readInitialSettings(this.next());
-    },
-    function(err)
-    {
-      if (err)
-      {
-        return this.skip(err);
-      }
+  readInitialSettings(done);
 
-      readMultiOneWorkflowVersion(null, this.group());
-      checkCoreScannerDriver(this.group());
-    },
-    done
-  );
+  app.broker.subscribe('app.started', onAppStarted).setLimit(1);
 
-  app.broker.subscribe('app.started', setUpServiceTagPrinterZpl.bind(null, app, module)).setLimit(1);
   app.broker.subscribe('settings.changed')
-    .on('message', setUpServiceTagPrinterZpl.bind(null, app, module))
-    .setFilter(function(changes) { return changes.serviceTagPrinter !== undefined; });
+    .setFilter(function(changes) { return changes.serviceTagPrinter !== undefined; })
+    .on('message', setUpServiceTagPrinterZpl.bind(null, app, module));
+
+  app.broker.subscribe('settings.changed')
+    .setFilter(function(changes) { return changes.programmerFile !== undefined; })
+    .on('message', function()
+    {
+      readMultiOneWorkflowVersion(function(err, multiOneWorkflowVersion)
+      {
+        module.import({multiOneWorkflowVersion}, () => {}, false, true);
+      });
+    });
+
+  function onAppStarted()
+  {
+    setUpServiceTagPrinterZpl(app, module);
+
+    step(
+      function()
+      {
+        readMultiOneWorkflowVersion(this.parallel());
+        checkCoreScannerDriver(this.parallel());
+      },
+      function(err, multiOneWorkflowVersion, coreScannerDriver)
+      {
+        module.import({multiOneWorkflowVersion, coreScannerDriver}, () => {}, false, true);
+      }
+    );
+  }
 
   function readInitialSettings(done)
   {
+    module.debug("Reading initial settings...");
+
     (safeFs || fs).readFile(module.config.settingsFile, {encoding: 'utf8'}, function(err, contents)
     {
       if (err && err.code !== 'ENOENT')
@@ -230,44 +235,52 @@ exports.start = function startSettingsModule(app, module, done)
 
       settings = _.defaults(settings, module.config.defaults);
 
-      module.import(_.merge({}, settings), done, true);
+      module.import(_.extend({}, settings), done, true);
     });
   }
 
-  function readMultiOneWorkflowVersion(programmerFile, done)
+  function readMultiOneWorkflowVersion(done)
   {
-    var cmd = format('"%s" /f dummy /w dummy /c Halt', programmerFile || module.get('programmerFile'));
-    var options = {
-      timeout: 10000
-    };
+    var cmd = format('"%s" /f dummy /w dummy /c Halt', module.get('programmerFile'));
 
-    exec(cmd, options, function(err, stdout)
+    module.debug("Checking MultiOne Workflow version...");
+
+    exec(cmd, {timeout: 30000}, function(err, stdout)
     {
       var matches = stdout.match(/v(?:ersion)?.*?((?:[0-9]+\.?){4})/);
+      var multiOneWorkflowVersion = matches ? matches[1] : '0.0.0.0';
 
-      settings.multiOneWorkflowVersion = matches ? matches[1] : '0.0.0.0';
+      module.debug("MultiOne Workflow version is %s.", multiOneWorkflowVersion);
 
-      done();
+      done(null, multiOneWorkflowVersion);
     });
   }
 
   function checkCoreScannerDriver(done)
   {
-    exec('sc qc CoreScanner', {timeout: 10000}, function(err, stdout)
-    {
-      settings.coreScannerDriver = _.includes(stdout, 'SERVICE_NAME: CoreScanner');
+    module.debug("Checking CoreScanner driver availability...");
 
-      done();
+    exec('sc qc CoreScanner', {timeout: 30000}, function(err, stdout)
+    {
+      var coreScannerDriver = _.includes(stdout, 'SERVICE_NAME: CoreScanner');
+
+      module.debug("CoreScanner driver is %s.", coreScannerDriver ? 'available' : 'unavailable');
+
+      done(null, coreScannerDriver);
     });
   }
 
   function validateSettings(rawSettings)
   {
+    var MOW_VERSION_RE = /^([0-9]+\.?){1,5}$/;
     var IPV4_ADDRESS_RE = /^([0-9]{1,3}\.){3}[0-9]{1,3}$/;
     var COAP_RESOURCE_RE = /^coap:\/\//;
 
     var newSettings = {};
 
+    // Special settings
+    validateEnum(rawSettings, newSettings, 'coreScannerDriver', Boolean, [false, true]);
+    validateStringSetting(rawSettings, newSettings, 'multiOneWorkflowVersion', 1, MOW_VERSION_RE);
     // General settings
     validateStringSetting(rawSettings, newSettings, 'title', 0);
     validateStringSetting(rawSettings, newSettings, 'password1');
@@ -448,21 +461,26 @@ exports.start = function startSettingsModule(app, module, done)
 
   function validateBgScannerFilter(rawSettings, newSettings)
   {
-    var newBgScannerFilter = rawSettings.bgScannerFilter;
+    var newValue = rawSettings.bgScannerFilter;
 
-    if (!_.isString(newBgScannerFilter))
+    if (!_.isString(newValue))
     {
       return;
     }
 
     var serialNumbers = {};
 
-    newBgScannerFilter
+    newValue
       .split(/[^0-9A-Z]/)
       .filter(function(serialNumber) { return /^[0-9A-Z]{4,}$/.test(serialNumber); })
       .forEach(function(serialNumber) { serialNumbers[serialNumber] = 1; });
 
-    newSettings.bgScannerFilter = Object.keys(serialNumbers).join(' ');
+    newValue = Object.keys(serialNumbers).join(' ');
+
+    if (newValue !== settings.bgScannerFilter)
+    {
+      newSettings.bgScannerFilter = newValue;
+    }
   }
 
   function validateFtOrderPattern(rawSettings, newSettings)
@@ -482,7 +500,13 @@ exports.start = function startSettingsModule(app, module, done)
       .filter(function(pattern) { return pattern.length > 0; })
       .forEach(function(pattern) { patterns[pattern] = 1; });
 
-    newSettings.ftOrderPattern = Object.keys(patterns).join('\n');
+
+    newValue = Object.keys(patterns).join('\n');
+
+    if (newValue !== settings.ftOrderPattern)
+    {
+      newSettings.ftOrderPattern = newValue;
+    }
   }
 
   function validateHotkeys(rawSettings, newSettings)

@@ -223,6 +223,8 @@ Glp2Manager.prototype.start = function(done)
   );
 };
 
+
+
 /**
  * @param {function(Error|null): void} done
  */
@@ -232,7 +234,8 @@ Glp2Manager.prototype.stop = function(done)
 
   this.readyState = Glp2Manager.ReadyState.STOPPED;
 
-  if (oldReadyState === Glp2Manager.ReadyState.STOPPED
+  if (!this.master
+    || oldReadyState === Glp2Manager.ReadyState.STOPPED
     || oldReadyState === Glp2Manager.ReadyState.DISCONNECTED)
   {
     return done();
@@ -544,9 +547,9 @@ Glp2Manager.prototype.onAppStarted = function()
 
   this.start(function(err)
   {
-    if (err)
+    if (err && err.code !== 'GLP2:SETTING_DISABLED')
     {
-      return manager.programmer.debug("[glp2] Failed to start after app started: %s", err.message);
+      manager.programmer.debug("[glp2] Failed to start after app started: %s", err.message);
     }
   });
 };

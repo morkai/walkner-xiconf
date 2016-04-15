@@ -116,8 +116,15 @@ module.exports = function validateLicense(app, settingsModule, rawSettings, newS
     licenseInfo.error = 'APP_ID';
   }
 
-  newSettings.licenseKey = rawLicenseKey;
-  newSettings.licenseInfo = licenseInfo;
+  if (rawLicenseKey !== settings.licenseKey)
+  {
+    newSettings.licenseKey = rawLicenseKey;
+  }
+
+  if (JSON.stringify(licenseInfo) !== JSON.stringify(settings.licenseInfo))
+  {
+    newSettings.licenseInfo = licenseInfo;
+  }
 
   function resetLicense(error)
   {

@@ -25,7 +25,10 @@ module.exports = function setUpProgrammerCommands(app, programmerModule)
 
   sio.on('connection', function(socket)
   {
-    var isLocal = socket.conn.remoteAddress === '127.0.0.1' || _.includes(socket.handshake.headers.cookie, 'LOCAL=1');
+    var remoteAddress = socket.conn.remoteAddress;
+    var isLocal = remoteAddress === '127.0.0.1' || _.includes(socket.handshake.headers.cookie, 'LOCAL=1');
+
+    programmerModule.debug("[sio] %s client connected: %s", isLocal ? 'Local' : 'Remote', remoteAddress);
 
     socket.emit('programmer.stateChanged', programmerModule.currentState.toJSON());
 
@@ -53,6 +56,11 @@ module.exports = function setUpProgrammerCommands(app, programmerModule)
       socket.on('programmer.reconnectToProdLine', reconnectToProdLine);
       socket.on('programmer.toggleResult', toggleResult);
     }
+
+    socket.on('disconnect', function()
+    {
+      programmerModule.debug("[sio] %s client disconnected: %s", isLocal ? 'Local' : 'Remote', remoteAddress);
+    });
   });
 
   function isSingleLocalSocket()
