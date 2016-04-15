@@ -1,3 +1,13 @@
+2.19.0 @ 2016-04-15
+===================
+
+  * Changed Node.js to v5.10.1 x64 and updated all dependencies.
+  * Changed the require cache to also include the source code to speed up the app startup.
+  * Changed the default remote server URL to not include the `6080` port.
+  * Added a new LED board recognition pattern.
+  * Added more logging messages.
+  * Added an ability to download the latest logs file.
+
 2.18.4 @ 2016-02-01
 ===================
 
