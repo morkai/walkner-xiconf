@@ -19,7 +19,8 @@ exports.DEFAULT_CONFIG = {
   settingsFile: 'settings.json',
   defaults: {
     hotkeys: {}
-  }
+  },
+  logsGlob: null
 };
 
 exports.start = function startSettingsModule(app, module, done)

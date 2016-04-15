@@ -16,6 +16,9 @@
     "msg:restart:failure": "Failed to restart the server :(",
     "msg:restart:AUTH": "Cannot restart the server: invalid password!",
     "msg:restart:LOCKED": "Cannot restart the server while programming is in progress!",
+    "msg:logs:failure": "Failed to download the logs :(",
+    "msg:logs:AUTH": "Cannot download the logs: invalid password!",
+    "msg:logs:EMPTY": "Cannot download the logs: not found!",
 
     "form:settings": "General settings",
     "form:remote": "Remote mode",
@@ -33,6 +36,7 @@
     "form:export": "Export settings",
     "form:restart": "Restart server",
     "form:password": "Password",
+    "form:logs": "Download logs",
 
     "mowVersion:supported": "Supported Philips MultiOne Workflow version",
     "mowVersion:installed": "Installed Philips MultiOne Workflow version",

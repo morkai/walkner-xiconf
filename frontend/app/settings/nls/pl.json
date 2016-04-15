@@ -15,6 +15,9 @@
   "msg:restart:failure": "Nie udało się zrestartować serwera :(",
   "msg:restart:AUTH": "Nie można zrestartować serwera: nieprawidłowe hasło!",
   "msg:restart:LOCKED": "Nie można zrestartować serwera w trakcie programowania!",
+  "msg:logs:failure": "Nie udało się pobrać logów :(",
+  "msg:logs:AUTH": "Nie można pobrać logów: nieprawidłowe hasło!",
+  "msg:logs:EMPTY": "Nie można pobrać logów: nie znaleziono!",
 
   "form:settings": "Podstawowe ustawienia",
   "form:remote": "Tryb zdalny",
@@ -32,6 +35,7 @@
   "form:export": "Eksportuj ustawienia",
   "form:restart": "Restartuj serwer",
   "form:password": "Hasło",
+  "form:logs": "Pobierz logi",
 
   "mowVersion:supported": "Wspierana wersja Philips MultiOne Workflow",
   "mowVersion:installed": "Zainstalowana wersja Philips MultiOne Workflow",

@@ -2,9 +2,12 @@
 
 'use strict';
 
+const glob = require('glob');
+
 module.exports = function setSettingsRoutes(app, settingsModule)
 {
-  var express = app[settingsModule.config.expressId];
+  const express = app[settingsModule.config.expressId];
+  const logsDls = {};
 
   express.get('/settings', function(req, res)
   {
@@ -28,7 +31,7 @@ module.exports = function setSettingsRoutes(app, settingsModule)
       return res.sendStatus(400);
     }
 
-    var programmer = app[settingsModule.config.programmerId];
+    const programmer = app[settingsModule.config.programmerId];
 
     if (programmer && programmer.currentState.isInProgress())
     {
@@ -50,7 +53,7 @@ module.exports = function setSettingsRoutes(app, settingsModule)
 
   express.get('/settings;export', function(req, res)
   {
-    var settings = settingsModule.export(req.query.password);
+    const settings = settingsModule.export(req.query.password);
 
     res.type('application/json');
     res.attachment('XICONF_SETTINGS_' + settings.id + '.txt');
@@ -66,7 +69,7 @@ module.exports = function setSettingsRoutes(app, settingsModule)
       return next(new Error('AUTH'));
     }
 
-    var programmer = app[settingsModule.config.programmerId];
+    const programmer = app[settingsModule.config.programmerId];
 
     if (programmer && programmer.currentState.isInProgress())
     {
@@ -77,6 +80,52 @@ module.exports = function setSettingsRoutes(app, settingsModule)
 
     res.send();
 
-    setImmediate(function() { process.exit(666); });
+    setImmediate(() => process.exit(666));
+  });
+
+  express.post('/settings;logs', function(req, res, next)
+  {
+    if (settingsModule.get('password') !== req.body.password)
+    {
+      res.statusCode = 400;
+
+      return next(new Error('AUTH'));
+    }
+
+    glob(settingsModule.config.logsGlob, function(err, files)
+    {
+      if (err)
+      {
+        return next(err);
+      }
+
+      if (!files.length)
+      {
+        res.statusCode = 400;
+
+        return next(new Error('EMPTY'));
+      }
+
+      var id = (Date.now().toString(16) + Math.round(Math.random() * 999999999999).toString(16)).toUpperCase();
+
+      logsDls[id] = files.sort((a, b) => a.localeCompare(b)).pop();
+
+      setTimeout(() => delete logsDls[id], 10000);
+
+      res.json(id);
+    });
+
+  });
+
+  express.get('/settings;logs', function(req, res, next)
+  {
+    if (!logsDls[req.query.id])
+    {
+      res.statusCode = 400;
+
+      return next(new Error('AUTH'));
+    }
+
+    res.download(logsDls[req.query.id]);
   });
 };

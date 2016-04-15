@@ -6,6 +6,7 @@ var path = require('path');
 
 var BIN_PATH = path.join(__dirname, '..', 'bin');
 var DATA_PATH = path.join(__dirname, '..', 'data');
+var LOGS_PATH = path.join(__dirname, '..', 'logs');
 
 var _ = require(path.join(BIN_PATH, 'walkner-xiconf/node_modules/lodash'));
 
@@ -41,7 +42,8 @@ _.assign(config.updater, {
 });
 
 _.assign(config.settings, {
-  settingsFile: path.join(DATA_PATH, 'settings.json')
+  settingsFile: path.join(DATA_PATH, 'settings.json'),
+  logsGlob: path.join(LOGS_PATH, '*.log')
 });
 
 _.assign(config.settings.defaults, {

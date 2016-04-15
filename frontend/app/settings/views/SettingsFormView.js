@@ -113,6 +113,7 @@ define([
       },
       'click .settings-save': 'onSaveClick',
       'click .settings-restart': 'onRestartClick',
+      'click .settings-logs': 'onLogsClick',
       'submit': 'onSubmit'
     },
 
@@ -231,12 +232,7 @@ define([
 
       req.fail(function(xhr)
       {
-        if (!xhr || !xhr.responseJSON || !xhr.responseJSON.error)
-        {
-          return;
-        }
-
-        var error = xhr.responseJSON.error.message;
+        var error = xhr && xhr.responseJSON && xhr.responseJSON.error && xhr.responseJSON.error.message;
 
         viewport.msg.show({
           type: 'error',
@@ -245,6 +241,43 @@ define([
             ? t('settings', 'msg:restart:' + error)
             : t('settings', 'msg:restart:failure')
         });
+      });
+
+      req.always(function()
+      {
+        $inputs.attr('disabled', false);
+      });
+    },
+
+    onLogsClick: function()
+    {
+      var $inputs = this.$('.panel-footer > input').attr('disabled', true);
+      var req = this.ajax({
+        type: 'POST',
+        url: '/settings;logs',
+        data: JSON.stringify({
+          password: this.$id('password').val()
+        })
+      });
+
+      this.$id('password').val('');
+
+      req.fail(function(xhr)
+      {
+        var error = xhr && xhr.responseJSON && xhr.responseJSON.error && xhr.responseJSON.error.message;
+
+        viewport.msg.show({
+          type: 'error',
+          time: 2000,
+          text: t.has('settings', 'msg:logs:' + error)
+            ? t('settings', 'msg:logs:' + error)
+            : t('settings', 'msg:logs:failure')
+        });
+      });
+
+      req.done(function(id)
+      {
+        window.location.href = '/settings;logs?id=' + id;
       });
 
       req.always(function()
