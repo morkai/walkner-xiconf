@@ -47,7 +47,7 @@ _.assign(config.settings, {
 _.assign(config.settings.defaults, {
   password: '1@3',
   orders: 'required',
-  remoteServer: 'http://161.87.64.46:6080/',
+  remoteServer: 'http://161.87.64.46/',
   syncInterval: 2,
   workflowVerify: 1,
   workflowDaliFactoryNew: 1,
