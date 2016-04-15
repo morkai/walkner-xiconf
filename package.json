@@ -16,7 +16,7 @@
     "url": "http://github.com/morkai/walkner-xiconf.git"
   },
   "engine": [
-    "node >=5.9.1"
+    "node >=5.10.1"
   ],
   "main": "./backend/main.js",
   "dependencies": {
