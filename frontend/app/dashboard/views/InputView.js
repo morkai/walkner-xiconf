@@ -59,6 +59,11 @@ define([
       pattern: '([0-9]{10}) [0-9]{6} [0-9]{3}(?: [A-Z0-9]{3})? ([0-9]{12}) [A-Z0-9]{3}',
       serialNumber: 1,
       nc12: 2
+    },
+    {
+      pattern: '.([0-9]+).*?([0-9]{12}).*?',
+      serialNumber: 1,
+      nc12: 2
     }
   ];
   var ALL_LEDS_PATTERN = new RegExp(LED_PATTERNS.map(function(d)
