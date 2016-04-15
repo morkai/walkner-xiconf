@@ -452,6 +452,11 @@ exports.start = function startSettingsModule(app, module, done)
 
   function validateEnum(rawSettings, newSettings, setting, cast, values)
   {
+    if (rawSettings[setting] === undefined)
+    {
+      return;
+    }
+
     var value = cast(rawSettings[setting]);
 
     if (values.indexOf(value) !== -1 && value !== settings[setting])
