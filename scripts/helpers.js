@@ -53,7 +53,9 @@ exports.copy = {
           'favicon.ico',
           'assets/main.css',
           'vendor/font-awesome/fonts/fontawesome-webfont.woff',
-          'vendor/require/require.js'
+          'vendor/require/require.js',
+          'vendor/highcharts-custom.js',
+          'app/highcharts.js'
         ],
         dest: DEST_APP + '/frontend-build'
       },
