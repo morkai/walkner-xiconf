@@ -8,23 +8,21 @@ var BIN_PATH = path.join(__dirname, '..', 'bin');
 var DATA_PATH = path.join(__dirname, '..', 'data');
 var LOGS_PATH = path.join(__dirname, '..', 'logs');
 
-var _ = require(path.join(BIN_PATH, 'walkner-xiconf/node_modules/lodash'));
-
 var config = module.exports = require(path.join(BIN_PATH, 'walkner-xiconf/config/frontend.js'));
 
-_.assign(config, {
+Object.assign(config, {
   localSecretKey: null
 });
 
-_.assign(config.httpServer, {
+Object.assign(config.httpServer, {
   port: /^[0-9]+$/.test(process.env.XICONF_PORT) ? +process.env.XICONF_PORT : 1337
 });
 
-_.assign(config.sqlite3, {
+Object.assign(config.sqlite3, {
   dbFile: path.join(DATA_PATH, 'db.sqlite3')
 });
 
-_.assign(config.programmer, {
+Object.assign(config.programmer, {
   httpPort: config.httpServer.port,
   featureDbPath: path.join(DATA_PATH, 'features'),
   gprsOutputFile: path.join(DATA_PATH, 'gprs-output.xml'),
@@ -32,21 +30,21 @@ _.assign(config.programmer, {
   lastModeFile: path.join(DATA_PATH, 'lastMode.txt')
 });
 
-_.assign(config.history, {
+Object.assign(config.history, {
   featureDbPath: config.programmer.featureDbPath,
   lastExportTimeFile: path.join(DATA_PATH, 'lastExportAt.txt')
 });
 
-_.assign(config.updater, {
+Object.assign(config.updater, {
   unzipExe: path.join(BIN_PATH, 'unzip.exe')
 });
 
-_.assign(config.settings, {
+Object.assign(config.settings, {
   settingsFile: path.join(DATA_PATH, 'settings.json'),
   logsGlob: path.join(LOGS_PATH, '*.log')
 });
 
-_.assign(config.settings.defaults, {
+Object.assign(config.settings.defaults, {
   password: '1@3',
   orders: 'required',
   remoteServer: 'http://161.87.64.46/',
@@ -81,7 +79,7 @@ _.assign(config.settings.defaults, {
   gprsInputTemplateFile: path.join(DATA_PATH, '/gprs-input.json')
 });
 
-_.assign(config.settings.defaults.hotkeys, {
+Object.assign(config.settings.defaults.hotkeys, {
   continue: 'P',
   cancel: null
 });
