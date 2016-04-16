@@ -214,7 +214,8 @@ exports.express = {
   ejsAmdHelpers: {
     t: 'app/i18n'
   },
-  title: exports.id
+  title: exports.id,
+  routes: require('../backend/routes')
 };
 
 exports.updater = {

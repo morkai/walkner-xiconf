@@ -4,9 +4,9 @@
 
 var path = require('path');
 var _ = require('lodash');
-var step = require('h5.step');
 var express = require('express');
 var methods = require('methods');
+var ejs = require('ejs');
 var ejsAmd = require('ejs-amd');
 var messageFormatAmd = require('messageformat-amd');
 var wrapAmd = require('./wrapAmd');
@@ -43,7 +43,7 @@ exports.DEFAULT_CONFIG = {
   urlencodedBody: {}
 };
 
-exports.start = function startExpressModule(app, expressModule, done)
+exports.start = function startExpressModule(app, expressModule)
 {
   var config = expressModule.config;
   var mongoose = app[config.mongooseId];
@@ -77,6 +77,8 @@ exports.start = function startExpressModule(app, expressModule, done)
 
   var production = app.options.env === 'production';
   var staticPath = config[production ? 'staticBuildPath' : 'staticPath'];
+
+  expressApp.engine('ejs', ejs.renderFile);
 
   expressApp.set('trust proxy', true);
   expressApp.set('view engine', 'ejs');
@@ -141,34 +143,21 @@ exports.start = function startExpressModule(app, expressModule, done)
     module: expressModule
   });
 
-  step(
-    function()
-    {
-      app.loadDir(app.pathTo('routes'), [app, expressModule], this.next());
-    },
-    function(err)
-    {
-      if (err)
-      {
-        return this.skip(err);
-      }
+  expressModule.config.routes(app, expressModule);
 
-      expressApp.use(express.static(staticPath));
+  expressApp.use(express.static(staticPath));
 
-      if (pmx !== null)
-      {
-        expressApp.use(pmx.expressErrorHandler());
-      }
+  if (pmx !== null)
+  {
+    expressApp.use(pmx.expressErrorHandler());
+  }
 
-      var errorHandlerOptions = {
-        title: config.title,
-        basePath: path.resolve(__dirname, '../../../')
-      };
+  var errorHandlerOptions = {
+    title: config.title,
+    basePath: path.resolve(__dirname, '../../../')
+  };
 
-      expressApp.use(errorHandlerMiddleware(expressModule, errorHandlerOptions));
-    },
-    done
-  );
+  expressApp.use(errorHandlerMiddleware(expressModule, errorHandlerOptions));
 
   /**
    * @private
