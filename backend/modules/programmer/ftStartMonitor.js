@@ -4,11 +4,11 @@
 
 var _ = require('lodash');
 var step = require('h5.step');
+var coap = require('h5.coap');
 
 module.exports = function setUpFtStartMonitor(app, programmerModule)
 {
   var settings = app[programmerModule.config.settingsId];
-  var coap = null;
   var coapClient = null;
 
   app.broker.subscribe('app.started', monitorStartButtons).setLimit(1);
@@ -29,7 +29,6 @@ module.exports = function setUpFtStartMonitor(app, programmerModule)
 
     if (coapClient === null)
     {
-      coap = require('h5.coap');
       coapClient = new coap.Client({
         socket4: false,
         socket6: true,

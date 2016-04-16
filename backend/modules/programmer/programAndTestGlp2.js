@@ -4,6 +4,7 @@
 
 var _ = require('lodash');
 var step = require('h5.step');
+var coap = require('h5.coap');
 var glp2 = require('./glp2');
 var gprs = require('./gprs');
 var programMowDriver = require('./programMowDriver');
@@ -1667,7 +1668,6 @@ module.exports = function programAndTestGlp2(app, programmerModule, programmerTy
       count: lampCount
     });
 
-    var coap = require('h5.coap');
     var coapClient = new coap.Client({
       socket4: false,
       socket6: true,
