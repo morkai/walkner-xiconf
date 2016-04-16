@@ -15,11 +15,6 @@ define([
 ) {
   'use strict';
 
-  /**
-   * @constructor
-   * @extends {app.core.View}
-   * @param {object} [options]
-   */
   var NavbarView = View.extend({
 
     template: navbarTemplate,
@@ -80,6 +75,28 @@ define([
         {
           e.target.disabled = false;
         });
+      },
+      'mouseup .btn[data-href]': function(e)
+      {
+        if (e.button === 2)
+        {
+          return;
+        }
+
+        var href = e.currentTarget.dataset.href;
+
+        if (e.ctrlKey || e.button === 1)
+        {
+          window.open(href);
+        }
+        else
+        {
+          window.location.href = href;
+        }
+
+        document.body.click();
+
+        return false;
       }
     }
 
@@ -107,9 +124,9 @@ define([
      */
     connectingStatusClassName: 'navbar-status-connecting',
     /**
-     * @type {Array.<string>}
+     * @type {object.<string, boolean>}
      */
-    loadedModules: []
+    loadedModules: {}
   };
 
   NavbarView.prototype.initialize = function()
@@ -133,17 +150,6 @@ define([
      * @type {jQuery|null}
      */
     this.$activeNavItem = null;
-
-    /**
-     * @private
-     * @type {object.<string, boolean>}
-     */
-    this.loadedModules = {};
-
-    this.options.loadedModules.forEach(function(moduleName)
-    {
-      this.loadedModules[moduleName] = true;
-    }, this);
 
     this.activateNavItem(this.getModuleNameFromPath(this.options.currentPath));
   };
@@ -216,20 +222,23 @@ define([
    * @private
    * @param {HTMLLIElement} liEl
    * @param {boolean} useAnchor
+   * @param {boolean} [clientModule]
    * @returns {string|null}
    */
-  NavbarView.prototype.getModuleNameFromLi = function(liEl, useAnchor)
+  NavbarView.prototype.getModuleNameFromLi = function(liEl, useAnchor, clientModule)
   {
     /*jshint -W116*/
 
-    if (liEl.dataset.module === undefined && !useAnchor)
+    var module = liEl.dataset[clientModule ? 'clientModule' : 'module'];
+
+    if (module === undefined && !useAnchor)
     {
       return null;
     }
 
-    if (liEl.dataset.module)
+    if (module)
     {
-      return liEl.dataset.module;
+      return module;
     }
 
     var aEl = liEl.querySelector('a');
@@ -335,7 +344,7 @@ define([
 
     if (href && href[0] === '#')
     {
-      var moduleName = this.getModuleNameFromLi($navItem[0], true);
+      var moduleName = this.getModuleNameFromLi($navItem[0], true, true);
 
       this.navItems[moduleName] = $navItem;
     }
@@ -345,7 +354,7 @@ define([
 
       $navItem.find('.dropdown-menu > li').each(function()
       {
-        var moduleName = view.getModuleNameFromLi(this, true);
+        var moduleName = view.getModuleNameFromLi(this, true, true);
 
         view.navItems[moduleName] = $navItem;
       });
@@ -374,13 +383,18 @@ define([
 
     dropdownHeaders.forEach(function($li)
     {
-      $li.toggle(this.hasVisibleSiblings($li, 'next'));
-    }, this);
+      $li.toggle(navbarView.hasVisibleSiblings($li, 'next'));
+    });
 
     dividers.forEach(function($li)
     {
-      $li.toggle(this.hasVisibleSiblings($li, 'prev') && this.hasVisibleSiblings($li, 'next'));
-    }, this);
+      $li.toggle(navbarView.hasVisibleSiblings($li, 'prev') && navbarView.hasVisibleSiblings($li, 'next'));
+    });
+
+    this.$('.btn[data-privilege]').each(function()
+    {
+      this.style.display = user.isAllowedTo.apply(user, this.dataset.privilege.split(' ')) ? '' : 'none';
+    });
 
     function hideChildEntries($parentLi)
     {
@@ -443,7 +457,9 @@ define([
 
       var moduleName = navbarView.getModuleNameFromLi($li[0], false);
 
-      if (moduleName !== null && !navbarView.loadedModules[moduleName])
+      if (moduleName !== null
+        && $li.attr('data-no-module') === undefined
+        && !navbarView.options.loadedModules[moduleName])
       {
         return false;
       }

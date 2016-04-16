@@ -9,6 +9,8 @@ module.exports = function startCoreRoutes(app, express)
   var requirejsPaths;
   var requirejsShim;
 
+  var MODULES = JSON.stringify(app.options.modules.map(m => m.id || m));
+
   reloadRequirejsConfig();
 
   express.get('/', showIndex);
@@ -38,7 +40,8 @@ module.exports = function startCoreRoutes(app, express)
         SETTINGS: JSON.stringify(app.settings.export(null, true)),
         CURRENT_STATE: JSON.stringify(app.programmer.currentState),
         COMPUTER_NAME: JSON.stringify(app.settings.getMachineId()),
-        AVAILABLE_FEATURES: JSON.stringify(app.settings.availableFeatures)
+        AVAILABLE_FEATURES: JSON.stringify(app.settings.availableFeatures),
+        MODULES: MODULES
       }
     });
   }

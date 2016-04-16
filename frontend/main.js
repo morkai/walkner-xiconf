@@ -104,6 +104,7 @@
     pubsub,
     router,
     viewport,
+    loadedModules,
     PageLayout,
     NavbarView,
     currentState,
@@ -203,7 +204,8 @@
       var req = router.getCurrentRequest();
 
       return new NavbarView({
-        currentPath: req === null ? '/' : req.path
+        currentPath: req === null ? '/' : req.path,
+        loadedModules: loadedModules.map
       });
     }
 
@@ -255,6 +257,7 @@
       'app/pubsub',
       'app/router',
       'app/viewport',
+      'app/data/loadedModules',
       'app/core/layouts/PageLayout',
       'app/core/views/NavbarView',
       'app/data/currentState',
