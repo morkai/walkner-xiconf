@@ -21,6 +21,7 @@ exports.build = buildRequireCache;
 exports.path = '';
 exports.use = useRequireCache;
 exports.save = saveRequireCacheToFile;
+exports.reset = resetRequireCache;
 
 for (var i = 0, l = process.argv.length; i < l; ++i)
 {
@@ -144,8 +145,6 @@ function useRequireCache()
       return originalJsHandler(module, filename);
     }
 
-    delete requireCache.sources[relativeFilename];
-
     return module._compile(source, filename);
   };
 
@@ -158,8 +157,6 @@ function useRequireCache()
     {
       return originalJsonHandler(module, filename);
     }
-
-    delete requireCache.sources[relativeFilename];
 
     module.exports = json;
   };

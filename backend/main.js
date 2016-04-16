@@ -96,4 +96,10 @@ app.broker.subscribe('app.started').setLimit(1).on('message', function()
     requireCache.save();
     app.debug('Require cache built!');
   }
+
+  app.timeout(5000, function()
+  {
+    requireCache.reset();
+    app.debug('Require cache reset!');
+  });
 });
