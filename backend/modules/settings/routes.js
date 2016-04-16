@@ -2,7 +2,9 @@
 
 'use strict';
 
+const fs = require('fs');
 const glob = require('glob');
+const step = require('h5.step');
 
 module.exports = function setSettingsRoutes(app, settingsModule)
 {
@@ -106,15 +108,22 @@ module.exports = function setSettingsRoutes(app, settingsModule)
         return next(new Error('EMPTY'));
       }
 
-      var id = (Date.now().toString(16) + Math.round(Math.random() * 999999999999).toString(16)).toUpperCase();
+      findLatestLogsFile(files, function(err, file)
+      {
+        if (err)
+        {
+          return next(err);
+        }
 
-      logsDls[id] = files.sort((a, b) => a.localeCompare(b)).pop();
+        var id = (Date.now().toString(16) + Math.round(Math.random() * 999999999999).toString(16)).toUpperCase();
 
-      setTimeout(() => delete logsDls[id], 10000);
+        logsDls[id] = file;
 
-      res.json(id);
+        setTimeout(() => delete logsDls[id], 10000);
+
+        res.json(id);
+      });
     });
-
   });
 
   express.get('/settings;logs', function(req, res, next)
@@ -128,4 +137,34 @@ module.exports = function setSettingsRoutes(app, settingsModule)
 
     res.download(logsDls[req.query.id]);
   });
+
+  function findLatestLogsFile(files, done)
+  {
+    if (files.length === 1)
+    {
+      return setImmediate(done, null, files[0]);
+    }
+
+    step(
+      function()
+      {
+        files.forEach(f => fs.stat(f, this.group()), this);
+      },
+      function(err, stats)
+      {
+        if (err)
+        {
+          return done(err);
+        }
+
+        const latestLogsFile = stats
+          .map((stat, i) => ({stat, file: files[i]}))
+          .sort((a, b) => a.stat.mtime - b.stat.mtime)
+          .pop()
+          .file;
+
+        done(null, latestLogsFile);
+      }
+    );
+  }
 };
