@@ -19,11 +19,23 @@ var session = null;
 var pmx = null;
 var MongoStore = null;
 
-try { cookieParser = require('cookie-parser'); }  catch (err) {}
-try { bodyParser = require('body-parser'); }  catch (err) {}
-try { session = require('express-session'); }  catch (err) {}
-try { pmx = require('pmx'); }  catch (err) {}
-try { MongoStore = require('./MongoStore'); }  catch (err) {}
+try { cookieParser = require('cookie-parser'); }
+catch (err) { console.log('Failed to load cookie-parser: %s', err.message); }
+
+try { bodyParser = require('body-parser'); }
+catch (err) { console.log('Failed to load body-parser: %s', err.message); }
+
+try { require('iconv-lite').encodingExists('UTF-8'); }
+catch (err) { console.log('Failed to load iconv-lite: %s', err.message); }
+
+try { session = require('express-session'); }
+catch (err) { console.log('Failed to load express-session: %s', err.message); }
+
+try { pmx = require('pmx'); }
+catch (err) { console.log('Failed to load pmx: %s', err.message); }
+
+try { MongoStore = require('./MongoStore'); }
+catch (err) { console.log('Failed to load MongoStore %s', err.message); }
 
 exports.DEFAULT_CONFIG = {
   mongooseId: 'mongoose',
