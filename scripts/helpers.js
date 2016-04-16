@@ -61,7 +61,7 @@ exports.copy = {
       },
       {
         expand: true,
-        cwd: './node_modules_prod',
+        cwd: './node_modules_min',
         src: '**',
         dest: DEST_APP + '/node_modules'
       },
