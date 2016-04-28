@@ -52,7 +52,8 @@ exports.DEFAULT_CONFIG = {
   title: 'express',
   jsonBody: {},
   textBody: {},
-  urlencodedBody: {}
+  urlencodedBody: {},
+  routes: (app, expressModule) => { /* jshint unused:false */ }
 };
 
 exports.start = function startExpressModule(app, expressModule)
@@ -155,7 +156,10 @@ exports.start = function startExpressModule(app, expressModule)
     module: expressModule
   });
 
-  expressModule.config.routes(app, expressModule);
+  if (typeof expressModule.config.routes === 'function')
+  {
+    expressModule.config.routes(app, expressModule);
+  }
 
   expressApp.use(express.static(staticPath));
 
