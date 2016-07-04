@@ -2,7 +2,7 @@
 
 'use strict';
 
-var serialport = require('serialport');
+var SerialPort = require('serialport');
 var step = require('h5.step');
 var modbus = require('h5.modbus');
 var sdp = require('./sdp');
@@ -40,7 +40,7 @@ module.exports = function programAndTestSdp(app, programmerModule, done)
 
       var next = this.next();
 
-      serialport.list(function(err, ports)
+      SerialPort.list(function(err, ports)
       {
         if (err)
         {
@@ -87,12 +87,13 @@ module.exports = function programAndTestSdp(app, programmerModule, done)
 
       programmerModule.log('TESTING_OPENING_COM', {comPort: comPort});
 
-      var serialPort = this.serialPort = new serialport.SerialPort(comPort, {
+      var serialPort = this.serialPort = new SerialPort(comPort, {
         baudRate: 9600,
         dataBits: 8,
         stopBits: 1,
-        parity: 'none'
-      }, false);
+        parity: 'none',
+        autoOpen: false
+      });
 
       if (fake)
       {

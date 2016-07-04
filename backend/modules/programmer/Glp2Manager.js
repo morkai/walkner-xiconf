@@ -5,7 +5,7 @@
 var inherits = require('util').inherits;
 var EventEmitter = require('events').EventEmitter;
 var step = require('h5.step');
-var serialport = require('serialport');
+var SerialPort = require('serialport');
 var glp2 = require('./glp2');
 
 module.exports = Glp2Manager;
@@ -164,7 +164,7 @@ Glp2Manager.prototype.start = function(done)
   step(
     function listSerialPortsStep()
     {
-      serialport.list(this.next());
+      SerialPort.list(this.next());
     },
     function findSerialPortStep(err, ports)
     {

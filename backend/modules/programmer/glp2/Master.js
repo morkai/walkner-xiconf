@@ -4,7 +4,7 @@
 
 var util = require('./util');
 var EventEmitter = require('events').EventEmitter;
-var SerialPort = require('serialport').SerialPort;
+var SerialPort = require('serialport');
 var BufferQueueReader = require('h5.buffers').BufferQueueReader;
 var NoConnectionError = require('./NoConnectionError');
 var InvalidParametersError = require('./InvalidParametersError');
@@ -419,8 +419,9 @@ Master.prototype.open = function()
     baudRate: 9600,
     parity: 'none',
     dataBits: 8,
-    stopBits: 1
-  }, false);
+    stopBits: 1,
+    autoOpen: false
+  });
 
   this.serialPort.on('open', this.emit.bind(this, 'open'));
   this.serialPort.on('error', this.emit.bind(this, 'error'));

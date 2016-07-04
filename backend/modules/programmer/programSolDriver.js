@@ -2,7 +2,7 @@
 
 'use strict';
 
-var serialport = require('serialport');
+var SerialPort = require('serialport');
 var step = require('h5.step');
 
 var EOF_DELAY = 250;
@@ -73,7 +73,7 @@ module.exports = function programSolDriver(app, programmerModule, output, onProg
 
       var next = this.next();
 
-      serialport.list(function(err, ports)
+      SerialPort.list(function(err, ports)
       {
         if (err)
         {
@@ -122,12 +122,13 @@ module.exports = function programSolDriver(app, programmerModule, output, onProg
 
       programmerModule.log('SOL_OPENING_COM', {comPort: comPort});
 
-      var serialPort = this.serialPort = new serialport.SerialPort(comPort, {
+      var serialPort = this.serialPort = new SerialPort(comPort, {
         baudRate: 1200,
         dataBits: 8,
         stopBits: 1,
-        parity: 'none'
-      }, false);
+        parity: 'none',
+        autoOpen: false
+      });
 
       serialPort.on('error', function(err)
       {
