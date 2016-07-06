@@ -1,3 +1,9 @@
+2.20.0 @ 2016-07-06
+===================
+
+  * Changed Node.js to v6.2.2 x64 and updated all dependencies.
+  * Added a new option: HID - HID lamp checking (similar to LED boards).
+
 2.19.0 @ 2016-04-15
 ===================
 
