@@ -21,6 +21,11 @@ define([
     currentState.pushLogEntry(logEntry);
   });
 
+  socket.on('programmer.hidLampManager.updated', function(message)
+  {
+    currentState.updateHidLamp(message.index, message.data);
+  });
+
   socket.on('programmer.ledManager.updated', function(message)
   {
     currentState.updateLed(message.index, message.data);

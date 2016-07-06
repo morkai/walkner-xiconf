@@ -8,30 +8,30 @@
   "author": {
     "name": "Łukasz Walukiewicz",
     "email": "lukasz@miracle.systems",
-    "url": "http://miracle.systems/"
+    "url": "https://miracle.systems/"
   },
   "bugs": "https://github.com/morkai/walkner-xiconf/issues",
   "repository": {
     "type": "git",
-    "url": "http://github.com/morkai/walkner-xiconf.git"
+    "url": "https://github.com/morkai/walkner-xiconf.git"
   },
   "engine": [
-    "node >=5.10.1"
+    "node >=6.2.2"
   ],
   "main": "./backend/main.js",
   "dependencies": {
-    "methods": "~1.1.1",
-    "body-parser": "~1.15.0",
-    "express": "~4.12.3",
-    "ejs": "~2.3.1",
-    "ejs-amd": "~0.0.4",
-    "socket.io-client": "~1.4.5",
-    "socket.io": "~1.4.5",
-    "lodash": "~3.6.0",
-    "messageformat": "~0.2.1",
-    "messageformat-amd": "git+http://github.com/morkai/messageformat-amd.git#d41fd5caba",
+    "body-parser": "~1.15.2",
     "csv": "~0.3.7",
-    "moment": "~2.9.0",
+    "methods": "~1.1.2",
+    "express": "~4.14.0",
+    "ejs": "~2.4.2",
+    "ejs-amd": "~1.0.0",
+    "socket.io-client": "~1.4.8",
+    "socket.io": "~1.4.8",
+    "lodash": "~4.13.1",
+    "messageformat": "~0.2.2",
+    "messageformat-amd": "git+http://github.com/morkai/messageformat-amd.git#d41fd5caba",
+    "moment": "~2.14.1",
     "h5.step": "~0.1.0",
     "h5.pubsub": "git+http://github.com/morkai/h5.pubsub.git#c1a899cb7e",
     "h5.rql": "git+http://github.com/morkai/h5.rql.git#56221896655",
@@ -41,24 +41,24 @@
     "h5.coap": "git+http://github.com/morkai/h5.coap.git#51c3b2a4cb",
     "sqlite3": "~3.1.4",
     "ursa": "~0.9.4",
-    "semver": "~4.3.3",
+    "semver": "~5.2.0",
     "jszip": "~2.5.0",
-    "request": "~2.54.0",
+    "request": "~2.72.0",
     "serialport": "~4.0.0",
-    "mkdirp": "~0.5.0",
-    "xml2js": "~0.4.8",
-    "transliteration": "~0.1.1",
-    "glob": "~3.2.11"
+    "mkdirp": "~0.5.1",
+    "xml2js": "~0.4.17",
+    "transliteration": "~1.1.5",
+    "glob": "~7.0.5"
   },
   "devDependencies": {
-    "grunt": "~0.4.5",
-    "grunt-contrib-clean": "~0.6.0",
-    "grunt-contrib-copy": "~0.8.0",
-    "grunt-contrib-jshint": "~0.10.0",
-    "grunt-contrib-requirejs": "~0.4.4",
+    "grunt": "~1.0.1",
+    "grunt-contrib-clean": "~1.0.0",
+    "grunt-contrib-copy": "~1.0.0",
+    "grunt-contrib-jshint": "~1.0.0",
+    "grunt-contrib-requirejs": "~1.0.0",
     "grunt-ejs-amd": "git+http://github.com/morkai/grunt-ejs-amd.git#a09723eabe",
     "grunt-messageformat-amd": "git+http://github.com/morkai/grunt-messageformat-amd.git#7c47f564a5",
-    "grunt-run": "~0.3.0",
+    "grunt-run": "~0.6.0",
     "grunt-text-replace": "~0.4.0"
   }
 }

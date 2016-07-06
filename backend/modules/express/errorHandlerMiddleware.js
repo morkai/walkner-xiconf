@@ -1,6 +1,8 @@
-// Part of <http://miracle.systems/p/walkner-xiconf> licensed under <CC BY-NC-SA 4.0>
+// Part of <https://miracle.systems/p/walkner-xiconf> licensed under <CC BY-NC-SA 4.0>
 
 'use strict';
+
+var _ = require('lodash');
 
 module.exports = function createErrorHandlerMiddleware(expressModule, options)
 {
@@ -13,6 +15,11 @@ module.exports = function createErrorHandlerMiddleware(expressModule, options)
   return function errorHandlerMiddleware(err, req, res, next)
   {
     /*jshint unused:false*/
+
+    if (_.includes(expressModule.config.ignoredErrorCodes, err.code))
+    {
+      return;
+    }
 
     if (err.status)
     {
@@ -27,6 +34,13 @@ module.exports = function createErrorHandlerMiddleware(expressModule, options)
     if (typeof err === 'string')
     {
       err = {message: err, stack: null};
+    }
+    else if (err && err.name === 'ValidationError')
+    {
+      _.forEach(err.errors, function(validationError)
+      {
+        err.message += '\n  - ' + validationError;
+      });
     }
 
     var login = req.session && req.session.user
@@ -66,6 +80,11 @@ module.exports = function createErrorHandlerMiddleware(expressModule, options)
       );
     }
 
+    if (!res.connection || !res.connection.writable)
+    {
+      return;
+    }
+
     var accept = req.headers.accept || '';
 
     if (accept.indexOf('html') !== -1)
@@ -74,7 +93,7 @@ module.exports = function createErrorHandlerMiddleware(expressModule, options)
         title: options.title || 'express',
         statusCode: res.statusCode,
         stack: prepareStack(options.basePath, err).reverse(),
-        error: err.message.replace(/\n/g, '<br>').replace(/^Error: /, '')
+        error: err.message.replace(/^Error: /, '')
       });
 
       return;
@@ -87,7 +106,7 @@ module.exports = function createErrorHandlerMiddleware(expressModule, options)
         stack: err.stack
       };
 
-      Object.keys(err).forEach(function(prop) { error[prop] = err[prop]; });
+      _.forEach(err, function(value, key) { error[key] = value; });
 
       res.setHeader('Content-Type', 'application/json');
       res.end(JSON.stringify({error: error}));

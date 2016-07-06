@@ -29,21 +29,22 @@
 .history-details-metrics {
   margin-top: 14px;
 }
-.history-details-leds .dashboard-leds {
+.history-details-leds .dashboard-leds,
+.history-details-hidLamps .dashboard-hidLamps {
   display: block;
   position: static;
 }
-.history-details-leds .dashboard-header {
+.history-details-hidLamps .dashboard-header {
   display: none;
 }
-.history-details-leds .dashboard-leds-list {
+.history-details-hidLamps .dashboard-hidLamps-list {
   box-shadow: none;
   min-height: inherit;
   max-height: none;
   overflow: auto;
   border-top: 0;
 }
-.history-details-leds .dashboard-leds-led {
+.history-details-hidLamps .dashboard-hidLamps-hidLamp {
   border-right: 0;
 }
 .history-details-steps .xiconfPrograms-steps {

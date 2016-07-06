@@ -1,23 +1,25 @@
-// Part of <http://miracle.systems/p/walkner-xiconf> licensed under <CC BY-NC-SA 4.0>
+// Part of <https://miracle.systems/p/walkner-xiconf> licensed under <CC BY-NC-SA 4.0>
 
 'use strict';
 
-var path = require('path');
-var _ = require('lodash');
-var express = require('express');
-var methods = require('methods');
-var ejs = require('ejs');
-var ejsAmd = require('ejs-amd');
-var messageFormatAmd = require('messageformat-amd');
-var wrapAmd = require('./wrapAmd');
-var rqlMiddleware = require('./rqlMiddleware');
-var errorHandlerMiddleware = require('./errorHandlerMiddleware');
-var crud = require('./crud');
-var cookieParser = null;
-var bodyParser = null;
-var session = null;
-var pmx = null;
-var MongoStore = null;
+const path = require('path');
+const _ = require('lodash');
+const express = require('express');
+const ExpressView = require('express/lib/view');
+const methods = require('methods');
+const ejs = require('ejs');
+const ejsAmd = require('ejs-amd');
+const messageFormatAmd = require('messageformat-amd');
+const wrapAmd = require('./wrapAmd');
+const rqlMiddleware = require('./rqlMiddleware');
+const errorHandlerMiddleware = require('./errorHandlerMiddleware');
+const crud = require('./crud');
+const monkeyPatch = require('./monkeyPatch');
+let cookieParser = null;
+let bodyParser = null;
+let session = null;
+let pmx = null;
+let MongoStore = null;
 
 try { cookieParser = require('cookie-parser'); }
 catch (err) { console.log('Failed to load cookie-parser: %s', err.message); }
@@ -47,27 +49,33 @@ exports.DEFAULT_CONFIG = {
     path: '/',
     httpOnly: true
   },
+  sessionStore: {},
   cookieSecret: null,
   ejsAmdHelpers: {},
   title: 'express',
   jsonBody: {},
   textBody: {},
   urlencodedBody: {},
+  ignoredErrorCodes: ['ECONNRESET', 'ECONNABORTED'],
   routes: (app, expressModule) => { /* jshint unused:false */ }
 };
 
 exports.start = function startExpressModule(app, expressModule)
 {
-  var config = expressModule.config;
-  var mongoose = app[config.mongooseId];
-  var expressApp = express();
+  const config = expressModule.config;
+  const mongoose = app[config.mongooseId];
+  const development = app.options.env === 'development';
+  const staticPath = config[development ? 'staticPath' : 'staticBuildPath'];
+  const expressApp = express();
+
+  expressModule.staticPath = staticPath;
 
   expressModule.app = expressApp;
 
   expressModule.crud = crud;
 
   expressModule.sessionStore = mongoose
-    ? new MongoStore(mongoose.connection.db)
+    ? new MongoStore(mongoose.connection.db, config.sessionStore)
     : session ? new session.MemoryStore() : null;
 
   expressModule.router = express.Router();
@@ -80,7 +88,7 @@ exports.start = function startExpressModule(app, expressModule)
     return httpError;
   };
 
-  methods.forEach(function(method)
+  _.forEach(methods, function(method)
   {
     expressModule[method] = function()
     {
@@ -88,16 +96,12 @@ exports.start = function startExpressModule(app, expressModule)
     };
   });
 
-  var production = app.options.env === 'production';
-  var staticPath = config[production ? 'staticBuildPath' : 'staticPath'];
-
   expressApp.engine('ejs', ejs.renderFile);
-
   expressApp.set('trust proxy', true);
   expressApp.set('view engine', 'ejs');
   expressApp.set('views', app.pathTo('templates'));
 
-  if (!production)
+  if (development)
   {
     expressApp.set('json spaces', 2);
   }
@@ -106,7 +110,7 @@ exports.start = function startExpressModule(app, expressModule)
     module: expressModule
   });
 
-  if (!production)
+  if (development)
   {
     setUpDevMiddleware(staticPath);
   }
@@ -119,7 +123,7 @@ exports.start = function startExpressModule(app, expressModule)
   if (bodyParser)
   {
     expressApp.use(bodyParser.json(config.jsonBody));
-    expressApp.use(bodyParser.urlencoded(_.extend({extended: false}, config.urlencodedBody)));
+    expressApp.use(bodyParser.urlencoded(_.assign({extended: false}, config.urlencodedBody)));
     expressApp.use(bodyParser.text(_.defaults({type: 'text/*'}, config.textBody)));
   }
 
@@ -127,7 +131,7 @@ exports.start = function startExpressModule(app, expressModule)
 
   if (expressModule.sessionStore)
   {
-    var sessionMiddleware = session({
+    const sessionMiddleware = session({
       store: expressModule.sessionStore,
       key: config.sessionCookieKey,
       cookie: config.sessionCookie,
@@ -175,6 +179,10 @@ exports.start = function startExpressModule(app, expressModule)
 
   expressApp.use(errorHandlerMiddleware(expressModule, errorHandlerOptions));
 
+  monkeyPatch(app, expressModule, {
+    View: ExpressView
+  });
+
   /**
    * @private
    * @param {string} staticPath
@@ -183,14 +191,14 @@ exports.start = function startExpressModule(app, expressModule)
   {
     ejsAmd.wrapAmd = wrapEjsAmd.bind(null, config.ejsAmdHelpers);
 
-    var templateUrlRe = /^\/app\/([a-zA-Z0-9\-]+)\/templates\/(.*?)\.js$/;
-    var ejsAmdMiddleware = ejsAmd.middleware({
+    const templateUrlRe = /^\/app\/([a-zA-Z0-9\-]+)\/templates\/(.*?)\.js$/;
+    const ejsAmdMiddleware = ejsAmd.middleware({
       views: staticPath
     });
 
     expressApp.use(function runEjsAmdMiddleware(req, res, next)
     {
-      var matches = req.url.match(templateUrlRe);
+      const matches = req.url.match(templateUrlRe);
 
       if (matches === null)
       {
@@ -206,7 +214,7 @@ exports.start = function startExpressModule(app, expressModule)
       localeModulePrefix: 'app/nls/locale/',
       jsonPath: function(locale, nlsName)
       {
-        var jsonFile = (locale === null ? 'root' : locale) + '.json';
+        const jsonFile = (locale === null ? 'root' : locale) + '.json';
 
         return path.join(staticPath, 'app', nlsName, 'nls', jsonFile);
       }

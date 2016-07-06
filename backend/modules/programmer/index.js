@@ -1,4 +1,4 @@
-// Part of <http://miracle.systems/p/walkner-xiconf> licensed under <CC BY-NC-SA 4.0>
+// Part of <https://miracle.systems/p/walkner-xiconf> licensed under <CC BY-NC-SA 4.0>
 
 'use strict';
 
@@ -12,6 +12,7 @@ var setUpFtStartMonitor = require('./ftStartMonitor');
 var program = require('./program');
 var printServiceTag = require('./printServiceTag');
 var RemoteCoordinator = require('./RemoteCoordinator');
+var HidLampManager = require('./HidLampManager');
 var LedManager = require('./LedManager');
 var Glp2Manager = require('./Glp2Manager');
 
@@ -66,6 +67,8 @@ exports.start = function startProgrammerModule(app, module, done)
   module.currentState = historyModule.createEntry();
 
   module.remoteCoordinator = new RemoteCoordinator(app, module);
+
+  module.hidLampManager = new HidLampManager(app.broker.sandbox(), settings, historyModule, module);
 
   module.ledManager = new LedManager(app.broker.sandbox(), settings, historyModule, module);
 
@@ -255,6 +258,33 @@ exports.start = function startProgrammerModule(app, module, done)
     module.changeState();
   };
 
+  module.resetHidLamps = function(done)
+  {
+    if (!module.currentState.waitingForHidLamps)
+    {
+      return done(new Error('NOT_WAITING_FOR_HID_LAMPS'));
+    }
+
+    var hidLamps = module.currentState.hidLamps;
+
+    if (_.isEmpty(hidLamps))
+    {
+      return done();
+    }
+
+    _.forEach(hidLamps, function(hidLamp, i)
+    {
+      if (hidLamp.status !== 'waiting')
+      {
+        module.hidLampManager.resetHidLamp(i, hidLamp);
+      }
+    });
+
+    module.debug("Reset HID lamps.");
+
+    setImmediate(done);
+  };
+
   module.resetLeds = function(done)
   {
     if (!module.currentState.waitingForLeds)
@@ -354,7 +384,7 @@ exports.start = function startProgrammerModule(app, module, done)
       return;
     }
 
-    _.merge(steps[stepIndex], stepProgress);
+    _.assign(steps[stepIndex], stepProgress);
 
     app.broker.publish('programmer.stepProgressed', {
       stepIndex: stepIndex,
@@ -409,6 +439,11 @@ exports.start = function startProgrammerModule(app, module, done)
       serviceTag,
       done
     );
+  };
+
+  module.checkHidScanResult = function(orderNo, raw, scannerId)
+  {
+    module.hidLampManager.check(orderNo, raw, scannerId);
   };
 
   module.checkSerialNumber = function(orderNo, raw, nc12, serialNumber, scannerId)
@@ -475,7 +510,7 @@ exports.start = function startProgrammerModule(app, module, done)
         }
 
         var historyEntry = historyModule.createEntry().fromDb(this.result, order);
-        var serviceTagRequestData = _.extend(historyEntry.createServiceTagRequestData(), {
+        var serviceTagRequestData = _.assign(historyEntry.createServiceTagRequestData(), {
           resultId: resultId
         });
         var command = newCancelled ? 'releaseServiceTag' : 'acquireServiceTag';

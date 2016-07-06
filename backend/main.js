@@ -1,8 +1,8 @@
-// Part of <http://miracle.systems/p/walkner-xiconf> licensed under <CC BY-NC-SA 4.0>
+// Part of <https://miracle.systems/p/walkner-xiconf> licensed under <CC BY-NC-SA 4.0>
 
 'use strict';
 
-var startTime = Date.now();
+const startTime = Date.now();
 
 if (!process.env.NODE_ENV)
 {
@@ -11,8 +11,8 @@ if (!process.env.NODE_ENV)
 
 require('./extensions');
 
-var fs = require('fs');
-var requireCache = require('./requireCache');
+const fs = require('fs');
+const requireCache = require('./requireCache');
 
 if (process.env.NODE_ENV === 'production')
 {
@@ -30,11 +30,11 @@ if (process.env.NODE_ENV === 'production')
   }
 }
 
-var _ = require('lodash');
-var main = require('h5.main');
-var config = require(process.argv[2]);
+const _ = require('lodash');
+const main = require('h5.main');
+const config = require(process.argv[2]);
 
-var modules = (config.modules || []).map(function(module)
+const modules = (config.modules || []).map(function(module)
 {
   if (typeof module === 'string')
   {
@@ -68,8 +68,8 @@ var modules = (config.modules || []).map(function(module)
   return module;
 });
 
-var app = {
-  options: _.merge({}, config, {
+const app = {
+  options: _.assign({}, config, {
     version: require('../package.json').version,
     startTime: startTime,
     env: process.env.NODE_ENV,
@@ -86,6 +86,8 @@ var app = {
     }
   }
 };
+
+_.assign(app, require('./helpers'));
 
 main(app, modules);
 

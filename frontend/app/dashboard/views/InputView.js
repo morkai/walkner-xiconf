@@ -1,4 +1,4 @@
-// Part of <http://miracle.systems/p/walkner-xiconf> licensed under <CC BY-NC-SA 4.0>
+// Part of <https://miracle.systems/p/walkner-xiconf> licensed under <CC BY-NC-SA 4.0>
 
 define([
   'underscore',
@@ -9,7 +9,7 @@ define([
   'app/time',
   'app/data/settings',
   'app/data/hotkeys',
-  'app/data/ledBuffer',
+  'app/data/scanBuffer',
   'app/core/View',
   'app/core/views/DialogView',
   './PrintServiceTagDialogView',
@@ -27,7 +27,7 @@ define([
   time,
   settings,
   hotkeys,
-  ledBuffer,
+  scanBuffer,
   View,
   DialogView,
   PrintServiceTagDialogView,
@@ -180,6 +180,7 @@ define([
 
       this.listenTo(this.model, 'change', _.debounce(this.onModelChange.bind(this), 25));
       this.listenTo(this.model, 'change:remoteData', this.onRemoteDataChange);
+      this.listenTo(this.model, 'change:waitingForHidLamps', this.onWaitingForHidLampsChange);
       this.listenTo(this.model, 'change:waitingForLeds', this.onWaitingForLedsChange);
       this.listenTo(settings, 'change', this.onSettingsChange);
 
@@ -246,6 +247,14 @@ define([
       var $el = this.$els[elId];
 
       return $el && !$el.prop('disabled') && $el.is(':visible');
+    },
+
+    checkHidScanResult: function(raw, scannerId)
+    {
+      if (this.model.get('waitingForHidLamps'))
+      {
+        this.socket.emit('programmer.checkHidScanResult', this.$els.orderNo.val(), raw, scannerId);
+      }
     },
 
     checkSerialNumber: function(raw, nc12, serialNumber, scannerId)
@@ -690,6 +699,8 @@ define([
         var glp2Enabled = !!settings.get('glp2Enabled');
         var ftEnabled = !!settings.get('ftEnabled');
         var ftInactive = !!this.$('.is-ft-disabled').length;
+        var hidEnabled = !!settings.get('hidEnabled');
+        var hidInactive = !!this.$('.is-hid-disabled').length;
 
         $els.orderNo
           .prop('disabled', orderFieldDisabled || countdown)
@@ -697,8 +708,8 @@ define([
         $els.quantity
           .prop('disabled', orderFieldDisabled || countdown)
           .prop('required', ordersRequired);
-        $els.nc12.prop('disabled', isInProgress || isRemoteInput || hasOrder || countdown || ftEnabled);
-        $els.start.prop('disabled', countdown || (ftEnabled && ftInactive));
+        $els.nc12.prop('disabled', isInProgress || isRemoteInput || hasOrder || countdown || ftEnabled || hidEnabled);
+        $els.start.prop('disabled', countdown || (ftEnabled && ftInactive) || (hidEnabled && hidInactive));
         $els.toggleWorkMode
           .prop('disabled', isInProgress || countdown || glp2Enabled)
           .css('display', glp2Enabled && !t24vdcEnabled ? 'none' : '');
@@ -797,6 +808,7 @@ define([
 
       var programItems = [];
       var ledItems = [];
+      var hidItems = [];
       var gprsItems = [];
       var testItems = [];
       var ftItem = null;
@@ -810,6 +822,10 @@ define([
         else if (item.kind === 'led')
         {
           ledItems.push(item);
+        }
+        else if (item.kind === 'hid')
+        {
+          hidItems.push(item);
         }
         else if (item.kind === 'gprs')
         {
@@ -829,17 +845,20 @@ define([
       var selectedTestItem = _.findWhere(testItems, {nc12: this.model.getProgramId()});
       var isTestingEnabled = !!settings.get('glp2Enabled');
       var isLedsEnabled = !!settings.get('ledsEnabled');
+      var isHidEnabled = !!settings.get('hidEnabled');
       var isFtEnabled = !!settings.get('ftEnabled');
       var isFtActive = this.model.isFtActive();
-      var isNoProgramming = !isFtEnabled && this.model.isNoProgramming();
+      var isHidActive = this.model.isHidActive();
+      var isNoProgramming = !isFtEnabled && !isHidEnabled && this.model.isNoProgramming();
       var isMultiNc12 = programItems.length > 1;
       var isLedOnly = user.isLocal()
+        && isLedsEnabled
         && isRemoteInput
         && !this.model.hasProgram()
         && !programItems.length
-        && ledItems.length > 0
-        && isLedsEnabled;
-      var isTestOnly = isTestingEnabled && !isLedsEnabled && isNoProgramming && !isFtEnabled;
+        && !hidItems.length
+        && ledItems.length > 0;
+      var isTestOnly = isTestingEnabled && !isLedsEnabled && isNoProgramming && !isFtEnabled && !isHidEnabled;
       var quantityTodo = orderData.quantityTodo;
       var quantityDone = orderData.quantityDone;
       var nc12 = '';
@@ -854,12 +873,13 @@ define([
         nc12 = selectedProgramItem ? selectedProgramItem.nc12 : '';
       }
 
-      if (isFtEnabled || isNoProgramming)
+      if (isHidEnabled || isFtEnabled || isNoProgramming)
       {
         nc12 = '';
       }
 
       var isMulti = user.isLocal() && !this.model.isInProgress() && isMultiNc12;
+      var isNoProgram = isTestingEnabled && !isLedOnly && !isNoProgramming && !selectedProgramItem && !isMulti;
 
       $els.nc12
         .val(nc12)
@@ -867,18 +887,30 @@ define([
         .toggleClass('is-ledOnly', isLedOnly)
         .toggleClass('is-ft-enabled', isFtEnabled && isFtActive)
         .toggleClass('is-ft-disabled', isFtEnabled && !isFtActive)
-        .toggleClass('is-noProgramming', isNoProgramming && !isLedOnly && !isTestOnly && isLedsEnabled)
+        .toggleClass('is-hid-enabled', isHidEnabled && isHidActive)
+        .toggleClass('is-hid-disabled', isHidEnabled && !isHidActive)
+        .toggleClass('is-noProgramming', isNoProgramming && !isLedOnly && !isTestOnly && isLedsEnabled && !isHidEnabled)
         .toggleClass('is-testOnly', isTestOnly)
-        .toggleClass(
-          'is-noProgram',
-          isTestingEnabled && !isLedOnly && !isNoProgramming && !selectedProgramItem && !isMulti
-        )
+        .toggleClass('is-noProgram', isNoProgram)
         .toggleClass('is-multi', isMulti && !isNoProgramming)
         .toggleClass('is-picked', nc12 !== '');
 
       if (isFtEnabled)
       {
         quantityDone = ftItem ? ftItem.quantityDone : 0;
+      }
+      else if (isHidEnabled)
+      {
+        quantityDone = 0;
+
+        _.forEach(hidItems, function(hidItem)
+        {
+          var quantityPerScan = hidItem.quantityTodo / orderData.quantityTodo;
+
+          quantityDone += hidItem.quantityDone / quantityPerScan;
+        });
+
+        quantityDone /= hidItems.length;
       }
       else if (isTestOnly)
       {
@@ -948,7 +980,7 @@ define([
 
     isNc12Required: function()
     {
-      if (settings.get('ftEnabled'))
+      if (settings.get('ftEnabled') || settings.get('hidEnabled'))
       {
         return false;
       }
@@ -1099,16 +1131,35 @@ define([
       this.updateOrderFinishedDialog();
     },
 
-    onWaitingForLedsChange: function()
+    onWaitingForHidLampsChange: function()
     {
-      if (!this.model.get('waitingForLeds'))
+      if (!this.model.get('waitingForHidLamps'))
       {
-        ledBuffer.clear();
+        scanBuffer.clear();
 
         return;
       }
 
-      var leds = ledBuffer.get();
+      var hidLamps = scanBuffer.get();
+
+      for (var i = 0; i < hidLamps.length; ++i)
+      {
+        var hidLamp = hidLamps[i];
+
+        this.checkHidScanResult(hidLamp.raw, hidLamp.scannerId);
+      }
+    },
+
+    onWaitingForLedsChange: function()
+    {
+      if (!this.model.get('waitingForLeds'))
+      {
+        scanBuffer.clear();
+
+        return;
+      }
+
+      var leds = scanBuffer.get();
 
       for (var i = 0; i < leds.length; ++i)
       {
@@ -1156,7 +1207,11 @@ define([
 
       if (this.model.isRemoteInput())
       {
-        if (ALL_LEDS_PATTERN.test(message.value))
+        if (settings.get('hidEnabled'))
+        {
+          this.handleHidCommand(message.value, message.scannerId);
+        }
+        else if (settings.get('ledsEnabled') && ALL_LEDS_PATTERN.test(message.value))
         {
           this.handleLedCommand(message.value, message.scannerId);
         }
@@ -1168,6 +1223,25 @@ define([
       else if (/^[0-9]{12}$/.test(message.value))
       {
         this.handleNc12Command(message.value, message.event ? message.event.target : null);
+      }
+    },
+
+    handleHidCommand: function(hid, scannerId)
+    {
+      if (!/^[0-9]{13}$/.test(hid))
+      {
+        return;
+      }
+
+      if (this.model.get('waitingForHidLamps'))
+      {
+        this.checkHidScanResult(hid, scannerId);
+      }
+      else if (this.model.get('countdown') === -1 || !this.model.get('finishedAt'))
+      {
+        scanBuffer.add(hid, scannerId);
+
+        this.start();
       }
     },
 
@@ -1201,7 +1275,7 @@ define([
       }
       else if (this.model.get('countdown') === -1 || !this.model.get('finishedAt'))
       {
-        ledBuffer.add(led, nc12, serialNumber, scannerId);
+        scanBuffer.add(led, nc12, serialNumber, scannerId);
 
         this.start();
       }

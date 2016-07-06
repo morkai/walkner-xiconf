@@ -1,9 +1,8 @@
-// Part of <http://miracle.systems/p/walkner-xiconf> licensed under <CC BY-NC-SA 4.0>
+// Part of <https://miracle.systems/p/walkner-xiconf> licensed under <CC BY-NC-SA 4.0>
 
 define([
   'moment-timezone',
-  'app/socket',
-  'moment-timezone-data'
+  'app/socket'
 ], function(
   moment,
   socket
@@ -42,9 +41,9 @@ define([
     return moment(Date.now() + time.offset).tz(time.zone);
   };
 
-  time.getMoment = function(date)
+  time.getMoment = function(date, inputFormat)
   {
-    return moment(date).tz(time.zone);
+    return moment(date, inputFormat).tz(time.zone);
   };
 
   time.format = function(date, format)
@@ -52,6 +51,30 @@ define([
     var dateMoment = time.getMoment(date);
 
     return dateMoment.isValid() ? dateMoment.format(format) : null;
+  };
+
+  time.toTagData = function(date, absolute)
+  {
+    if (!date)
+    {
+      return {
+        iso: '?',
+        long: '?',
+        human: '?',
+        daysAgo: 0
+      };
+    }
+
+    var timeMoment = time.getMoment(date);
+    var then = timeMoment.valueOf();
+    var now = Date.now();
+
+    return {
+      iso: timeMoment.toISOString(),
+      long: timeMoment.format('LLLL'),
+      human: absolute === true ? timeMoment.from(then > now ? then : now) : timeMoment.fromNow(),
+      daysAgo: -timeMoment.diff(now, 'days')
+    };
   };
 
   /**
@@ -105,7 +128,7 @@ define([
    */
   time.toString = function(time, compact, ms)
   {
-    if (typeof time !== 'number' || time <= 0)
+    if (typeof time !== 'number' || time <= 0 || isNaN(time))
     {
       return compact ? '00:00:00' : '0s';
     }

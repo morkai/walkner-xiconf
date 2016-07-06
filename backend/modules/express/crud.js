@@ -1,8 +1,9 @@
-// Part of <http://miracle.systems/p/walkner-xiconf> licensed under <CC BY-NC-SA 4.0>
+// Part of <https://miracle.systems/p/walkner-xiconf> licensed under <CC BY-NC-SA 4.0>
 
 'use strict';
 
 var EventEmitter = require('events').EventEmitter;
+var _ = require('lodash');
 var step = require('h5.step');
 var mongoSerializer = require('h5.rql/lib/serializers/mongoSerializer');
 
@@ -53,6 +54,11 @@ exports.browseRoute = function(app, options, req, res, next)
   step(
     function countStep()
     {
+      if (_.isNumber(options.totalCount))
+      {
+        return this.next()(null, options.totalCount);
+      }
+
       Model.count(queryOptions.selector, this.next());
     },
     function findStep(err, totalCount)
@@ -145,7 +151,15 @@ exports.addRoute = function(app, Model, req, res, next)
       {
         res.statusCode = 400;
         err.code = 'DUPLICATE_KEY';
-        err.index = err.message.match(/\.\$(.*?) /)[1];
+
+        var matches = err.message.match(/\.\$(.*?) /);
+
+        if (!matches)
+        {
+          matches = err.message.match(/ (.*?) dup key/);
+        }
+
+        err.index = matches ? matches[1] : '';
       }
 
       return next(err);
@@ -158,10 +172,13 @@ exports.addRoute = function(app, Model, req, res, next)
       }
     });
 
-    app.broker.publish((Model.TOPIC_PREFIX || Model.collection.name) + '.added', {
-      model: model,
-      user: req.session.user
-    });
+    if (Model.CRUD_PUBLISH !== false)
+    {
+      app.broker.publish((Model.TOPIC_PREFIX || Model.collection.name) + '.added', {
+        model: model,
+        user: req.session.user
+      });
+    }
   });
 };
 
@@ -179,7 +196,8 @@ exports.readRoute = function(app, options, req, res, next)
     options = {};
   }
 
-  var query = Model.findById(req.params.id);
+  var queryOptions = mongoSerializer.fromQuery(req.rql);
+  var query = Model.findById(req.params.id, queryOptions.fields).lean();
 
   try
   {
@@ -200,6 +218,11 @@ exports.readRoute = function(app, options, req, res, next)
     if (model === null)
     {
       return res.sendStatus(404);
+    }
+
+    if (typeof Model.customizeLeanObject === 'function')
+    {
+      model = Model.customizeLeanObject(model);
     }
 
     if (typeof options.prepareResult === 'function')
@@ -235,8 +258,20 @@ exports.readRoute = function(app, options, req, res, next)
   }
 };
 
-exports.editRoute = function(app, Model, req, res, next)
+exports.editRoute = function(app, options, req, res, next)
 {
+  var Model;
+
+  if (options.model && options.model.model)
+  {
+    Model = options.model;
+  }
+  else
+  {
+    Model = options;
+    options = {};
+  }
+
   if (req.model === null)
   {
     edit(null, null);
@@ -264,7 +299,17 @@ exports.editRoute = function(app, Model, req, res, next)
       return res.sendStatus(404);
     }
 
+    if (typeof options.beforeSet === 'function')
+    {
+      options.beforeSet(model, req);
+    }
+
     model.set(req.body);
+
+    if (typeof options.beforeSave === 'function')
+    {
+      options.beforeSave(model, req);
+    }
 
     if (!model.isModified())
     {
@@ -283,7 +328,15 @@ exports.editRoute = function(app, Model, req, res, next)
         {
           res.statusCode = 400;
           err.code = 'DUPLICATE_KEY';
-          err.index = err.message.match(/\.\$(.*?) /)[1];
+
+          var matches = err.message.match(/\.\$(.*?) /);
+
+          if (!matches)
+          {
+            matches = err.message.match(/ (.*?) dup key/);
+          }
+
+          err.index = matches ? matches[1] : '';
         }
 
         return next(err);
@@ -291,10 +344,18 @@ exports.editRoute = function(app, Model, req, res, next)
 
       sendResponse(res, model);
 
-      app.broker.publish((Model.TOPIC_PREFIX || Model.collection.name) + '.edited', {
-        model: model,
-        user: req.session.user
-      });
+      if (Model.CRUD_PUBLISH !== false)
+      {
+        app.broker.publish((Model.TOPIC_PREFIX || Model.collection.name) + '.edited', {
+          model: model,
+          user: req.session.user
+        });
+      }
+
+      if (!err && typeof options.afterSave === 'function')
+      {
+        options.afterSave(model, req);
+      }
     });
   }
 
@@ -352,10 +413,13 @@ exports.deleteRoute = function(app, Model, req, res, next)
         }
       });
 
-      app.broker.publish((Model.TOPIC_PREFIX || Model.collection.name) + '.deleted', {
-        model: model,
-        user: req.session.user
-      });
+      if (Model.CRUD_PUBLISH !== false)
+      {
+        app.broker.publish((Model.TOPIC_PREFIX || Model.collection.name) + '.deleted', {
+          model: model,
+          user: req.session.user
+        });
+      }
     });
   }
 };
@@ -384,28 +448,41 @@ exports.exportRoute = function(options, req, res, next)
   {
     var emitter = new EventEmitter();
 
-    handleExportStream(emitter, false);
+    handleExportStream(emitter, false, req, options.cleanUp);
 
     options.serializeStream(query.stream(), emitter);
   }
   else
   {
-    handleExportStream(query.stream(), true);
+    handleExportStream(query.stream(), true, req, options.cleanUp);
   }
 
-  function handleExportStream(queryStream, serializeRow)
+  function handleExportStream(queryStream, serializeRow, req, cleanUp)
   {
-    queryStream.on('error', next);
+    queryStream.on('error', function(err)
+    {
+      next(err);
+
+      if (cleanUp)
+      {
+        cleanUp(req);
+      }
+    });
 
     queryStream.on('close', function()
     {
       writeHeader();
       res.end();
+
+      if (cleanUp)
+      {
+        cleanUp(req);
+      }
     });
 
     queryStream.on('data', function(doc)
     {
-      var row = serializeRow ? options.serializeRow(doc) : doc;
+      var row = serializeRow ? options.serializeRow(doc, req) : doc;
       var multiple = Array.isArray(row);
 
       if (!row || (multiple && !row.length))
@@ -422,7 +499,7 @@ exports.exportRoute = function(options, req, res, next)
 
       if (multiple)
       {
-        row.forEach(writeRow);
+        _.forEach(row, writeRow);
       }
       else
       {
@@ -475,7 +552,7 @@ exports.exportRoute = function(options, req, res, next)
 
 function populateQuery(query, rql)
 {
-  rql.selector.args.forEach(function(term)
+  _.forEach(rql.selector.args, function(term)
   {
     if (term.name === 'populate' && term.args.length > 0)
     {

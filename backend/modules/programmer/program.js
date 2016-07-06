@@ -1,4 +1,4 @@
-// Part of <http://miracle.systems/p/walkner-xiconf> licensed under <CC BY-NC-SA 4.0>
+// Part of <https://miracle.systems/p/walkner-xiconf> licensed under <CC BY-NC-SA 4.0>
 
 'use strict';
 
@@ -100,6 +100,7 @@ module.exports = function program(app, programmerModule, data, done)
     checkSolProgramStep,
     writeWorkflowFileStep,
     handleWriteWorkflowFileResultStep,
+    waitForHidLampsStep,
     waitForLedsStep,
     waitForContinueStep,
     tryToProgramLptStep,
@@ -875,6 +876,62 @@ module.exports = function program(app, programmerModule, data, done)
     setImmediate(this.next());
   }
 
+  function waitForHidLampsStep()
+  {
+    /*jshint validthis:true*/
+
+    if (thisProgrammingCancelled)
+    {
+      return this.skip();
+    }
+
+    var hidLampCount = currentState.hidLamps.length;
+
+    if (!hidLampCount)
+    {
+      return;
+    }
+
+    programmerModule.updateOverallProgress(22);
+
+    if (!currentState.waitingForHidLamps)
+    {
+      return;
+    }
+
+    programmerModule.log('HID:WAITING', {
+      hidLampCount: hidLampCount
+    });
+
+    var next = this.next();
+    var cancelSub;
+    var waitingSub;
+
+    cancelSub = app.broker.subscribe('programmer.cancelled', function()
+    {
+      waitingSub.cancel();
+      waitingSub = null;
+
+      setImmediate(next);
+    }).setLimit(1);
+
+    waitingSub = app.broker.subscribe('programmer.stateChanged', function(changes)
+    {
+      if (changes.waitingForHidLamps === false)
+      {
+        waitingSub.cancel();
+        waitingSub = null;
+
+        cancelSub.cancel();
+        cancelSub = null;
+
+        scanned = true;
+
+        setImmediate(next);
+      }
+    });
+  }
+
   function waitForLedsStep()
   {
     /*jshint validthis:true*/
@@ -948,7 +1005,7 @@ module.exports = function program(app, programmerModule, data, done)
 
         lastLedsTimer = null;
 
-        if (_.any(currentState.leds, function(led) { return led.status !== 'waiting'; }))
+        if (_.some(currentState.leds, function(led) { return led.status !== 'waiting'; }))
         {
           return;
         }
@@ -1294,6 +1351,7 @@ module.exports = function program(app, programmerModule, data, done)
       exception: null,
       result: 'success',
       order: currentState.order,
+      waitingForHidLamps: false,
       waitingForLeds: false,
       waitingForContinue: null,
       inProgress: false,
@@ -1314,7 +1372,15 @@ module.exports = function program(app, programmerModule, data, done)
         changes.exception = err.message;
       }
 
-      if (settings.get('ftEnabled'))
+      if (settings.get('hidEnabled'))
+      {
+        programmerModule.log('HID:FAILURE', {
+          time: changes.finishedAt,
+          duration: changes.duration,
+          errorCode: changes.errorCode
+        });
+      }
+      else if (settings.get('ftEnabled'))
       {
         programmerModule.log('FT:FAILURE', {
           time: changes.finishedAt,
@@ -1365,7 +1431,14 @@ module.exports = function program(app, programmerModule, data, done)
     {
       changes.counter = currentState.counter + 1;
 
-      if (settings.get('ftEnabled'))
+      if (settings.get('hidEnabled'))
+      {
+        programmerModule.log('HID:SUCCESS', {
+          time: changes.finishedAt,
+          duration: changes.duration
+        });
+      }
+      else if (settings.get('ftEnabled'))
       {
         programmerModule.log('FT:SUCCESS', {
           time: changes.finishedAt,

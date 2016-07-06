@@ -1,4 +1,4 @@
-// Part of <http://miracle.systems/p/walkner-xiconf> licensed under <CC BY-NC-SA 4.0>
+// Part of <https://miracle.systems/p/walkner-xiconf> licensed under <CC BY-NC-SA 4.0>
 
 'use strict';
 
@@ -211,6 +211,22 @@ RemoteCoordinator.prototype.request = function(action, body, done, rid, attempt,
 /**
  * @param {object} data
  * @param {string} data.orderNo
+ * @param {string} data.scanResult
+ * @param {function} done
+ */
+RemoteCoordinator.prototype.checkHidLamp = function(data, done)
+{
+  if (!this.isConnected())
+  {
+    return done(new Error("No connection to the remote server: " + this.settings.get('remoteServer')));
+  }
+
+  this.request('checkHidLamp', data, done);
+};
+
+/**
+ * @param {object} data
+ * @param {string} data.orderNo
  * @param {string} data.nc12
  * @param {string} data.serialNumber
  * @param {function} done
@@ -344,6 +360,12 @@ RemoteCoordinator.prototype.setUpSio = function()
     rc.connectToProdLine();
 
     programmer.changeState({remoteConnected: true});
+
+    if (rc.resetRemoteOrderTimer)
+    {
+      clearTimeout(rc.resetRemoteOrderTimer);
+      rc.resetRemoteOrderTimer = null;
+    }
   });
 
   sio.on('error', function(err)

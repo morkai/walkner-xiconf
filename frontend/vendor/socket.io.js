@@ -109,10 +109,27 @@ define("socket.io", [], function() { return /******/ (function(modules) { // web
 	    }
 	    io = cache[id];
 	  }
-
-	  return io.socket(parsed.path);
+	  if (parsed.query && !opts.query) {
+	    opts.query = parsed.query;
+	  } else if (opts && 'object' === _typeof(opts.query)) {
+	    opts.query = encodeQueryString(opts.query);
+	  }
+	  return io.socket(parsed.path, opts);
 	}
-
+	/**
+	 *  Helper method to parse query objects to string.
+	 * @param {object} query
+	 * @returns {string}
+	 */
+	function encodeQueryString(obj) {
+	  var str = [];
+	  for (var p in obj) {
+	    if (obj.hasOwnProperty(p)) {
+	      str.push(encodeURIComponent(p) + '=' + encodeURIComponent(obj[p]));
+	    }
+	  }
+	  return str.join('&');
+	}
 	/**
 	 * Protocol version.
 	 *
@@ -1250,7 +1267,7 @@ define("socket.io", [], function() { return /******/ (function(modules) { // web
 	 * @api public
 	 */
 
-	Manager.prototype.open = Manager.prototype.connect = function (fn) {
+	Manager.prototype.open = Manager.prototype.connect = function (fn, opts) {
 	  debug('readyState %s', this.readyState);
 	  if (~this.readyState.indexOf('open')) return this;
 
@@ -1395,10 +1412,10 @@ define("socket.io", [], function() { return /******/ (function(modules) { // web
 	 * @api public
 	 */
 
-	Manager.prototype.socket = function (nsp) {
+	Manager.prototype.socket = function (nsp, opts) {
 	  var socket = this.nsps[nsp];
 	  if (!socket) {
-	    socket = new Socket(this, nsp);
+	    socket = new Socket(this, nsp, opts);
 	    this.nsps[nsp] = socket;
 	    var self = this;
 	    socket.on('connecting', onConnecting);
@@ -1413,7 +1430,7 @@ define("socket.io", [], function() { return /******/ (function(modules) { // web
 	  }
 
 	  function onConnecting() {
-	    if (! ~indexOf(self.connecting, socket)) {
+	    if (!~indexOf(self.connecting, socket)) {
 	      self.connecting.push(socket);
 	    }
 	  }
@@ -1445,6 +1462,7 @@ define("socket.io", [], function() { return /******/ (function(modules) { // web
 	Manager.prototype.packet = function (packet) {
 	  debug('writing packet %j', packet);
 	  var self = this;
+	  if (packet.query && packet.type === 0) packet.nsp += '?' + packet.query;
 
 	  if (!self.encoding) {
 	    // encode, then write to engine with result
@@ -1718,7 +1736,7 @@ define("socket.io", [], function() { return /******/ (function(modules) { // web
 	  this.binaryType = null;
 	  this.onlyBinaryUpgrades = opts.onlyBinaryUpgrades;
 	  this.perMessageDeflate = false !== opts.perMessageDeflate ? (opts.perMessageDeflate || {}) : false;
-
+console.log(opts, this);
 	  if (true === this.perMessageDeflate) this.perMessageDeflate = {};
 	  if (this.perMessageDeflate && null == this.perMessageDeflate.threshold) {
 	    this.perMessageDeflate.threshold = 1024;
@@ -1731,7 +1749,7 @@ define("socket.io", [], function() { return /******/ (function(modules) { // web
 	  this.cert = opts.cert || null;
 	  this.ca = opts.ca || null;
 	  this.ciphers = opts.ciphers || null;
-	  this.rejectUnauthorized = opts.rejectUnauthorized === undefined ? null : opts.rejectUnauthorized;
+	  this.rejectUnauthorized = opts.rejectUnauthorized === undefined ? true : opts.rejectUnauthorized;
 
 	  // other options for Node.js client
 	  var freeGlobal = typeof global == 'object' && global;
@@ -3692,8 +3710,16 @@ define("socket.io", [], function() { return /******/ (function(modules) { // web
 	 * Copyright (c) 2012 Niklas von Hertzen
 	 * Licensed under the MIT license.
 	 */
-	(function(chars){
+	(function(){
 	  "use strict";
+
+	  var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
+	  // Use a lookup table to find the index.
+	  var lookup = new Uint8Array(256);
+	  for (var i = 0; i < chars.length; i++) {
+	    lookup[chars.charCodeAt(i)] = i;
+	  }
 
 	  exports.encode = function(arraybuffer) {
 	    var bytes = new Uint8Array(arraybuffer),
@@ -3731,10 +3757,10 @@ define("socket.io", [], function() { return /******/ (function(modules) { // web
 	    bytes = new Uint8Array(arraybuffer);
 
 	    for (i = 0; i < len; i+=4) {
-	      encoded1 = chars.indexOf(base64[i]);
-	      encoded2 = chars.indexOf(base64[i+1]);
-	      encoded3 = chars.indexOf(base64[i+2]);
-	      encoded4 = chars.indexOf(base64[i+3]);
+	      encoded1 = lookup[base64.charCodeAt(i)];
+	      encoded2 = lookup[base64.charCodeAt(i+1)];
+	      encoded3 = lookup[base64.charCodeAt(i+2)];
+	      encoded4 = lookup[base64.charCodeAt(i+3)];
 
 	      bytes[p++] = (encoded1 << 2) | (encoded2 >> 4);
 	      bytes[p++] = ((encoded2 & 15) << 4) | (encoded3 >> 2);
@@ -3743,7 +3769,7 @@ define("socket.io", [], function() { return /******/ (function(modules) { // web
 
 	    return arraybuffer;
 	  };
-	})("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/");
+	})();
 
 
 /***/ },
@@ -4565,7 +4591,7 @@ define("socket.io", [], function() { return /******/ (function(modules) { // web
 	 * @api public
 	 */
 
-	function Socket(io, nsp) {
+	function Socket(io, nsp, opts) {
 	  this.io = io;
 	  this.nsp = nsp;
 	  this.json = this; // compat
@@ -4575,6 +4601,9 @@ define("socket.io", [], function() { return /******/ (function(modules) { // web
 	  this.sendBuffer = [];
 	  this.connected = false;
 	  this.disconnected = true;
+	  if (opts && opts.query) {
+	    this.query = opts.query;
+	  }
 	  if (this.io.autoConnect) this.open();
 	}
 
@@ -4693,7 +4722,11 @@ define("socket.io", [], function() { return /******/ (function(modules) { // web
 
 	  // write connect packet if necessary
 	  if ('/' !== this.nsp) {
-	    this.packet({ type: parser.CONNECT });
+	    if (this.query) {
+	      this.packet({ type: parser.CONNECT, query: this.query });
+	    } else {
+	      this.packet({ type: parser.CONNECT });
+	    }
 	  }
 	};
 

@@ -1,4 +1,4 @@
-// Part of <http://miracle.systems/p/walkner-xiconf> licensed under <CC BY-NC-SA 4.0>
+// Part of <https://miracle.systems/p/walkner-xiconf> licensed under <CC BY-NC-SA 4.0>
 
 'use strict';
 
@@ -57,7 +57,7 @@ exports.start = function startUpdaterModule(app, updaterModule)
 
     var path = '/xiconf/updates/' + app.options.version;
 
-    _.merge(updatesUrl, {
+    _.assign(updatesUrl, {
       path: path,
       pathname: path,
       query: '',

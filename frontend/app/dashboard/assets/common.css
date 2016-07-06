@@ -125,6 +125,8 @@
 .dashboard-carousel {
   margin-top: 68px!important;
 }
+.is-waitingForHidLamps .dashboard-carousel,
+.is-waitingForHidLamps .dashboard-program,
 .is-waitingForLeds .dashboard-carousel,
 .is-waitingForLeds .dashboard-program {
   margin-top: 364px!important;

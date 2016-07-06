@@ -67,6 +67,7 @@
     "tab:workflow": "MultiOneWorkflow configuration",
     "tab:feature": "Driver configuration",
     "tab:leds": "LED boards",
+    "tab:hidLamps": "HID lamps",
     "tab:program": "Program",
     "tab:gprsOrderFile": "Order",
     "tab:gprsInputFile": "CityTouchIPT configuration",
@@ -322,7 +323,12 @@
     "error:FT:CONNECTING_FAILURE": "FT: Tester connection failure.",
     "error:FT:SDP_TIMEOUT": "FT: Waiting for a response from the SDP timed out.",
     "error:FT:SDP_INVALID_RESPONSE": "FT: Received an invalid response from the SDP.",
-    "error:FT:PE_FAILURE": "FT: PE failure."
+    "error:FT:PE_FAILURE": "FT: PE failure.",
+
+    "log:HID:STARTED": "Starting a HID lamp check...",
+    "log:HID:SUCCESS": "Successfully finished the HID lamp check in <code>{duration}</code>.",
+    "log:HID:FAILURE": "Unsuccessfully finished the HID lamp check in <code>{duration}</code> with an error: <code>{error}</code>",
+    "log:HID:WAITING": "Waiting for {hidLampCount} HID {hidLampCount, plural, one{lamp} other{lamps}}..."
   },
   "pl": true
 }

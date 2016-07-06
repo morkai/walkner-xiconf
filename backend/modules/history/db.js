@@ -1,4 +1,4 @@
-// Part of <http://miracle.systems/p/walkner-xiconf> licensed under <CC BY-NC-SA 4.0>
+// Part of <https://miracle.systems/p/walkner-xiconf> licensed under <CC BY-NC-SA 4.0>
 
 'use strict';
 
@@ -124,6 +124,13 @@ COMMIT TRANSACTION;';
         userVersion = 6;
 
         sql += 'ALTER TABLE historyEntries ADD COLUMN cancelled INT DEFAULT 0;\n';
+      }
+
+      if (row.user_version < 7)
+      {
+        userVersion = 7;
+
+        sql += 'ALTER TABLE historyEntries ADD COLUMN hidLamps TEXT;\n';
       }
 
       if (sql === '')

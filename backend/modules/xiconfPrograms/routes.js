@@ -1,4 +1,4 @@
-// Part of <http://miracle.systems/p/walkner-xiconf> licensed under <CC BY-NC-SA 4.0>
+// Part of <https://miracle.systems/p/walkner-xiconf> licensed under <CC BY-NC-SA 4.0>
 
 'use strict';
 
@@ -411,7 +411,7 @@ module.exports = function setProgramsRoutes(app, programsModule)
   {
     try
     {
-      new ProgramStep(_.merge({step: 1}, step));
+      new ProgramStep(_.assign({step: 1}, step));
     }
     catch (err)
     {
@@ -455,7 +455,7 @@ module.exports = function setProgramsRoutes(app, programsModule)
   {
     return JSON.parse(steps).map(function(step)
     {
-      return _.pick(step, 'kind', 'type', 'duration');
+      return _.pick(step, ['kind', 'type', 'duration']);
     });
   }
 

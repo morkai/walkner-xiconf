@@ -1,4 +1,4 @@
-// Part of <http://miracle.systems/p/walkner-xiconf> licensed under <CC BY-NC-SA 4.0>
+// Part of <https://miracle.systems/p/walkner-xiconf> licensed under <CC BY-NC-SA 4.0>
 
 'use strict';
 
@@ -43,6 +43,7 @@ function HistoryEntry(db, broker, settings)
   this.selectedOrderNo = null;
   this.selectedNc12 = null;
   this.waitingForLeds = false;
+  this.waitingForHidLamps = false;
   this.waitingForContinue = null;
   this.updating = null;
 
@@ -67,6 +68,7 @@ HistoryEntry.prototype.toJSON = function()
     program: this.program,
     steps: this.steps,
     leds: this.leds,
+    hidLamps: this.hidLamps,
     inputMode: this.inputMode,
     workMode: this.workMode,
     inProgress: this.inProgress,
@@ -77,6 +79,7 @@ HistoryEntry.prototype.toJSON = function()
     selectedOrderNo: this.selectedOrderNo,
     selectedNc12: this.selectedNc12,
     waitingForLeds: this.waitingForLeds,
+    waitingForHidLamps: this.waitingForHidLamps,
     waitingForContinue: this.waitingForContinue,
     updating: this.updating
   };
@@ -84,7 +87,7 @@ HistoryEntry.prototype.toJSON = function()
 
 HistoryEntry.prototype.fromDb = function(result, order)
 {
-  _.extend(this, _.pick(result, [
+  _.assign(this, _.pick(result, [
     '_id',
     'nc12',
     'counter',
@@ -108,7 +111,8 @@ HistoryEntry.prototype.fromDb = function(result, order)
     'program',
     'steps',
     'metrics',
-    'leds'
+    'leds',
+    'hidLamps'
   ].forEach(function(property)
   {
     this[property] = _.isString(result[property]) ? JSON.parse(result[property]) : result[property];
@@ -116,7 +120,7 @@ HistoryEntry.prototype.fromDb = function(result, order)
 
   if (order)
   {
-    this.order = _.extend(new Order(0, order.no, order.quantity), order);
+    this.order = _.assign(new Order(0, order.no, order.quantity), order);
   }
 
   return this;
@@ -186,6 +190,20 @@ HistoryEntry.prototype.hasProgramStep = function(type)
 
 HistoryEntry.prototype.createServiceTagRequestData = function()
 {
+  return {
+    serviceTag: this.serviceTag,
+    orderNo: this.order.no,
+    nc12: this.nc12,
+    multi: _.isString(this.workflow) && /multidevice\s*=\s*true/i.test(this.workflow),
+    leds: this.createLedsForRequestData(),
+    hidLamps: this.createHidLampsForRequestData(),
+    programId: this.program ? this.program._id : null,
+    programName: this.program ? this.program.name : null
+  };
+};
+
+HistoryEntry.prototype.createLedsForRequestData = function()
+{
   var ledsList = [];
   var ledsMap = {};
   var leds = Array.isArray(this.leds) ? this.leds : [];
@@ -212,15 +230,38 @@ HistoryEntry.prototype.createServiceTagRequestData = function()
     }
   }
 
-  return {
-    serviceTag: this.serviceTag,
-    orderNo: this.order.no,
-    nc12: this.nc12,
-    multi: _.isString(this.workflow) && /multidevice\s*=\s*true/i.test(this.workflow),
-    leds: ledsList,
-    programId: this.program ? this.program._id : null,
-    programName: this.program ? this.program.name : null
-  };
+  return ledsList;
+};
+
+HistoryEntry.prototype.createHidLampsForRequestData = function()
+{
+  var hidLampList = [];
+  var hidLampMap = {};
+  var hidLamps = Array.isArray(this.hidLamps) ? this.hidLamps : [];
+
+  if (this.settings.get('hidEnabled') > 0 && this.settings.supportsFeature('hid'))
+  {
+    for (var i = 0; i < hidLamps.length; ++i)
+    {
+      var hidLamp = hidLamps[i];
+
+      if (!hidLampMap[hidLamp.nc12])
+      {
+        hidLampMap[hidLamp.nc12] = [];
+        hidLampList.push({
+          nc12: hidLamp.nc12,
+          scanResults: hidLampMap[hidLamp.nc12]
+        });
+      }
+
+      if (hidLamp.scanResult !== null)
+      {
+        hidLampMap[hidLamp.nc12].push(hidLamp.scanResult);
+      }
+    }
+  }
+
+  return hidLampList;
 };
 
 HistoryEntry.prototype.clear = function(clearOrder, clearProgram)
@@ -258,7 +299,9 @@ HistoryEntry.prototype.clear = function(clearOrder, clearProgram)
   this.steps = null;
   this.metrics = null;
   this.leds = null;
+  this.hidLamps = null;
   this.waitingForLeds = false;
+  this.waitingForHidLamps = false;
   this.waitingForContinue = null;
   this.inProgress = false;
   this.overallProgress = 0;
@@ -310,13 +353,18 @@ HistoryEntry.prototype.reset = function(orderNo, quantity, nc12)
   this.steps = null;
   this.metrics = null;
   this.leds = [];
+  this.hidLamps = [];
 
   this.setUpProgram();
   this.setUpLeds();
+  this.setUpHidLamps();
 
   this.waitingForLeds = this.settings.get('ledsEnabled') > 0
     && this.settings.supportsFeature('led')
     && this.leds.length > 0;
+  this.waitingForHidLamps = this.settings.get('hidEnabled') > 0
+    && this.settings.supportsFeature('hid')
+    && this.hidLamps.length > 0;
   this.waitingForContinue = null;
   this.inProgress = true;
   this.overallProgress = 1;
@@ -351,6 +399,13 @@ HistoryEntry.prototype.reset = function(orderNo, quantity, nc12)
     });
   }
 
+  if (this.waitingForHidLamps)
+  {
+    this.log.push({
+      time: this.startedAt,
+      text: 'HID:STARTED'
+    });
+  }
   if (this.settings.get('ftEnabled'))
   {
     this.log.push({
@@ -423,7 +478,7 @@ HistoryEntry.prototype.setUpProgram = function()
 
   this.metrics = null;
 
-  if (this.program.type === 't24vdc' && !this.settings.get('ftEnabled'))
+  if (this.program.type === 't24vdc' && !this.settings.get('ftEnabled') && !this.settings.get('hidEnabled'))
   {
     this.metrics = {
       uSet: [],
@@ -435,7 +490,7 @@ HistoryEntry.prototype.setUpProgram = function()
 
 HistoryEntry.prototype.setUpLeds = function()
 {
-  if (this.inputMode !== 'remote' || this.settings.get('ftEnabled'))
+  if (this.inputMode !== 'remote' || this.settings.get('ftEnabled') || this.settings.get('hidEnabled'))
   {
     return;
   }
@@ -465,6 +520,44 @@ HistoryEntry.prototype.setUpLeds = function()
         nc12: item.nc12,
         name: item.name,
         serialNumber: null,
+        status: 'waiting' // waiting, checking, checked or an error object
+      });
+    }
+  }
+};
+
+HistoryEntry.prototype.setUpHidLamps = function()
+{
+  if (this.inputMode !== 'remote' || this.settings.get('ftEnabled'))
+  {
+    return;
+  }
+
+  var orderData = this.getSelectedOrderData();
+
+  if (!orderData)
+  {
+    return;
+  }
+
+  for (var i = 0; i < orderData.items.length; ++i)
+  {
+    var item = orderData.items[i];
+
+    if (item.kind !== 'hid')
+    {
+      continue;
+    }
+
+    var lampsPerResult = Math.floor(item.quantityTodo / orderData.quantityTodo);
+
+    for (var ii = 0; ii < lampsPerResult; ++ii)
+    {
+      this.hidLamps.push({
+        raw: '',
+        nc12: item.nc12,
+        name: item.name,
+        scanResult: null,
         status: 'waiting' // waiting, checking, checked or an error object
       });
     }
@@ -608,13 +701,13 @@ HistoryEntry.prototype.save = function(featureDbPath, done)
         _id, _order, nc12, counter, startedAt, finishedAt, duration,\
         log, result, errorCode, exception, output, featureFile,\
         featureFileName, featureFileHash, workflowFile, workflow,\
-        program, steps, metrics, serviceTag, leds, prodLine,\
+        program, steps, metrics, serviceTag, leds, hidLamps, prodLine,\
         gprsNc12, gprsOrderFileHash, gprsInputFileHash, gprsOutputFileHash\
       ) VALUES (\
         $_id, $_order, $nc12, $counter, $startedAt, $finishedAt, $duration,\
         $log, $result, $errorCode, $exception, $output, $featureFile,\
         $featureFileName, $featureFileHash, $workflowFile, $workflow,\
-        $program, $steps, $metrics, $serviceTag, $leds, $prodLine,\
+        $program, $steps, $metrics, $serviceTag, $leds, $hidLamps, $prodLine,\
         $gprsNc12, $gprsOrderFileHash, $gprsInputFileHash, $gprsOutputFileHash\
       )";
     var params = {
@@ -639,7 +732,12 @@ HistoryEntry.prototype.save = function(featureDbPath, done)
       $steps: historyEntry.steps ? JSON.stringify(historyEntry.steps) : null,
       $metrics: historyEntry.metrics ? JSON.stringify(historyEntry.metrics) : null,
       $serviceTag: historyEntry.serviceTag,
-      $leds: Array.isArray(historyEntry.leds) && historyEntry.leds.length ? JSON.stringify(historyEntry.leds) : null,
+      $leds: Array.isArray(historyEntry.leds) && historyEntry.leds.length
+        ? JSON.stringify(historyEntry.leds)
+        : null,
+      $hidLamps: Array.isArray(historyEntry.hidLamps) && historyEntry.hidLamps.length
+        ? JSON.stringify(historyEntry.hidLamps)
+        : null,
       $prodLine: historyEntry.settings.get('prodLine') || null,
       $gprsNc12: historyEntry.gprs.item ? historyEntry.gprs.item.nc12 : null,
       $gprsOrderFileHash: historyEntry.gprs.orderFileHash,

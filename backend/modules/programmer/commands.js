@@ -1,4 +1,4 @@
-// Part of <http://miracle.systems/p/walkner-xiconf> licensed under <CC BY-NC-SA 4.0>
+// Part of <https://miracle.systems/p/walkner-xiconf> licensed under <CC BY-NC-SA 4.0>
 
 'use strict';
 
@@ -14,6 +14,7 @@ module.exports = function setUpProgrammerCommands(app, programmerModule)
     'programmer.stateChanged',
     'programmer.logged',
     'programmer.stepProgressed',
+    'programmer.hidLampManager.updated',
     'programmer.ledManager.updated'
   ].forEach(function(topic)
   {
@@ -45,12 +46,14 @@ module.exports = function setUpProgrammerCommands(app, programmerModule)
       socket.on('programmer.setProgram', setProgram);
       socket.on('programmer.selectOrderNo', selectOrderNo);
       socket.on('programmer.selectNc12', selectNc12);
+      socket.on('programmer.checkHidScanResult', checkHidScanResult);
       socket.on('programmer.checkSerialNumber', checkSerialNumber);
       socket.on('programmer.start', start);
       socket.on('programmer.cancel', cancel);
       socket.on('programmer.continue', continueProcess);
       socket.on('programmer.reload', reload);
       socket.on('programmer.reset', reset);
+      socket.on('programmer.resetHidLamps', resetHidLamps);
       socket.on('programmer.resetLeds', resetLeds);
       socket.on('programmer.printServiceTags', printServiceTags);
       socket.on('programmer.reconnectToProdLine', reconnectToProdLine);
@@ -161,6 +164,20 @@ module.exports = function setUpProgrammerCommands(app, programmerModule)
     }
 
     programmerModule.selectNc12(nc12, password, reply);
+  }
+
+  function checkHidScanResult(orderNo, raw, scannerId)
+  {
+    if (isSingleLocalSocket()
+      && _.isString(orderNo) && /^[0-9]{1,9}$/.test(orderNo)
+      && _.isString(raw) && /^[0-9]{13}$/.test(raw))
+    {
+      programmerModule.checkHidScanResult(
+        orderNo,
+        raw,
+        _.isString(scannerId) && /^[A-Z0-9]+$/.test(scannerId) ? scannerId : null
+      );
+    }
   }
 
   function checkSerialNumber(orderNo, raw, nc12, serialNumber, scannerId)
@@ -301,6 +318,21 @@ module.exports = function setUpProgrammerCommands(app, programmerModule)
     }
 
     programmerModule.reset(reply);
+  }
+
+  function resetHidLamps(reply)
+  {
+    if (!_.isFunction(reply))
+    {
+      return;
+    }
+
+    if (!isSingleLocalSocket())
+    {
+      return reply(new Error('MULTIPLE_LOCAL_SOCKETS'));
+    }
+
+    programmerModule.resetHidLamps(reply);
   }
 
   function resetLeds(reply)

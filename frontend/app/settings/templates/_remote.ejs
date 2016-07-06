@@ -27,6 +27,19 @@
       </div>
     </div>
     <div class="col-md-3 form-group">
+      <label for="<%- idPrefix %>-hidEnabled" class="control-label"><%- t('settings', 'setting:hidEnabled') %></label>
+      <div>
+        <label class="radio-inline">
+          <input id="<%- idPrefix %>-hidEnabled" name="hidEnabled" type="radio" value="0" required> <%- t('settings', 'setting:hidEnabled:off') %>
+        </label>
+        <label class="radio-inline">
+          <input name="hidEnabled" type="radio" value="1" required> <%- t('settings', 'setting:hidEnabled:on') %>
+        </label>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-3 form-group">
       <label for="<%- idPrefix %>-ledsEnabled" class="control-label"><%- t('settings', 'setting:ledsEnabled') %></label>
       <div>
         <label class="radio-inline">

@@ -1,0 +1,14 @@
+<div class="dashboard-hidLamps">
+  <h3 class="dashboard-header">
+    <span><%- t('dashboard', 'hidLamps') %></span>
+    <button id="<%- idPrefix %>-reset" class="btn btn-link" type="button" title="<%- t('dashboard', 'hidLamps:reset') %>" <%- resetEnabled ? '' : 'disabled' %>>
+      <i class="fa fa-eraser"></i>
+      <kbd data-hotkey="reset"><%- resetHotkey %></kbd>
+    </button>
+  </h3>
+  <ul id="<%- idPrefix %>-list" class="dashboard-hidLamps-list list-group form-control is-scrollable">
+    <% hidLamps.forEach(function(hidLamp) { %>
+    <%- renderHidLamp(hidLamp) %>
+    <% }) %>
+  </ul>
+</div>

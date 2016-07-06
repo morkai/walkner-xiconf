@@ -1,8 +1,8 @@
-// Part of <http://miracle.systems/p/walkner-xiconf> licensed under <CC BY-NC-SA 4.0>
+// Part of <https://miracle.systems/p/walkner-xiconf> licensed under <CC BY-NC-SA 4.0>
 
 'use strict';
 
-var lodash = require('lodash');
+var _ = require('lodash');
 var rql = require('h5.rql');
 
 module.exports = function createRqlMiddleware()
@@ -31,12 +31,12 @@ module.exports = function createRqlMiddleware()
 
 function getQueryString(req)
 {
-  if (lodash.isObject(req._parsedUrl) && lodash.isString(req._parsedUrl.query))
+  if (_.isObject(req._parsedUrl) && _.isString(req._parsedUrl.query))
   {
     return req._parsedUrl.query;
   }
 
-  if (lodash.isString(req.url))
+  if (_.isString(req.url))
   {
     var queryPos = req.url.indexOf('?');
 

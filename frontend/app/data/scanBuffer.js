@@ -5,7 +5,7 @@ define([
 ) {
   'use strict';
 
-  var ledBuffer = [];
+  var scanBuffer = [];
   var clearTimer = null;
 
   function scheduleBufferClear()
@@ -26,7 +26,7 @@ define([
       clearTimer = null;
     }
 
-    ledBuffer = [];
+    scanBuffer = [];
   }
 
   pubsub.subscribe('programmer.finished', clearBuffer);
@@ -34,7 +34,7 @@ define([
   return {
     add: function(raw, nc12, serialNumber, scannerId)
     {
-      ledBuffer.push({
+      scanBuffer.push({
         raw: raw,
         nc12: nc12,
         serialNumber: serialNumber,
@@ -45,7 +45,7 @@ define([
     },
     get: function()
     {
-      var buffer = ledBuffer;
+      var buffer = scanBuffer;
 
       clearBuffer();
 

@@ -1,8 +1,8 @@
-// Part of <http://miracle.systems/p/walkner-xiconf> licensed under <CC BY-NC-SA 4.0>
+// Part of <https://miracle.systems/p/walkner-xiconf> licensed under <CC BY-NC-SA 4.0>
 
 'use strict';
 
-var lodash = require('lodash');
+var _ = require('lodash');
 var ursa = require('ursa');
 var semver = require('semver');
 
@@ -16,7 +16,7 @@ module.exports = function validateLicense(app, settingsModule, rawSettings, newS
 {
   var config = settingsModule.config;
 
-  if (!lodash.isString(config.licenseEdPem) || lodash.isEmpty(config.licenseEdPem))
+  if (!_.isString(config.licenseEdPem) || _.isEmpty(config.licenseEdPem))
   {
     if (settings.licenseInfo.error !== 'INVALID_ED_PEM')
     {
@@ -28,7 +28,7 @@ module.exports = function validateLicense(app, settingsModule, rawSettings, newS
 
   var rawLicenseKey = rawSettings.licenseKey;
 
-  if (!lodash.isString(rawLicenseKey))
+  if (!_.isString(rawLicenseKey))
   {
     return;
   }

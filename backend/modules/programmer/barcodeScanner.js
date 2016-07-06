@@ -1,4 +1,4 @@
-// Part of <http://miracle.systems/p/walkner-xiconf> licensed under <CC BY-NC-SA 4.0>
+// Part of <https://miracle.systems/p/walkner-xiconf> licensed under <CC BY-NC-SA 4.0>
 
 'use strict';
 
@@ -20,7 +20,7 @@ module.exports = function setUpBarcodeScanner(app, programmerModule)
     return changes.bgScanner !== undefined;
   });
 
-  app.broker.subscribe('programmer.ledManager.checkFailed', function(message)
+  app.broker.subscribe('programmer.*.checkFailed', function(message)
   {
     if (!motoBarScan)
     {
@@ -47,7 +47,7 @@ module.exports = function setUpBarcodeScanner(app, programmerModule)
     }
   });
 
-  app.broker.subscribe('programmer.ledManager.checked', function(message)
+  app.broker.subscribe('programmer.*.checked', function(message)
   {
     if (!motoBarScan)
     {

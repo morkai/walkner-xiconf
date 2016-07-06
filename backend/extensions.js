@@ -1,8 +1,8 @@
-// Part of <http://miracle.systems/p/walkner-xiconf> licensed under <CC BY-NC-SA 4.0>
+// Part of <https://miracle.systems/p/walkner-xiconf> licensed under <CC BY-NC-SA 4.0>
 
 'use strict';
 
-var util = require('util');
+const util = require('util');
 
 Object.defineProperty(Error.prototype, 'toJSON', {
   configurable: false,
@@ -10,8 +10,8 @@ Object.defineProperty(Error.prototype, 'toJSON', {
   writable: true,
   value: function()
   {
-    var error = this;
-    var result = {
+    const error = this;
+    const result = {
       message: error.message,
       stack: error.stack
     };

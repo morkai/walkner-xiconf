@@ -1,4 +1,4 @@
-// Part of <http://miracle.systems/p/walkner-xiconf> licensed under <CC BY-NC-SA 4.0>
+// Part of <https://miracle.systems/p/walkner-xiconf> licensed under <CC BY-NC-SA 4.0>
 
 define([
   'underscore',
@@ -47,20 +47,13 @@ define([
       delete data.orderFinishedAt;
       delete data.orderDuration;
 
-      if (typeof data.leds === 'string')
+      ['hidLamps', 'leds', 'program', 'steps'].forEach(function(p)
       {
-        data.leds = JSON.parse(data.leds);
-      }
-
-      if (typeof data.program === 'string')
-      {
-        data.program = JSON.parse(data.program);
-      }
-
-      if (typeof data.steps === 'string')
-      {
-        data.steps = JSON.parse(data.steps);
-      }
+        if (typeof data[p] === 'string')
+        {
+          data[p] = JSON.parse(data[p]);
+        }
+      });
 
       return data;
     },
@@ -146,6 +139,7 @@ define([
 
       if (!this.isRemoteInput())
       {
+        // TODO ???
         return true;
       }
 
@@ -157,6 +151,28 @@ define([
       }
 
       return settings.isFtOrder(remoteData.name);
+    },
+
+    isHidActive: function()
+    {
+      if (!settings.get('hidEnabled'))
+      {
+        return false;
+      }
+
+      if (!this.isRemoteInput())
+      {
+        return false;
+      }
+
+      var remoteData = this.getSelectedRemoteData();
+
+      if (!remoteData)
+      {
+        return false;
+      }
+
+      return _.some(remoteData.items, function(item) { return item.kind === 'hid'; });
     },
 
     hasOrder: function()
@@ -278,6 +294,20 @@ define([
       var result = this.get('result');
 
       return result === 'success' || result === 'failure' ? result : 'program';
+    },
+
+    updateHidLamp: function(index, data)
+    {
+      var hidLamps = this.get('hidLamps');
+
+      if (!Array.isArray(hidLamps) || !hidLamps[index])
+      {
+        return;
+      }
+
+      hidLamps[index] = data;
+
+      this.trigger('change:hidLamp', index, data);
     },
 
     updateLed: function(index, data)

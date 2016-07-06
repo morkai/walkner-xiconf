@@ -1,4 +1,4 @@
-// Part of <http://miracle.systems/p/walkner-xiconf> licensed under <CC BY-NC-SA 4.0>
+// Part of <https://miracle.systems/p/walkner-xiconf> licensed under <CC BY-NC-SA 4.0>
 
 define([
   'underscore',
@@ -15,6 +15,7 @@ function(
   'use strict';
 
   var socket = new Socket(sio({
+    path: '/sio',
     transports: ['websocket'],
     timeout: 10000,
     reconnectionDelay: 500,

@@ -1,8 +1,8 @@
-// Part of <http://miracle.systems/p/walkner-xiconf> licensed under <CC BY-NC-SA 4.0>
+// Part of <https://miracle.systems/p/walkner-xiconf> licensed under <CC BY-NC-SA 4.0>
 
 'use strict';
 
-var lodash = require('lodash');
+const _ = require('lodash');
 
 module.exports = wrapAmd;
 
@@ -13,13 +13,13 @@ module.exports = wrapAmd;
  */
 function wrapAmd(js, modules)
 {
-  var moduleArgs;
-  var modulePaths;
+  let moduleArgs;
+  let modulePaths;
 
-  if (lodash.isObject(modules))
+  if (_.isObject(modules))
   {
-    moduleArgs = lodash.keys(modules).join(', ');
-    modulePaths = JSON.stringify(lodash.values(modules));
+    moduleArgs = _.keys(modules).join(', ');
+    modulePaths = JSON.stringify(_.values(modules));
   }
   else
   {
@@ -27,7 +27,7 @@ function wrapAmd(js, modules)
     modulePaths = '[]';
   }
 
-  var wrappedJs = [
+  const wrappedJs = [
     'define(' + modulePaths + ', function(' + moduleArgs + ') {',
     js,
     '});'

@@ -1,4 +1,4 @@
-// Part of <http://miracle.systems/p/walkner-xiconf> licensed under <CC BY-NC-SA 4.0>
+// Part of <https://miracle.systems/p/walkner-xiconf> licensed under <CC BY-NC-SA 4.0>
 
 define([
   'moment',
@@ -22,7 +22,7 @@ define([
         .minutes(0)
         .seconds(0)
         .milliseconds(0)
-        .subtract('days', 7)
+        .subtract(7, 'days')
         .valueOf();
 
       return rql.Query.fromObject({

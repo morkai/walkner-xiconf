@@ -1,4 +1,4 @@
-// Part of <http://miracle.systems/p/walkner-xiconf> licensed under <CC BY-NC-SA 4.0>
+// Part of <https://miracle.systems/p/walkner-xiconf> licensed under <CC BY-NC-SA 4.0>
 
 define([
   'underscore',
@@ -18,6 +18,7 @@ define([
   '../views/CarouselView',
   '../views/ProgramView',
   '../views/LedsView',
+  '../views/HidLampsView',
   'app/dashboard/templates/page'
 ], function(
   _,
@@ -37,6 +38,7 @@ define([
   CarouselView,
   ProgramView,
   LedsView,
+  HidLampsView,
   template
 ) {
   'use strict';
@@ -105,6 +107,7 @@ define([
       this.defineViews();
       this.insertView('.dashboard-leftColumn', this.inputView);
       this.insertView('.dashboard-leftColumn', this.logView);
+      this.insertView('.dashboard-rightColumn', this.hidLampsView);
       this.insertView('.dashboard-rightColumn', this.ledsView);
       this.insertView('.dashboard-rightColumn', this.historyView);
       this.insertView('.dashboard-rightColumn', this.carouselView);
@@ -123,6 +126,7 @@ define([
       this.listenTo(currentState, 'change:overallProgress', this.onOverallProgressChange);
       this.listenTo(currentState, 'change:result', this.onResultChange);
       this.listenTo(currentState, 'change:remoteConnected', this.toggleConnectionIndicator);
+      this.listenTo(currentState, 'change:waitingForHidLamps', this.onWaitingForHidLampsChange);
       this.listenTo(currentState, 'change:waitingForLeds', this.onWaitingForLedsChange);
       this.listenTo(currentState, 'change:waitingForContinue', this.onWaitingForContinueChange);
       this.listenTo(currentState, 'change:selectedOrderNo', this.onSelectedOrderNoChange);
@@ -150,6 +154,7 @@ define([
     {
       this.inputView = new InputView({model: currentState});
       this.logView = new LogView({model: currentState});
+      this.hidLampsView = new HidLampsView({model: currentState, shortenScanResults: true});
       this.ledsView = new LedsView({model: currentState, shortenSerialNumbers: true});
       this.historyView = new HistoryView({collection: new HistoryEntryCollection()});
       this.carouselView = new CarouselView({model: currentState});
@@ -167,7 +172,9 @@ define([
         workMode: currentState.get('workMode'),
         inputMode: currentState.get('inputMode'),
         workModeChangeEnabled: !settings.get('ftEnabled')
+          && !settings.get('hidEnabled')
           && (settings.get('testingEnabled') || settings.get('glp2Enabled')),
+        waitingForHidLamps: currentState.get('waitingForHidLamps'),
         waitingForLeds: currentState.get('waitingForLeds'),
         waitingForContinue: currentState.get('waitingForContinue'),
         progressBarClassName: this.getProgressBarClassName(),
@@ -202,7 +209,11 @@ define([
     resize: function()
     {
       var height = this.getRemainingHeight();
-      var width = Math.max(this.historyView.$el.outerWidth(true), this.ledsView.$el.outerWidth(true));
+      var width = Math.max(
+        this.historyView.$el.outerWidth(true),
+        this.hidLampsView.$el.outerWidth(true),
+        this.ledsView.$el.outerWidth(true)
+      );
       var shrinked = this.$els.window[0].innerWidth <= 1024;
 
       if (shrinked && height < 275)
@@ -213,6 +224,7 @@ define([
       this.logView.resize(height);
       this.carouselView.resize(width, height);
       this.programView.resize(width, height);
+      this.hidLampsView.resize(height);
       this.ledsView.resize(height);
 
       this.inputView.el.style.marginBottom = shrinked
@@ -488,6 +500,18 @@ define([
       if (e.keyCode === 27)
       {
         this.hideInputModeForm();
+      }
+    },
+
+    onWaitingForHidLampsChange: function()
+    {
+      var waitingForHidLamps = currentState.get('waitingForHidLamps');
+
+      this.$el.toggleClass('is-waitingForHidLamps', waitingForHidLamps);
+
+      if (waitingForHidLamps)
+      {
+        this.hidLampsView.resize();
       }
     },
 

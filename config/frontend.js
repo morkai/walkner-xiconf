@@ -1,5 +1,3 @@
-/*jshint maxlen:false*/
-
 'use strict';
 
 var fs = require('fs');
@@ -168,6 +166,7 @@ exports.settings = {
     ftStartResource2: '',
     ftSerialProxyAddress: '',
     ftOrderPattern: '',
+    hidEnabled: false,
     hotkeys: {
       focusOrderNo: 'Q',
       focusQuantity: 'W',
@@ -219,5 +218,5 @@ exports.express = {
 };
 
 exports.updater = {
-
+  
 };

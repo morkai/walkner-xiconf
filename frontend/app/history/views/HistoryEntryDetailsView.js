@@ -1,4 +1,4 @@
-// Part of <http://miracle.systems/p/walkner-xiconf> licensed under <CC BY-NC-SA 4.0>
+// Part of <https://miracle.systems/p/walkner-xiconf> licensed under <CC BY-NC-SA 4.0>
 
 define([
   'require',
@@ -7,6 +7,7 @@ define([
   'app/i18n',
   'app/core/View',
   'app/dashboard/views/LedsView',
+  'app/dashboard/views/HidLampsView',
   'app/xiconfPrograms/views/XiconfProgramStepsView',
   'app/history/templates/details'
 ], function(
@@ -16,6 +17,7 @@ define([
   t,
   View,
   LedsView,
+  HidLampsView,
   XiconfProgramStepsView,
   detailsTemplate
 ) {
@@ -71,6 +73,7 @@ define([
       this.renderingMetrics = false;
 
       this.setView('.history-details-leds', new LedsView({model: this.model}));
+      this.setView('.history-details-hidLamps', new HidLampsView({model: this.model}));
       this.setView('.history-details-steps', new XiconfProgramStepsView({model: this.model}));
     },
 

@@ -7,6 +7,7 @@
 @import url(./history.css);
 @import url(./carousel.css);
 @import url(./program.css);
+@import url(./hidLamps.css);
 @import url(./leds.css);
 @import url(./continue.css);
 
@@ -70,18 +71,23 @@
     left: 14px;
     right: 14px;
   }
+  .dashboard-hidLamps,
   .dashboard-leds {
     top: 65px;
     left: 14px;
     right: 14px;
   }
+  .is-waitingForHidLamps .dashboard-input,
   .is-waitingForLeds .dashboard-input {
     visibility: hidden;
   }
+  .is-waitingForHidLamps .dashboard-carousel,
+  .is-waitingForHidLamps .dashboard-program,
   .is-waitingForLeds .dashboard-carousel,
   .is-waitingForLeds .dashboard-program {
     margin-top: auto!important;
   }
+  .is-waitingForHidLamps .dashboard-history,
   .is-waitingForLeds .dashboard-history {
     display: block;
   }

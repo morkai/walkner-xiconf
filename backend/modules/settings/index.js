@@ -1,4 +1,4 @@
-// Part of <http://miracle.systems/p/walkner-xiconf> licensed under <CC BY-NC-SA 4.0>
+// Part of <https://miracle.systems/p/walkner-xiconf> licensed under <CC BY-NC-SA 4.0>
 
 'use strict';
 
@@ -31,7 +31,7 @@ exports.start = function startSettingsModule(app, module, done)
     coreScannerDriver: false
   };
 
-  module.availableFeatures = ['wmes', 'sol', 't24vdc', 'led', 'gprs', 'glp2', 'fl', 'ft'];
+  module.availableFeatures = ['wmes', 'sol', 't24vdc', 'led', 'gprs', 'glp2', 'fl', 'ft', 'hid'];
 
   module.has = function(name)
   {
@@ -45,7 +45,7 @@ exports.start = function startSettingsModule(app, module, done)
 
   module.export = function(password, includeLicenseInfo)
   {
-    var copy = _.merge({}, settings);
+    var copy = _.assign({}, settings);
 
     if (password === copy.password)
     {
@@ -96,7 +96,7 @@ exports.start = function startSettingsModule(app, module, done)
     step(
       function()
       {
-        settings = _.extend(settings, changes);
+        settings = _.assign(settings, changes);
 
         (safeFs || fs).writeFile(
           module.config.settingsFile,
@@ -236,7 +236,7 @@ exports.start = function startSettingsModule(app, module, done)
 
       settings = _.defaults(settings, module.config.defaults);
 
-      module.import(_.extend({}, settings), done, true);
+      module.import(_.assign({}, settings), done, true);
     });
   }
 
@@ -389,6 +389,8 @@ exports.start = function startSettingsModule(app, module, done)
     validateStringSetting(rawSettings, newSettings, 'ftStartResource2', 0, COAP_RESOURCE_RE);
     validateStringSetting(rawSettings, newSettings, 'ftSerialProxyAddress', 0, IPV4_ADDRESS_RE);
     validateFtOrderPattern(rawSettings, newSettings);
+    // HID lamps
+    validateEnum(rawSettings, newSettings, 'hidEnabled', Number, [0, 1]);
     // Hotkeys
     validateHotkeys(rawSettings, newSettings);
     // License

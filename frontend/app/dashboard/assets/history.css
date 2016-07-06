@@ -1,3 +1,4 @@
+.is-waitingForHidLamps .dashboard-history,
 .is-waitingForLeds .dashboard-history {
   display: none;
 }

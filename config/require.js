@@ -11,7 +11,6 @@ exports.paths = {
   'moment': 'vendor/moment/moment',
   'moment-lang': 'vendor/moment/lang',
   'moment-timezone': 'vendor/moment/moment-timezone',
-  'moment-timezone-data': 'vendor/moment/moment-timezone-data',
   'bootstrap': 'vendor/bootstrap/js/bootstrap',
   'socket.io': 'vendor/socket.io',
   'h5.pubsub': 'vendor/h5.pubsub',
