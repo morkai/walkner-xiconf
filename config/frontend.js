@@ -217,6 +217,10 @@ exports.express = {
   routes: require('../backend/routes')
 };
 
+exports.sio = {
+  path: '/socket.io'
+};
+
 exports.updater = {
-  
+
 };
