@@ -118,7 +118,7 @@ exports.getFaultText = function(faultStatus)
   {
     FAULT_STATUS_TO_TEXT = {};
 
-    Object.keys(require('./constants').FaultStatus).forEach(function(text)
+    Object.keys(constants.FaultStatus).forEach(function(text)
     {
       FAULT_STATUS_TO_TEXT[constants.FaultStatus[text]] = text;
     });
