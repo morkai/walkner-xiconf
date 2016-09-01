@@ -2,7 +2,7 @@
 
 'use strict';
 
-var CHR = require('./util').CHR;
+var CHR = require('./CHR');
 
 /**
  * @enum {string}
