@@ -1,3 +1,11 @@
+2.20.2 @ 2016-07-13
+===================
+
+  * Fixed a circular `require()` bug in handling GLP2 fault status when
+    run in production with the require cache.
+  * Changed the recently added LED board recognition pattern to be
+    a little more generic.
+
 2.20.1 @ 2016-07-13
 ===================
 
