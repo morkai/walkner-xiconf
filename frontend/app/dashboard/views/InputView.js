@@ -41,9 +41,10 @@ define([
 
   var LED_PATTERNS = [
     {
-      pattern: 'W[0-9]+___[A-Z]([0-9]{10})([0-9]{12})',
+      pattern: 'W[0-9]+___.*?([0-9]{10})([0-9]{12})',
       serialNumber: 1,
-      nc12: 2
+      nc12: 2,
+      whole: true
     },
     {
       pattern: '([A-Z0-9]{22})-.*?([0-9]{12})[^0-9]',
@@ -1258,7 +1259,7 @@ define([
       for (var i = 0; i < LED_PATTERNS.length; ++i)
       {
         var ledPattern = LED_PATTERNS[i];
-        var matches = led.match(ledPattern.pattern);
+        var matches = led.match(ledPattern.whole ? ('^' + ledPattern.pattern + '$') : ledPattern.pattern);
 
         if (matches)
         {
