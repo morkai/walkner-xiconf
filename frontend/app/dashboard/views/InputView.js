@@ -41,7 +41,7 @@ define([
 
   var LED_PATTERNS = [
     {
-      pattern: 'W[0-9]+___.*?([0-9]{10})([0-9]{12})',
+      pattern: '.*?W[0-9]+___.*?([0-9]{10})([0-9]{12})',
       serialNumber: 1,
       nc12: 2,
       whole: true
@@ -75,7 +75,8 @@ define([
   var ALL_LEDS_PATTERN = new RegExp(LED_PATTERNS.map(function(d)
   {
     var pattern = d.pattern;
-    d.pattern = new RegExp(pattern, 'i');
+
+    d.pattern = new RegExp(d.whole ? ('^' + pattern + '$') : pattern, 'i');
 
     return pattern;
   }).join('|'), 'i');
@@ -1259,7 +1260,7 @@ define([
       for (var i = 0; i < LED_PATTERNS.length; ++i)
       {
         var ledPattern = LED_PATTERNS[i];
-        var matches = led.match(ledPattern.whole ? ('^' + ledPattern.pattern + '$') : ledPattern.pattern);
+        var matches = led.match(ledPattern.pattern);
 
         if (matches)
         {

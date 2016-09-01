@@ -1,4 +1,9 @@
-2.20.2 @ 2016-07-13
+2.20.3 @ 2016-09-01
+===================
+
+  * Fixed?
+
+2.20.2 @ 2016-09-01
 ===================
 
   * Fixed a circular `require()` bug in handling GLP2 fault status when

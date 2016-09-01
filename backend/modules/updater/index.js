@@ -162,7 +162,13 @@ exports.start = function startUpdaterModule(app, updaterModule)
           if (newPackageJson.name !== oldPackageJson.name
             || !semver.gt(newPackageJson.version, oldPackageJson.version))
           {
-            throw new Error("invalid package.json");
+            throw new Error(util.format(
+              "invalid package.json: old %s v%s, new %s v%s",
+              oldPackageJson.name,
+              oldPackageJson.version,
+              newPackageJson.name,
+              newPackageJson.version
+            ));
           }
         }
         catch (err)
@@ -218,11 +224,18 @@ exports.start = function startUpdaterModule(app, updaterModule)
   {
     try
     {
-      return require(path.join(updateDirPath, 'data', 'package.json'));
+      return require(path.join(updateDirPath, 'data', 'app', 'package.json'));
     }
     catch (err)
     {
-      return require(path.join(updateDirPath, 'package.json'));
+      try
+      {
+        return require(path.join(updateDirPath, 'data', 'package.json'));
+      }
+      catch (err)
+      {
+        return require(path.join(updateDirPath, 'package.json'));
+      }
     }
   }
 };
