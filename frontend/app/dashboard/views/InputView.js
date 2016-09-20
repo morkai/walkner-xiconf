@@ -41,7 +41,7 @@ define([
 
   var LED_PATTERNS = [
     {
-      pattern: '.*?W[0-9]+___.*?([0-9]{10})([0-9]{12})',
+      pattern: '.*?W[0-9]+___.*?([0-9]{9})([0-9]{12})',
       serialNumber: 1,
       nc12: 2,
       whole: true
