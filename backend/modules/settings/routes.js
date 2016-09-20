@@ -80,9 +80,9 @@ module.exports = function setSettingsRoutes(app, settingsModule)
       return next(new Error('LOCKED'));
     }
 
-    res.send();
+    res.json({});
 
-    setImmediate(() => process.exit(666));
+    setTimeout(() => process.exit(666), 300);
   });
 
   express.post('/settings;logs', function(req, res, next)

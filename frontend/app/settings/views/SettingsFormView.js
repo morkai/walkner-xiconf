@@ -6,6 +6,7 @@ define([
   'js2form',
   'form2js',
   'app/i18n',
+  'app/broker',
   'app/viewport',
   'app/core/View',
   'app/data/settings',
@@ -17,6 +18,7 @@ define([
   js2form,
   form2js,
   t,
+  broker,
   viewport,
   View,
   settings,
@@ -241,11 +243,16 @@ define([
             ? t('settings', 'msg:restart:' + error)
             : t('settings', 'msg:restart:failure')
         });
+
+        $inputs.attr('disabled', false);
       });
 
-      req.always(function()
+      req.done(function()
       {
-        $inputs.attr('disabled', false);
+        broker.subscribe('socket.connected', function()
+        {
+          $inputs.attr('disabled', false);
+        });
       });
     },
 
