@@ -34,9 +34,11 @@
   display: block;
   position: static;
 }
+.history-details-leds .dashboard-header,
 .history-details-hidLamps .dashboard-header {
   display: none;
 }
+.history-details-leds .dashboard-leds-list,
 .history-details-hidLamps .dashboard-hidLamps-list {
   box-shadow: none;
   min-height: inherit;
@@ -44,6 +46,7 @@
   overflow: auto;
   border-top: 0;
 }
+.history-details-leds .dashboard-leds-led,
 .history-details-hidLamps .dashboard-hidLamps-hidLamp {
   border-right: 0;
 }
