@@ -1736,7 +1736,7 @@ define("socket.io", [], function() { return /******/ (function(modules) { // web
 	  this.binaryType = null;
 	  this.onlyBinaryUpgrades = opts.onlyBinaryUpgrades;
 	  this.perMessageDeflate = false !== opts.perMessageDeflate ? (opts.perMessageDeflate || {}) : false;
-console.log(opts, this);
+
 	  if (true === this.perMessageDeflate) this.perMessageDeflate = {};
 	  if (this.perMessageDeflate && null == this.perMessageDeflate.threshold) {
 	    this.perMessageDeflate.threshold = 1024;
