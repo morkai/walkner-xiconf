@@ -651,7 +651,7 @@ exports.start = function startProgrammerModule(app, module, done)
       }
 
       module.currentState.inputMode = lastMode.input || 'remote';
-      module.currentState.workMode = lastMode.work || 'programming';
+      module.currentState.workMode = resolveWorkMode(lastMode.work || 'programming');
 
       saveLastMode();
 
@@ -691,24 +691,10 @@ exports.start = function startProgrammerModule(app, module, done)
 
   function updateWorkMode()
   {
-    var t24vdcEnabled = !!settings.get('testingEnabled');
-    var glp2Enabled = !!settings.get('glp2Enabled');
-    var ftEnabled = !!settings.get('ftEnabled');
-    var newWorkMode;
+    var oldWorkMode = module.currentState.workMode;
+    var newWorkMode = resolveWorkMode(oldWorkMode);
 
-    if (ftEnabled)
-    {
-      newWorkMode = 'programming';
-    }
-    else if (glp2Enabled)
-    {
-      newWorkMode = 'testing';
-    }
-    else if (!t24vdcEnabled && !glp2Enabled)
-    {
-      newWorkMode = 'programming';
-    }
-    else
+    if (oldWorkMode === newWorkMode)
     {
       return;
     }
@@ -724,5 +710,29 @@ exports.start = function startProgrammerModule(app, module, done)
         );
       }
     });
+  }
+
+  function resolveWorkMode(workMode)
+  {
+    var t24vdcEnabled = !!settings.get('testingEnabled');
+    var glp2Enabled = !!settings.get('glp2Enabled');
+    var ftEnabled = !!settings.get('ftEnabled');
+
+    if (ftEnabled)
+    {
+      return 'programming';
+    }
+
+    if (glp2Enabled)
+    {
+      return 'testing';
+    }
+
+    if (!t24vdcEnabled && !glp2Enabled)
+    {
+      return 'programming';
+    }
+
+    return workMode;
   }
 };
