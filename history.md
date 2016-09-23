@@ -1,3 +1,12 @@
+2.20.5 @ 2016-09-23
+===================
+
+  * Fixed display errors in the scanned LED board list on the history
+    details page.
+  * Changed the starting work mode selection process to take into
+    account the currently enabled options.
+  * Added a new LED board recognition pattern.
+
 2.20.4 @ 2016-09-01
 ===================
 
