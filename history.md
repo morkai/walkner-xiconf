@@ -1,3 +1,8 @@
+2.21.0 @ 2016-11-06
+===================
+
+  * Added a new option: WEIGHT - component weight checking.
+
 2.20.5 @ 2016-09-23
 ===================
 
