@@ -47,6 +47,7 @@ module.exports = function setUpProgrammerCommands(app, programmerModule)
       socket.on('programmer.selectOrderNo', selectOrderNo);
       socket.on('programmer.selectNc12', selectNc12);
       socket.on('programmer.checkHidScanResult', checkHidScanResult);
+      socket.on('programmer.checkWeightScanResult', checkWeightScanResult);
       socket.on('programmer.checkSerialNumber', checkSerialNumber);
       socket.on('programmer.start', start);
       socket.on('programmer.cancel', cancel);
@@ -180,6 +181,20 @@ module.exports = function setUpProgrammerCommands(app, programmerModule)
     }
   }
 
+  function checkWeightScanResult(orderNo, raw, scannerId)
+  {
+    if (isSingleLocalSocket()
+      && _.isString(orderNo) && /^[0-9]{1,9}$/.test(orderNo)
+      && _.isString(raw) && /[0-9]{12}.+/.test(raw))
+    {
+      programmerModule.checkWeightScanResult(
+        orderNo,
+        raw,
+        _.isString(scannerId) && /^[A-Z0-9]+$/.test(scannerId) ? scannerId : null
+      );
+    }
+  }
+
   function checkSerialNumber(orderNo, raw, nc12, serialNumber, scannerId)
   {
     if (isSingleLocalSocket()
@@ -301,6 +316,11 @@ module.exports = function setUpProgrammerCommands(app, programmerModule)
     }
 
     reply();
+
+    if (/^weight/.test(programmerModule.currentState.waitingForContinue))
+    {
+      return;
+    }
 
     programmerModule.changeState({waitingForContinue: null});
   }

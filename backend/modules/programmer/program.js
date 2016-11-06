@@ -55,6 +55,7 @@ module.exports = function program(app, programmerModule, data, done)
   var scanned = false;
   var programmed = false;
   var tested = false;
+  var weighed = false;
   var serviceTagAcquired = false;
   var shouldAcquireServiceTag = !_.isEmpty(data.orderNo)
     && (currentState.inputMode === 'remote' || settings.get('serviceTagInLocalMode') !== 'disabled');
@@ -79,7 +80,11 @@ module.exports = function program(app, programmerModule, data, done)
 
   programmerModule.changeState();
 
-  programmerModule.OVERALL_SETUP_PROGRESS = currentState.waitingForLeds ? 28 : 23;
+  programmerModule.OVERALL_SETUP_PROGRESS = currentState.waitingForLeds
+    ? 28
+    : settings.get('weightEnabled')
+      ? 80
+      : 23;
   programmerModule.OVERALL_PROGRAMMING_PROGRESS = shouldPrintServiceTag ? 90 : 100;
 
   step(
@@ -100,6 +105,7 @@ module.exports = function program(app, programmerModule, data, done)
     checkSolProgramStep,
     writeWorkflowFileStep,
     handleWriteWorkflowFileResultStep,
+    weighComponentStep,
     waitForHidLampsStep,
     waitForLedsStep,
     waitForContinueStep,
@@ -876,13 +882,248 @@ module.exports = function program(app, programmerModule, data, done)
     setImmediate(this.next());
   }
 
-  function waitForHidLampsStep()
+  function weighComponentStep()
   {
     /*jshint validthis:true*/
 
     if (thisProgrammingCancelled)
     {
       return this.skip();
+    }
+
+    if (!settings.get('weightEnabled'))
+    {
+      return;
+    }
+
+    programmerModule.updateOverallProgress(22);
+
+    const done = this.next();
+    let cancelSub;
+    let waitingSub;
+
+    step(
+      function waitForScanStep()
+      {
+        programmerModule.log('WEIGHT:SCANNING');
+
+        programmerModule.changeState({waitingForContinue: 'weight:scanning'});
+
+        const next = _.once(this.next());
+
+        cancelSub = app.broker.subscribe('programmer.cancelled', function()
+        {
+          waitingSub.cancel();
+          waitingSub = null;
+
+          setImmediate(next);
+        }).setLimit(1);
+
+        waitingSub = app.broker.subscribe('programmer.stateChanged', function(changes)
+        {
+          if (changes.waitingForContinue === 'weight:weighing')
+          {
+            waitingSub.cancel();
+            waitingSub = null;
+
+            cancelSub.cancel();
+            cancelSub = null;
+
+            weighed = true;
+
+            setImmediate(next);
+          }
+        });
+      },
+      function checkScanValueStep()
+      {
+        if (thisProgrammingCancelled)
+        {
+          return this.skip();
+        }
+
+        programmerModule.updateOverallProgress(30);
+
+        programmerModule.log('WEIGHT:SCANNED', {
+          scanValue: currentState.weight.scan
+        });
+
+        if (!currentState.weight.nc12)
+        {
+          return this.skip('WEIGHT:SCAN_FAILURE');
+        }
+      },
+      function remoteCheckStep()
+      {
+        programmerModule.log('WEIGHT:CHECKING_COMPONENT', {
+          nc12: currentState.weight.nc12
+        });
+
+        const next = _.once(this.next());
+        const cancelReq = programmerModule.remoteCoordinator.checkComponentWeight({
+          orderNo: currentState.weight.orderNo,
+          nc12: currentState.weight.nc12,
+          serialNumber: currentState.weight.scan,
+          scope: settings.get('weightCheckScope')
+        }, next);
+
+        cancelSub = app.broker.subscribe('programmer.cancelled', function()
+        {
+          cancelReq();
+          setImmediate(next);
+        }).setLimit(1);
+      },
+      function handleRemoteCheckResultStep(err, res)
+      {
+        if (cancelSub)
+        {
+          cancelSub.cancel();
+          cancelSub = null;
+        }
+
+        if (thisProgrammingCancelled)
+        {
+          return this.skip();
+        }
+
+        if (err)
+        {
+          if (err.message === 'DB_FAILURE'
+            || err.message === 'ORDER_NOT_FOUND'
+            || err.message === 'WEIGHT_NOT_FOUND'
+            || err.message === 'SN_ALREADY_USED')
+          {
+            return this.skip('WEIGHT:' + err.message);
+          }
+
+          return this.skip(err);
+        }
+
+        if (!_.isPlainObject(res) || !_.isNumber(res.weight) || res.weight <= 0)
+        {
+          return this.skip('WEIGHT:BAD_RESPONSE');
+        }
+
+        programmerModule.updateWeight({component: res});
+      },
+      function waitForWeightStep()
+      {
+        programmerModule.updateOverallProgress(60);
+
+        programmerModule.log('WEIGHT:WEIGHING', {
+          component: currentState.weight.component.description || currentState.weight.nc12,
+          weight: (Math.round(currentState.weight.component.weight * 100) / 100).toLocaleString()
+        });
+
+        programmerModule.changeState({waitingForContinue: 'weight:weighing'});
+
+        const next = _.once(this.next());
+        let weighedSub = null;
+        let timeoutTimer = null;
+        let error = null;
+
+        cancelSub = app.broker.subscribe('programmer.cancelled', function()
+        {
+          waitingSub.cancel();
+          waitingSub = null;
+
+          weighedSub.cancel();
+          weighedSub = null;
+
+          if (timeoutTimer)
+          {
+            clearTimeout(timeoutTimer);
+            timeoutTimer = null;
+          }
+
+          setImmediate(next);
+        }).setLimit(1);
+
+        waitingSub = app.broker.subscribe('programmer.stateChanged', function(changes)
+        {
+          if (changes.waitingForContinue === null)
+          {
+            waitingSub.cancel();
+            waitingSub = null;
+
+            cancelSub.cancel();
+            cancelSub = null;
+
+            weighedSub.cancel();
+            weighedSub = null;
+
+            if (timeoutTimer)
+            {
+              clearTimeout(timeoutTimer);
+              timeoutTimer = null;
+            }
+
+            setImmediate(next, error);
+          }
+        });
+
+        weighedSub = app.broker.subscribe('programmer.componentWeighed', checkWeight);
+
+        timeoutTimer = setTimeout(
+          function()
+          {
+            error = 'WEIGHT:TIMEOUT';
+
+            programmerModule.changeState({waitingForContinue: null});
+          },
+          settings.get('weightTimeout') < 1 ? 3600000 : (settings.get('weightTimeout') * 1000)
+        );
+
+        setImmediate(checkWeight);
+
+        function checkWeight()
+        {
+          const weightTime = currentState.weight.time;
+
+          // Ignore old weights.
+          if (Date.now() - weightTime > 30000)
+          {
+            return;
+          }
+
+          // Ignore unstable weights if required.
+          if (settings.get('weightStabilized') && !currentState.weight.stabilized)
+          {
+            return;
+          }
+
+          const requiredWeight = currentState.weight.component.weight;
+          const actualWeight = currentState.weight.value;
+          const weightTolerance = settings.get('weightTolerance') || 0;
+          const minWeight = requiredWeight - weightTolerance;
+          const maxWeight = requiredWeight + weightTolerance;
+
+          if (actualWeight >= minWeight && actualWeight <= maxWeight)
+          {
+            programmerModule.log('WEIGHT:WEIGHED', {
+              weight: actualWeight
+            });
+
+            programmerModule.changeState({waitingForContinue: null});
+          }
+        }
+      },
+      done
+    );
+  }
+
+  function waitForHidLampsStep(err)
+  {
+    /*jshint validthis:true*/
+
+    if (thisProgrammingCancelled)
+    {
+      return this.skip();
+    }
+
+    if (err)
+    {
+      return this.skip(err);
     }
 
     var hidLampCount = currentState.hidLamps.length;
@@ -1216,7 +1457,7 @@ module.exports = function program(app, programmerModule, data, done)
       this.sub = null;
     }
 
-    if (!scanned && !programmed && !tested)
+    if (!scanned && !programmed && !tested && !weighed)
     {
       return this.skip('NOTHING_DONE');
     }
@@ -1372,7 +1613,15 @@ module.exports = function program(app, programmerModule, data, done)
         changes.exception = err.message;
       }
 
-      if (settings.get('hidEnabled'))
+      if (settings.get('weightEnabled'))
+      {
+        programmerModule.log('WEIGHT:FAILURE', {
+          time: changes.finishedAt,
+          duration: changes.duration,
+          errorCode: changes.errorCode
+        });
+      }
+      else if (settings.get('hidEnabled'))
       {
         programmerModule.log('HID:FAILURE', {
           time: changes.finishedAt,
@@ -1431,7 +1680,14 @@ module.exports = function program(app, programmerModule, data, done)
     {
       changes.counter = currentState.counter + 1;
 
-      if (settings.get('hidEnabled'))
+      if (settings.get('weightEnabled'))
+      {
+        programmerModule.log('WEIGHT:SUCCESS', {
+          time: changes.finishedAt,
+          duration: changes.duration
+        });
+      }
+      else if (settings.get('hidEnabled'))
       {
         programmerModule.log('HID:SUCCESS', {
           time: changes.finishedAt,

@@ -96,7 +96,7 @@ RemoteCoordinator.prototype.generateServiceTag = function(data, done)
     return done(new Error("No connection to the remote server: " + this.settings.get('remoteServer')));
   }
 
-  this.request('generateServiceTag', data, done);
+  return this.request('generateServiceTag', data, done);
 };
 
 /**
@@ -120,92 +120,20 @@ RemoteCoordinator.prototype.acquireServiceTag = function(data, done)
 };
 
 /**
- * @private
- * @param {string} action
- * @param {object} body
- * @param {function(Error|null), *} done
- * @param {string} [rid]
- * @param {number} [attempt]
- * @param {function} [cancel]
+ * @param {object} data
+ * @param {string} data.orderNo
+ * @param {string} data.nc12
+ * @param {string} data.serialNumber
+ * @param {function} done
  */
-RemoteCoordinator.prototype.request = function(action, body, done, rid, attempt, cancel)
+RemoteCoordinator.prototype.checkComponentWeight = function(data, done)
 {
-  rid = rid || _.uniqueId(this.settings.getInstallationId() + '_' + Date.now().toString(36) + '_');
-  attempt = (attempt || 0) + 1;
-  cancel = cancel || function()
+  if (!this.isConnected())
   {
-    if (cancel.req)
-    {
-      cancel.req.abort();
-      cancel.req = null;
-    }
-  };
+    return done(new Error("No connection to the remote server: " + this.settings.get('remoteServer')));
+  }
 
-  var rc = this;
-  var options = {
-    method: 'POST',
-    uri: url.format(_.assign(url.parse(this.settings.get('remoteServer')), {
-      pathname: '/xiconf;execute',
-      query: {
-        rid: rid,
-        action: action
-      }
-    })),
-    json: true,
-    body: body,
-    timeout: REQUEST_TIMEOUT
-  };
-
-  cancel.req = request(options, function(err, res, responseBody)
-  {
-    if (!cancel.req)
-    {
-      return;
-    }
-
-    cancel.req = null;
-
-    if (!err && res.statusCode >= 300)
-    {
-      if (_.isPlainObject(responseBody) && _.isPlainObject(responseBody.error))
-      {
-        err = responseBody.error;
-        attempt = REQUEST_MAX_ATTEMPTS;
-      }
-      else
-      {
-        err = {
-          message: "Invalid response status code: " + res.statusCode,
-          code: 'INVALID_RESPONSE_STATUS'
-        };
-      }
-    }
-
-    if (err)
-    {
-      if (attempt === REQUEST_MAX_ATTEMPTS)
-      {
-        rc.programmer.debug("[remote] %s failed %d times: %s", action, attempt, err.code || err.message);
-
-        return done(err);
-      }
-
-      rc.programmer.debug("[remote] %d. attempt at %s...", attempt + 1, action);
-
-      return setTimeout(
-        rc.request.bind(rc, action, body, done, rid, attempt, cancel),
-        500 * attempt
-      );
-    }
-    else
-    {
-      rc.lastResponseTime = Date.now();
-    }
-
-    return done(null, responseBody);
-  });
-
-  return cancel;
+  return this.request('checkComponentWeight', data, done);
 };
 
 /**
@@ -221,7 +149,7 @@ RemoteCoordinator.prototype.checkHidLamp = function(data, done)
     return done(new Error("No connection to the remote server: " + this.settings.get('remoteServer')));
   }
 
-  this.request('checkHidLamp', data, done);
+  return this.request('checkHidLamp', data, done);
 };
 
 /**
@@ -238,7 +166,7 @@ RemoteCoordinator.prototype.checkSerialNumber = function(data, done)
     return done(new Error("No connection to the remote server: " + this.settings.get('remoteServer')));
   }
 
-  this.request('checkSerialNumber', data, done);
+  return this.request('checkSerialNumber', data, done);
 };
 
 /**
@@ -258,7 +186,7 @@ RemoteCoordinator.prototype.releaseServiceTag = function(data, done)
     return done(new Error("No connection to the remote server: " + this.settings.get('remoteServer')));
   }
 
-  this.request('releaseServiceTag', data, done);
+  return this.request('releaseServiceTag', data, done);
 };
 
 /**
@@ -391,6 +319,95 @@ RemoteCoordinator.prototype.setUpSio = function()
 
   this.sio = sio;
   this.lastResponseTime = Date.now();
+};
+
+/**
+ * @private
+ * @param {string} action
+ * @param {object} body
+ * @param {function(Error|null), *} done
+ * @param {string} [rid]
+ * @param {number} [attempt]
+ * @param {function} [cancel]
+ */
+RemoteCoordinator.prototype.request = function(action, body, done, rid, attempt, cancel)
+{
+  rid = rid || _.uniqueId(this.settings.getInstallationId() + '_' + Date.now().toString(36) + '_');
+  attempt = (attempt || 0) + 1;
+  cancel = cancel || function()
+  {
+    if (cancel.req)
+    {
+      cancel.req.abort();
+      cancel.req = null;
+    }
+  };
+
+  var rc = this;
+  var options = {
+    method: 'POST',
+    uri: url.format(_.assign(url.parse(this.settings.get('remoteServer')), {
+      pathname: '/xiconf;execute',
+      query: {
+        rid: rid,
+        action: action
+      }
+    })),
+    json: true,
+    body: body,
+    timeout: REQUEST_TIMEOUT
+  };
+
+  cancel.req = request(options, function(err, res, responseBody)
+  {
+    if (!cancel.req)
+    {
+      return;
+    }
+
+    cancel.req = null;
+
+    if (!err && res.statusCode >= 300)
+    {
+      if (_.isPlainObject(responseBody) && _.isPlainObject(responseBody.error))
+      {
+        err = responseBody.error;
+        attempt = REQUEST_MAX_ATTEMPTS;
+      }
+      else
+      {
+        err = {
+          message: "Invalid response status code: " + res.statusCode,
+          code: 'INVALID_RESPONSE_STATUS'
+        };
+      }
+    }
+
+    if (err)
+    {
+      if (attempt === REQUEST_MAX_ATTEMPTS)
+      {
+        rc.programmer.debug("[remote] %s failed %d times: %s", action, attempt, err.code || err.message);
+
+        return done(err);
+      }
+
+      rc.programmer.debug("[remote] %d. attempt at %s...", attempt + 1, action);
+
+      return setTimeout(
+        rc.request.bind(rc, action, body, done, rid, attempt, cancel),
+        500 * attempt
+      );
+    }
+    else
+    {
+      rc.lastResponseTime = Date.now();
+    }
+
+    return done(null, responseBody);
+  });
+
+  return cancel;
 };
 
 /**
@@ -685,7 +702,7 @@ RemoteCoordinator.prototype.onLedUpdated = function(message)
 
   this.programmer.debug('[remote] Recording invalid LED: %s', JSON.stringify(data));
 
-  this.request('recordInvalidLed', data, _.noop);
+  return this.request('recordInvalidLed', data, _.noop);
 };
 
 /**

@@ -42,6 +42,7 @@
     "input:orderNo": "Order no",
     "input:quantity": "Quantity",
     "input:nc12": "Program 12NC",
+    "input:nc12:weight:enabled": "Work station without programming.<br>Component weighing is active.",
     "input:nc12:ft:enabled": "Work station without programming.<br>Frame testing is active.",
     "input:nc12:ft:disabled": "Work station without programming.<br>Frame testing is not active.",
     "input:nc12:hid:enabled": "Work station without programming.<br>HID lamp scanning is active.",

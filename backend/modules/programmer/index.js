@@ -9,6 +9,7 @@ var setUpCommands = require('./commands');
 var setUpBlockage = require('./blockage');
 var setUpBarcodeScanner = require('./barcodeScanner');
 var setUpFtStartMonitor = require('./ftStartMonitor');
+var setUpWeightMonitor = require('./weightMonitor');
 var program = require('./program');
 var printServiceTag = require('./printServiceTag');
 var RemoteCoordinator = require('./RemoteCoordinator');
@@ -549,6 +550,7 @@ exports.start = function startProgrammerModule(app, module, done)
   setUpBlockage(app, module);
   setUpBarcodeScanner(app, module);
   setUpFtStartMonitor(app, module);
+  setUpWeightMonitor(app, module);
 
   app.onModuleReady(
     [

@@ -42,5 +42,15 @@
       <p><%- t('dashboard', 'continue:ft:p1') %></p>
       <p><%- t('dashboard', 'continue:ft:p2') %></p>
     </button>
+    <button class="dashboard-continue dashboard-continue-weight-scanning btn btn-warning">
+      <i class="fa fa-barcode"></i>
+      <p><%- t('dashboard', 'continue:weight:scanning:p1') %></p>
+      <p><%- t('dashboard', 'continue:weight:scanning:p2') %></p>
+    </button>
+    <button class="dashboard-continue dashboard-continue-weight-weighing btn btn-warning">
+      <i class="fa fa-balance-scale"></i>
+      <p><%- t('dashboard', 'continue:weight:weighing:p1') %></p>
+      <p><span id="<%- idPrefix %>-weight">0</span>g</p>
+    </button>
   </div>
 </div>

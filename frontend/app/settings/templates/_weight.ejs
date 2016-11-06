@@ -1,0 +1,56 @@
+<div id="<%- idPrefix %>-weight" class="panel-body">
+  <div class="form-group">
+    <label class="control-label"><%- t('settings', 'setting:weightEnabled') %></label>
+    <div>
+      <label class="radio-inline">
+        <input name="weightEnabled" type="radio" value="1" required> <%- t('settings', 'setting:weightEnabled:on') %>
+      </label>
+      <label class="radio-inline">
+        <input name="weightEnabled" type="radio" value="0" required> <%- t('settings', 'setting:weightEnabled:off') %>
+      </label>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="control-label"><%- t('settings', 'setting:weightCheckScope') %></label>
+    <div>
+      <% ['none', 'current', 'all'].forEach(function(scope) { %>
+      <label class="radio-inline">
+        <input name="weightCheckScope" type="radio" value="<%- scope %>" required> <%- t('settings', 'setting:weightCheckScope:' + scope) %>
+      </label>
+      <% }) %>
+    </div>
+  </div>
+  <div class="row">
+    <div class="form-group col-md-3">
+      <label for="<%- idPrefix %>-weightHost" class="control-label"><%- t('settings', 'setting:weightHost') %></label>
+      <input id="<%- idPrefix %>-weightHost" class="form-control" name="weightHost" type="text" placeholder="0.0.0.0">
+    </div>
+    <div class="form-group col-md-3">
+      <label for="<%- idPrefix %>-weightPort" class="control-label"><%- t('settings', 'setting:weightPort') %></label>
+      <input id="<%- idPrefix %>-weightPort" class="form-control" name="weightPort" type="number" required min="1" max="65535" step="1">
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="control-label"><%- t('settings', 'setting:weightStabilized') %></label>
+    <div>
+      <label class="radio-inline">
+        <input name="weightStabilized" type="radio" value="1" required> <%- t('settings', 'setting:weightStabilized:on') %>
+      </label>
+      <label class="radio-inline">
+        <input name="weightStabilized" type="radio" value="0" required> <%- t('settings', 'setting:weightStabilized:off') %>
+      </label>
+    </div>
+  </div>
+  <div class="row">
+    <div class="form-group col-md-3">
+      <label for="<%- idPrefix %>-weightTolerance" class="control-label"><%- t('settings', 'setting:weightTolerance') %></label>
+      <input id="<%- idPrefix %>-weightTolerance" class="form-control" name="weightTolerance" type="number" required min="0" max="9999" step="1">
+    </div>
+  </div>
+  <div class="row">
+    <div class="form-group col-md-3">
+      <label for="<%- idPrefix %>-weightTimeout" class="control-label"><%- t('settings', 'setting:weightTimeout') %></label>
+      <input id="<%- idPrefix %>-weightTimeout" class="form-control" name="weightTimeout" type="number" required min="0" max="600" step="1">
+    </div>
+  </div>
+</div>

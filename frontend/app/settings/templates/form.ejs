@@ -1,6 +1,6 @@
 <form class="settings-form" method="post" action="/settings" autocomplete="off">
   <div class="list-group">
-    <% ['settings', 'remote', 'mow', 'gprs', 'lpt', 'sol', 'testing', 'glp2', 'ft', 'fl', 'hotkeys', 'license'].forEach(function(tab) { %>
+    <% ['settings', 'remote', 'mow', 'gprs', 'lpt', 'sol', 'testing', 'glp2', 'ft', 'fl', 'weight', 'hotkeys', 'license'].forEach(function(tab) { %>
     <a data-tab="<%- tab %>" class="list-group-item" href="#settings?tab=<%- tab %>"><%- t('settings', 'form:' + tab) %></a>
     <% }) %>
   </div>
@@ -15,6 +15,7 @@
     <% include _glp2.ejs %>
     <% include _ft.ejs %>
     <% include _fl.ejs %>
+    <% include _weight.ejs %>
     <% include _hotkeys.ejs %>
     <% include _license.ejs %>
     <div class="panel-footer">

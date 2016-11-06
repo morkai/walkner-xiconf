@@ -46,6 +46,15 @@ function HistoryEntry(db, broker, settings)
   this.waitingForHidLamps = false;
   this.waitingForContinue = null;
   this.updating = null;
+  this.weight = {
+    time: 0,
+    value: 0,
+    stabilized: false,
+    scan: null,
+    nc12: null,
+    orderNo: null,
+    component: null
+  };
 
   this.clear();
 }
@@ -80,8 +89,10 @@ HistoryEntry.prototype.toJSON = function()
     selectedNc12: this.selectedNc12,
     waitingForLeds: this.waitingForLeds,
     waitingForHidLamps: this.waitingForHidLamps,
+    waitingForWeight: this.waitingForWeight,
     waitingForContinue: this.waitingForContinue,
-    updating: this.updating
+    updating: this.updating,
+    weight: this.weight
   };
 };
 
@@ -198,7 +209,12 @@ HistoryEntry.prototype.createServiceTagRequestData = function()
     leds: this.createLedsForRequestData(),
     hidLamps: this.createHidLampsForRequestData(),
     programId: this.program ? this.program._id : null,
-    programName: this.program ? this.program.name : null
+    programName: this.program ? this.program.name : null,
+    weight: !this.weight.component ? null : {
+      name: this.weight.component.description,
+      nc12: this.weight.nc12,
+      serialNumber: this.weight.scan
+    }
   };
 };
 
@@ -306,6 +322,13 @@ HistoryEntry.prototype.clear = function(clearOrder, clearProgram)
   this.inProgress = false;
   this.overallProgress = 0;
 
+  Object.assign(this.weight, {
+    scan: null,
+    nc12: null,
+    orderNo: null,
+    component: null
+  });
+
   this.clearGprs();
 };
 
@@ -399,7 +422,14 @@ HistoryEntry.prototype.reset = function(orderNo, quantity, nc12)
     });
   }
 
-  if (this.waitingForHidLamps)
+  if (this.settings.get('weightEnabled'))
+  {
+    this.log.push({
+      time: this.startedAt,
+      text: 'WEIGHT:STARTED'
+    });
+  }
+  else if (this.waitingForHidLamps)
   {
     this.log.push({
       time: this.startedAt,
@@ -478,7 +508,10 @@ HistoryEntry.prototype.setUpProgram = function()
 
   this.metrics = null;
 
-  if (this.program.type === 't24vdc' && !this.settings.get('ftEnabled') && !this.settings.get('hidEnabled'))
+  if (this.program.type === 't24vdc'
+    && !this.settings.get('ftEnabled')
+    && !this.settings.get('hidEnabled')
+    && !this.settings.get('weightEnabled'))
   {
     this.metrics = {
       uSet: [],
@@ -490,7 +523,10 @@ HistoryEntry.prototype.setUpProgram = function()
 
 HistoryEntry.prototype.setUpLeds = function()
 {
-  if (this.inputMode !== 'remote' || this.settings.get('ftEnabled') || this.settings.get('hidEnabled'))
+  if (this.inputMode !== 'remote'
+    || this.settings.get('ftEnabled')
+    || this.settings.get('hidEnabled')
+    || this.settings.get('weightEnabled'))
   {
     return;
   }
@@ -528,7 +564,10 @@ HistoryEntry.prototype.setUpLeds = function()
 
 HistoryEntry.prototype.setUpHidLamps = function()
 {
-  if (this.inputMode !== 'remote' || this.settings.get('ftEnabled'))
+  if (this.inputMode !== 'remote'
+    || this.settings.get('ftEnabled')
+    || this.settings.get('ledsEnabled')
+    || this.settings.get('weightEnabled'))
   {
     return;
   }

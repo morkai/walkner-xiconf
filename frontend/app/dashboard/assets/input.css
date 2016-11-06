@@ -24,6 +24,7 @@
   position: relative;
   z-index: 2;
 }
+.dashboard-input-nc12.is-weight-enabled > .form-control,
 .dashboard-input-nc12.is-ft-enabled > .form-control,
 .dashboard-input-nc12.is-hid-enabled > .form-control,
 .dashboard-input-nc12.is-ledOnly > .form-control,
@@ -49,6 +50,7 @@
   line-height: 35px;
   z-index: 1;
 }
+.is-weight-enabled > .dashboard-input-weight-enabled,
 .is-ft-enabled > .dashboard-input-ft-enabled,
 .is-ft-disabled > .dashboard-input-ft-disabled,
 .is-hid-enabled > .dashboard-input-hid-enabled,
@@ -129,6 +131,9 @@
 .is-workModeChangeEnabled .dashboard-input-toggleWorkMode,
 .is-waitingForContinue .dashboard-input-continue {
   display: inline-block;
+}
+.is-waitingForContinue[data-waiting^="weight"] .dashboard-input-continue {
+  display: none;
 }
 .is-inProgress .dashboard-input-start,
 .is-inProgress .dashboard-input-toggleWorkMode {

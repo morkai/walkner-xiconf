@@ -130,6 +130,7 @@ define([
       this.listenTo(currentState, 'change:waitingForLeds', this.onWaitingForLedsChange);
       this.listenTo(currentState, 'change:waitingForContinue', this.onWaitingForContinueChange);
       this.listenTo(currentState, 'change:selectedOrderNo', this.onSelectedOrderNoChange);
+      this.listenTo(currentState, 'change:weight', this.updateWeight);
       this.listenTo(settings, 'change:licenseInfo', this.onLicenseInfoChange);
       this.listenTo(settings, 'change:testingEnabled', this.onTestingEnabledChange);
       this.listenTo(settings, 'change:hotkeys', this.updateHotkeys);
@@ -201,6 +202,7 @@ define([
       this.toggleConnectionIndicator();
       this.animateLicenseError();
       this.updateHotkeys();
+      this.updateWeight();
 
       this.timers.license = setInterval(this.animateLicenseError.bind(this), 10000);
       this.timers.resize = setTimeout(this.resize.bind(this), 1);
@@ -555,6 +557,11 @@ define([
       {
         currentState.set('waitingForContinue', null);
       }
+    },
+
+    updateWeight: function()
+    {
+      this.$id('weight').text((Math.round(currentState.get('weight').value * 100) / 100).toLocaleString());
     }
 
   });

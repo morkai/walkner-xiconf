@@ -174,7 +174,7 @@ define([
     {
       return {
         idPrefix: this.idPrefix,
-        hotkeyPattern: '^([A-Z\\[\\]\\;\',./]|Space)$',
+        hotkeyPattern: '^([A-Z\\[\\];\',./]|Space)$',
         computerName: window.COMPUTER_NAME || '',
         multiOneWorkflowVersion: settings.get('multiOneWorkflowVersion')
       };

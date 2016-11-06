@@ -21,13 +21,22 @@
 .is-waitingForContinue[data-waiting="glp2"] .dashboard-continue-glp2,
 .is-waitingForContinue[data-waiting="vis"] .dashboard-continue-vis,
 .is-waitingForContinue[data-waiting="programmed"] .dashboard-continue-programmed,
-.is-waitingForContinue[data-waiting="ft"] .dashboard-continue-ft {
+.is-waitingForContinue[data-waiting="ft"] .dashboard-continue-ft,
+.is-waitingForContinue[data-waiting="weight:scanning"] .dashboard-continue-weight-scanning,
+.is-waitingForContinue[data-waiting="weight:weighing"] .dashboard-continue-weight-weighing {
   display: block;
   -webkit-animation-name: dashboard-continue-pulse-warning;
   animation-name: dashboard-continue-pulse-warning;
 }
 .dashboard-continue-glp2 {
   cursor: not-allowed;
+}
+.dashboard-continue-weight-scanning,
+.dashboard-continue-weight-weighing {
+  cursor: default;
+}
+.dashboard-continue-weight-weighing > p:last-child {
+  font-size: 48px;
 }
 @-webkit-keyframes dashboard-continue-pulse-success {
   0% {

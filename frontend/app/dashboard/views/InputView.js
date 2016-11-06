@@ -193,6 +193,7 @@ define([
 
       this.listenTo(this.model, 'change', _.debounce(this.onModelChange.bind(this), 25));
       this.listenTo(this.model, 'change:remoteData', this.onRemoteDataChange);
+      this.listenTo(this.model, 'change:waitingForContinue', this.onWaitingForWeightScanningChange);
       this.listenTo(this.model, 'change:waitingForHidLamps', this.onWaitingForHidLampsChange);
       this.listenTo(this.model, 'change:waitingForLeds', this.onWaitingForLedsChange);
       this.listenTo(settings, 'change', this.onSettingsChange);
@@ -260,6 +261,14 @@ define([
       var $el = this.$els[elId];
 
       return $el && !$el.prop('disabled') && $el.is(':visible');
+    },
+
+    checkWeightScanResult: function(raw, scannerId)
+    {
+      if (this.model.get('waitingForContinue') === 'weight:scanning')
+      {
+        this.socket.emit('programmer.checkWeightScanResult', this.$els.orderNo.val(), raw, scannerId);
+      }
     },
 
     checkHidScanResult: function(raw, scannerId)
@@ -825,6 +834,7 @@ define([
       var gprsItems = [];
       var testItems = [];
       var ftItem = null;
+      var weightItem = null;
 
       _.forEach(orderData.items, function(item)
       {
@@ -852,6 +862,10 @@ define([
         {
           ftItem = item;
         }
+        else if (item.kind === 'weight')
+        {
+          weightItem = item;
+        }
       });
 
       var selectedProgramItem = _.findWhere(programItems, {nc12: this.model.get('selectedNc12')});
@@ -860,9 +874,10 @@ define([
       var isLedsEnabled = !!settings.get('ledsEnabled');
       var isHidEnabled = !!settings.get('hidEnabled');
       var isFtEnabled = !!settings.get('ftEnabled');
+      var isWeightEnabled = !!settings.get('weightEnabled') && isRemoteInput;
       var isFtActive = this.model.isFtActive();
       var isHidActive = this.model.isHidActive();
-      var isNoProgramming = !isFtEnabled && !isHidEnabled && this.model.isNoProgramming();
+      var isNoProgramming = !isFtEnabled && !isHidEnabled && !isWeightEnabled && this.model.isNoProgramming();
       var isMultiNc12 = programItems.length > 1;
       var isLedOnly = user.isLocal()
         && isLedsEnabled
@@ -870,8 +885,9 @@ define([
         && !this.model.hasProgram()
         && !programItems.length
         && !hidItems.length
+        && !isWeightEnabled
         && ledItems.length > 0;
-      var isTestOnly = isTestingEnabled && !isLedsEnabled && isNoProgramming && !isFtEnabled && !isHidEnabled;
+      var isTestOnly = isTestingEnabled && !isLedsEnabled && isNoProgramming;
       var quantityTodo = orderData.quantityTodo;
       var quantityDone = orderData.quantityDone;
       var nc12 = '';
@@ -886,7 +902,7 @@ define([
         nc12 = selectedProgramItem ? selectedProgramItem.nc12 : '';
       }
 
-      if (isHidEnabled || isFtEnabled || isNoProgramming)
+      if (isWeightEnabled || isHidEnabled || isFtEnabled || isNoProgramming)
       {
         nc12 = '';
       }
@@ -898,17 +914,22 @@ define([
         .val(nc12)
         .parent('div')
         .toggleClass('is-ledOnly', isLedOnly)
+        .toggleClass('is-weight-enabled', isWeightEnabled)
         .toggleClass('is-ft-enabled', isFtEnabled && isFtActive)
         .toggleClass('is-ft-disabled', isFtEnabled && !isFtActive)
         .toggleClass('is-hid-enabled', isHidEnabled && isHidActive)
         .toggleClass('is-hid-disabled', isHidEnabled && !isHidActive)
-        .toggleClass('is-noProgramming', isNoProgramming && !isLedOnly && !isTestOnly && isLedsEnabled && !isHidEnabled)
+        .toggleClass('is-noProgramming', isNoProgramming && !isLedOnly && !isTestOnly && isLedsEnabled)
         .toggleClass('is-testOnly', isTestOnly)
         .toggleClass('is-noProgram', isNoProgram)
         .toggleClass('is-multi', isMulti && !isNoProgramming)
         .toggleClass('is-picked', nc12 !== '');
 
-      if (isFtEnabled)
+      if (isWeightEnabled)
+      {
+        quantityDone = weightItem ? weightItem.quantityDone : 0;
+      }
+      else if (isFtEnabled)
       {
         quantityDone = ftItem ? ftItem.quantityDone : 0;
       }
@@ -993,7 +1014,7 @@ define([
 
     isNc12Required: function()
     {
-      if (settings.get('ftEnabled') || settings.get('hidEnabled'))
+      if (settings.get('ftEnabled') || settings.get('hidEnabled') || settings.get('weightEnabled'))
       {
         return false;
       }
@@ -1144,6 +1165,23 @@ define([
       this.updateOrderFinishedDialog();
     },
 
+    onWaitingForWeightScanningChange: function()
+    {
+      if (this.model.get('waitingForContinue') !== 'weight:scanning')
+      {
+        scanBuffer.clear();
+
+        return;
+      }
+
+      var weighedComponent = scanBuffer.get().pop();
+
+      if (weighedComponent)
+      {
+        this.checkWeightScanResult(weighedComponent.raw, weighedComponent.scannerId);
+      }
+    },
+
     onWaitingForHidLampsChange: function()
     {
       if (!this.model.get('waitingForHidLamps'))
@@ -1220,7 +1258,11 @@ define([
 
       if (this.model.isRemoteInput())
       {
-        if (settings.get('hidEnabled'))
+        if (settings.get('weightEnabled'))
+        {
+          this.handleWeightCommand(message.value);
+        }
+        else if (settings.get('hidEnabled'))
         {
           this.handleHidCommand(message.value, message.scannerId);
         }
@@ -1236,6 +1278,20 @@ define([
       else if (/^[0-9]{12}$/.test(message.value))
       {
         this.handleNc12Command(message.value, message.event ? message.event.target : null);
+      }
+    },
+
+    handleWeightCommand: function(scanValue, scannerId)
+    {
+      if (this.model.get('waitingForContinue') === 'weight:scanning')
+      {
+        this.checkWeightScanResult(scanValue, scannerId);
+      }
+      else if (this.model.get('countdown') === -1 || !this.model.get('finishedAt'))
+      {
+        scanBuffer.add(scanValue, scannerId);
+
+        this.start();
       }
     },
 

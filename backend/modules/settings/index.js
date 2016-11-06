@@ -31,7 +31,7 @@ exports.start = function startSettingsModule(app, module, done)
     coreScannerDriver: false
   };
 
-  module.availableFeatures = ['wmes', 'sol', 't24vdc', 'led', 'gprs', 'glp2', 'fl', 'ft', 'hid'];
+  module.availableFeatures = ['wmes', 'sol', 't24vdc', 'led', 'gprs', 'glp2', 'fl', 'ft', 'hid', 'weight'];
 
   module.has = function(name)
   {
@@ -391,6 +391,14 @@ exports.start = function startSettingsModule(app, module, done)
     validateFtOrderPattern(rawSettings, newSettings);
     // HID lamps
     validateEnum(rawSettings, newSettings, 'hidEnabled', Number, [0, 1]);
+    // Component Weight
+    validateEnum(rawSettings, newSettings, 'weightEnabled', Number, [0, 1]);
+    validateEnum(rawSettings, newSettings, 'weightStabilized', Number, [0, 1]);
+    validateEnum(rawSettings, newSettings, 'weightCheckScope', String, ['none', 'current', 'all']);
+    validateNumericSetting(rawSettings, newSettings, 'weightTolerance', 0, 9999);
+    validateNumericSetting(rawSettings, newSettings, 'weightTimeout', 0, 600);
+    validateNumericSetting(rawSettings, newSettings, 'weightPort', 1, 65535);
+    validateStringSetting(rawSettings, newSettings, 'weightHost', 0);
     // Hotkeys
     validateHotkeys(rawSettings, newSettings);
     // License

@@ -41,6 +41,7 @@
   "input:orderNo": "Nr zlecenia",
   "input:quantity": "Ilość",
   "input:nc12": "12NC programu",
+  "input:nc12:weight:enabled": "Stanowisko bez programowania.<br>Ważenie komponentów aktywne.",
   "input:nc12:ft:enabled": "Stanowisko bez programowania.<br>Testowanie ramki aktywne.",
   "input:nc12:ft:disabled": "Stanowisko bez programowania.<br>Testowanie ramki nieaktywne.",
   "input:nc12:hid:enabled": "Stanowisko bez programowania.<br>Skanowanie lamp HID aktywne.",
@@ -129,6 +130,9 @@
   "continue:programmed:p2": "Wciśnij przycisk na sondzie,<br>aby kontynuować testowanie.",
   "continue:ft:p1": "Zlecenie z testem ramki!",
   "continue:ft:p2": "Wciśnij <kbd data-hotkey=start>?</kbd> lub przycisk na sondzie,<br>aby rozpocząć test ramki.",
+  "continue:weight:scanning:p1": "Ważenie komponentu gotowe do startu!",
+  "continue:weight:scanning:p2": "Zeskanuj kod komponentu,<br>aby rozpocząć ważenie.",
+  "continue:weight:weighing:p1": "Ważenie komponentu...",
 
   "multipleLocalSocketsDialog:title": "Wykryto wielu lokalnych klientów",
   "multipleLocalSocketsDialog:help": "<p>Sprawdź, czy okno przeglądarki z aplikacją nie zostało przypadkiem otwarte więcej niż jeden raz i zamknij wszystkie dodatkowe okna.</p><p>Jeżeli problem nadal występuje, to poinformuj swojego przełożonego.</p>"
