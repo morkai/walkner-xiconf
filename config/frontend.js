@@ -1,9 +1,10 @@
 'use strict';
 
 var fs = require('fs');
+var path = require('path');
 
-var DATA_PATH = __dirname + '/../data';
-var BIN_PATH = __dirname + '/../bin';
+var DATA_PATH = path.join(__dirname, '..', 'data');
+var BIN_PATH = path.join(__dirname, '..', 'bin');
 
 exports.id = 'walkner-xiconf';
 
@@ -26,7 +27,7 @@ exports.modules = [
 ];
 
 exports.sqlite3 = {
-  dbFile: DATA_PATH + '/db.sqlite3'
+  dbFile: path.join(DATA_PATH, 'db.sqlite3')
 };
 
 exports.httpServer = {
@@ -35,24 +36,24 @@ exports.httpServer = {
 };
 
 exports.programmer = {
-  featureDbPath: DATA_PATH + '/features',
-  gprsOutputFile: DATA_PATH + '/gprs-output.xml',
-  workflowFile: DATA_PATH + '/workflow.txt',
-  lptIoFile: BIN_PATH + '/LptIo/LptIo.exe',
-  lastModeFile: DATA_PATH + '/lastMode.txt',
-  spoolFile: BIN_PATH + '/spool.exe',
-  motoBarScanFile: BIN_PATH + '/MotoBarScan/MotoBarScan.exe',
-  fakeFeatureFile: BIN_PATH + '/fake-feature.xml',
+  featureDbPath: path.join(DATA_PATH, 'features'),
+  gprsOutputFile: path.join(DATA_PATH, 'gprs-output.xml'),
+  workflowFile: path.join(DATA_PATH, 'workflow.txt'),
+  lptIoFile: path.join(BIN_PATH, 'LptIo/LptIo.exe'),
+  lastModeFile: path.join(DATA_PATH, 'lastMode.txt'),
+  spoolFile: path.join(BIN_PATH, 'spool.exe'),
+  motoBarScanFile: path.join(BIN_PATH, 'MotoBarScan/MotoBarScan.exe'),
+  fakeFeatureFile: path.join(BIN_PATH, 'fake-feature.xml'),
   httpPort: exports.httpServer.port
 };
 
 exports.history = {
   featureDbPath: exports.programmer.featureDbPath,
-  lastExportTimeFile: DATA_PATH + '/lastExportAt.txt'
+  lastExportTimeFile: path.join(DATA_PATH, 'lastExportAt.txt')
 };
 
 exports.settings = {
-  settingsFile: DATA_PATH + '/settings.json',
+  settingsFile: path.join(DATA_PATH, 'settings.json'),
   licenseEdPem: fs.existsSync(__dirname + '/license.ed.public.pem')
     ? fs.readFileSync(__dirname + '/license.ed.public.pem', 'utf8')
     : null,
@@ -78,8 +79,8 @@ exports.settings = {
     workflowCheckDeviceModel: 0,
     workflowCommissionAll: 0,
     workflowDaliFactoryNew: 0,
-    featurePath1: DATA_PATH + '/_features1',
-    featurePath2: DATA_PATH + '/_features2',
+    featurePath1: path.join(DATA_PATH, '_features1'),
+    featurePath2: path.join(DATA_PATH, '_features2'),
     searchTimeout1: 10000,
     searchTimeout2: 5000,
     readTimeout1: 5000,
@@ -147,12 +148,12 @@ exports.settings = {
     forceLatestOrder: 0,
     gprsVerification: 1,
     gprsVerificationTimeout: 60000,
-    gprsVerificationInputPath: DATA_PATH + '/gprs/input',
-    gprsVerificationSuccessPath: DATA_PATH + '/gprs/success',
-    gprsVerificationErrorPath: DATA_PATH + '/gprs/error',
-    gprsOrdersPath: DATA_PATH + '/gprs/orders',
+    gprsVerificationInputPath: path.join(DATA_PATH, 'gprs', 'input'),
+    gprsVerificationSuccessPath: path.join(DATA_PATH, 'gprs', 'success'),
+    gprsVerificationErrorPath: path.join(DATA_PATH, 'gprs', 'error'),
+    gprsOrdersPath: path.join(DATA_PATH, 'gprs', 'orders'),
     gprsProgrammerFile: 'CityTouchIPT.exe',
-    gprsInputTemplateFile: DATA_PATH + '/gprs-input.json',
+    gprsInputTemplateFile: path.join(DATA_PATH, 'gprs-input.json'),
     gprsDaliPort: 0,
     flResource1: '',
     flResource2: '',
@@ -214,8 +215,8 @@ exports.pubsub = {
 
 exports.express = {
   mongooseId: null,
-  staticPath: __dirname + '/../frontend',
-  staticBuildPath: __dirname + '/../frontend-build',
+  staticPath: path.join(__dirname, '..', 'frontend'),
+  staticBuildPath: path.join(__dirname, '..', 'frontend-build'),
   cookieSecret: null,
   ejsAmdHelpers: {
     t: 'app/i18n'
