@@ -19,7 +19,24 @@ define([
 
     pageContainerSelector: '.bd',
 
-    template: pageLayoutTemplate
+    template: pageLayoutTemplate,
+
+    events: {
+      'mousedown #-switchApps': function(e) { this.startActionTimer('switchApps', e); },
+      'touchstart #-switchApps': function() { this.startActionTimer('switchApps'); },
+      'mouseup #-switchApps': function() { this.stopActionTimer('switchApps'); },
+      'touchend #-switchApps': function() { this.stopActionTimer('switchApps'); },
+
+      'mousedown #-reboot': function(e) { this.startActionTimer('reboot', e); },
+      'touchstart #-reboot': function() { this.startActionTimer('reboot'); },
+      'mouseup #-reboot': function() { this.stopActionTimer('reboot'); },
+      'touchend #-reboot': function() { this.stopActionTimer('reboot'); },
+
+      'mousedown #-shutdown': function(e) { this.startActionTimer('shutdown', e); },
+      'touchstart #-shutdown': function() { this.startActionTimer('shutdown'); },
+      'mouseup #-shutdown': function() { this.stopActionTimer('shutdown'); },
+      'touchend #-shutdown': function() { this.stopActionTimer('shutdown'); },
+    }
 
   });
 
@@ -30,6 +47,11 @@ define([
       actions: [],
       breadcrumbs: [],
       title: null
+    };
+
+    this.actionTimer = {
+      action: null,
+      time: null
     };
 
     /**
@@ -49,10 +71,17 @@ define([
      * @type {jQuery|null}
      */
     this.$actions = null;
+
+    if (window.parent !== window)
+    {
+      $(window).on('contextmenu.' + this.idPrefix, function(e) { e.preventDefault(); });
+    }
   };
 
   PageLayout.prototype.destroy = function()
   {
+    $(window).off('.' + this.idPrefix);
+
     if (this.el.ownerDocument)
     {
       this.el.ownerDocument.body.classList.remove('page');
@@ -65,7 +94,8 @@ define([
   PageLayout.prototype.serialize = function()
   {
     return _.extend(View.prototype.serialize.call(this), {
-      version: this.options.version
+      version: this.options.version,
+      showParentControls: window.parent !== window
     });
   };
 
@@ -450,6 +480,63 @@ define([
 
       this.broker.publish('page.titleChanged', newTitle);
     }
+  };
+
+  /**
+   * @private
+   */
+  PageLayout.prototype.startActionTimer = function(action, e)
+  {
+    this.actionTimer.action = action;
+    this.actionTimer.time = Date.now();
+
+    if (e)
+    {
+      e.preventDefault();
+    }
+  };
+
+  /**
+   * @private
+   */
+  PageLayout.prototype.stopActionTimer = function(action)
+  {
+    if (this.actionTimer.action !== action)
+    {
+      return;
+    }
+
+    var long = (Date.now() - this.actionTimer.time) > 3000;
+
+    if (action === 'switchApps')
+    {
+      if (long)
+      {
+        window.parent.postMessage({type: 'config'}, '*');
+      }
+      else
+      {
+        window.parent.postMessage({type: 'switch', app: 'xiconf'}, '*');
+      }
+    }
+    else if (action === 'reboot')
+    {
+      if (long)
+      {
+        window.parent.postMessage({type: 'reboot'}, '*');
+      }
+      else
+      {
+        window.parent.postMessage({type: 'refresh'}, '*');
+      }
+    }
+    else if (long && action === 'shutdown')
+    {
+      window.parent.postMessage({type: 'shutdown'}, '*');
+    }
+
+    this.actionTimer.action = null;
+    this.actionTimer.time = null;
   };
 
   return PageLayout;

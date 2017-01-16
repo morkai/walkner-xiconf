@@ -75,5 +75,9 @@
   "highcharts:loading": "Ładowanie...",
   "highcharts:months": "Styczeń_Luty_Marzec_Kwiecień_Maj_Czerwiec_Lipiec_Sierpień_Wrzesień_Październik_Listopad_Grudzień",
   "highcharts:shortMonths": "Sty_Lut_Mar_Kwi_Maj_Cze_Lip_Sie_Wrz_Paź_Lis_Gru",
-  "highcharts:weekdays": "Niedziela_Poniedziałek_Wtorek_Środa_Czwartek_Piątek_Sobota"
+  "highcharts:weekdays": "Niedziela_Poniedziałek_Wtorek_Środa_Czwartek_Piątek_Sobota",
+
+  "parent:switchApps": "Zmień aplikację/Konfiguruj po 3s",
+  "parent:reboot": "Odśwież stronę/Restartuj komputer po 3s",
+  "parent:shutdown": "Wyłącz komputer po 3s"
 }

@@ -23,6 +23,11 @@
     locale = 'en';
   }
 
+  if (window.parent)
+  {
+    window.parent.postMessage({type: 'init', host: location.host}, '*');
+  }
+
   var domains = [];
   var i18n = null;
   var select2 = null;

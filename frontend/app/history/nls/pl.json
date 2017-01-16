@@ -176,6 +176,7 @@
   "error:EXIT_CODE:201": "MultiOneWorkflow (201): nieprawidłowy plik konfiguracyjny drivera.",
   "error:EXIT_CODE:202": "MultiOneWorkflow (202): pusty plik konfiguracyjny drivera.",
   "error:EXIT_CODE:203": "MultiOneWorkflow (203): wykryto zduplikowane opcje drivera.",
+  "error:EXIT_CODE:255": "MultiOneWorkflow (255): programowanie pod Linuxem niemożliwe.",
   "error:EXIT_CODE:300": "MultiOneWorkflow (300): urządzenie nie obsługuje wszystkich opcji z pliku konfiguracyjnego.",
   "error:EXIT_CODE:301": "MultiOneWorkflow (301): model urządzenia różni się od tego w pliku konfiguracyjnym drivera.",
   "error:EXIT_CODE:350": "MultiOneWorkflow (350): hasło w pliku opcji drivera nie pasuje do hasła w urządzeniu.",
@@ -255,6 +256,7 @@
   "error:GPRS:VERIFICATION_ERROR": "GPRS: Plik wynikowy programatora nie przeszedł weryfikacji.",
   "error:GPRS:VERIFICATION_TIMEOUT": "GPRS: Upłynął limit czasu weryfikacji pliku wynikowego programatora.",
   "error:GPRS:EXIT_CODE:-1": "CityTouchIPT (-1): błąd aplikacji.",
+  "error:GPRS:EXIT_CODE:255": "CityTouchIPT (255): programowanie pod Linuxem niemożliwe.",
 
   "log:GLP2:RESETTING_TESTER": "Resetowanie testera GLP2-I...",
   "log:GLP2:TEST_STEP_FAILURE": "Przekroczono wartość graniczną 1 <code>{setValue}</code>: <code>{actualValue}</code> lub wartość graniczną 2: <code>{setValue2}</code>: <code>{actualValue2}</code>",

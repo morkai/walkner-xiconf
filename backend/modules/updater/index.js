@@ -131,12 +131,9 @@ exports.start = function startUpdaterModule(app, updaterModule)
       {
         updaterModule.debug("Unzipping the update archive...");
 
-        var cmd = util.format(
-          '"%s" "%s" -d "%s"',
-          updaterModule.config.unzipExe,
-          updateZipPath,
-          updateDirPath
-        );
+        const cmd = updaterModule.config.unzipExe.includes('7z')
+          ? `"${updaterModule.config.unzipExe}" x -y -o"${updateDirPath}" "${updateZipPath}"`
+          : `"${updaterModule.config.unzipExe}" "${updateZipPath}" -d "${updateDirPath}"`;
 
         exec(cmd, {timeout: 60000}, this.next());
       },

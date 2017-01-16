@@ -2,6 +2,7 @@
 
 'use strict';
 
+var path = require('path');
 var _ = require('lodash');
 
 module.exports = function startCoreRoutes(app, express)
@@ -18,6 +19,8 @@ module.exports = function startCoreRoutes(app, express)
   express.get('/time', sendTime);
 
   express.get('/config.js', sendRequireJsConfig);
+
+  express.get('/ping', ping);
 
   function showIndex(req, res)
   {
@@ -60,9 +63,16 @@ module.exports = function startCoreRoutes(app, express)
     });
   }
 
+  function ping(req, res)
+  {
+    res.type('text/plain');
+    res.set('Access-Control-Allow-Origin', '*');
+    res.send('pong');
+  }
+
   function reloadRequirejsConfig()
   {
-    var configPath = require.resolve('../../config/require');
+    var configPath = require.resolve(path.join(__dirname, '..', '..', 'config', 'require.js'));
 
     delete require.cache[configPath];
 

@@ -206,6 +206,11 @@ define([
 
       this.timers.license = setInterval(this.animateLicenseError.bind(this), 10000);
       this.timers.resize = setTimeout(this.resize.bind(this), 1);
+
+      if (window.parent !== window)
+      {
+        window.parent.postMessage({type: 'ready', app: 'xiconf'}, '*');
+      }
     },
 
     resize: function()
