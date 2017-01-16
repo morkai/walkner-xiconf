@@ -1,3 +1,9 @@
+2.22.0 @ 2017-01-16
+===================
+
+  * Added support for MultiOne Workflow 3.3.
+  * Added support for running the app on the UP board.
+
 2.21.0 @ 2016-11-06
 ===================
 
