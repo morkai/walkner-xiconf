@@ -77,6 +77,7 @@ exports.settings = {
     workflowIdentifyAlways: 0,
     workflowMultiDevice: 0,
     workflowCheckDeviceModel: 0,
+    workflowCheckDevicePresent: 0,
     workflowCommissionAll: 0,
     workflowDaliFactoryNew: 0,
     featurePath1: path.join(DATA_PATH, '_features1'),

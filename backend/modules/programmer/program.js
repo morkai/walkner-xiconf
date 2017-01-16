@@ -16,8 +16,27 @@ var programMowDriver = require('./programMowDriver');
 var LptIo = require('./LptIo');
 var gprs = require('./gprs');
 
+var MOW_OPTIONS_OLD = {
+  workflowVerify: 'Verify',
+  workflowIdentifyAlways: 'IdentifyAlways',
+  workflowMultiDevice: 'MultiDevice',
+  workflowCheckDeviceModel: 'CheckDeviceModel',
+  workflowCommissionAll: 'CommissionAll',
+  workflowDaliFactoryNew: 'DaliFactoryNew',
+};
+var MOW_OPTIONS_NEW = {
+  workflowVerify: 'DaliVerify',
+  workflowIdentifyAlways: 'DaliIdentifyAlways',
+  workflowMultiDevice: 'DaliMultiDevice',
+  workflowCheckDeviceModel: 'CheckDeviceModel',
+  workflowCheckDevicePresent: 'DaliCheckDevicePresent',
+  workflowCommissionAll: 'DaliCommissionAll',
+  workflowDaliFactoryNew: 'DaliFactoryNew',
+};
+
 module.exports = function program(app, programmerModule, data, done)
 {
+
   var fake = app.options.env !== 'production';
   var settings = app[programmerModule.config.settingsId];
   var history = app[programmerModule.config.historyId];
@@ -1749,25 +1768,29 @@ module.exports = function program(app, programmerModule, data, done)
 
   function buildWorkflowFile(settings, workflowOptions)
   {
-    return buildWorkflowFileOption(settings, workflowOptions, 'Verify')
-      + buildWorkflowFileOption(settings, workflowOptions, 'IdentifyAlways')
-      + buildWorkflowFileOption(settings, workflowOptions, 'MultiDevice')
-      + buildWorkflowFileOption(settings, workflowOptions, 'CheckDeviceModel')
-      + buildWorkflowFileOption(settings, workflowOptions, 'CommissionAll')
-      + buildWorkflowFileOption(settings, workflowOptions, 'DaliFactoryNew');
+    var mowVersion = parseFloat(settings.get('multiOneWorkflowVersion') || '0.0.0.0');
+    var mowOptions = mowVersion >= 3.3 ? MOW_OPTIONS_NEW : MOW_OPTIONS_OLD;
+    var lines = [];
+
+    Object.keys(mowOptions).forEach(function(setting)
+    {
+      lines.push(buildWorkflowFileOption(settings.get(setting), workflowOptions, mowOptions[setting]));
+    });
+
+    return lines.join('\r\n');
   }
 
-  function buildWorkflowFileOption(settings, workflowOptions, configOption)
+  function buildWorkflowFileOption(setting, workflowOptions, configOption)
   {
     var fileOption = configOption.toLowerCase();
 
-    if (settings.get('workflow' + configOption))
+    if (setting)
     {
       workflowOptions.push(fileOption);
 
-      return fileOption + '=true\r\n';
+      return fileOption + '=true';
     }
 
-    return fileOption + '=false\r\n';
+    return fileOption + '=false';
   }
 };

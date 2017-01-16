@@ -7,6 +7,7 @@ var spawn = require('child_process').spawn;
 module.exports = function programSolDriver(app, programmerModule, onProgress, done)
 {
   var settings = app[programmerModule.config.settingsId];
+  var mowVersion = parseFloat(settings.get('multiOneWorkflowVersion') || '0.0.0.0');
   var programmerFile = settings.get('programmerFile');
 
   if (typeof programmerFile !== 'string' || !programmerFile.length)
@@ -34,7 +35,7 @@ module.exports = function programSolDriver(app, programmerModule, onProgress, do
   var args = [
     '/f', programmerModule.currentState.featureFile,
     '/w', programmerModule.currentState.workflowFile,
-    '/i', comInterface,
+    mowVersion >= 3.3 ? '/p' : '/i', comInterface,
     '/v', settings.get('logVerbosity') || 'fatal',
     '/c', settings.get('continueOnWarnings') || 'halt'
   ];

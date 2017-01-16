@@ -1,7 +1,7 @@
 <div id="<%- idPrefix %>-mow" class="panel-body">
   <div class="form-group">
     <label class="control-label"><%- t('settings', 'mowVersion:supported') %></label>
-    <p class="form-control-static">2.3</p>
+    <p class="form-control-static">3.3</p>
   </div>
   <div class="form-group">
     <label class="control-label"><%- t('settings', 'mowVersion:installed') %></label>
@@ -21,6 +21,9 @@
       </label>
       <label class="checkbox-inline">
         <input name="workflowCheckDeviceModel" type="checkbox" value="1"> <%- t('settings', 'setting:workflowCheckDeviceModel') %>
+      </label>
+      <label class="checkbox-inline">
+        <input name="workflowCheckDevicePresent" type="checkbox" value="1"> <%- t('settings', 'setting:workflowCheckDevicePresent') %>
       </label>
       <label class="checkbox-inline">
         <input name="workflowCommissionAll" type="checkbox" value="1"> <%- t('settings', 'setting:workflowCommissionAll') %>
