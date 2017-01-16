@@ -30,7 +30,6 @@ if (process.env.NODE_ENV === 'production')
   }
 }
 
-const _ = require('lodash');
 const main = require('h5.main');
 const config = require(process.argv[2]);
 
@@ -69,7 +68,7 @@ const modules = (config.modules || []).map(function(module)
 });
 
 const app = {
-  options: _.assign({}, config, {
+  options: Object.assign({}, config, {
     version: require('../package.json').version,
     startTime: startTime,
     env: process.env.NODE_ENV,
@@ -87,7 +86,7 @@ const app = {
   }
 };
 
-_.assign(app, require('./helpers'));
+Object.assign(app, require('./helpers'));
 
 main(app, modules);
 
