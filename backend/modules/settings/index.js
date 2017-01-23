@@ -204,6 +204,11 @@ exports.start = function startSettingsModule(app, module, done)
       },
       function(err, multiOneWorkflowVersion, coreScannerDriver)
       {
+        if (multiOneWorkflowVersion === '0.0.0.0')
+        {
+          setTimeout(tryReadMultiOneWorkflowVersion, 30000);
+        }
+
         module.import({multiOneWorkflowVersion, coreScannerDriver}, () => {}, false, true);
       }
     );
@@ -237,6 +242,19 @@ exports.start = function startSettingsModule(app, module, done)
       settings = _.defaults(settings, module.config.defaults);
 
       module.import(_.assign({}, settings), done, true);
+    });
+  }
+
+  function tryReadMultiOneWorkflowVersion()
+  {
+    readMultiOneWorkflowVersion(function(err, multiOneWorkflowVersion)
+    {
+      if (multiOneWorkflowVersion === '0.0.0.0')
+      {
+        return setTimeout(tryReadMultiOneWorkflowVersion, 30000);
+      }
+
+      module.import({multiOneWorkflowVersion}, () => {}, false, true);
     });
   }
 
