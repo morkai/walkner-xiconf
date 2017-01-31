@@ -1,3 +1,9 @@
+2.22.1 @ 2017-01-31
+===================
+
+  * Changed the MultiOne Workflow version checking to be rerun constantly
+    if the previous check failed.
+
 2.22.0 @ 2017-01-16
 ===================
 
