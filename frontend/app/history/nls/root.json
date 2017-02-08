@@ -350,6 +350,9 @@
     "log:WEIGHT:SCANNING": "Waiting for the component code scan...",
     "log:WEIGHT:SCANNED": "Scanned: <code>{scanValue}</code>",
     "log:WEIGHT:CHECKING_COMPONENT": "Checking component <code>{nc12}</code>...",
+    "log:WEIGHT:SELECTING_COMPONENT": "Waiting for the selection of 1 of {count} components with 12NC <code>{nc12}</code>...",
+    "log:WEIGHT:COMPONENT_SELECTED:AUTO": "Selected component basing on the last result: <code>{description}</code>",
+    "log:WEIGHT:COMPONENT_SELECTED:MANUAL": "Selected component: <code>{description}</code>",
     "log:WEIGHT:WEIGHING": "Weighing component <code>{component}</code>. Required weight: <code>{weight}</code>g",
     "log:WEIGHT:WEIGHED": "Actual weight: <code>{weight}</code>g",
 

@@ -153,7 +153,7 @@
   "error:MISSING_WORKFLOW_FILE": "Nie znaleziono pliku konfiguracyjnego programatora.",
   "error:MISSING_FEATURE_FILE": "Nie znaleziono pliku konfiguracyjnego drivera.",
   "error:DUPLICATE_FEATURE_FILE": "Wykryto kilka plików konfiguracyjnych driverów dla danego kodu 12NC.",
-  "error:CANCELLED": "Anulowanie programowania.",
+  "error:CANCELLED": "Anulowanie procesu.",
   "error:READING_FEATURE_FILE_TIMEOUT": "Upłynięcie limitu czasu odczytywania pliku konfiguracyjnego drivera.",
   "error:MISSING_PROGRAMMER_FILE": "Nie znaleziono pliku wykonywalnego programatora.",
   "error:PROGRAMMER_FILE_ERROR": "Błąd podczas uruchamiania pliku wykonywalnego programatora.",
@@ -349,6 +349,9 @@
   "log:WEIGHT:SCANNING": "Oczekiwanie na zeskanowanie kodu komponentu...",
   "log:WEIGHT:SCANNED": "Zeskanowano: <code>{scanValue}</code>",
   "log:WEIGHT:CHECKING_COMPONENT": "Sprawdzanie komponentu <code>{nc12}</code>...",
+  "log:WEIGHT:SELECTING_COMPONENT": "Oczekiwanie na wybranie 1 z {count} komponentów o 12NC <code>{nc12}</code>...",
+  "log:WEIGHT:COMPONENT_SELECTED:AUTO": "Wybrano komponent na podstawie ostatniego wyniku: <code>{description}</code>",
+  "log:WEIGHT:COMPONENT_SELECTED:MANUAL": "Wybrano komponent: <code>{description}</code>",
   "log:WEIGHT:WEIGHING": "Ważenie komponentu <code>{component}</code>. Oczekiwana waga: <code>{weight}</code>g",
   "log:WEIGHT:WEIGHED": "Rzeczywista waga: <code>{weight}</code>g",
 

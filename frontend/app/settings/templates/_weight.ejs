@@ -11,6 +11,17 @@
     </div>
   </div>
   <div class="form-group">
+    <label class="control-label"><%- t('settings', 'setting:weightRequireComponent') %></label>
+    <div>
+      <label class="radio-inline">
+        <input name="weightRequireComponent" type="radio" value="1" required> <%- t('settings', 'setting:weightRequireComponent:on') %>
+      </label>
+      <label class="radio-inline">
+        <input name="weightRequireComponent" type="radio" value="0" required> <%- t('settings', 'setting:weightRequireComponent:off') %>
+      </label>
+    </div>
+  </div>
+  <div class="form-group">
     <label class="control-label"><%- t('settings', 'setting:weightCheckScope') %></label>
     <div>
       <% ['none', 'current', 'all'].forEach(function(scope) { %>

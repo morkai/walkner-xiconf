@@ -1,0 +1,10 @@
+<div class="dashboard-componentWeights">
+  <h3 class="dashboard-header">
+    <span><%- t('dashboard', 'componentWeights') %></span>
+  </h3>
+  <ul id="<%- idPrefix %>-list" class="dashboard-componentWeights-list list-group form-control is-scrollable">
+    <% items.forEach(function(item) { %>
+    <%- renderItem(item) %>
+    <% }) %>
+  </ul>
+</div>

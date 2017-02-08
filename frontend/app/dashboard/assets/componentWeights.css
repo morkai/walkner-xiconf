@@ -1,0 +1,52 @@
+.dashboard-componentWeights {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+}
+.is-waitingForComponentWeight .dashboard-componentWeights {
+  display: block;
+}
+.is-waitingForContinue.is-waitingForComponentWeight[data-waiting="weight:weighing"] .dashboard-continue-weight-weighing {
+  display: none;
+}
+.dashboard-componentWeights-list {
+  margin: 0;
+  padding: 0;
+  height: auto;
+  min-height: 267px;
+  max-height: 267px;
+  overflow-x: auto;
+  overflow-y: scroll;
+  box-shadow: 0 0.5em 1em rgba(0, 0, 0, .5);
+}
+.dashboard-componentWeights-componentWeight {
+  margin: 0;
+  padding: 0.25em 0.5em;
+  display: flex;
+  border-top: 0;
+  border-left: 0;
+  border-color: #ccc;
+  cursor: pointer;
+}
+.dashboard-componentWeights-componentWeight:hover {
+  background: #ffffd6;
+}
+.dashboard-componentWeights-no {
+  margin: 0 0.34em 0 0.24em;
+  font-family: Consolas, monospace;
+  font-size: 3em;
+  line-height: 0.953;
+  flex: 0 0 auto;
+  white-space: pre;
+}
+.dashboard-componentWeights-info {
+  flex: 1 1 auto;
+}
+.dashboard-componentWeights-name {
+  display: block;
+  white-space: nowrap;
+  font-weight: bold;
+}

@@ -38,6 +38,29 @@ exports.start = function startProgrammerModule(app, module, done)
     return new HistoryEntry(sqlite3Module.db, app.broker.sandbox(), app[module.config.settingsId]);
   };
 
+  module.findRecentWeightComponent = function(orderNo, componentWeights)
+  {
+    var componentWeightMap = {};
+
+    componentWeights.forEach(cw => componentWeightMap[cw._id] = cw);
+
+    for (var i = 0; i < this.recent.length; ++i)
+    {
+      var recentHistoryEntry = this.recent[i];
+
+      if (recentHistoryEntry.result === 'success'
+        && recentHistoryEntry.no === orderNo
+        && recentHistoryEntry.weight
+        && recentHistoryEntry.weight.component
+        && componentWeightMap[recentHistoryEntry.weight.component._id])
+      {
+        return componentWeightMap[recentHistoryEntry.weight.component._id];
+      }
+    }
+
+    return null;
+  };
+
   module.findLedsFromRecentFailure = function(orderNo, nc12, done)
   {
     var ids = [];
@@ -142,6 +165,9 @@ exports.start = function startProgrammerModule(app, module, done)
     var program = _.isString(historyEntry.program)
       ? JSON.parse(historyEntry.program)
       : (historyEntry.program || null);
+    var weight = _.isString(historyEntry.weight)
+      ? JSON.parse(historyEntry.weight)
+      : (historyEntry.weight || null);
     var orderNo = historyEntry.order ? historyEntry.order.no : (historyEntry.orderNo || null);
 
     module.recent.unshift({
@@ -158,6 +184,9 @@ exports.start = function startProgrammerModule(app, module, done)
       featureFileName: historyEntry.featureFileName,
       program: !program ? null : {
         name: program.name
+      },
+      weight: !weight ? null : {
+        component: weight.component
       },
       cancelled: historyEntry.cancelled ? 1 : 0
     });

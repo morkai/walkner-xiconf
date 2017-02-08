@@ -19,6 +19,7 @@ define([
   '../views/ProgramView',
   '../views/LedsView',
   '../views/HidLampsView',
+  '../views/ComponentWeightsView',
   'app/dashboard/templates/page'
 ], function(
   _,
@@ -39,6 +40,7 @@ define([
   ProgramView,
   LedsView,
   HidLampsView,
+  ComponentWeightsView,
   template
 ) {
   'use strict';
@@ -109,6 +111,7 @@ define([
       this.insertView('.dashboard-leftColumn', this.logView);
       this.insertView('.dashboard-rightColumn', this.hidLampsView);
       this.insertView('.dashboard-rightColumn', this.ledsView);
+      this.insertView('.dashboard-rightColumn', this.componentWeightsView);
       this.insertView('.dashboard-rightColumn', this.historyView);
       this.insertView('.dashboard-rightColumn', this.carouselView);
       this.insertView('.dashboard-rightColumn', this.programView);
@@ -128,6 +131,7 @@ define([
       this.listenTo(currentState, 'change:remoteConnected', this.toggleConnectionIndicator);
       this.listenTo(currentState, 'change:waitingForHidLamps', this.onWaitingForHidLampsChange);
       this.listenTo(currentState, 'change:waitingForLeds', this.onWaitingForLedsChange);
+      this.listenTo(currentState, 'change:waitingForComponentWeight', this.onWaitingForComponentWeightChange);
       this.listenTo(currentState, 'change:waitingForContinue', this.onWaitingForContinueChange);
       this.listenTo(currentState, 'change:selectedOrderNo', this.onSelectedOrderNoChange);
       this.listenTo(currentState, 'change:weight', this.updateWeight);
@@ -157,6 +161,7 @@ define([
       this.logView = new LogView({model: currentState});
       this.hidLampsView = new HidLampsView({model: currentState, shortenScanResults: true});
       this.ledsView = new LedsView({model: currentState, shortenSerialNumbers: true});
+      this.componentWeightsView = new ComponentWeightsView({model: currentState});
       this.historyView = new HistoryView({collection: new HistoryEntryCollection()});
       this.carouselView = new CarouselView({model: currentState});
       this.programView = new ProgramView({model: currentState});
@@ -177,6 +182,7 @@ define([
           && (settings.get('testingEnabled') || settings.get('glp2Enabled')),
         waitingForHidLamps: currentState.get('waitingForHidLamps'),
         waitingForLeds: currentState.get('waitingForLeds'),
+        waitingForComponentWeight: currentState.get('waitingForComponentWeight'),
         waitingForContinue: currentState.get('waitingForContinue'),
         progressBarClassName: this.getProgressBarClassName(),
         progressBarWidth: this.getProgressBarWidth()
@@ -219,7 +225,8 @@ define([
       var width = Math.max(
         this.historyView.$el.outerWidth(true),
         this.hidLampsView.$el.outerWidth(true),
-        this.ledsView.$el.outerWidth(true)
+        this.ledsView.$el.outerWidth(true),
+        this.componentWeightsView.$el.outerWidth(true)
       );
       var shrinked = this.$els.window[0].innerWidth <= 1024;
 
@@ -233,6 +240,7 @@ define([
       this.programView.resize(width, height);
       this.hidLampsView.resize(height);
       this.ledsView.resize(height);
+      this.componentWeightsView.resize(height);
 
       this.inputView.el.style.marginBottom = shrinked
         ? ((height + this.$els.progressBar.outerHeight(true) + 3 * 14) + 'px')
@@ -531,6 +539,18 @@ define([
       if (waitingForLeds)
       {
         this.ledsView.resize();
+      }
+    },
+
+    onWaitingForComponentWeightChange: function()
+    {
+      var waitingForComponentWeight = currentState.get('waitingForComponentWeight');
+
+      this.$el.toggleClass('is-waitingForComponentWeight', !!waitingForComponentWeight);
+
+      if (waitingForComponentWeight)
+      {
+        this.componentWeightsView.resize();
       }
     },
 

@@ -36,7 +36,6 @@ var MOW_OPTIONS_NEW = {
 
 module.exports = function program(app, programmerModule, data, done)
 {
-
   var fake = app.options.env !== 'production';
   var settings = app[programmerModule.config.settingsId];
   var history = app[programmerModule.config.historyId];
@@ -983,7 +982,8 @@ module.exports = function program(app, programmerModule, data, done)
           orderNo: currentState.weight.orderNo,
           nc12: currentState.weight.nc12,
           serialNumber: currentState.weight.scan,
-          scope: settings.get('weightCheckScope')
+          scope: settings.get('weightCheckScope'),
+          requireComponent: settings.get('weightRequireComponent')
         }, next);
 
         cancelSub = app.broker.subscribe('programmer.cancelled', function()
@@ -992,7 +992,7 @@ module.exports = function program(app, programmerModule, data, done)
           setImmediate(next);
         }).setLimit(1);
       },
-      function handleRemoteCheckResultStep(err, res)
+      function handleRemoteCheckResultStep(err, componentWeights)
       {
         if (cancelSub)
         {
@@ -1018,15 +1018,86 @@ module.exports = function program(app, programmerModule, data, done)
           return this.skip(err);
         }
 
-        if (!_.isPlainObject(res) || !_.isNumber(res.weight) || res.weight <= 0)
+        if (!_.isArray(componentWeights) || _.isEmpty(componentWeights))
         {
           return this.skip('WEIGHT:BAD_RESPONSE');
         }
 
-        programmerModule.updateWeight({component: res});
+        if (componentWeights.length === 1)
+        {
+          programmerModule.updateWeight({component: componentWeights[0]});
+
+          return;
+        }
+
+        programmerModule.updateOverallProgress(45);
+
+        programmerModule.log('WEIGHT:SELECTING_COMPONENT', {
+          count: componentWeights.length,
+          nc12: currentState.weight.nc12
+        });
+
+        var recentWeightComponent = history.findRecentWeightComponent(
+          currentState.weight.orderNo,
+          componentWeights
+        );
+
+        if (recentWeightComponent)
+        {
+          programmerModule.log('WEIGHT:COMPONENT_SELECTED:AUTO', {
+            description: recentWeightComponent.description
+          });
+
+          programmerModule.updateWeight({component: recentWeightComponent});
+
+          return;
+        }
+
+        programmerModule.changeState({waitingForComponentWeight: componentWeights});
+
+        const next = _.once(this.next());
+
+        waitingSub = app.broker.subscribe('programmer.stateChanged', function(changes)
+        {
+          if (changes.waitingForComponentWeight === null)
+          {
+            programmerModule.log('WEIGHT:COMPONENT_SELECTED:MANUAL', {
+              description: currentState.weight.component.description
+            });
+
+            waitingSub.cancel();
+            waitingSub = null;
+
+            cancelSub.cancel();
+            cancelSub = null;
+
+            setImmediate(next);
+          }
+        });
+
+        cancelSub = app.broker.subscribe('programmer.cancelled', function()
+        {
+          waitingSub.cancel();
+          waitingSub = null;
+
+          programmerModule.updateWeight({waitingForComponentWeight: null});
+
+          setImmediate(next);
+        }).setLimit(1);
       },
       function waitForWeightStep()
       {
+        if (cancelSub)
+        {
+          cancelSub.cancel();
+          cancelSub = null;
+        }
+
+        if (thisProgrammingCancelled)
+        {
+          return this.skip();
+        }
+
         programmerModule.updateOverallProgress(60);
 
         programmerModule.log('WEIGHT:WEIGHING', {
@@ -1613,6 +1684,7 @@ module.exports = function program(app, programmerModule, data, done)
       order: currentState.order,
       waitingForHidLamps: false,
       waitingForLeds: false,
+      waitingForComponentWeight: null,
       waitingForContinue: null,
       inProgress: false,
       overallProgress: 100

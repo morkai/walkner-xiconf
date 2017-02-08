@@ -124,6 +124,8 @@ RemoteCoordinator.prototype.acquireServiceTag = function(data, done)
  * @param {string} data.orderNo
  * @param {string} data.nc12
  * @param {string} data.serialNumber
+ * @param {string} data.scope
+ * @param {boolean} data.requireComponent
  * @param {function} done
  */
 RemoteCoordinator.prototype.checkComponentWeight = function(data, done)

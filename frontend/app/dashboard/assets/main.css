@@ -9,6 +9,7 @@
 @import url(./program.css);
 @import url(./hidLamps.css);
 @import url(./leds.css);
+@import url(./componentWeights.css);
 @import url(./continue.css);
 
 .is-dashboard > .message {

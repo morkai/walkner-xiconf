@@ -1,3 +1,9 @@
+2.23.0 @ 2017-02-08
+===================
+
+  * Changed the component weighing to allow multiple predefined weights
+    for the same component.
+
 2.22.1 @ 2017-01-31
 ===================
 

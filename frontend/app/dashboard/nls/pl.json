@@ -118,6 +118,8 @@
   "hidLamps:error:NO_HID_LAMPS": "Zlecenie bez lamp HID!",
   "hidLamps:error:INVALID_HID_LAMP": "Nieprawidłowe ID lampy HID!",
 
+  "componentWeights": "Wybór ważonego komponentu",
+
   "continue:led:p1": "Płytki LED zeskanowane pomyślnie!",
   "continue:led:p2": "Wciśnij <kbd data-hotkey=continue>?</kbd> lub zeskanuj kod startu,<br>aby rozpocząć programowanie.",
   "continue:test:p1": "Testowanie wstrzymane!",

@@ -133,6 +133,13 @@ COMMIT TRANSACTION;';
         sql += 'ALTER TABLE historyEntries ADD COLUMN hidLamps TEXT;\n';
       }
 
+      if (row.user_version < 8)
+      {
+        userVersion = 8;
+
+        sql += 'ALTER TABLE historyEntries ADD COLUMN weight TEXT;\n';
+      }
+
       if (sql === '')
       {
         return sqlite3Module.info("Database user version: %d", userVersion);

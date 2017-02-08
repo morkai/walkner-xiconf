@@ -175,6 +175,7 @@ exports.settings = {
     weightStabilized: 1,
     weightTolerance: 0,
     weightCheckScope: 'none',
+    weightRequireComponent: true,
     weightTimeout: 0,
     hotkeys: {
       focusOrderNo: 'Q',

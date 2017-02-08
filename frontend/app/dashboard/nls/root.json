@@ -119,6 +119,8 @@
     "hidLamps:error:NO_HID_LAMPS": "Order without HID lamps!",
     "hidLamps:error:INVALID_HID_LAMP": "Invalid HID lamp ID!",
 
+    "componentWeights": "Weighed component selection",
+
     "continue:led:p1": "LED boards scanned successfully!",
     "continue:led:p2": "Press <kbd data-hotkey=continue>?</kbd> or scan the start barcode<br>to start the programming.",
     "continue:test:p1": "Testing paused!",
@@ -129,6 +131,11 @@
     "continue:vis:p2": "Press <kbd data-hotkey=continue>?</kbd> or use the start barcode<br>or the probe, to continue the testing.",
     "continue:programmed:p1": "Programming finished!",
     "continue:programmed:p2": "Press the button on the probe,<br>to continue the testing.",
+    "continue:ft:p1": "Order with frame test!",
+    "continue:ft:p2": "Press <kbd data-hotkey=start>?</kbd> or use the probe,<br>to continue the testing.",
+    "continue:weight:scanning:p1": "Component weighing ready to start!",
+    "continue:weight:scanning:p2": "Scan the component barcode,<br>to start the weighing.",
+    "continue:weight:weighing:p1": "Component weighing...",
 
     "multipleLocalSocketsDialog:title": "Multiple local clients detected",
     "multipleLocalSocketsDialog:help": "<p>Make sure the browser window with the application has not been accidentally opened more than once and close all additional windows.</p><p>If the problem persists, inform your supervisor.</p>"

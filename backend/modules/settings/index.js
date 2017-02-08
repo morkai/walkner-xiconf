@@ -413,6 +413,7 @@ exports.start = function startSettingsModule(app, module, done)
     // Component Weight
     validateEnum(rawSettings, newSettings, 'weightEnabled', Number, [0, 1]);
     validateEnum(rawSettings, newSettings, 'weightStabilized', Number, [0, 1]);
+    validateEnum(rawSettings, newSettings, 'weightRequireComponent', Number, [0, 1]);
     validateEnum(rawSettings, newSettings, 'weightCheckScope', String, ['none', 'current', 'all']);
     validateNumericSetting(rawSettings, newSettings, 'weightTolerance', 0, 9999);
     validateNumericSetting(rawSettings, newSettings, 'weightTimeout', 0, 600);

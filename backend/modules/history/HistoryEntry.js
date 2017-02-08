@@ -44,6 +44,7 @@ function HistoryEntry(db, broker, settings)
   this.selectedNc12 = null;
   this.waitingForLeds = false;
   this.waitingForHidLamps = false;
+  this.waitingForComponentWeight = null;
   this.waitingForContinue = null;
   this.updating = null;
   this.weight = {
@@ -89,7 +90,7 @@ HistoryEntry.prototype.toJSON = function()
     selectedNc12: this.selectedNc12,
     waitingForLeds: this.waitingForLeds,
     waitingForHidLamps: this.waitingForHidLamps,
-    waitingForWeight: this.waitingForWeight,
+    waitingForComponentWeight: this.waitingForComponentWeight,
     waitingForContinue: this.waitingForContinue,
     updating: this.updating,
     weight: this.weight
@@ -123,7 +124,8 @@ HistoryEntry.prototype.fromDb = function(result, order)
     'steps',
     'metrics',
     'leds',
-    'hidLamps'
+    'hidLamps',
+    'weight'
   ].forEach(function(property)
   {
     this[property] = _.isString(result[property]) ? JSON.parse(result[property]) : result[property];
@@ -318,6 +320,7 @@ HistoryEntry.prototype.clear = function(clearOrder, clearProgram)
   this.hidLamps = null;
   this.waitingForLeds = false;
   this.waitingForHidLamps = false;
+  this.waitingForComponentWeight = null;
   this.waitingForContinue = null;
   this.inProgress = false;
   this.overallProgress = 0;
@@ -388,6 +391,7 @@ HistoryEntry.prototype.reset = function(orderNo, quantity, nc12)
   this.waitingForHidLamps = this.settings.get('hidEnabled') > 0
     && this.settings.supportsFeature('hid')
     && this.hidLamps.length > 0;
+  this.waitingForComponentWeight = null;
   this.waitingForContinue = null;
   this.inProgress = true;
   this.overallProgress = 1;
@@ -741,13 +745,15 @@ HistoryEntry.prototype.save = function(featureDbPath, done)
         log, result, errorCode, exception, output, featureFile,\
         featureFileName, featureFileHash, workflowFile, workflow,\
         program, steps, metrics, serviceTag, leds, hidLamps, prodLine,\
-        gprsNc12, gprsOrderFileHash, gprsInputFileHash, gprsOutputFileHash\
+        gprsNc12, gprsOrderFileHash, gprsInputFileHash, gprsOutputFileHash,\
+        weight\
       ) VALUES (\
         $_id, $_order, $nc12, $counter, $startedAt, $finishedAt, $duration,\
         $log, $result, $errorCode, $exception, $output, $featureFile,\
         $featureFileName, $featureFileHash, $workflowFile, $workflow,\
         $program, $steps, $metrics, $serviceTag, $leds, $hidLamps, $prodLine,\
-        $gprsNc12, $gprsOrderFileHash, $gprsInputFileHash, $gprsOutputFileHash\
+        $gprsNc12, $gprsOrderFileHash, $gprsInputFileHash, $gprsOutputFileHash,\
+        $weight\
       )";
     var params = {
       $_id: historyEntry._id,
@@ -781,7 +787,8 @@ HistoryEntry.prototype.save = function(featureDbPath, done)
       $gprsNc12: historyEntry.gprs.item ? historyEntry.gprs.item.nc12 : null,
       $gprsOrderFileHash: historyEntry.gprs.orderFileHash,
       $gprsInputFileHash: historyEntry.gprs.inputFileHash,
-      $gprsOutputFileHash: historyEntry.gprs.outputFileHash
+      $gprsOutputFileHash: historyEntry.gprs.outputFileHash,
+      $weight: historyEntry.weight && historyEntry.weight.orderNo ? JSON.stringify(historyEntry.weight) : null
     };
 
     historyEntry.db.run(sql, params, done);

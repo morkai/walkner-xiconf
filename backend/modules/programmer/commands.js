@@ -49,6 +49,7 @@ module.exports = function setUpProgrammerCommands(app, programmerModule)
       socket.on('programmer.checkHidScanResult', checkHidScanResult);
       socket.on('programmer.checkWeightScanResult', checkWeightScanResult);
       socket.on('programmer.checkSerialNumber', checkSerialNumber);
+      socket.on('programmer.selectComponentWeight', selectComponentWeight);
       socket.on('programmer.start', start);
       socket.on('programmer.cancel', cancel);
       socket.on('programmer.continue', continueProcess);
@@ -192,6 +193,14 @@ module.exports = function setUpProgrammerCommands(app, programmerModule)
         raw,
         _.isString(scannerId) && /^[A-Z0-9]+$/.test(scannerId) ? scannerId : null
       );
+    }
+  }
+
+  function selectComponentWeight(index)
+  {
+    if (isSingleLocalSocket() && _.isNumber(index))
+    {
+      programmerModule.selectComponentWeight(index);
     }
   }
 

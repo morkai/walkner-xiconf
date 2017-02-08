@@ -42,6 +42,16 @@ module.exports = function setUpWeightMonitor(app, programmerModule)
     });
   };
 
+  programmerModule.selectComponentWeight = function(index)
+  {
+    if (currentState.waitingForComponentWeight
+      && currentState.waitingForComponentWeight[index])
+    {
+      programmerModule.updateWeight({component: currentState.waitingForComponentWeight[index]});
+      programmerModule.changeState({waitingForComponentWeight: null});
+    }
+  };
+
   app.broker.subscribe('app.started', createConnection).setLimit(1);
   app.broker.subscribe('settings.changed', handleSettingsChange);
 
@@ -217,4 +227,6 @@ module.exports = function setUpWeightMonitor(app, programmerModule)
       app.broker.publish('programmer.componentWeighed', weight);
     }
   }
+
+  programmerModule.updateWeightState = updateState;
 };

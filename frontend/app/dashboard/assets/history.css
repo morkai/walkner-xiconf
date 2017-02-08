@@ -1,5 +1,6 @@
 .is-waitingForHidLamps .dashboard-history,
-.is-waitingForLeds .dashboard-history {
+.is-waitingForLeds .dashboard-history,
+.is-waitingForComponentWeight .dashboard-history {
   display: none;
 }
 .dashboard-history .list-group {

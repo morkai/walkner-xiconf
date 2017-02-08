@@ -128,7 +128,9 @@
 .is-waitingForHidLamps .dashboard-carousel,
 .is-waitingForHidLamps .dashboard-program,
 .is-waitingForLeds .dashboard-carousel,
-.is-waitingForLeds .dashboard-program {
+.is-waitingForLeds .dashboard-program,
+.is-waitingForComponentWeight .dashboard-carousel,
+.is-waitingForComponentWeight .dashboard-program {
   margin-top: 364px!important;
 }
 
