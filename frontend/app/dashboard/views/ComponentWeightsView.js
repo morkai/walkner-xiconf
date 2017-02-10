@@ -42,7 +42,7 @@ define([
 
     destroy: function()
     {
-      $(window).off('.' + this.onKeyDown);
+      $(window).off('.' + this.idPrefix);
     },
 
     serialize: function()
