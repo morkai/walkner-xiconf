@@ -198,7 +198,7 @@ module.exports = function setUpWeightMonitor(app, programmerModule)
       && responseBuffer.readByte(responseBuffer.length - 1) === 0x0A)
     {
       const response = responseBuffer.shiftString(responseBuffer.length, 'ascii');
-      const matches = response.match(/(U|S)\s*([0-9]+(?:\.[0-9]+)?)\s*g/);
+      const matches = response.match(/(U|S)\s*(-?[0-9]+(?:\.[0-9]+)?)\s*g/);
 
       if (matches)
       {
@@ -213,6 +213,11 @@ module.exports = function setUpWeightMonitor(app, programmerModule)
 
   function updateState(stabilized, value)
   {
+    if (value < 0)
+    {
+      value = 0;
+    }
+
     if (currentState.weight.stabilized !== stabilized
       || Math.round(currentState.weight.value * 100) !== Math.round(value * 100))
     {
