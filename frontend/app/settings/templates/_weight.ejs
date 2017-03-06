@@ -64,4 +64,24 @@
       <input id="<%- idPrefix %>-weightTimeout" class="form-control" name="weightTimeout" type="number" required min="0" max="600" step="1">
     </div>
   </div>
+  <div class="row">
+    <div class="form-group col-md-3">
+      <label for="<%- idPrefix %>-weightRefUnit" class="control-label"><%- t('settings', 'setting:weightRefUnit') %></label>
+      <input id="<%- idPrefix %>-weightRefUnit" class="form-control" name="weightRefUnit" type="number" required min="1" step="0.001">
+    </div>
+    <div class="form-group col-md-3">
+      <label for="<%- idPrefix %>-weightCurrentValue" class="control-label"><%- t('settings', 'setting:weightCurrentValue') %></label>
+      <input id="<%- idPrefix %>-weightCurrentValue" class="form-control" readonly>
+    </div>
+    <div class="form-group col-md-3">
+      <label for="<%- idPrefix %>-weightWeighedValue" class="control-label"><%- t('settings', 'setting:weightWeighedValue') %></label>
+      <div class="input-group">
+        <input id="<%- idPrefix %>-weightWeighedValue" class="form-control" type="number" min="1">
+        <span class="input-group-btn">
+          <button id="<%- idPrefix %>-weightRefUnitCalc" class="btn btn-default" type="button"><%- t('settings', 'setting:weightRefUnitCalc') %></button>
+          <button id="<%- idPrefix %>-weightTare" class="btn btn-default" type="button"><%- t('settings', 'setting:weightTare') %></button>
+        </span>
+      </div>
+    </div>
+  </div>
 </div>

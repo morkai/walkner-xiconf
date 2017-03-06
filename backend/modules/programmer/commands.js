@@ -35,6 +35,7 @@ module.exports = function setUpProgrammerCommands(app, programmerModule)
 
     socket.on('programmer.getCurrentState', getCurrentState);
     socket.on('programmer.setInputMode', setInputMode.bind(null, isLocal));
+    socket.on('programmer.tareWeight', tareWeight);
 
     if (isLocal)
     {
@@ -106,6 +107,16 @@ module.exports = function setUpProgrammerCommands(app, programmerModule)
     }
 
     programmerModule.setInputMode(inputMode, reply);
+  }
+
+  function tareWeight(password, reply)
+  {
+    if (password !== settings.get('password'))
+    {
+      return reply && reply(new Error('INVALID_PASSWORD'));
+    }
+
+    programmerModule.tareWeight(reply || function() {});
   }
 
   function setWorkMode(workMode, reply)

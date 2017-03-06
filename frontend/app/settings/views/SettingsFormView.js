@@ -9,6 +9,7 @@ define([
   'app/broker',
   'app/viewport',
   'app/core/View',
+  'app/data/currentState',
   'app/data/settings',
   '../Settings',
   'app/settings/templates/form'
@@ -21,6 +22,7 @@ define([
   broker,
   viewport,
   View,
+  currentState,
   settings,
   Settings,
   formTemplate
@@ -113,6 +115,26 @@ define([
 
         window.location.href = '/settings;export?password=' + password;
       },
+      'click #-weightRefUnitCalc': function()
+      {
+        var rawValue = currentState.get('weight').value * settings.get('weightRefUnit');
+        var refUnit = rawValue / (parseFloat(this.$id('weightWeighedValue').val()) || 1);
+
+        this.$id('weightRefUnit').val(Math.round(refUnit * 1000) / 1000);
+      },
+      'click #-weightTare': function()
+      {
+        var password = this.$id('password').val();
+
+        if (!password.length)
+        {
+          this.$id('submit').click();
+
+          return;
+        }
+
+        this.socket.emit('programmer.tareWeight', password);
+      },
       'click .settings-save': 'onSaveClick',
       'click .settings-restart': 'onRestartClick',
       'click .settings-logs': 'onLogsClick',
@@ -160,6 +182,7 @@ define([
       document.addEventListener('drop', this.onDrop, false);
 
       this.listenTo(settings, 'change', this.onSettingsChange);
+      this.listenTo(currentState, 'change:weight', this.onWeightChange);
     },
 
     destroy: function()
@@ -184,6 +207,7 @@ define([
     {
       this.importSettings(settings.toJSON());
       this.changeTab(this.options.tab || this.$('.list-group-item[data-tab]').first().attr('data-tab'));
+      this.onWeightChange();
     },
 
     changeTab: function(tab)
@@ -217,6 +241,19 @@ define([
       this.importSettings(settings.toJSON());
 
       this.$id('mowVersion').text(settings.get('multiOneWorkflowVersion'));
+    },
+
+    onWeightChange: function()
+    {
+      var weight = currentState.get('weight');
+      var currentWeight = '?';
+
+      if (weight && weight.value >= 0)
+      {
+        currentWeight = weight.value.toLocaleString() + ' ' + (weight.stabilized ? 'S' : 'U');
+      }
+
+      this.$id('weightCurrentValue').val(currentWeight);
     },
 
     onRestartClick: function()

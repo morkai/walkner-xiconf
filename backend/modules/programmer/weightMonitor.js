@@ -9,14 +9,27 @@ const BufferQueueReader = require('h5.buffers').BufferQueueReader;
 module.exports = function setUpWeightMonitor(app, programmerModule)
 {
   const REQUEST_BUFFER = new Buffer([0x53, 0x78, 0x33, 0x0D, 0x0A]);
+  const WALKNER_RESPONSE_RE = /(-?[0-9]+(?:\.[0-9]+)?)/g;
 
   const settings = app[programmerModule.config.settingsId];
   const currentState = programmerModule.currentState;
   const responseBuffer = new BufferQueueReader();
+  const weightBuffer = [];
   let socket = null;
   let wasConnected = true;
   let connectTimer = null;
   let idleTimer = null;
+
+  programmerModule.tareWeight = function(done)
+  {
+    if (settings.get('weightPort') !== 1337)
+    {
+      return done(new Error('NOT_SUPPORTED'));
+    }
+
+    destroyConnection();
+    done();
+  };
 
   programmerModule.updateWeight = function(changes)
   {
@@ -185,13 +198,80 @@ module.exports = function setUpWeightMonitor(app, programmerModule)
 
   function sendRequest()
   {
-    if (socket)
+    if (socket && settings.get('weightPort') !== 1337)
     {
       socket.write(REQUEST_BUFFER);
     }
   }
 
   function handleResponse()
+  {
+    if (settings.get('weightPort') === 1337)
+    {
+      handleWalknerResponse();
+    }
+    else
+    {
+      handleAxisResponse();
+    }
+
+    startIdleTimer();
+  }
+
+  function handleWalknerResponse()
+  {
+    if (responseBuffer.length < 2 || responseBuffer.readByte(responseBuffer.length - 1) !== 0x0A)
+    {
+      return;
+    }
+
+    const response = responseBuffer.shiftString(responseBuffer.length, 'utf8');
+    let matches = null;
+
+    while ((matches = WALKNER_RESPONSE_RE.exec(response)) !== null)
+    {
+      handleWalknerReading(parseFloat(matches[1]));
+    }
+  }
+
+  function handleWalknerReading(reading)
+  {
+    if (reading < 0)
+    {
+      reading = 0;
+    }
+
+    weightBuffer.push(Math.round(reading / settings.get('weightRefUnit') * 10) / 10);
+
+    if (weightBuffer.length < 5)
+    {
+      return;
+    }
+
+    if (weightBuffer.length > 6)
+    {
+      weightBuffer.shift();
+    }
+
+    const latestValue = weightBuffer[weightBuffer.length - 1];
+    let stabilized = true;
+
+    for (let i = 0; i < 4; ++i)
+    {
+      const prevValue = weightBuffer[i];
+
+      if (Math.abs(latestValue - prevValue) > 0.25)
+      {
+        stabilized = false;
+
+        break;
+      }
+    }
+
+    updateState(stabilized, latestValue);
+  }
+
+  function handleAxisResponse()
   {
     if (responseBuffer.length > 2
       && responseBuffer.readByte(responseBuffer.length - 2) === 0x0D
@@ -207,8 +287,6 @@ module.exports = function setUpWeightMonitor(app, programmerModule)
 
       setTimeout(sendRequest, 200);
     }
-
-    startIdleTimer();
   }
 
   function updateState(stabilized, value)

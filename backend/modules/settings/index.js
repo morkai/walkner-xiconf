@@ -418,6 +418,7 @@ exports.start = function startSettingsModule(app, module, done)
     validateNumericSetting(rawSettings, newSettings, 'weightTolerance', 0, 9999);
     validateNumericSetting(rawSettings, newSettings, 'weightTimeout', 0, 600);
     validateNumericSetting(rawSettings, newSettings, 'weightPort', 1, 65535);
+    validateNumericSetting(rawSettings, newSettings, 'weightRefUnit', 1);
     validateStringSetting(rawSettings, newSettings, 'weightHost', 0);
     // Hotkeys
     validateHotkeys(rawSettings, newSettings);
