@@ -16,9 +16,15 @@ module.exports = function setUpWeightMonitor(app, programmerModule)
   const responseBuffer = new BufferQueueReader();
   const weightBuffer = [];
   let socket = null;
+  let isConnected = false;
   let wasConnected = true;
   let connectTimer = null;
   let idleTimer = null;
+
+  programmerModule.isWeightConnected = function()
+  {
+    return isConnected;
+  };
 
   programmerModule.tareWeight = function(done)
   {
@@ -92,6 +98,7 @@ module.exports = function setUpWeightMonitor(app, programmerModule)
   {
     updateState(false, 0);
 
+    isConnected = false;
     wasConnected = false;
 
     if (connectTimer)
@@ -190,6 +197,8 @@ module.exports = function setUpWeightMonitor(app, programmerModule)
 
     if (data !== null)
     {
+      isConnected = true;
+
       responseBuffer.push(data);
 
       handleResponse();

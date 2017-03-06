@@ -361,5 +361,6 @@
   "error:WEIGHT:WEIGHT_NOT_FOUND": "Brak zdefiniowanej wagi komponentu.",
   "error:WEIGHT:SN_ALREADY_USED": "Numer seryjny komponentu został już użyty.",
   "error:WEIGHT:BAD_RESPONSE": "Nieprawidłowa odpowiedź z serwera zewnętrznego.",
-  "error:WEIGHT:TIMEOUT": "Upłynięcie limitu czasu oczekiwania na zważenie komponentu."
+  "error:WEIGHT:TIMEOUT": "Upłynięcie limitu czasu oczekiwania na zważenie komponentu.",
+  "error:WEIGHT:NO_CONNECTION": "Brak połączenia z wagą."
 }

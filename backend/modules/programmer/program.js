@@ -916,6 +916,11 @@ module.exports = function program(app, programmerModule, data, done)
 
     programmerModule.updateOverallProgress(22);
 
+    if (!programmerModule.isWeightConnected())
+    {
+      return this.skip('WEIGHT:NO_CONNECTION');
+    }
+
     const done = this.next();
     let cancelSub;
     let waitingSub;

@@ -362,7 +362,8 @@
     "error:WEIGHT:WEIGHT_NOT_FOUND": "No weight is defined for the scanned component.",
     "error:WEIGHT:SN_ALREADY_USED": "The component's serial number was already used.",
     "error:WEIGHT:BAD_RESPONSE": "Invalid response from the remote server.",
-    "error:WEIGHT:TIMEOUT": "Waiting for the component weight timed out."
+    "error:WEIGHT:TIMEOUT": "Waiting for the component weight timed out.",
+    "error:WEIGHT:NO_CONNECTION": "No connection to the scales."
   },
   "pl": true
 }
