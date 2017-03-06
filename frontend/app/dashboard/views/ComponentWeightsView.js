@@ -6,6 +6,7 @@ define([
   'app/i18n',
   'app/user',
   'app/core/View',
+  'app/data/settings',
   'app/dashboard/templates/componentWeights',
   'app/dashboard/templates/componentWeight'
 ], function(
@@ -14,6 +15,7 @@ define([
   t,
   user,
   View,
+  settings,
   listTemplate,
   itemTemplate
 ) {
@@ -56,11 +58,31 @@ define([
 
     serializeItem: function(componentWeight, index)
     {
+      var weightTolerance = settings.get('weightTolerance') || 0;
+      var minWeight = 0;
+      var maxWeight = 0;
+
+      if (componentWeight.minWeight >= 0 && componentWeight.maxWeight >= 0)
+      {
+        minWeight = Math.round(Math.min(componentWeight.minWeight, componentWeight.maxWeight) * 100) / 100;
+        maxWeight = Math.round(Math.max(componentWeight.minWeight, componentWeight.maxWeight) * 100) / 100;
+      }
+      else if (componentWeight.weight >= 0)
+      {
+        minWeight = Math.round(componentWeight.weight * 100) / 100;
+        maxWeight = minWeight;
+      }
+
+      minWeight -= weightTolerance;
+      maxWeight += weightTolerance;
+
       return {
         no: index + 1,
         description: componentWeight.description,
         nc12: componentWeight.nc12,
-        weight: Math.round((componentWeight.weight * 100) / 100).toLocaleString()
+        weight: minWeight === maxWeight
+          ? minWeight.toLocaleString()
+          : (minWeight.toLocaleString() + '-' + maxWeight.toLocaleString())
       };
     },
 

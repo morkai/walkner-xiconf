@@ -1100,9 +1100,30 @@ module.exports = function program(app, programmerModule, data, done)
 
         programmerModule.updateOverallProgress(60);
 
+        const weightTolerance = settings.get('weightTolerance') || 0;
+        const component = currentState.weight.component;
+        let minWeight = 0;
+        let maxWeight = 0;
+
+        if (component.minWeight >= 0 && component.maxWeight >= 0)
+        {
+          minWeight = Math.round(Math.min(component.minWeight, component.maxWeight) * 100) / 100;
+          maxWeight = Math.round(Math.max(component.minWeight, component.maxWeight) * 100) / 100;
+        }
+        else if (component.weight >= 0)
+        {
+          minWeight = Math.round(component.weight * 100) / 100;
+          maxWeight = minWeight;
+        }
+
+        minWeight -= weightTolerance;
+        maxWeight += weightTolerance;
+
         programmerModule.log('WEIGHT:WEIGHING', {
-          component: currentState.weight.component.description || currentState.weight.nc12,
-          weight: (Math.round(currentState.weight.component.weight * 100) / 100).toLocaleString()
+          component: component.description || currentState.weight.nc12,
+          weight: minWeight === maxWeight
+            ? minWeight.toLocaleString()
+            : (minWeight.toLocaleString() + '-' + maxWeight.toLocaleString())
         });
 
         programmerModule.changeState({waitingForContinue: 'weight:weighing'});
@@ -1182,11 +1203,26 @@ module.exports = function program(app, programmerModule, data, done)
             return;
           }
 
-          const requiredWeight = currentState.weight.component.weight;
-          const actualWeight = currentState.weight.value;
           const weightTolerance = settings.get('weightTolerance') || 0;
-          const minWeight = requiredWeight - weightTolerance;
-          const maxWeight = requiredWeight + weightTolerance;
+          const component = currentState.weight.component;
+          let minWeight = Number.MAX_VALUE;
+          let maxWeight = Number.MIN_VALUE;
+
+          if (component.minWeight >= 0 && component.maxWeight >= 0)
+          {
+            minWeight = Math.min(component.minWeight, component.maxWeight);
+            maxWeight = Math.max(component.minWeight, component.maxWeight);
+          }
+          else if (component.weight >= 0)
+          {
+            minWeight = component.weight;
+            maxWeight = component.weight;
+          }
+
+          minWeight -= weightTolerance;
+          maxWeight += weightTolerance;
+
+          const actualWeight = currentState.weight.value;
 
           if (actualWeight >= minWeight && actualWeight <= maxWeight)
           {
