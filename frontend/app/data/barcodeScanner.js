@@ -14,10 +14,6 @@ define([
   'use strict';
 
   var KEY_ENTER = 13;
-  var KEY_MINUS = 45;
-  var KEY_EQUALS = 61;
-  var KEY_0 = 48;
-  var KEY_9 = 57;
 
   var enabledScanners = null;
   var enabled = false;
@@ -56,7 +52,7 @@ define([
       return;
     }
 
-    if (e.keyCode === KEY_ENTER && commandBuffer.length)
+    if (e.keyCode === KEY_ENTER && commandBuffer.length > 1)
     {
       handleCommandBuffer(e);
     }
@@ -71,9 +67,7 @@ define([
       return;
     }
 
-    if (e.charCode === KEY_MINUS
-      || e.charCode === KEY_EQUALS
-      || (e.charCode >= KEY_0 && e.charCode <= KEY_9))
+    if (e.charCode >= 32 && e.charCode <= 126)
     {
       commandBuffer += String.fromCharCode(e.charCode);
     }

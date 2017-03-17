@@ -47,7 +47,7 @@ define([
       whole: true
     },
     {
-      pattern: '.*?W[0-9]+___.*?([0-9]{9})([0-9]{12})',
+      pattern: '.*?W[0-9]+___.*?([0-9]{9})_*([0-9]{12})',
       serialNumber: 1,
       nc12: 2,
       whole: true
@@ -1323,12 +1323,12 @@ define([
       {
         var ledPattern = LED_PATTERNS[i];
         var matches = led.match(ledPattern.pattern);
-
+console.log(ledPattern, matches);
         if (matches)
         {
           nc12 = matches[ledPattern.nc12];
           serialNumber = ledPattern.serialNumber === -1 ? '????????' : matches[ledPattern.serialNumber].toUpperCase();
-
+console.log(nc12, serialNumber);
           break;
         }
       }
