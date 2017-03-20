@@ -1,3 +1,12 @@
+2.23.2 @ 2017-03-05
+===================
+
+  * Changed the local barcode scanner handler to include all printable characters.
+    Now the scan is complete after receiving at least two characters followed by ENTER
+    (to avoid conflicts with hotkeys).
+  * Changed the weighing to stop the process if there is no connection to the scale.
+  * Added support for min and max component weights received from the remote server.
+
 2.23.1 @ 2017-03-05
 ===================
 
