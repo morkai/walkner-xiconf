@@ -49,13 +49,13 @@ module.exports = function setUpWeightMonitor(app, programmerModule)
       return;
     }
 
-    var matches = raw.match(/([0-9]{12})/);
+    var matches = raw.match(/([0-9]{4}\s*[0-9]{4}\s*[0-9]{4})/);
 
     programmerModule.changeState({
       waitingForContinue: 'weight:weighing',
       weight: _.defaults({
         scan: raw,
-        nc12: matches ? matches[1] : null,
+        nc12: matches ? matches[1].replace(/\s+/g, '') : null,
         orderNo: orderNo
       }, currentState.weight)
     });
