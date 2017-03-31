@@ -1,3 +1,8 @@
+2.23.3 @ 2017-03-31
+===================
+
+  * Changed the weighing barcode handling to allow spaces in the component's 12NC.
+
 2.23.2 @ 2017-03-05
 ===================
 
