@@ -101,29 +101,26 @@ module.exports = function setUpWeightMonitor(app, programmerModule)
     isConnected = false;
     wasConnected = false;
 
-    if (connectTimer)
-    {
-      clearTimeout(connectTimer);
-      connectTimer = null;
-    }
-
     if (idleTimer)
     {
       clearTimeout(idleTimer);
       idleTimer = null;
     }
 
-    if (!socket)
-    {
-      return;
-    }
-
     responseBuffer.skip();
 
-    socket.removeAllListeners();
-    socket.destroy();
-    socket.on('error', () => {});
-    socket = null;
+    if (socket)
+    {
+      socket.removeAllListeners();
+      socket.destroy();
+      socket.on('error', () => {});
+      socket = null;
+    }
+
+    if (connectTimer)
+    {
+      clearTimeout(connectTimer);
+    }
 
     connectTimer = setTimeout(createConnection, 1000);
   }
