@@ -260,6 +260,11 @@ exports.start = function startSettingsModule(app, module, done)
 
   function readMultiOneWorkflowVersion(done)
   {
+    if (process.platform !== 'win32')
+    {
+      return done(null, '0.0.0.0');
+    }
+
     var cmd = format('"%s" /f dummy /w dummy /c Halt', module.get('programmerFile'));
 
     module.debug("Checking MultiOne Workflow version...");
@@ -277,6 +282,11 @@ exports.start = function startSettingsModule(app, module, done)
 
   function checkCoreScannerDriver(done)
   {
+    if (process.platform !== 'win32')
+    {
+      return done(null, false);
+    }
+
     module.debug("Checking CoreScanner driver availability...");
 
     exec('sc qc CoreScanner', {timeout: 30000}, function(err, stdout)
