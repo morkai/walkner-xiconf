@@ -41,7 +41,11 @@ Object.assign(config.updater, {
 
 Object.assign(config.settings, {
   settingsFile: path.join(DATA_PATH, 'settings.json'),
-  logsGlob: path.join(LOGS_PATH, '*.log')
+  logsGlob: path.join(LOGS_PATH, '*.log'),
+  remoteServers: [
+    'http://161.87.64.46/',
+    'http://192.168.21.60/'
+  ]
 });
 
 Object.assign(config.settings.defaults, {

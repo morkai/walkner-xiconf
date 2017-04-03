@@ -57,6 +57,7 @@ exports.settings = {
   licenseEdPem: fs.existsSync(__dirname + '/license.ed.public.pem')
     ? fs.readFileSync(__dirname + '/license.ed.public.pem', 'utf8')
     : null,
+  remoteServers: [],
   defaults: {
     password: 'x!c0nf',
     id: '',

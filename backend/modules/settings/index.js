@@ -8,6 +8,7 @@ var exec = require('child_process').exec;
 var format = require('util').format;
 var _ = require('lodash');
 var step = require('h5.step');
+var request = require('request');
 var setUpRoutes = require('./routes');
 var validateLicense = require('./validateLicense');
 var setUpServiceTagPrinterZpl = require('./setUpServiceTagPrinterZpl');
@@ -20,7 +21,8 @@ exports.DEFAULT_CONFIG = {
   defaults: {
     hotkeys: {}
   },
-  logsGlob: null
+  logsGlob: null,
+  remoteServers: []
 };
 
 exports.start = function startSettingsModule(app, module, done)
@@ -192,6 +194,11 @@ exports.start = function startSettingsModule(app, module, done)
       });
     });
 
+  app.broker.subscribe('settings.changed').on('message', function()
+  {
+    updateRemoteSettings(false, () => {});
+  });
+
   function onAppStarted()
   {
     setUpServiceTagPrinterZpl(app, module);
@@ -201,15 +208,22 @@ exports.start = function startSettingsModule(app, module, done)
       {
         readMultiOneWorkflowVersion(this.parallel());
         checkCoreScannerDriver(this.parallel());
+        updateRemoteSettings(false, this.parallel());
       },
-      function(err, multiOneWorkflowVersion, coreScannerDriver)
+      function(err, multiOneWorkflowVersion, coreScannerDriver, remoteSettings)
       {
         if (multiOneWorkflowVersion === '0.0.0.0')
         {
           setTimeout(tryReadMultiOneWorkflowVersion, 30000);
         }
 
-        module.import({multiOneWorkflowVersion, coreScannerDriver}, () => {}, false, true);
+        if (!_.isEmpty(remoteSettings))
+        {
+          remoteSettings.multiOneWorkflowVersion = multiOneWorkflowVersion;
+          remoteSettings.coreScannerDriver = coreScannerDriver;
+        }
+
+        module.import(remoteSettings, () => {}, false, true);
       }
     );
   }
@@ -297,6 +311,74 @@ exports.start = function startSettingsModule(app, module, done)
 
       done(null, coreScannerDriver);
     });
+  }
+
+  function updateRemoteSettings(save, done)
+  {
+    step(
+      function()
+      {
+        var remoteSettingsUrls = [module.get('remoteServer')]
+          .concat(module.config.remoteServers || [])
+          .map(buildRemoteSettingsUrl);
+
+        updateNextRemoteSettings(remoteSettingsUrls, this.next());
+      },
+      function(err, remoteSettings)
+      {
+        if (!_.isEmpty(remoteSettings) && save)
+        {
+          remoteSettings.multiOneWorkflowVersion = settings.multiOneWorkflowVersion;
+          remoteSettings.coreScannerDriver = settings.coreScannerDriver;
+
+          module.import(remoteSettings, () => {}, false, true);
+        }
+
+        done(null, remoteSettings);
+      }
+    );
+  }
+
+  function updateNextRemoteSettings(remoteSettingsUrls, done)
+  {
+    if (!remoteSettingsUrls.length)
+    {
+      return done(null, {});
+    }
+
+    var url = remoteSettingsUrls.shift();
+
+    if (!url)
+    {
+      return updateNextRemoteSettings(remoteSettingsUrls, done);
+    }
+
+    module.debug("Updating remote settings at %s ...", url);
+
+    request({method: 'POST', url: url, json: true, body: settings, timeout: 5000}, function(err, res, body)
+    {
+      if (err || res.statusCode !== 200)
+      {
+        return updateNextRemoteSettings(remoteSettingsUrls, done);
+      }
+
+      return done(null, body);
+    });
+  }
+
+  function buildRemoteSettingsUrl(remoteServer)
+  {
+    if (!_.isString(remoteServer) || !/^http/i.test(remoteServer))
+    {
+      return null;
+    }
+
+    if (remoteServer.charAt(remoteServer.length - 1) !== '/')
+    {
+      remoteServer += '/';
+    }
+
+    return remoteServer + 'xiconf/clients;settings?_id=' + module.getMachineId();
   }
 
   function validateSettings(rawSettings)
