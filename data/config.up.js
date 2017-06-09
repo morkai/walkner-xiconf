@@ -36,7 +36,7 @@ Object.assign(config.history, {
 });
 
 Object.assign(config.updater, {
-  unzipExe: '/usr/bin/7z'
+  unzipExe: '/usr/bin/unzip'
 });
 
 Object.assign(config.settings, {
