@@ -1,3 +1,12 @@
+2.23.4 @ 2017-05-24
+===================
+
+  * Fixed the connection to the scales not being recreated after destruction
+    if there was no established connection to begin with.
+  * Changed the MOW version and CoreScanner availability check to be disabled
+    on non-Windows.
+  * Added support for saving and reading of settings from the remote server.
+  
 2.23.3 @ 2017-03-31
 ===================
 
