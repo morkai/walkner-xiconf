@@ -55,7 +55,7 @@ Object.assign(config.settings.defaults, {
   syncInterval: 2,
   workflowVerify: 1,
   workflowDaliFactoryNew: 1,
-  featurePath1: '\\\\code1\\plrketchr8-box1\\Dokumentacja.technologiczna\\-=- Centrum dystrybucji\\Programowanie driverow\\1. Programy\\5. Multione',
+  featurePath1: '\\\\code1\\plrketchr8-box1\\Dokumentacja.technologiczna\\-=- Centrum dystrybucji\\Programowanie driverow\\1. Programy\\5. Multione\\Indoor',
   featurePath2: 'C:\\Programy_Multione',
   searchTimeout1: 15000,
   searchTimeout2: 15000,
