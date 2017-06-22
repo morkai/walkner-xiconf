@@ -42,3 +42,9 @@
 .settings-form textarea[name="ftOrderPattern"] {
   font-family: Consolas, Menlo, Monaco, monospace;
 }
+.settings-import select {
+  font-family: Consolas, Menlo, Monaco, monospace;
+}
+.control-label + .help-block {
+  margin-top: 0;
+}

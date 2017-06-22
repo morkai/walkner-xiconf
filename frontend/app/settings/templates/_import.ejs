@@ -1,0 +1,25 @@
+<div id="<%- idPrefix %>-import" class="panel-body settings-import">
+  <div class="form-group">
+    <label for="<%- idPrefix %>-importLine" class="control-label"><%- t('settings', 'import:line') %></label>
+    <p class="help-block"><%- t('settings', 'import:line:help') %></p>
+    <select id="<%- idPrefix %>-importLine" class="form-control"></select>
+  </div>
+  <div class="form-group">
+    <label for="<%- idPrefix %>-importClient" class="control-label"><%- t('settings', 'import:client') %></label>
+    <p class="help-block"><%- t('settings', 'import:client:help') %></p>
+    <select id="<%- idPrefix %>-importClient" class="form-control"></select>
+  </div>
+  <div id="<%- idPrefix %>-importFeatures" class="form-group">
+    <label class="control-label"><%- t('settings', 'import:features') %></label>
+    <p class="help-block"><%- t('settings', 'import:features:help') %></p>
+    <% availableFeatures.forEach(function(feature) { %>
+    <label class="checkbox-inline">
+      <input id="<%- idPrefix %>-importFeatures-<%- feature %>" type="checkbox" value="<%- feature %>"> <%- t('settings', 'features:' + feature) %>
+    </label>
+    <br>
+    <% }) %>
+  </div>
+  <button id="<%- idPrefix %>-importSettings" class="btn btn-default btn-lg" type="button">
+    <i class="fa fa-download"></i><span><%- t('settings', 'import:button') %></span>
+  </button>
+</div>

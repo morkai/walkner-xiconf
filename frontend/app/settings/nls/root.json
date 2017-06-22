@@ -38,6 +38,7 @@
     "form:restart": "Restart server",
     "form:password": "Password",
     "form:logs": "Download logs",
+    "form:import": "Import settings",
 
     "mowVersion:supported": "Supported Philips MultiOne Workflow version",
     "mowVersion:installed": "Installed Philips MultiOne Workflow version",
@@ -252,7 +253,27 @@
     "hotkey:continue": "Continue",
     "hotkey:setProgram": "Select program",
     "hotkey:printServiceTag": "Print Service Tag",
-    "hotkey:closeDialog": "Close modal dialog"
+    "hotkey:closeDialog": "Close modal dialog",
+
+    "import:line": "Production line",
+    "import:line:help": "Choose a production line for this installation.",
+    "import:client": "Settings source",
+    "import:client:help": "Choose a client from which settings should be copied to this installation.",
+    "import:features": "License options",
+    "import:features:help": "Choose license options for this installation.",
+    "import:button": "Import settings",
+    "import:failure": "Failed to import settings :(",
+
+    "features:wmes": "Remote mode (WMES)",
+    "features:sol": "Fortimo Solar (SOL)",
+    "features:t24vdc": "24V DC Tester (T24VDC)",
+    "features:led": "LED scanning (LED)",
+    "features:gprs": "GPRS programing (GPRS)",
+    "features:glp2": "Schleich GLP2-I Tester (GLP2)",
+    "features:fl": "Fluorescent Lamps (FL)",
+    "features:ft": "Frame Tester (FT)",
+    "features:hid": "HID scanning (HID)",
+    "features:weight": "Component weighing (WEIGHT)"
   },
   "pl": true
 }

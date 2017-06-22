@@ -51,17 +51,22 @@ define([
       });
     },
 
-    getLicenseFeatures: function()
+    getLicenseFeatures: function(features)
     {
-      var licenseInfo = this.get('licenseInfo');
-
-      if (!licenseInfo || !licenseInfo.features)
+      if (!features)
       {
-        return '';
+        var licenseInfo = this.get('licenseInfo');
+
+        if (!licenseInfo || !licenseInfo.features)
+        {
+          return '';
+        }
+
+        features = licenseInfo.features;
       }
 
       return AVAILABLE_FEATURES
-        .filter(function(feature) { return this.supportsFeature(feature); }, this)
+        .filter(function(feature) { return this.supportsFeature(feature, features); }, this)
         .join(', ')
         .toUpperCase();
     },
@@ -73,19 +78,55 @@ define([
       return licenseInfo && !licenseInfo.error;
     },
 
-    supportsFeature: function(feature)
+    supportsFeature: function(feature, supportedFeatures)
     {
-      var licenseInfo = this.get('licenseInfo');
-
-      if (!licenseInfo)
+      if (!supportedFeatures)
       {
-        return false;
+        var licenseInfo = this.get('licenseInfo');
+
+        if (!licenseInfo)
+        {
+          return false;
+        }
+
+        supportedFeatures = licenseInfo.features;
       }
 
-      var supportedFeatures = licenseInfo.features;
       var featureIndex = AVAILABLE_FEATURES.indexOf(feature.toLowerCase());
 
       return featureIndex !== -1 && !!(supportedFeatures & Math.pow(2, featureIndex));
+    },
+
+    getLabelsFromFeatures: function(features)
+    {
+      var labels = [];
+
+      features.toString(2).split('').reverse().forEach(function(supported, i)
+      {
+        if (supported !== '1')
+        {
+          return;
+        }
+
+        var feature = AVAILABLE_FEATURES[i];
+
+        if (!feature)
+        {
+          return;
+        }
+
+        labels.push(feature.toUpperCase());
+      });
+
+      return labels;
+    },
+
+    getFeaturesFromLabels: function(labels)
+    {
+      return parseInt(AVAILABLE_FEATURES
+        .map(function(feature) { return _.contains(labels, feature.toUpperCase()) ? 1 : 0; })
+        .reverse()
+        .join(''), 2);
     },
 
     isFtOrder: function(orderName)
@@ -128,6 +169,10 @@ define([
 
       return false;
     }
+
+  }, {
+
+    AVAILABLE_FEATURES: AVAILABLE_FEATURES
 
   });
 });

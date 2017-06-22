@@ -138,7 +138,9 @@ define([
       'click .settings-save': 'onSaveClick',
       'click .settings-restart': 'onRestartClick',
       'click .settings-logs': 'onLogsClick',
-      'submit': 'onSubmit'
+      'submit': 'onSubmit',
+      'change #-importClient': 'onImportClientChange',
+      'click #-importSettings': 'onImportClick'
     },
 
     remoteTopics: {
@@ -199,7 +201,8 @@ define([
         idPrefix: this.idPrefix,
         hotkeyPattern: '^([A-Z\\[\\];\',./]|Space)$',
         computerName: window.COMPUTER_NAME || '',
-        multiOneWorkflowVersion: settings.get('multiOneWorkflowVersion')
+        multiOneWorkflowVersion: settings.get('multiOneWorkflowVersion'),
+        availableFeatures: Settings.AVAILABLE_FEATURES
       };
     },
 
@@ -215,10 +218,193 @@ define([
       var $oldTab = this.$('.list-group-item.active');
       var $newTab = this.$('.list-group-item[data-tab="' + tab + '"]');
 
+      if (tab === 'import')
+      {
+        this.loadImportTab();
+      }
+
       $oldTab.removeClass('active');
       $newTab.addClass('active');
       this.$('.panel-body.active').removeClass('active');
       this.$id(tab).addClass('active');
+    },
+
+    loadImportTab: function()
+    {
+      var view = this;
+      var $hidden = view.$id('import').children().addClass('hidden');
+      var $spinner = $('<i class="fa fa-spinner fa-spin"></i>').appendTo(view.$id('import'));
+      var fail = function() { $spinner.removeClass('fa-spin').css('color', '#E00'); };
+
+      view.import = {
+        remoteServer: null,
+        prodLines: [],
+        clients: []
+      };
+
+      this.$id('importFeatures').find('input[type="checkbox"]').prop('checked', false);
+
+      view.resolveRemoteServer().fail(fail).done(function(remoteServer)
+      {
+        view.import.remoteServer = remoteServer;
+
+        $.when(view.loadRemoteProdLines(), view.loadRemoteClients()).fail(fail).done(function(prodLines, clients)
+        {
+          view.import.prodLines = prodLines;
+          view.import.clients = clients;
+
+          $spinner.remove();
+          $hidden.removeClass('hidden');
+
+          view.prepareImportTab();
+        });
+      });
+    },
+
+    prepareImportTab: function()
+    {
+      var i;
+      var l;
+      var prodLines = '<option selected></option>';
+      var maxProdLineId = this.import.prodLines.reduce(
+        function(max, prodLine) { return Math.max(max, prodLine._id.length); },
+        0
+      );
+
+      this.import.prodLines.forEach(function(prodLine)
+      {
+        var id = prodLine._id;
+
+        for (i = 0, l = maxProdLineId - id.length; i < l; ++i)
+        {
+          id += '&nbsp;';
+        }
+
+        prodLines += '<option value="' + _.escape(prodLine._id) + '">' +
+          id + ' | ' + _.escape(prodLine.description)
+          + '</option>';
+      });
+
+      this.$id('importLine').html(prodLines);
+
+      var clients = '<option selected></option>';
+      var maxClientLine = this.import.clients.reduce(
+        function(max, client) { return Math.max(max, client.settings.prodLine.length); },
+        0
+      );
+      var maxClientId = this.import.clients.reduce(
+        function(max, client) { return Math.max(max, client._id.length); },
+        0
+      );
+
+      this.import.clients.forEach(function(client)
+      {
+        var label = client.settings.prodLine;
+
+        for (i = 0, l = maxClientLine - client.settings.prodLine.length; i < l; ++i)
+        {
+          label += '&nbsp;';
+        }
+
+        label += ' | ' + client._id;
+
+        for (i = 0, l = maxClientId - client._id.length; i < l; ++i)
+        {
+          label += '&nbsp;';
+        }
+
+        if (client.settings.licenseInfo)
+        {
+          label += ' | ' + settings.getLabelsFromFeatures(client.settings.licenseInfo.features).join(', ');
+        }
+
+        clients += '<option value="' + _.escape(client._id) + '">' + label + '</option>';
+      });
+
+      this.$id('importClient').html(clients);
+    },
+
+    resolveRemoteServer: function()
+    {
+      var deferred = $.Deferred();
+      var remoteServers = _.uniq(
+        (window.REMOTE_SERVERS || []).concat('http://localhost/', settings.get('remoteServer'))
+      );
+
+      this.resolveNextRemoteServer(remoteServers, deferred);
+
+      return deferred.promise();
+    },
+
+    resolveNextRemoteServer: function(remoteServers, deferred)
+    {
+      var remoteServer = remoteServers.shift();
+
+      if (!remoteServer)
+      {
+        return deferred.reject();
+      }
+
+      var view = this;
+
+      view
+        .ajax({
+          url: remoteServer + 'ping?' + Date.now(),
+          dataType: 'text'
+        })
+        .always(function(res)
+        {
+          if (res === 'pong')
+          {
+            deferred.resolve(remoteServer);
+          }
+          else
+          {
+            view.resolveNextRemoteServer(remoteServers, deferred);
+          }
+        });
+    },
+
+    loadRemoteProdLines: function()
+    {
+      var deferred = $.Deferred();
+      var url = this.import.remoteServer + 'prodLines?select(description)&sort(_id)&limit(0)&deactivatedAt=null';
+
+      this.ajax({url: url}).always(function(res)
+      {
+        if (res && Array.isArray(res.collection) && res.collection.length)
+        {
+          deferred.resolve(res.collection);
+        }
+        else
+        {
+          deferred.reject();
+        }
+      });
+
+      return deferred.promise();
+    },
+
+    loadRemoteClients: function()
+    {
+      var deferred = $.Deferred();
+      var url = this.import.remoteServer + 'xiconf/clients;settings'
+        + '?select(settings.prodLine,settings.licenseInfo)&sort(settings.prodLine,-updatedAt)&limit(0)'
+        + '&settings.prodLine=ne=string:';
+
+      this.ajax({url: url}).always(function(res)
+      {
+        if (res && Array.isArray(res.collection) && res.collection.length)
+        {
+          deferred.resolve(res.collection);
+        }
+        else
+        {
+          deferred.reject();
+        }
+      });
+
+      return deferred.promise();
     },
 
     importSettings: function(newSettings)
@@ -233,7 +419,146 @@ define([
 
       js2form(this.el, newSettings);
 
-      this.$id('licenseInfo-features').val(settings.getLicenseFeatures());
+      this.$id('licenseInfo-features').val(settings.getLicenseFeatures(licenseInfo ? licenseInfo.features : 0));
+    },
+
+    onImportClientChange: function()
+    {
+      var $features = this.$id('importFeatures').find('input[type="checkbox"]').prop('checked', false);
+      var client = _.findWhere(this.import.clients, {_id: this.$id('importClient').val()});
+
+      if (!client)
+      {
+        return;
+      }
+
+      var features = settings.getLabelsFromFeatures((client.settings.licenseInfo || {}).features || 0);
+
+      features.forEach(function(feature)
+      {
+        $features.filter('[value="' + feature.toLowerCase() + '"]').prop('checked', true);
+      });
+    },
+
+    onImportClick: function()
+    {
+      var view = this;
+      var prodLine = view.$id('importLine').val();
+      var client = view.$id('importClient').val();
+      var features = view.$id('importFeatures')
+        .find('input:checked')
+        .get()
+        .map(function(el) { return el.value.toUpperCase(); });
+
+      if (!prodLine)
+      {
+        return view.$id('importLine').focus();
+      }
+
+      if (!client)
+      {
+        return view.$id('importClient').focus();
+      }
+
+      if (!features.length)
+      {
+        return view.$id('importFeatures').find('input').first().focus();
+      }
+
+      var $button = view.$id('importSettings').prop('disabled', true);
+      var $icon = $button.find('.fa').removeClass('fa-download').addClass('fa-spinner fa-spin');
+
+      var freeLicensesReq = view.ajax({url: view.import.remoteServer + 'xiconf/clients;licenses', data: {free: 1}});
+      var settingsReq = view.ajax({url: view.import.remoteServer + 'xiconf/clients;settings', data: {_id: client}});
+      var fail = function()
+      {
+        $icon.removeClass('fa-spinner fa-spin').addClass('fa-download');
+        $button.prop('disabled', false);
+
+        viewport.msg.show({
+          type: 'error',
+          time: 3000,
+          text: t('settings', 'import:failure')
+        });
+      };
+      var complete = function(newSettings)
+      {
+        view.importSettings(newSettings);
+
+        $icon.removeClass('fa-spinner fa-spin').addClass('fa-download');
+        $button.prop('disabled', false);
+
+        view.$('a[data-tab="license"]').click();
+        view.$id('submit').click();
+      };
+
+      $.when(freeLicensesReq, settingsReq).fail(fail).done(function(freeLicensesRes, settingsRes)
+      {
+        var freeLicense = view.resolveFreeLicense(freeLicensesRes[0].collection, features);
+        var newSettings = _.extend(settingsRes[0].collection[0].settings, {
+          id: '',
+          title: prodLine,
+          prodLine: prodLine,
+          remoteServer: view.import.remoteServer,
+          licenseInfo: freeLicense ? _.omit(freeLicense, 'key') : null,
+          licenseKey: freeLicense ? freeLicense.key : '',
+          password: ''
+        });
+
+        if (freeLicense)
+        {
+          return complete(newSettings);
+        }
+
+        view.ajax({
+          method: 'POST',
+          url: view.import.remoteServer + 'xiconf/clients;licenses',
+          data: JSON.stringify({
+            features: settings.getFeaturesFromLabels(features)
+          })
+        }).fail(fail).done(function(newLicense)
+        {
+          var freeLicense = view.resolveFreeLicense([newLicense], features);
+
+          newSettings.licenseInfo = _.omit(freeLicense, 'key');
+          newSettings.licenseKey = freeLicense.key;
+
+          complete(newSettings);
+        });
+      });
+    },
+
+    resolveFreeLicense: function(freeLicenses, requiredFeatures)
+    {
+      var matchingLicenses = freeLicenses.filter(function(license)
+      {
+        license.featureLabels = settings.getLabelsFromFeatures(license.features);
+
+        return _.every(requiredFeatures, function(requiredFeature)
+        {
+          return _.contains(license.featureLabels, requiredFeature);
+        });
+      });
+
+      if (!matchingLicenses.length)
+      {
+        return null;
+      }
+
+      matchingLicenses.sort(function(a, b) { return a.featureLabels.length - b.featureLabels.length; });
+
+      var freeLicense = matchingLicenses[0];
+
+      return {
+        appId: freeLicense.appId,
+        appVersion: freeLicense.appVersion,
+        date: time.format(freeLicense.date, 'YYYY-MM-DD'),
+        uuid: freeLicense._id,
+        licensee: freeLicense.licensee,
+        features: freeLicense.features,
+        error: null,
+        key: freeLicense.key
+      };
     },
 
     onSettingsChange: function()

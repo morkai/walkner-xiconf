@@ -37,6 +37,7 @@
   "form:restart": "Restartuj serwer",
   "form:password": "Hasło",
   "form:logs": "Pobierz logi",
+  "form:import": "Import ustawień",
 
   "mowVersion:supported": "Wspierana wersja Philips MultiOne Workflow",
   "mowVersion:installed": "Zainstalowana wersja Philips MultiOne Workflow",
@@ -251,5 +252,25 @@
   "hotkey:continue": "Kontynuuj",
   "hotkey:setProgram": "Wybierz program",
   "hotkey:printServiceTag": "Drukuj Service Tag",
-  "hotkey:closeDialog": "Zamknij okno dialogowe"
+  "hotkey:closeDialog": "Zamknij okno dialogowe",
+
+  "import:line": "Linia produkcyjna",
+  "import:line:help": "Wybierz linię, jaka ma być ustawiona dla tej instalacji.",
+  "import:client": "Klient ustawień",
+  "import:client:help": "Wybierz klienta, z którego mają zostać skopiowane ustawienia do tej instalacji.",
+  "import:features": "Opcje licencji",
+  "import:features:help": "Wybierz opcje licencji dla tej instalacji.",
+  "import:button": "Importuj ustawienia",
+  "import:failure": "Nie udało się zaimportować ustawień :(",
+
+  "features:wmes": "Tryb zdalny (WMES)",
+  "features:sol": "Fortimo Solar (SOL)",
+  "features:t24vdc": "Tester 24V DC (T24VDC)",
+  "features:led": "Skanowanie LED (LED)",
+  "features:gprs": "Programowanie GPRS (GPRS)",
+  "features:glp2": "Tester Schleich GLP2-I (GLP2)",
+  "features:fl": "Świetlówki (FL)",
+  "features:ft": "Tester ramki (FT)",
+  "features:hid": "Skanowanie HID (HID)",
+  "features:weight": "Ważenie komponentów (WEIGHT)"
 }

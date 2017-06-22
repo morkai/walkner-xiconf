@@ -44,7 +44,8 @@ module.exports = function startCoreRoutes(app, express)
         CURRENT_STATE: JSON.stringify(app.programmer.currentState),
         COMPUTER_NAME: JSON.stringify(app.settings.getMachineId()),
         AVAILABLE_FEATURES: JSON.stringify(app.settings.availableFeatures),
-        MODULES: MODULES
+        MODULES: MODULES,
+        REMOTE_SERVERS: JSON.stringify(app.settings.config.remoteServers)
       }
     });
   }
