@@ -272,5 +272,7 @@
   "features:fl": "Świetlówki (FL)",
   "features:ft": "Tester ramki (FT)",
   "features:hid": "Skanowanie HID (HID)",
-  "features:weight": "Ważenie komponentów (WEIGHT)"
+  "features:weight": "Ważenie komponentów (WEIGHT)",
+
+  "weight:help": "1"
 }
