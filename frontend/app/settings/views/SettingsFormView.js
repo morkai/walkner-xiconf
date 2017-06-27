@@ -327,11 +327,20 @@ define([
     resolveRemoteServer: function()
     {
       var deferred = $.Deferred();
-      var remoteServers = _.uniq(
-        (window.REMOTE_SERVERS || []).concat('http://localhost/', settings.get('remoteServer'))
-      );
+      var remoteServers = [settings.get('remoteServer')]
+        .concat(window.REMOTE_SERVERS, 'http://localhost/')
+        .filter(function(url) { return typeof url === 'string' && url.indexOf('http') === 0; })
+        .map(function(url)
+        {
+          if (url.charAt(url.length - 1) !== '/')
+          {
+            url += '/';
+          }
 
-      this.resolveNextRemoteServer(remoteServers, deferred);
+          return url;
+        });
+
+      this.resolveNextRemoteServer(_.uniq(remoteServers), deferred);
 
       return deferred.promise();
     },
@@ -350,7 +359,8 @@ define([
       view
         .ajax({
           url: remoteServer + 'ping?' + Date.now(),
-          dataType: 'text'
+          dataType: 'text',
+          timeout: 3000
         })
         .always(function(res)
         {
