@@ -71,7 +71,7 @@ module.exports = function setUpProgrammerCommands(app, programmerModule)
 
   function isSingleLocalSocket()
   {
-    return localSocketCounter === 1;
+    return settings.get('bgScanner') !== 1 || localSocketCounter === 1;
   }
 
   function getCurrentState(reply)
