@@ -143,7 +143,7 @@ exports.prettifyBuffer = function(buffer)
 exports.encodeStringValue = function(stringValue)
 {
   stringValue = stringValue.replace(/\*|_/g, ' ').trim().replace(/\s+/g, '*');
-  stringValue = transliteration.transliterate(stringValue, '?');
+  stringValue = transliteration.transliterate(stringValue, {unknown: '?'});
 
   if (stringValue.length > 32)
   {
