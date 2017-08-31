@@ -1,3 +1,11 @@
+2.24.1 @ 2017-06-27
+===================
+
+  * Fixed a NULL-reference error while sending a program to the GLP2 tester.
+  * Changed the weight scale calibration instructions to be simpler.
+  * Changed the settings import to first check the current remote server.
+  * Changed the settings import to timeout each server check after 3s.
+
 2.24.0 @ 2017-06-27
 ===================
 
