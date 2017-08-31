@@ -1,12 +1,22 @@
-2.23.4 @ 2017-05-24
+2.24.0 @ 2017-06-27
 ===================
 
+  * Changed Node.js to v8.1.2 x64 and updated all dependencies.
+  * Changed the default path to the MultiOne feature files.
+  * Changed the single local socket check to be enabled only if the background scanner
+    is enabled.
+  * Added support for importing settings from the remote server.
+  * Added weight scale calibration instructions.
+
+2.23.4 @ 2017-05-24
+===================
+  
   * Fixed the connection to the scales not being recreated after destruction
     if there was no established connection to begin with.
   * Changed the MOW version and CoreScanner availability check to be disabled
     on non-Windows.
   * Added support for saving and reading of settings from the remote server.
-  
+
 2.23.3 @ 2017-03-31
 ===================
 
