@@ -70,7 +70,7 @@ Object.assign(config.settings.defaults, {
   testingComPattern: 'COM2',
   serviceTagPrint: 0,
   serviceTagLabelCode: '<DLE>CT~~CD,~CC^~CT~\n^XA~TA000~JSN^LT0^MNW^MTT^PON^PMN^LH0,0^JMA^PR3,3~SD30^JUS^LRN^CI0^XZ\n^XA\n^MMT\n^PW400\n^LL0240\n^LS0\n^BY2,3,129^FT33,162^BCN,,N,N\n^FD>:P>50000000000000000>60^FS\n^FT92,216^A0N,34,48^FH\\^FDServiceTag^FS\n^FT127,30^A0N,16,16^FB145,1,0,C^FH\\^FDP00000000000000000^FS\n^PQ1,0,1,Y^XZ',
-  bgScanner: 1,
+  bgScanner: 0,
   bgScannerBeepBad: 14,
   bgScannerBeepGood: 1,
   bgScannerBeepDone: 20,
