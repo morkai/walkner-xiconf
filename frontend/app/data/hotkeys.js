@@ -23,6 +23,8 @@ define([
   var enabled = false;
   var barcodeScannedSub = null;
   var hotkeyToActions = {};
+  var lastKeyPressAt = 0;
+  var timer = null;
 
   function isValidHotkey(hotkey)
   {
@@ -31,6 +33,24 @@ define([
 
   function onKeyPress(e)
   {
+    if (timer)
+    {
+      clearTimeout(timer);
+      timer = null;
+    }
+
+    var bgScanner = settings.get('bgScanner');
+    var now = Date.now();
+
+    if (!bgScanner && now - lastKeyPressAt < 300)
+    {
+      lastKeyPressAt = now;
+
+      return;
+    }
+
+    lastKeyPressAt = now;
+
     if (e.ctrlKey || e.altKey || e.shiftKey)
     {
       return;
@@ -53,7 +73,14 @@ define([
       return;
     }
 
-    handleHotkey(hotkey);
+    if (bgScanner)
+    {
+      handleHotkey(hotkey);
+    }
+    else
+    {
+      timer = setTimeout(handleHotkey, 150, hotkey);
+    }
   }
 
   function onBarcodeScanned(message)
