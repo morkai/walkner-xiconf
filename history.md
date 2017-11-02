@@ -1,4 +1,11 @@
-2.24.1 @ 2017-06-27
+2.24.2 @ 2017-11-02
+===================
+
+  * Changed the default value of the Barcode scanner mode to be client-side.
+  * Changed the hotkey handling to not treat a keypress as a hotkey if there
+    is another keypress event in 150 ms.
+
+2.24.1 @ 2017-08-31
 ===================
 
   * Fixed a NULL-reference error while sending a program to the GLP2 tester.
