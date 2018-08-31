@@ -87,6 +87,36 @@ define([
     return pattern;
   }).join('|'), 'i');
 
+  window.TEST_LED = function(input)
+  {
+    var nc12;
+    var serialNumber;
+
+    for (var i = 0; i < LED_PATTERNS.length; ++i)
+    {
+      var ledPattern = LED_PATTERNS[i];
+      var matches = input.match(ledPattern.pattern);
+
+      if (matches)
+      {
+        nc12 = matches[ledPattern.nc12];
+        serialNumber = ledPattern.serialNumber === -1 ? '????????' : matches[ledPattern.serialNumber].toUpperCase();
+
+        break;
+      }
+    }
+
+    if (nc12)
+    {
+      return {
+        nc12: nc12,
+        serialNumber: serialNumber
+      };
+    }
+
+    return null;
+  };
+
   return View.extend({
 
     template: inputTemplate,
@@ -1316,35 +1346,20 @@ define([
 
     handleLedCommand: function(led, scannerId)
     {
-      var nc12;
-      var serialNumber;
+      var result = window.TEST_LED(led);
 
-      for (var i = 0; i < LED_PATTERNS.length; ++i)
-      {
-        var ledPattern = LED_PATTERNS[i];
-        var matches = led.match(ledPattern.pattern);
-console.log(ledPattern, matches);
-        if (matches)
-        {
-          nc12 = matches[ledPattern.nc12];
-          serialNumber = ledPattern.serialNumber === -1 ? '????????' : matches[ledPattern.serialNumber].toUpperCase();
-console.log(nc12, serialNumber);
-          break;
-        }
-      }
-
-      if (!nc12)
+      if (!result)
       {
         return;
       }
 
       if (this.model.get('waitingForLeds'))
       {
-        this.checkSerialNumber(led, nc12, serialNumber, scannerId);
+        this.checkSerialNumber(led, result.nc12, result.serialNumber, scannerId);
       }
       else if (this.model.get('countdown') === -1 || !this.model.get('finishedAt'))
       {
-        scanBuffer.add(led, nc12, serialNumber, scannerId);
+        scanBuffer.add(led, result.nc12, result.serialNumber, scannerId);
 
         this.start();
       }
