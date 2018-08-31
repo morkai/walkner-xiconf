@@ -1128,7 +1128,7 @@ define([
         quantity = order && order.no === orderNo ? order.quantity : parseInt(this.$els.quantity.val(), 10);
       }
 
-      if (isNaN(quantity) || quantity < 1 || quantity > 999)
+      if (isNaN(quantity) || quantity < 1 || quantity > 9999)
       {
         if (ordersRequired)
         {
