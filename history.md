@@ -1,3 +1,8 @@
+2.24.3 @ 2018-08-31
+===================
+
+  * Changed the maximum allowed order quantity from 999 to 9999.
+
 2.24.2 @ 2017-11-02
 ===================
 
