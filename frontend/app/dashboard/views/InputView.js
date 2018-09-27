@@ -1294,7 +1294,7 @@ define([
         }
         else if (settings.get('hidEnabled'))
         {
-          this.handleHidCommand(message.value, message.scannerId);
+          this.handleHidCommand(message.value.replace(/^0+/, ''), message.scannerId);
         }
         else if (settings.get('ledsEnabled') && ALL_LEDS_PATTERN.test(message.value))
         {
@@ -1327,7 +1327,7 @@ define([
 
     handleHidCommand: function(hid, scannerId)
     {
-      if (!/^[0-9]{13}$/.test(hid))
+      if (!/^[0-9]{13,20}$/.test(hid))
       {
         return;
       }

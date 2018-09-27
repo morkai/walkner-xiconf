@@ -183,7 +183,7 @@ module.exports = function setUpProgrammerCommands(app, programmerModule)
   {
     if (isSingleLocalSocket()
       && _.isString(orderNo) && /^[0-9]{1,9}$/.test(orderNo)
-      && _.isString(raw) && /^[0-9]{13}$/.test(raw))
+      && _.isString(raw) && /^[0-9]{13,20}$/.test(raw))
     {
       programmerModule.checkHidScanResult(
         orderNo,
