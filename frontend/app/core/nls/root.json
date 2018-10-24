@@ -80,7 +80,10 @@
 
     "parent:switchApp": "Switch apps/Configure after 3s",
     "parent:reboot": "Refresh page/Restart after 3s",
-    "parent:shutdown": "Shutdown after 3s"
+    "parent:shutdown": "Shutdown after 3s",
+
+    "lockUi": "Lock UI",
+    "uiLocked": "UI locked.<br>Touch here to unlock."
   },
   "pl": true
 }

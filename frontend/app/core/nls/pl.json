@@ -79,5 +79,8 @@
 
   "parent:switchApps": "Zmień aplikację/Konfiguruj po 3s",
   "parent:reboot": "Odśwież stronę/Restartuj komputer po 3s",
-  "parent:shutdown": "Wyłącz komputer po 3s"
+  "parent:shutdown": "Wyłącz komputer po 3s",
+
+  "lockUi": "Zablokuj interfejs",
+  "uiLocked": "Interfejs zablokowany.<br>Dotknij tutaj, aby odblokować."
 }

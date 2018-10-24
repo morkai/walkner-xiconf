@@ -16,6 +16,7 @@
   </div>
   <% if (showParentControls) { %>
   <div class="parentControls">
+    <button id="<%- idPrefix %>-lockUi" class="btn btn-default" title="<%- t('core', 'lockUi') %>"><i class="fa fa-lock"></i></button>
     <button id="<%- idPrefix %>-switchApps" class="btn btn-default" title="<%- t('core', 'parent:switchApps') %>"><i class="fa fa-window-restore"></i></button>
     <button id="<%- idPrefix %>-reboot" class="btn btn-default" title="<%- t('core', 'parent:reboot') %>"><i class="fa fa-refresh"></i></button>
     <button id="<%- idPrefix %>-shutdown" class="btn btn-default" title="<%- t('core', 'parent:shutdown') %>"><i class="fa fa-power-off"></i></button>

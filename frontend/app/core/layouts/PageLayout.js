@@ -5,15 +5,19 @@ define([
   'jquery',
   'app/user',
   '../View',
-  'app/core/templates/pageLayout'
+  'app/core/templates/pageLayout',
+  'app/core/templates/uiLock'
 ], function(
   _,
   $,
   user,
   View,
-  pageLayoutTemplate
+  pageLayoutTemplate,
+  uiLockTemplate
 ) {
   'use strict';
+
+  var IS_EMBEDDED = true;// window.parent !== window;
 
   var PageLayout = View.extend({
 
@@ -36,6 +40,8 @@ define([
       'touchstart #-shutdown': function() { this.startActionTimer('shutdown'); },
       'mouseup #-shutdown': function() { this.stopActionTimer('shutdown'); },
       'touchend #-shutdown': function() { this.stopActionTimer('shutdown'); },
+
+      'click #-lockUi': 'lockUi'
     }
 
   });
@@ -72,7 +78,7 @@ define([
      */
     this.$actions = null;
 
-    if (window.parent !== window)
+    if (IS_EMBEDDED)
     {
       $(window).on('contextmenu.' + this.idPrefix, function(e) { e.preventDefault(); });
     }
@@ -95,7 +101,7 @@ define([
   {
     return _.extend(View.prototype.serialize.call(this), {
       version: this.options.version,
-      showParentControls: window.parent !== window
+      showParentControls: IS_EMBEDDED
     });
   };
 
@@ -117,6 +123,11 @@ define([
     if (this.model.id !== null)
     {
       this.setId(this.model.id);
+    }
+
+    if (localStorage.getItem('XICONF_UI_LOCKED') === '1')
+    {
+      this.lockUi();
     }
   };
 
@@ -537,6 +548,31 @@ define([
 
     this.actionTimer.action = null;
     this.actionTimer.time = null;
+  };
+
+  PageLayout.prototype.lockUi = function()
+  {
+    var $uiLock = this.$id('uiLock');
+
+    if ($uiLock.length)
+    {
+      return;
+    }
+
+    $uiLock = $(uiLockTemplate({
+      idPrefix: this.idPrefix
+    }));
+
+    $uiLock.find('div').on('click', function()
+    {
+      localStorage.removeItem('XICONF_UI_LOCKED');
+
+      $uiLock.remove();
+    });
+
+    $uiLock.appendTo('body');
+
+    localStorage.setItem('XICONF_UI_LOCKED', '1');
   };
 
   return PageLayout;
