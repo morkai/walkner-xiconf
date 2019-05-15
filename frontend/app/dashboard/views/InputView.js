@@ -53,6 +53,11 @@ define([
       whole: true
     },
     {
+      pattern: '([A-Z0-9]{15})PHILIPS.*?PCB([0-9]{12})',
+      serialNumber: 1,
+      nc12: 2
+    },
+    {
       pattern: '([A-Z0-9]{22})-.*?([0-9]{12})[^0-9]',
       serialNumber: 1,
       nc12: 2
@@ -91,10 +96,12 @@ define([
   {
     var nc12;
     var serialNumber;
+    var ledPattern;
 
     for (var i = 0; i < LED_PATTERNS.length; ++i)
     {
-      var ledPattern = LED_PATTERNS[i];
+      ledPattern = LED_PATTERNS[i];
+
       var matches = input.match(ledPattern.pattern);
 
       if (matches)
@@ -109,6 +116,7 @@ define([
     if (nc12)
     {
       return {
+        ledPattern: ledPattern,
         nc12: nc12,
         serialNumber: serialNumber
       };
