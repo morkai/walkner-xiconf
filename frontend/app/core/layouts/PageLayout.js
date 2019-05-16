@@ -570,6 +570,14 @@ define([
       $uiLock.remove();
     });
 
+    $uiLock.on('touchstart', function(e)
+    {
+      if (!$(e.target).closest('.uiLock-inner').length)
+      {
+        return false;
+      }
+    });
+
     $uiLock.appendTo('body');
 
     localStorage.setItem('XICONF_UI_LOCKED', '1');
