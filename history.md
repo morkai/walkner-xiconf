@@ -1,3 +1,8 @@
+2.24.7 @ 2019-04-04
+===================
+
+  * Changed the UI lock to also disable all touch events.
+
 2.24.6 @ 2019-04-04
 ===================
 
