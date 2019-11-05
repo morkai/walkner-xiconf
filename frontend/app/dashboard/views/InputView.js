@@ -53,6 +53,12 @@ define([
       whole: true
     },
     {
+      pattern: '([0-9]{14}) [0-9]{6} .*? ([0-9]{12}) .*?',
+      serialNumber: 1,
+      nc12: 2,
+      whole: true
+    },
+    {
       pattern: '([A-Z0-9]{15})PHILIPS.*?PCB([0-9]{12})',
       serialNumber: 1,
       nc12: 2
