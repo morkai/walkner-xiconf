@@ -1,3 +1,9 @@
+2.24.9 @ 2019-11-05
+===================
+
+  * Fixed the MultiOne Workflow version comparison.
+  * Added a new LED board recognition pattern (two scans for each board).
+
 2.24.8 @ 2019-07-24
 ===================
 
