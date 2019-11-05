@@ -3,11 +3,12 @@
 'use strict';
 
 var spawn = require('child_process').spawn;
+var semver = require('semver');
 
-module.exports = function programSolDriver(app, programmerModule, onProgress, done)
+module.exports = function programMowDriver(app, programmerModule, onProgress, done)
 {
   var settings = app[programmerModule.config.settingsId];
-  var mowVersion = parseFloat(settings.get('multiOneWorkflowVersion') || '0.0.0.0');
+  var mowVersion = parseFloat(settings.get('multiOneWorkflowVersion') || '0.0.0.0') + '.0';
   var programmerFile = settings.get('programmerFile');
 
   if (typeof programmerFile !== 'string' || !programmerFile.length)
@@ -35,7 +36,7 @@ module.exports = function programSolDriver(app, programmerModule, onProgress, do
   var args = [
     '/f', programmerModule.currentState.featureFile,
     '/w', programmerModule.currentState.workflowFile,
-    mowVersion >= 3.3 ? '/p' : '/i', comInterface,
+    semver.gte(mowVersion, '3.3.0') ? '/p' : '/i', comInterface,
     '/v', settings.get('logVerbosity') || 'fatal',
     '/c', settings.get('continueOnWarnings') || 'halt'
   ];
