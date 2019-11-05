@@ -6,6 +6,7 @@ var fs = require('fs');
 var path = require('path');
 var _ = require('lodash');
 var step = require('h5.step');
+var semver = require('semver');
 var findFeatureFile = require('./findFeatureFile');
 var readFeatureFile = require('./readFeatureFile');
 var programAndTestSdp = require('./programAndTestSdp');
@@ -25,13 +26,13 @@ var MOW_OPTIONS_OLD = {
   workflowDaliFactoryNew: 'DaliFactoryNew',
 };
 var MOW_OPTIONS_NEW = {
+  workflowCheckDeviceModel: 'CheckDeviceModel',
   workflowVerify: 'DaliVerify',
   workflowIdentifyAlways: 'DaliIdentifyAlways',
   workflowMultiDevice: 'DaliMultiDevice',
-  workflowCheckDeviceModel: 'CheckDeviceModel',
-  workflowCheckDevicePresent: 'DaliCheckDevicePresent',
   workflowCommissionAll: 'DaliCommissionAll',
   workflowDaliFactoryNew: 'DaliFactoryNew',
+  workflowCheckDevicePresent: 'DaliCheckDevicePresent',
 };
 
 module.exports = function program(app, programmerModule, data, done)
@@ -1881,8 +1882,8 @@ module.exports = function program(app, programmerModule, data, done)
 
   function buildWorkflowFile(settings, workflowOptions)
   {
-    var mowVersion = parseFloat(settings.get('multiOneWorkflowVersion') || '0.0.0.0');
-    var mowOptions = mowVersion >= 3.3 ? MOW_OPTIONS_NEW : MOW_OPTIONS_OLD;
+    var mowVersion = parseFloat(settings.get('multiOneWorkflowVersion') || '0.0.0.0') + '.0';
+    var mowOptions = semver.gte(mowVersion, '3.3.0') ? MOW_OPTIONS_NEW : MOW_OPTIONS_OLD;
     var lines = [];
 
     Object.keys(mowOptions).forEach(function(setting)
