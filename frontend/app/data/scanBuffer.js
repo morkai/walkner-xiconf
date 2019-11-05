@@ -32,6 +32,11 @@ define([
   pubsub.subscribe('programmer.finished', clearBuffer);
 
   return {
+    new: {
+      raw1: '',
+      raw2: '',
+      time: 0
+    },
     add: function(raw, nc12, serialNumber, scannerId)
     {
       scanBuffer.push({

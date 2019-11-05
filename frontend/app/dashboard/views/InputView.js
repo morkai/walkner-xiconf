@@ -39,6 +39,8 @@ define([
 ) {
   'use strict';
 
+  var NEW_LED_PATTERN_1 = /^[0-9](63[0-9]{7}|7[0-9]{8})$/;
+  var NEW_LED_PATTERN_2 = /^(19|[23][0-9])[0-5][0-9][0-3][0-9]\s+[0-9]+\s+[0-9]{12}$/;
   var LED_PATTERNS = [
     {
       pattern: '([0-9]{12})',
@@ -1310,9 +1312,16 @@ define([
         {
           this.handleHidCommand(message.value.replace(/^0+/, ''), message.scannerId);
         }
-        else if (settings.get('ledsEnabled') && ALL_LEDS_PATTERN.test(message.value))
+        else if (settings.get('ledsEnabled'))
         {
-          this.handleLedCommand(message.value, message.scannerId);
+          if (NEW_LED_PATTERN_1.test(message.value) || NEW_LED_PATTERN_2.test(message.value))
+          {
+            this.handleNewLedCommand(message.value, message.scannerId);
+          }
+          else if (ALL_LEDS_PATTERN.test(message.value))
+          {
+            this.handleOldLedCommand(message.value, message.scannerId);
+          }
         }
       }
       else if (/^[0-9]{9}-[0-9]{3}$/.test(message.value))
@@ -1358,22 +1367,62 @@ define([
       }
     },
 
-    handleLedCommand: function(led, scannerId)
+    handleNewLedCommand: function(raw, scannerId)
     {
-      var result = window.TEST_LED(led);
+      var now = Date.now();
 
-      if (!result)
+      if (now - scanBuffer.new.time > 3000)
+      {
+        scanBuffer.new.value1 = '';
+        scanBuffer.new.value2 = '';
+      }
+
+      scanBuffer.new.time = now;
+
+      if (NEW_LED_PATTERN_1.test(raw))
+      {
+        scanBuffer.new.value1 = raw;
+      }
+      else if (NEW_LED_PATTERN_2.test(raw))
+      {
+        scanBuffer.new.value2 = raw;
+      }
+
+      if (!scanBuffer.new.value1 || !scanBuffer.new.value2)
       {
         return;
       }
 
+      raw = scanBuffer.new.value1 + ' ' + scanBuffer.new.value2;
+
+      this.handleLedCommand(raw, scannerId, {
+        nc12: scanBuffer.new.value2.split(/\s+/).pop(),
+        serialNumber: scanBuffer.new.value1
+      });
+
+      scanBuffer.new.value1 = '';
+      scanBuffer.new.value2 = '';
+    },
+
+    handleOldLedCommand: function(raw, scannerId)
+    {
+      var result = window.TEST_LED(raw);
+
+      if (result)
+      {
+        this.handleLedCommand(raw, scannerId, result);
+      }
+    },
+
+    handleLedCommand: function(raw, scannerId, result)
+    {
       if (this.model.get('waitingForLeds'))
       {
-        this.checkSerialNumber(led, result.nc12, result.serialNumber, scannerId);
+        this.checkSerialNumber(raw, result.nc12, result.serialNumber, scannerId);
       }
       else if (this.model.get('countdown') === -1 || !this.model.get('finishedAt'))
       {
-        scanBuffer.add(led, result.nc12, result.serialNumber, scannerId);
+        scanBuffer.add(raw, result.nc12, result.serialNumber, scannerId);
 
         this.start();
       }
