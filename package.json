@@ -31,7 +31,7 @@
     "lodash": "~4.17.4",
     "messageformat": "~0.2.2",
     "messageformat-amd": "git+http://github.com/morkai/messageformat-amd.git#d41fd5caba",
-    "moment": "~2.18.1",
+    "moment": "~2.24.0",
     "h5.step": "git+http://github.com/morkai/h5.step.git#14ea69a759",
     "h5.pubsub": "git+http://github.com/morkai/h5.pubsub.git#c1a899cb7e",
     "h5.rql": "git+http://github.com/morkai/h5.rql.git#56221896655",
