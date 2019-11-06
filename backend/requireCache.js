@@ -212,7 +212,6 @@ function loadSource(sources, path)
     try
     {
       minified = require('uglify-js').minify(source, {
-        fromString: true,
         compress: {
           hoist_funs: false,
           hoist_vars: false
@@ -221,7 +220,7 @@ function loadSource(sources, path)
     }
     catch (err)
     {
-
+      console.log('[requireCache] %s: %s', path, err.message);
     }
   }
 
