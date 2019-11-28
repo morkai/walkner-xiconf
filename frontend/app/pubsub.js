@@ -6,12 +6,6 @@ define([
   'app/broker',
   'app/socket'
 ],
-/**
- * @param {underscore} _
- * @param {function(new:h5.pubsub.MessageBroker)} MessageBroker
- * @param {h5.pubsub.Broker} broker
- * @param {Socket} socket
- */
 function(
   _,
   MessageBroker,

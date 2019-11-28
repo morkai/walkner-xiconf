@@ -9,10 +9,9 @@ LED driver programming and testing application.
 Node.js is a server side software system designed for writing scalable
 Internet applications in JavaScript.
 
-  * __Version__: 8
+  * __Version__: 12
   * __Website__: http://nodejs.org/
   * __Download__: http://nodejs.org/download/
-  * __Installation guide__: https://github.com/joyent/node/wiki/Installation
 
 ## Installation
 

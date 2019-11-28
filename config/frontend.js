@@ -12,7 +12,7 @@ exports.localSecretKey = null;
 
 exports.modules = [
   'safeFs',
-  'sqlite3',
+  {id: 'h5-sqlite3'},
   'settings',
   'history',
   'xiconfPrograms',
@@ -20,13 +20,13 @@ exports.modules = [
   'featureSync',
   'imWorkin',
   'pubsub',
-  'express',
+  {id: 'h5-express'},
   'httpServer',
   'sio',
   'updater'
 ];
 
-exports.sqlite3 = {
+exports['h5-sqlite3'] = {
   dbFile: path.join(DATA_PATH, 'db.sqlite3')
 };
 
@@ -217,7 +217,7 @@ exports.pubsub = {
   ]
 };
 
-exports.express = {
+exports['h5-express'] = {
   mongooseId: null,
   staticPath: path.join(__dirname, '..', 'frontend'),
   staticBuildPath: path.join(__dirname, '..', 'frontend-build'),
@@ -226,7 +226,9 @@ exports.express = {
     t: 'app/i18n'
   },
   title: exports.id,
-  routes: require('../backend/routes')
+  routes: [
+    require('../backend/routes')
+  ]
 };
 
 exports.sio = {

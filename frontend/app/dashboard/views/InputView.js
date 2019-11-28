@@ -1125,10 +1125,8 @@ define([
 
           return null;
         }
-        else
-        {
-          orderNo = null;
-        }
+
+        orderNo = null;
       }
 
       var quantity;
@@ -1153,10 +1151,8 @@ define([
 
           return null;
         }
-        else
-        {
-          quantity = null;
-        }
+
+        quantity = null;
       }
 
       return {
@@ -1406,7 +1402,7 @@ define([
 
     handleOldLedCommand: function(raw, scannerId)
     {
-      var result = window.TEST_LED(raw);
+      var result = window.TEST_LED(raw); // eslint-disable-line new-cap
 
       if (result)
       {

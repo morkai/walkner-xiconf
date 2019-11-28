@@ -8,6 +8,4 @@ define([
 ], function()
 {
   'use strict';
-
-
 });

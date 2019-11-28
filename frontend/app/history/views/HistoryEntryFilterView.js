@@ -64,15 +64,12 @@ define([
 
       rqlQuery.selector.args.forEach(function(term)
       {
-        /*jshint -W015*/
-
         var property = term.args[0];
 
         switch (property)
         {
           case 'startedAt':
-            formData[term.name === 'ge' ? 'from' : 'to'] =
-              time.format(term.args[1], datetimeFormat);
+            formData[term.name === 'ge' ? 'from' : 'to'] = time.format(term.args[1], datetimeFormat);
             break;
 
           case 'serviceTag':

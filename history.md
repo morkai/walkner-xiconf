@@ -1,3 +1,8 @@
+2.25.0 @ 2019-11-28
+===================
+
+  * Changed Node.js to v12 x64 and updated all dependencies.
+
 2.24.9 @ 2019-11-05
 ===================
 

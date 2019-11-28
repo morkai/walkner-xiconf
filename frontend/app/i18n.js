@@ -17,7 +17,7 @@ define([
   /**
    * @param {string} domain
    * @param {string} key
-   * @param {object.<string, string|number>} [data]
+   * @param {Object.<string, (string|number)>} [data]
    * @returns {string}
    */
   function translate(domain, key, data)
@@ -44,7 +44,7 @@ define([
 
   /**
    * @param {string} domain
-   * @param {object.<string, function>} keys
+   * @param {Object.<string, function>} keys
    * @param {string} [moduleId]
    */
   function register(domain, keys, moduleId)

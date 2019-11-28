@@ -116,7 +116,7 @@ define([
     {
       if (height === undefined)
       {
-        height = parseInt(this.el.style.height);
+        height = parseInt(this.el.style.height, 10);
       }
       else
       {

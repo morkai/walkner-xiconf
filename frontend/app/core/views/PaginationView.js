@@ -91,14 +91,8 @@ define([
     }
   };
 
-  /**
-   * @protected
-   * @returns {object}
-   */
   PaginationView.prototype.serialize = function()
   {
-    /*jshint maxstatements:33*/
-
     var options = this.options;
     var model = this.model;
     var currentPage = model.get('page');
@@ -211,7 +205,7 @@ define([
    * @private
    * @param {number} firstPageNr
    * @param {number} lastPageNr
-   * @returns {Array.<object>}
+   * @returns {Array.<Object>}
    */
   PaginationView.prototype.genPages = function(firstPageNr, lastPageNr)
   {

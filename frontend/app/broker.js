@@ -3,9 +3,6 @@
 define([
   'h5.pubsub/MessageBroker'
 ],
-/**
- * @param {function(new:h5.pubsub.MessageBroker)} MessageBroker
- */
 function(
   MessageBroker
 ) {

@@ -201,13 +201,6 @@ define([
     return this;
   };
 
-  /**
-   * @param {function|object|string|Array.<object|string>} breadcrumbs
-   * @param {string|function} breadcrumbs.label
-   * @param {string} [breadcrumbs.href]
-   * @param {object} [context]
-   * @returns {PageLayout}
-   */
   PageLayout.prototype.setBreadcrumbs = function(breadcrumbs, context)
   {
     if (breadcrumbs == null)
@@ -252,11 +245,6 @@ define([
     return this;
   };
 
-  /**
-   * @param {function|string|Array.<string>} title
-   * @param {object} [context]
-   * @returns {PageLayout}
-   */
   PageLayout.prototype.setTitle = function(title, context)
   {
     if (title == null)
@@ -281,16 +269,6 @@ define([
     return this;
   };
 
-  /**
-   * @param {function|object|string|Array.<object|string>} actions
-   * @param {string} actions.label
-   * @param {string} [actions.type]
-   * @param {string} [actions.icon]
-   * @param {string} [actions.href]
-   * @param {function} [actions.callback]
-   * @param {object} [context]
-   * @returns {PageLayout}
-   */
   PageLayout.prototype.setActions = function(actions, context)
   {
     if (actions == null)
@@ -323,11 +301,6 @@ define([
     return this;
   };
 
-  /**
-   * @private
-   * @param action
-   * @returns {*}
-   */
   PageLayout.prototype.prepareAction = function(action)
   {
     if (action.prepared)
@@ -493,9 +466,6 @@ define([
     }
   };
 
-  /**
-   * @private
-   */
   PageLayout.prototype.startActionTimer = function(action, e)
   {
     this.actionTimer.action = action;
@@ -507,9 +477,6 @@ define([
     }
   };
 
-  /**
-   * @private
-   */
   PageLayout.prototype.stopActionTimer = function(action)
   {
     if (this.actionTimer.action !== action)

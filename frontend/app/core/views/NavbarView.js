@@ -227,8 +227,6 @@ define([
    */
   NavbarView.prototype.getModuleNameFromLi = function(liEl, useAnchor, clientModule)
   {
-    /*jshint -W116*/
-
     var module = liEl.dataset[clientModule ? 'clientModule' : 'module'];
 
     if (module === undefined && !useAnchor)
@@ -524,8 +522,6 @@ define([
 
     this.$('li[data-online]').each(function()
     {
-      /*jshint -W015*/
-
       var $li = navbarView.$(this);
 
       if (typeof $li.attr('data-disabled') !== 'undefined')

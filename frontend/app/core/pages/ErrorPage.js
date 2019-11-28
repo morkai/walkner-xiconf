@@ -33,8 +33,6 @@ define([
 
     initialize: function()
     {
-      /*jshint -W015*/
-
       var template;
 
       switch (this.options.code)

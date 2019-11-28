@@ -75,12 +75,6 @@ define([
     this.routes.unshift(this.createMatcher(pattern), handlers);
   };
 
-  /**
-   * @param {string} url
-   * @param {object} [options]
-   * @param {Boolean=false} options.trigger
-   * @param {Boolean=false} options.replace
-   */
   Router.prototype.navigate = function(url, options)
   {
     this.broker.publish('router.navigate', _.extend({url: url}, options));
@@ -250,8 +244,7 @@ define([
     var isRegExp = false;
     var patternRegExp = pattern.replace(escapeRegExp, '\\$&');
 
-    patternRegExp =
-      patternRegExp.replace(pathParamRegExp, function(match, op, param)
+    patternRegExp = patternRegExp.replace(pathParamRegExp, function(match, op, param)
     {
       isRegExp = true;
 

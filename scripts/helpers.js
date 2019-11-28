@@ -1,7 +1,5 @@
 // Part of <http://miracle.systems/p/walkner-xiconf> licensed under <CC BY-NC-SA 4.0>
 
-/*jshint maxlen:false*/
-
 'use strict';
 
 var path = require('path');
@@ -144,10 +142,6 @@ exports.copy = {
         dest: DEST_APP + '/bin/MotoBarScan/Interop.CoreScanner.dll'
       },
       {
-        src: installerConfig.libeay32,
-        dest: DEST_APP + '/node_modules/ursa/lib/libeay32.dll'
-      },
-      {
         src: installerConfig.unzip,
         dest: DEST_INSTALLER + '/bin/unzip.exe'
       },
@@ -224,7 +218,7 @@ exports.replace = {
         to: '$PRODUCT_VERSION = "' + pkg.version + '"'
       },
       {
-        from :'#AutoIt3Wrapper_Res_ProductVersion=0.0.0',
+        from: '#AutoIt3Wrapper_Res_ProductVersion=0.0.0',
         to: '#AutoIt3Wrapper_Res_ProductVersion=' + pkg.version
       },
       {

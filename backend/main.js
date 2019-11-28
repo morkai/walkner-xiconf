@@ -4,6 +4,16 @@
 
 const startTime = Date.now();
 
+process.on('uncaughtException', function(err)
+{
+  console.error(err.stack);
+
+  if (err.code !== 'ERR_SOCKET_CANNOT_SEND')
+  {
+    process.exit(1); // eslint-disable-line no-process-exit
+  }
+});
+
 if (!process.env.NODE_ENV)
 {
   process.env.NODE_ENV = 'development';
@@ -30,26 +40,27 @@ if (process.env.NODE_ENV === 'production')
   }
 }
 
+const moment = require('moment');
 const main = require('h5.main');
 const config = require(process.argv[2]);
 
-const modules = (config.modules || []).map(function(module)
+moment.locale('pl');
+
+const modules = (config.modules || []).map((module, i) =>
 {
   if (typeof module === 'string')
   {
     module = {id: module};
   }
 
-  if (typeof module !== 'object' || module === null)
+  if (!module || typeof module !== 'object')
   {
-    console.error("Invalid module:", module);
-    process.exit(1);
+    throw new Error(`Invalid type for a module definition at position ${i}.`);
   }
 
   if (typeof module.id !== 'string')
   {
-    console.error("Module ID is required:", module);
-    process.exit(1);
+    throw new Error(`Missing ID for a module at position ${i}.`);
   }
 
   if (typeof module.name !== 'string')
@@ -59,10 +70,13 @@ const modules = (config.modules || []).map(function(module)
 
   if (typeof module.path !== 'string')
   {
-    module.path = './modules/' + module.id;
+    module.path = `${__dirname}/node_modules/${module.id}`;
   }
 
-  module.config = config[module.name];
+  if (!module.config)
+  {
+    module.config = config[module.name];
+  }
 
   return module;
 });
@@ -77,11 +91,11 @@ const app = {
   }),
   exit: function(code, err)
   {
-    app.error(err.message);
+    app.error(err);
 
     if (app.options.env !== 'production' || code !== 'MODULE_START_FAILURE' || !/port.*?already/.test(err.message))
     {
-      process.exit(1);
+      process.exit(1); // eslint-disable-line no-process-exit
     }
   }
 };
@@ -90,7 +104,7 @@ Object.assign(app, require('./helpers'));
 
 main(app, modules);
 
-app.broker.subscribe('app.started').setLimit(1).on('message', function()
+app.broker.subscribe('app.started').setLimit(1).on('message', () =>
 {
   if (requireCache.built)
   {
@@ -98,9 +112,9 @@ app.broker.subscribe('app.started').setLimit(1).on('message', function()
     app.debug('Require cache built!');
   }
 
-  app.timeout(5000, function()
+  setTimeout(() =>
   {
     requireCache.reset();
     app.debug('Require cache reset!');
-  });
+  }, 5000);
 });

@@ -20,7 +20,7 @@ define([
     remoteTopics: {
       'history.orderUpdated': 'refreshCollection',
       'programmer.finished': 'refreshCollection',
-      'programmer.resultToggled' : 'refreshCollection'
+      'programmer.resultToggled': 'refreshCollection'
     },
 
     events: {

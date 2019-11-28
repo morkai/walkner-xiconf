@@ -234,8 +234,6 @@ define([
 
   function exportChart(type)
   {
-    /*jshint validthis:true*/
-
     var plotOptions = {
       dataLabels: {
         enabled: true,
@@ -254,8 +252,6 @@ define([
 
   function formatDataLabelForExport()
   {
-    /*jshint validthis:true*/
-
     if (this.y === null || this.y === 0)
     {
       return '';

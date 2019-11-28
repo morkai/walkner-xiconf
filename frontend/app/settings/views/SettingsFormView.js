@@ -5,6 +5,7 @@ define([
   'underscore',
   'js2form',
   'form2js',
+  'app/time',
   'app/i18n',
   'app/broker',
   'app/viewport',
@@ -18,6 +19,7 @@ define([
   _,
   js2form,
   form2js,
+  time,
   t,
   broker,
   viewport,
@@ -30,9 +32,7 @@ define([
   'use strict';
 
   var LICENSE_RE = new RegExp(
-    '^-----BEGIN LICENSE KEY-----\r?\n?' +
-    '([a-zA-Z0-9=+\/\r\n]+)' +
-    '-----END LICENSE KEY-----$'
+    '^-----BEGIN LICENSE KEY-----\\r?\\n?([a-zA-Z0-9=+\/\\r\\n]+)-----END LICENSE KEY-----$'
   );
   var ASCII = {
     0: 'NUL',
@@ -280,8 +280,8 @@ define([
           id += '&nbsp;';
         }
 
-        prodLines += '<option value="' + _.escape(prodLine._id) + '">' +
-          id + ' | ' + _.escape(prodLine.description)
+        prodLines += '<option value="' + _.escape(prodLine._id) + '">'
+          + id + ' | ' + _.escape(prodLine.description)
           + '</option>';
       });
 

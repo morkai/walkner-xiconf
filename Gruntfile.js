@@ -1,15 +1,11 @@
-// Copyright (c) 2014, Łukasz Walukiewicz <lukasz@walukiewicz.eu>. Some Rights Reserved.
-// Licensed under CC BY-NC-SA 4.0 <http://creativecommons.org/licenses/by-nc-sa/4.0/>.
-// Part of the walkner-xiconf project <http://lukasz.walukiewicz.eu/p/walkner-xiconf>
-
-/*global module:false*/
+// Part of <https://miracle.systems/p/walkner-xiconf> licensed under <CC BY-NC-SA 4.0>
 
 'use strict';
 
-var requirejsConfig = require('./config/require');
-var scriptsHelpers = require('./scripts/helpers');
+const requirejsConfig = require('./config/require');
+const scriptsHelpers = require('./scripts/helpers');
 
-module.exports = function(grunt)
+module.exports = (grunt) =>
 {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
@@ -33,13 +29,13 @@ module.exports = function(grunt)
         './build'
       ]
     },
-    jshint: {
+    eslint: {
       backend: {
         src: [
           './backend/**/*.js'
         ],
         options: {
-          jshintrc: '.jshintrc'
+          configFile: '.eslintrc.json'
         }
       },
       frontend: {
@@ -47,7 +43,7 @@ module.exports = function(grunt)
           './frontend/app/**/*.js'
         ],
         options: {
-          jshintrc: 'frontend/.jshintrc'
+          configFile: 'frontend/.eslintrc.json'
         }
       }
     },
@@ -77,7 +73,7 @@ module.exports = function(grunt)
         dest: './build/frontend',
         ext: '.js',
         options: {
-          helpers: require('./config/frontend').express.ejsAmdHelpers
+          helpers: require('./config/frontend')['h5-express'].ejsAmdHelpers
         }
       }
     },
@@ -120,35 +116,50 @@ module.exports = function(grunt)
         options: {
           baseUrl: './build/frontend',
           dir: './frontend-build',
-          optimize: 'uglify2',
-          uglify2: {
-            compress: {
-              drop_console: true
-            }
-          },
+          optimize: 'none',
           optimizeCss: 'standard',
-          modules: [{name: 'main'}],
+          buildCSS: false,
+          modules: [
+            {name: 'main'}
+          ],
           paths: requirejsConfig.buildPaths,
           shim: requirejsConfig.buildShim,
           locale: 'pl'
         }
+      }
+    },
+    uglify: {
+      options: {
+        ecma: 5,
+        compress: {
+          drop_console: false // eslint-disable-line camelcase
+        }
+      },
+      frontend: {
+        files: [{
+          expand: true,
+          cwd: './frontend-build',
+          src: '**/*.js',
+          dest: './frontend-build'
+        }]
       }
     }
   });
 
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-copy');
-  grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-requirejs');
+  grunt.loadNpmTasks('grunt-uglify-es-multicore');
   grunt.loadNpmTasks('grunt-ejs-amd');
+  grunt.loadNpmTasks('grunt-eslint');
   grunt.loadNpmTasks('grunt-messageformat-amd');
   grunt.loadNpmTasks('grunt-run');
   grunt.loadNpmTasks('grunt-text-replace');
 
   grunt.registerTask('default', [
     'clean',
-    'jshint:backend',
-    'jshint:frontend'
+    'eslint:backend',
+    'eslint:frontend'
   ]);
 
   grunt.registerTask('build-frontend', [
@@ -158,6 +169,7 @@ module.exports = function(grunt)
     'messageformatAmdLocale:frontend',
     'messageformatAmd:frontend',
     'requirejs:frontend',
+    'uglify:frontend',
     'clean:frontendBuilt'
   ]);
 

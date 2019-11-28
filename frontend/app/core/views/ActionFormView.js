@@ -204,15 +204,11 @@ define([
         }
         else
         {
-          options.messageText =
-            t.bound(options.nlsDomain, 'ACTION_FORM:MESSAGE:' + options.actionKey);
+          options.messageText = t.bound(options.nlsDomain, 'ACTION_FORM:MESSAGE:' + options.actionKey);
         }
 
-        options.formActionText =
-          t.bound(options.nlsDomain, 'ACTION_FORM:BUTTON:' + options.actionKey);
-
-        options.failureText =
-          t.bound(options.nlsDomain, 'ACTION_FORM:MESSAGE_FAILURE:' + options.actionKey);
+        options.formActionText = t.bound(options.nlsDomain, 'ACTION_FORM:BUTTON:' + options.actionKey);
+        options.failureText = t.bound(options.nlsDomain, 'ACTION_FORM:MESSAGE_FAILURE:' + options.actionKey);
       }
 
       if (!options.formAction && _.isFunction(options.model.url))

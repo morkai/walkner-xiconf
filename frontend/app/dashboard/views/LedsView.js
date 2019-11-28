@@ -116,7 +116,7 @@ define([
 
       while (shortSerialNumber.length < 8)
       {
-        shortSerialNumber = shortSerialNumber + ' ';
+        shortSerialNumber += ' ';
       }
 
       if (this.options.shortenSerialNumbers)

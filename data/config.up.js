@@ -18,7 +18,7 @@ Object.assign(config.httpServer, {
   port: /^[0-9]+$/.test(process.env.XICONF_PORT) ? +process.env.XICONF_PORT : 1337
 });
 
-Object.assign(config.sqlite3, {
+Object.assign(config['h5-sqlite3'], {
   dbFile: path.join(DATA_PATH, 'db.sqlite3')
 });
 
@@ -43,15 +43,14 @@ Object.assign(config.settings, {
   settingsFile: path.join(DATA_PATH, 'settings.json'),
   logsGlob: path.join(LOGS_PATH, '*.log'),
   remoteServers: [
-    'http://192.168.21.60/',
-    'http://161.87.64.46/'
+    'https://ket.wmes.pl/'
   ]
 });
 
 Object.assign(config.settings.defaults, {
   password: '1@3',
   orders: 'required',
-  remoteServer: 'http://192.168.21.60/',
+  remoteServer: 'https://ket.wmes.pl/',
   syncInterval: 1,
   featurePath1: '/dev/null',
   featurePath2: '',

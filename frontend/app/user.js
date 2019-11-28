@@ -51,9 +51,6 @@ function(
 
   delete window.GUEST_USER;
 
-  /**
-   * @param {object} userData
-   */
   user.reload = function(userData)
   {
     if (_.isEqual(userData, user.data))

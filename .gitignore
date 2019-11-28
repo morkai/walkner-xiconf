@@ -1,8 +1,7 @@
 .idea/
-node_modules/
-node_modules_dev/
 build/
 frontend-build/
 config/installer.json
 config/license.ed.public.pem
 updates/
+require-cache.json
