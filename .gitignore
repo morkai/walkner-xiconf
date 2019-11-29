@@ -3,5 +3,8 @@ build/
 frontend-build/
 config/installer.json
 config/license.ed.public.pem
+config/development/
+config/up/
+config/rpi/
 updates/
 require-cache.json

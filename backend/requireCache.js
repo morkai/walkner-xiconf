@@ -1,5 +1,7 @@
 // Part of <https://miracle.systems/p/walkner-xiconf> licensed under <CC BY-NC-SA 4.0>
 
+/* eslint-disable no-underscore-dangle, camelcase */
+
 'use strict';
 
 const Module = require('module');
@@ -25,8 +27,8 @@ exports.reset = resetRequireCache;
 
 for (var i = 0, l = process.argv.length; i < l; ++i)
 {
-  const currentArg = process.argv[i];
-  const nextArg = process.argv[i + 1];
+  var currentArg = process.argv[i];
+  var nextArg = process.argv[i + 1];
 
   if (currentArg === '--cache-require' && nextArg)
   {
@@ -41,6 +43,7 @@ for (var i = 0, l = process.argv.length; i < l; ++i)
   if (currentArg === '--require-cache' && nextArg)
   {
     exports.path = nextArg;
+    exports.cache = null;
 
     useRequireCache();
 
@@ -73,8 +76,8 @@ function isAbsolute(path)
 
 function buildRequireCache()
 {
-  const Module = require('module');
-  const requireCache = exports.cache.paths;
+  var Module = require('module');
+  var requireCache = exports.cache.paths;
 
   Module.prototype.require = function(request)
   {
@@ -106,20 +109,20 @@ function useRequireCache()
     exports.cache = JSON.parse(fs.readFileSync(exports.path, 'utf8'));
   }
 
-  const requireCache = exports.cache;
+  var requireCache = exports.cache;
 
-  Module._resolveFilename = function(request, parent)
+  Module._resolveFilename = function(request, parent, isMain, options)
   {
     if (!parent.idRel)
     {
       parent.idRel = makeRelative(parent.id);
     }
 
-    const parentRequireMap = requireCache.paths[parent.idRel];
+    var parentRequireMap = requireCache.paths[parent.idRel];
 
     if (parentRequireMap !== undefined)
     {
-      let resolvedRequest = parentRequireMap[request];
+      var resolvedRequest = parentRequireMap[request];
 
       if (resolvedRequest === undefined && isAbsolute(request))
       {
@@ -132,13 +135,13 @@ function useRequireCache()
       }
     }
 
-    return originalResolveFilename(request, parent);
+    return originalResolveFilename(request, parent, isMain, options);
   };
 
   Module._extensions['.js'] = function(module, filename)
   {
-    const relativeFilename = makeRelative(filename);
-    const source = requireCache.sources[relativeFilename];
+    var relativeFilename = makeRelative(filename);
+    var source = requireCache.sources[relativeFilename];
 
     if (source === undefined)
     {
@@ -150,8 +153,8 @@ function useRequireCache()
 
   Module._extensions['.json'] = function(module, filename)
   {
-    const relativeFilename = makeRelative(filename);
-    const json = requireCache.sources[relativeFilename];
+    var relativeFilename = makeRelative(filename);
+    var json = requireCache.sources[relativeFilename];
 
     if (json === undefined)
     {
@@ -169,7 +172,7 @@ function saveRequireCacheToFile(path)
     path = exports.path;
   }
 
-  const requireCache = exports.cache;
+  var requireCache = exports.cache;
 
   resetRequireCache();
 
@@ -195,13 +198,15 @@ function loadSources(requireCache)
 
 function loadSource(sources, path)
 {
-  if (!/\.js(on)?$/.test(path) || sources[path] !== undefined)
+  if (/^([A-Za-z]:|\/)/.test(path)
+    || !/\.js(on)?$/.test(path)
+    || sources[path] !== undefined)
   {
     return;
   }
 
-  const source = fs.readFileSync(exports.root + path, 'utf8');
-  let minified = null;
+  var source = fs.readFileSync(exports.root + path, 'utf8');
+  var minified = null;
 
   if (/\.json$/.test(path))
   {
@@ -211,10 +216,10 @@ function loadSource(sources, path)
   {
     try
     {
-      minified = require('uglify-js').minify(source, {
+      minified = require('uglify-es').minify(source, {
         compress: {
-          hoist_funs: false, // eslint-disable-line camelcase
-          hoist_vars: false // eslint-disable-line camelcase
+          hoist_funs: false,
+          hoist_vars: false
         }
       }).code;
     }

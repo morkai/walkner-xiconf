@@ -226,9 +226,12 @@ exports['h5-express'] = {
     t: 'app/i18n'
   },
   title: exports.id,
-  routes: [
-    require('../backend/routes')
-  ]
+  routes: () =>
+  {
+    return [
+      require('../backend/routes')
+    ];
+  }
 };
 
 exports.sio = {
