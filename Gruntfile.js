@@ -73,7 +73,7 @@ module.exports = (grunt) =>
         dest: './build/frontend',
         ext: '.js',
         options: {
-          helpers: require('./config/frontend')['h5-express'].ejsAmdHelpers
+          helpers: require('./config/xiconf-frontend')['h5-express'].ejsAmdHelpers
         }
       }
     },
