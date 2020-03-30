@@ -43,6 +43,18 @@ define([
   var NEW_LED_PATTERN_2 = /^(19|[23][0-9])[0-5][0-9][0-3][0-9]\s+[0-9]+\s+[0-9]{12}$/;
   var LED_PATTERNS = [
     {
+      pattern: '5409360076',
+      serialNumber: -1,
+      nc12: '913700349403',
+      whole: true
+    },
+    {
+      pattern: '5375513112',
+      serialNumber: -1,
+      nc12: '913701035203',
+      whole: true
+    },
+    {
       pattern: '([0-9]{12})',
       serialNumber: -1,
       nc12: 1,
@@ -114,7 +126,7 @@ define([
 
       if (matches)
       {
-        nc12 = matches[ledPattern.nc12];
+        nc12 = typeof ledPattern.nc12 === 'string' ? ledPattern.nc12 : matches[ledPattern.nc12];
         serialNumber = ledPattern.serialNumber === -1 ? '????????' : matches[ledPattern.serialNumber].toUpperCase();
 
         break;
