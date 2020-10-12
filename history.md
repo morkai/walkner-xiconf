@@ -1,3 +1,9 @@
+2.25.1 @ 2020-03-30
+===================
+
+  * Changed a font size of the order number field so its value fully fits on Linux.
+  * Added two new LED board recognition patterns.
+
 2.25.0 @ 2019-11-28
 ===================
 
