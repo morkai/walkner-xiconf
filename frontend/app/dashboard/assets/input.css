@@ -6,6 +6,9 @@
   font-size: 50px;
   text-align: center;
 }
+.dashboard-input .form-control[readOnly] {
+  user-select: none;
+}
 .dashboard-input-orderNoAndQuantity {
   display: flex;
 }

@@ -300,7 +300,7 @@ define([
     {
       var $el = this.$els[elId];
 
-      if ($el && !$el.prop('disabled'))
+      if ($el && !$el.prop('disabled') && !$el.prop('readOnly'))
       {
         $el.focus().select();
       }
@@ -783,12 +783,12 @@ define([
         var hidInactive = !!this.$('.is-hid-disabled').length;
 
         $els.orderNo
-          .prop('disabled', orderFieldDisabled || countdown)
+          .prop('readOnly', orderFieldDisabled || countdown)
           .prop('required', ordersRequired);
         $els.quantity
           .prop('disabled', orderFieldDisabled || countdown)
           .prop('required', ordersRequired);
-        $els.nc12.prop('disabled', isInProgress || isRemoteInput || hasOrder || countdown || ftEnabled || hidEnabled);
+        $els.nc12.prop('readOnly', isInProgress || isRemoteInput || hasOrder || countdown || ftEnabled || hidEnabled);
         $els.start.prop('disabled', countdown || (ftEnabled && ftInactive) || (hidEnabled && hidInactive));
         $els.toggleWorkMode
           .prop('disabled', isInProgress || countdown || glp2Enabled)
@@ -809,11 +809,11 @@ define([
         $els.printServiceTag.prop('disabled', true);
       }
 
-      if (!$els.orderNo.prop('disabled'))
+      if (!$els.orderNo.prop('disabled') && !$els.orderNo.prop('readOnly'))
       {
         $els.orderNo.focus().select();
       }
-      else if (!$els.nc12.prop('disabled'))
+      else if (!$els.nc12.prop('disabled') && !$els.nc12.prop('readOnly'))
       {
         $els.nc12.focus().select();
       }
