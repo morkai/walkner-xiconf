@@ -146,6 +146,10 @@ define([
     remoteTopics: {
       'programmer.barcodeScanned': function(message)
       {
+        var $scannedValue = this.$id('scannedValue');
+
+        $scannedValue[0].value = '"' + message.value + '"' + '\n' + $scannedValue[0].value;
+
         if (!message.scannerId
           || parseInt(message.scannerId, 10) <= 255
           || !document.activeElement

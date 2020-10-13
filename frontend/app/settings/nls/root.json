@@ -31,6 +31,7 @@
     "form:ft": "Frame tester",
     "form:fl": "Fluorescent Lamps",
     "form:weight": "Component weight",
+    "form:scanner": "Barcode scanner",
     "form:hotkeys": "Hotkeys",
     "form:license": "License settings",
     "form:submit": "Save settings",
@@ -273,7 +274,13 @@
     "features:fl": "Fluorescent Lamps (FL)",
     "features:ft": "Frame Tester (FT)",
     "features:hid": "HID scanning (HID)",
-    "features:weight": "Component weighing (WEIGHT)"
+    "features:weight": "Component weighing (WEIGHT)",
+
+    "scanner:scannedValue": "Scanned values",
+    "scanner:defaults": "Reset to factory settings",
+    "scanner:keyboard": "Set keyboard mode",
+    "scanner:snapi": "Set SNAPI mode",
+    "scanner:enter": "Add Enter to the end of the scanned value"
   },
   "pl": true
 }

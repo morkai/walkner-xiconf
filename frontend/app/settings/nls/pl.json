@@ -30,6 +30,7 @@
   "form:ft": "Tester ramki",
   "form:fl": "Świetlówki",
   "form:weight": "Ważenie komponentów",
+  "form:scanner": "Czytnik kodów",
   "form:hotkeys": "Skróty klawiszowe",
   "form:license": "Ustawienia licencji",
   "form:submit": "Zapisz ustawienia",
@@ -274,5 +275,11 @@
   "features:hid": "Skanowanie HID (HID)",
   "features:weight": "Ważenie komponentów (WEIGHT)",
 
-  "weight:help": "1"
+  "weight:help": "1",
+
+  "scanner:scannedValue": "Zeskanowane wartości",
+  "scanner:defaults": "Resetuj do ustawień fabrycznych",
+  "scanner:keyboard": "Ustaw tryb klawiatury",
+  "scanner:snapi": "Ustaw tryb SNAPI",
+  "scanner:enter": "Dodaj Enter na końcu skanowanej wartości"
 }

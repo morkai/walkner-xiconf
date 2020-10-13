@@ -53,43 +53,6 @@
   </div>
   <div class="row">
     <div class="form-group col-md-4">
-      <label for="<%- idPrefix %>-bgScanner" class="control-label"><%- t('settings', 'setting:bgScanner') %></label>
-      <div>
-        <label class="radio-inline">
-          <input id="<%- idPrefix %>-bgScanner" name="bgScanner" type="radio" value="1" required> <%- t('settings', 'setting:bgScanner:on') %>
-        </label>
-        <label class="radio-inline">
-          <input name="bgScanner" type="radio" value="0" required> <%- t('settings', 'setting:bgScanner:off') %>
-        </label>
-      </div>
-    </div>
-    <div class="form-group col-md-8">
-      <label for="<%- idPrefix %>-bgScannerFilter" class="control-label"><%- t('settings', 'setting:bgScannerFilter') %></label>
-      <input id="<%- idPrefix %>-bgScannerFilter" class="form-control" name="bgScannerFilter" type="text">
-    </div>
-  </div>
-  <div class="row">
-    <div class="form-group col-md-4">
-      <label for="<%- idPrefix %>-bgScannerBeepGood" class="control-label"><%- t('settings', 'setting:bgScannerBeepGood') %></label>
-      <select id="<%- idPrefix %>-bgScannerBeepGood" class="form-control" name="bgScannerBeepGood">
-        <% include _bgScannerOptions.ejs %>
-      </select>
-    </div>
-    <div class="form-group col-md-4">
-      <label for="<%- idPrefix %>-bgScannerBeepBad" class="control-label"><%- t('settings', 'setting:bgScannerBeepBad') %></label>
-      <select id="<%- idPrefix %>-bgScannerBeepBad" class="form-control" name="bgScannerBeepBad">
-        <% include _bgScannerOptions.ejs %>
-      </select>
-    </div>
-    <div class="form-group col-md-4">
-      <label for="<%- idPrefix %>-bgScannerBeepDone" class="control-label"><%- t('settings', 'setting:bgScannerBeepDone') %></label>
-      <select id="<%- idPrefix %>-bgScannerBeepDone" class="form-control" name="bgScannerBeepDone">
-        <% include _bgScannerOptions.ejs %>
-      </select>
-    </div>
-  </div>
-  <div class="row">
-    <div class="form-group col-md-4">
       <label for="<%- idPrefix %>-programDelay" class="control-label"><%- t('settings', 'setting:programDelay') %></label>
       <input id="<%- idPrefix %>-programDelay" class="form-control" name="programDelay" type="number" min="0" max="60">
     </div>
