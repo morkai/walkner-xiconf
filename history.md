@@ -1,3 +1,9 @@
+2.26.0 @ 2020-10-13
+===================
+
+  * Added backend scanner support on Linux.
+  * Added a new scanner settings tab with scanner programming bar codes.
+  
 2.25.1 @ 2020-03-30
 ===================
 
