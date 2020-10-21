@@ -33,7 +33,7 @@ define([
         broker.publish('programmer.barcodeScanned', {
           remote: true,
           local: false,
-          value: message.value,
+          value: message.value.trim(),
           scannerId: message.scannerId,
           event: null
         });
@@ -119,7 +119,7 @@ define([
       broker.publish('programmer.barcodeScanned', {
         remote: false,
         local: true,
-        value: commandBuffer,
+        value: commandBuffer.trim(),
         scannerId: null,
         event: e
       });
