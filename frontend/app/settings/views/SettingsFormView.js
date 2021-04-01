@@ -135,6 +135,7 @@ define([
 
         this.socket.emit('programmer.tareWeight', password);
       },
+      'change input[name="bgScanner"]': 'toggleScannerCodes',
       'click .settings-save': 'onSaveClick',
       'click .settings-restart': 'onRestartClick',
       'click .settings-logs': 'onLogsClick',
@@ -215,6 +216,7 @@ define([
       this.importSettings(settings.toJSON());
       this.changeTab(this.options.tab || this.$('.list-group-item[data-tab]').first().attr('data-tab'));
       this.onWeightChange();
+      this.toggleScannerCodes();
     },
 
     changeTab: function(tab)
@@ -873,6 +875,16 @@ define([
         type: 'success',
         time: 1500,
         text: t('settings', 'msg:importSuccess')
+      });
+    },
+
+    toggleScannerCodes: function()
+    {
+      var bgScanner = this.$('input[name="bgScanner"]:checked').val();
+
+      this.$('[data-bg-scanner]').each(function()
+      {
+        this.style.display = this.dataset.bgScanner === bgScanner ? '' : 'none';
       });
     }
 
