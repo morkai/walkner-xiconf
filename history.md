@@ -1,9 +1,21 @@
+2.26.2 @ 2021-04-01
+===================
+
+  * Changed the barcode scanning settings to only show helper barcodes relevant
+    to the selected background scanner mode.
+
+2.26.1 @ 2020-10-22
+===================
+
+  * Changed the barcode scanning to trim whitespace characters from the scanned
+    value.
+
 2.26.0 @ 2020-10-13
 ===================
 
   * Added backend scanner support on Linux.
   * Added a new scanner settings tab with scanner programming bar codes.
-  
+
 2.25.1 @ 2020-03-30
 ===================
 
