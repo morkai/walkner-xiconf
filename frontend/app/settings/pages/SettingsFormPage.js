@@ -3,10 +3,12 @@
 define([
   'app/i18n',
   'app/core/View',
+  'app/core/util/embedded',
   '../views/SettingsFormView'
 ], function(
   t,
   View,
+  embedded,
   SettingsFormView
 ) {
   'use strict';
@@ -20,6 +22,11 @@ define([
     initialize: function()
     {
       this.view = new SettingsFormView({tab: this.options.tab});
+    },
+
+    afterRender: function()
+    {
+      embedded.render(this);
     }
 
   });

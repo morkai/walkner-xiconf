@@ -5,15 +5,13 @@ define([
   'jquery',
   'app/user',
   '../View',
-  'app/core/templates/pageLayout',
-  'app/core/templates/uiLock'
+  'app/core/templates/pageLayout'
 ], function(
   _,
   $,
   user,
   View,
-  pageLayoutTemplate,
-  uiLockTemplate
+  pageLayoutTemplate
 ) {
   'use strict';
 
@@ -23,26 +21,7 @@ define([
 
     pageContainerSelector: '.bd',
 
-    template: pageLayoutTemplate,
-
-    events: {
-      'mousedown #-switchApps': function(e) { this.startActionTimer('switchApps', e); },
-      'touchstart #-switchApps': function() { this.startActionTimer('switchApps'); },
-      'mouseup #-switchApps': function() { this.stopActionTimer('switchApps'); },
-      'touchend #-switchApps': function() { this.stopActionTimer('switchApps'); },
-
-      'mousedown #-reboot': function(e) { this.startActionTimer('reboot', e); },
-      'touchstart #-reboot': function() { this.startActionTimer('reboot'); },
-      'mouseup #-reboot': function() { this.stopActionTimer('reboot'); },
-      'touchend #-reboot': function() { this.stopActionTimer('reboot'); },
-
-      'mousedown #-shutdown': function(e) { this.startActionTimer('shutdown', e); },
-      'touchstart #-shutdown': function() { this.startActionTimer('shutdown'); },
-      'mouseup #-shutdown': function() { this.stopActionTimer('shutdown'); },
-      'touchend #-shutdown': function() { this.stopActionTimer('shutdown'); },
-
-      'click #-lockUi': 'lockUi'
-    }
+    template: pageLayoutTemplate
 
   });
 
@@ -100,8 +79,7 @@ define([
   PageLayout.prototype.serialize = function()
   {
     return _.extend(View.prototype.serialize.call(this), {
-      version: this.options.version,
-      showParentControls: IS_EMBEDDED
+      version: this.options.version
     });
   };
 
@@ -123,11 +101,6 @@ define([
     if (this.model.id !== null)
     {
       this.setId(this.model.id);
-    }
-
-    if (localStorage.getItem('XICONF_UI_LOCKED') === '1')
-    {
-      this.lockUi();
     }
   };
 
@@ -515,39 +488,6 @@ define([
 
     this.actionTimer.action = null;
     this.actionTimer.time = null;
-  };
-
-  PageLayout.prototype.lockUi = function()
-  {
-    var $uiLock = this.$id('uiLock');
-
-    if ($uiLock.length)
-    {
-      return;
-    }
-
-    $uiLock = $(uiLockTemplate({
-      idPrefix: this.idPrefix
-    }));
-
-    $uiLock.find('div').on('click', function()
-    {
-      localStorage.removeItem('XICONF_UI_LOCKED');
-
-      $uiLock.remove();
-    });
-
-    $uiLock.on('touchstart', function(e)
-    {
-      if (!$(e.target).closest('.uiLock-inner').length)
-      {
-        return false;
-      }
-    });
-
-    $uiLock.appendTo('body');
-
-    localStorage.setItem('XICONF_UI_LOCKED', '1');
   };
 
   return PageLayout;

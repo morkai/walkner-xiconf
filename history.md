@@ -1,3 +1,8 @@
+2.26.3 @ 2021-04-02
+===================
+
+  * Changed the embedded controls to be the same as in other WMES apps.
+
 2.26.2 @ 2021-04-01
 ===================
 

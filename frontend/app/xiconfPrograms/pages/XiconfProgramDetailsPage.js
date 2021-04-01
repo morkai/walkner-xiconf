@@ -4,12 +4,14 @@ define([
   'app/i18n',
   'app/user',
   'app/core/util/pageActions',
+  'app/core/util/embedded',
   'app/core/pages/DetailsPage',
   '../views/XiconfProgramDetailsView'
 ], function(
   t,
   user,
   pageActions,
+  embedded,
   DetailsPage,
   XiconfProgramDetailsView
 ) {
@@ -42,6 +44,11 @@ define([
       }
 
       return actions;
+    },
+
+    afterRender: function()
+    {
+      embedded.render(this);
     }
 
   });

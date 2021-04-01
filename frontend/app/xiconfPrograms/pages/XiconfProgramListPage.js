@@ -5,6 +5,7 @@ define([
   'app/user',
   'app/viewport',
   'app/core/util/pageActions',
+  'app/core/util/embedded',
   'app/core/pages/FilteredListPage',
   '../views/XiconfProgramListView',
   '../views/XiconfProgramFilterView'
@@ -13,6 +14,7 @@ define([
   user,
   viewport,
   pageActions,
+  embedded,
   FilteredListPage,
   XiconfProgramListView,
   XiconfProgramFilterView
@@ -45,6 +47,11 @@ define([
       });
 
       return actions;
+    },
+
+    afterRender: function()
+    {
+      embedded.render(this);
     },
 
     onSyncActionClick: function(e)

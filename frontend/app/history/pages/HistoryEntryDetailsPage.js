@@ -7,6 +7,7 @@ define([
   'app/core/View',
   'app/core/views/DialogView',
   'app/core/util/bindLoadingMessage',
+  'app/core/util/embedded',
   '../HistoryEntry',
   '../views/HistoryEntryDetailsView',
   'app/history/templates/downloadAction',
@@ -18,6 +19,7 @@ define([
   View,
   DialogView,
   bindLoadingMessage,
+  embedded,
   HistoryEntry,
   HistoryEntryDetailsView,
   downloadActionTemplate,
@@ -119,6 +121,11 @@ define([
     load: function(when)
     {
       return when(this.model.fetch());
+    },
+
+    afterRender: function()
+    {
+      embedded.render(this);
     },
 
     toggleResult: function()

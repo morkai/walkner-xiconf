@@ -4,6 +4,7 @@ define([
   'app/i18n',
   'app/core/util/bindLoadingMessage',
   'app/core/util/pageActions',
+  'app/core/util/embedded',
   'app/core/View',
   '../HistoryEntryCollection',
   '../views/HistoryEntryListView',
@@ -13,6 +14,7 @@ define([
   t,
   bindLoadingMessage,
   pageActions,
+  embedded,
   View,
   HistoryEntryCollection,
   HistoryEntryListView,
@@ -70,6 +72,11 @@ define([
     load: function(when)
     {
       return when(this.collection.fetch({reset: true}));
+    },
+
+    afterRender: function()
+    {
+      embedded.render(this);
     },
 
     refreshList: function(newRqlQuery)

@@ -11,6 +11,7 @@ define([
   'app/data/hotkeys',
   'app/data/barcodeScanner',
   'app/core/View',
+  'app/core/util/embedded',
   'app/history/HistoryEntryCollection',
   '../views/InputView',
   '../views/LogView',
@@ -32,6 +33,7 @@ define([
   hotkeys,
   barcodeScanner,
   View,
+  embedded,
   HistoryEntryCollection,
   InputView,
   LogView,
@@ -213,10 +215,8 @@ define([
       this.timers.license = setInterval(this.animateLicenseError.bind(this), 10000);
       this.timers.resize = setTimeout(this.resize.bind(this), 1);
 
-      if (window.parent !== window)
-      {
-        window.parent.postMessage({type: 'ready', app: 'xiconf'}, '*');
-      }
+      embedded.render(this, {actions: {lockUi: true}});
+      embedded.ready('xiconf');
     },
 
     resize: function()

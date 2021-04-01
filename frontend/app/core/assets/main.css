@@ -7,6 +7,7 @@
 @import url(./filter.css);
 @import url(./highlight.css);
 @import url(./highcharts.css);
+@import url(./embedded.css);
 
 body {
   font-family: Arial, "Helvetic Neue", Helvetica, sans-serif;
@@ -291,44 +292,4 @@ kbd {
 
 .select2-choices > .select2-search-choice.sortable-ghost {
   border-color: #0af;
-}
-
-.parentControls {
-  position: fixed;
-  right: 0;
-  bottom: -1px;
-  display: flex;
-  box-shadow: 0 3px 6px #666;
-}
-.parentControls > .btn {
-  margin-right: -1px;
-  width: 60px;
-  height: 50px;
-  font-size: 24px;
-}
-
-.uiLock {
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  user-select: none;
-}
-.uiLock-inner {
-  display: flex;
-  position: absolute;
-  top: 0;
-  right: 0;
-  padding: 15px;
-  background: #e00;
-  color: #fff;
-  font-size: 16px;
-  font-weight: bold;
-  text-shadow: 1px 1px 1px #333;
-  cursor: pointer;
-}
-.uiLock-inner .fa {
-  font-size: 42px;
-  margin-right: 15px;
 }
