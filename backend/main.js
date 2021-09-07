@@ -2,6 +2,20 @@
 
 'use strict';
 
+const fs = require('fs');
+const {execSync} = require('child_process');
+
+if (process.platform === 'win32' && fs.existsSync(`${__dirname}/../node_modules_win32`))
+{
+  execSync(`mv "${__dirname}/../node_modules" "${__dirname}/../node_modules_linux"`);
+  execSync(`mv "${__dirname}/../node_modules_win32" "${__dirname}/../node_modules"`);
+}
+else if (process.platform === 'linux' && fs.existsSync(`${__dirname}/../node_modules_linux`))
+{
+  execSync(`mv "${__dirname}/../node_modules" "${__dirname}/../node_modules_win32"`);
+  execSync(`mv "${__dirname}/../node_modules_linux" "${__dirname}/../node_modules"`);
+}
+
 const startTime = Date.now();
 
 process.on('uncaughtException', function(err)
