@@ -1,4 +1,4 @@
-// Part of <https://miracle.systems/p/walkner-xiconf> licensed under <CC BY-NC-SA 4.0>
+// Part of <https://miracle.systems/p/walkner-wmes> licensed under <CC BY-NC-SA 4.0>
 
 define([
   'underscore'
@@ -17,7 +17,7 @@ define([
 
     /**
      * @private
-     * @type {object}
+     * @type {Object}
      */
     this.listeners = {
       destroy: []
@@ -79,12 +79,12 @@ define([
 
   SocketSandbox.prototype.getId = function()
   {
-    return this.socket.getId();
+    return !!this.socket && this.socket.getId();
   };
 
   SocketSandbox.prototype.isConnected = function()
   {
-    return this.socket.isConnected();
+    return !!this.socket && this.socket.isConnected();
   };
 
   SocketSandbox.prototype.on = function(eventName, cb)

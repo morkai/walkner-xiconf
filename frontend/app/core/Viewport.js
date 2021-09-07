@@ -1,4 +1,4 @@
-// Part of <https://miracle.systems/p/walkner-xiconf> licensed under <CC BY-NC-SA 4.0>
+// Part of <https://miracle.systems/p/walkner-wmes> licensed under <CC BY-NC-SA 4.0>
 
 define([
   'require',
@@ -38,6 +38,8 @@ define([
 
     this.currentLayoutName = null;
 
+    this.defaultLayoutName = null;
+
     this.currentPage = null;
 
     this.$dialog = null;
@@ -45,6 +47,8 @@ define([
     this.dialogQueue = [];
 
     this.currentDialog = null;
+
+    this.pageCounter = 0;
 
     this.closeDialog = this.closeDialog.bind(this);
 
@@ -98,12 +102,27 @@ define([
       show: false,
       backdrop: true
     });
+    this.$dialog.on('show.bs.modal', this.onDialogShowing.bind(this));
+    this.$dialog.on('in.bs.modal', this.onDialogIn.bind(this));
     this.$dialog.on('shown.bs.modal', this.onDialogShown.bind(this));
+    this.$dialog.on('hide.bs.modal', this.onDialogHiding.bind(this));
     this.$dialog.on('hidden.bs.modal', this.onDialogHidden.bind(this));
+  };
+
+  Viewport.prototype.setDefaultLayout = function(name)
+  {
+    this.defaultLayoutName = name;
+
+    return this;
   };
 
   Viewport.prototype.registerLayout = function(name, layoutFactory)
   {
+    if (!this.defaultLayoutName)
+    {
+      this.defaultLayoutName = name;
+    }
+
     this.layouts[name] = layoutFactory;
 
     return this;
@@ -119,32 +138,176 @@ define([
     }
 
     var viewport = this;
+    var pageCounter = ++this.pageCounter;
 
-    require([].concat(dependencies), function()
-    {
-      viewport.showPage(createPage.apply(null, arguments));
-      viewport.msg.loaded();
-    });
+    require(
+      _.flatten([].concat(dependencies), true),
+      function()
+      {
+        if (pageCounter === viewport.pageCounter)
+        {
+          viewport.showPage(createPage.apply(null, arguments));
+        }
+
+        viewport.msg.loaded();
+      },
+      function(err)
+      {
+        if (pageCounter === viewport.pageCounter)
+        {
+          viewport.msg.loadingFailed();
+
+          viewport.broker.publish('viewport.page.loadingFailed', {
+            page: null,
+            xhr: {
+              status: 0,
+              responseText: err.stack || err.message
+            }
+          });
+        }
+      }
+    );
   };
 
   Viewport.prototype.showPage = function(page)
   {
-    var layoutName = _.result(page, 'layoutName');
+    var viewport = this;
+    var layoutName = viewport.defaultLayoutName;
 
-    if (!_.isObject(this.layouts[layoutName]))
+    if (typeof page.layoutName === 'string')
     {
-      throw new Error("Unknown layout: `" + layoutName + "`");
+      layoutName = page.layoutName;
+    }
+    else if (typeof page.layoutName === 'function')
+    {
+      layoutName = page.layoutName(viewport);
     }
 
-    var viewport = this;
+    if (!_.isObject(viewport.layouts[layoutName]))
+    {
+      throw new Error('Unknown layout: ' + layoutName);
+    }
+
+    ++viewport.pageCounter;
+
+    viewport.broker.publish('viewport.page.loading', {page: page});
+
+    var requests = [];
+    var priorityRequests = [];
+    var normalRequests = [];
+    var moduleRequests = _.result(page, 'requiredModules') || [];
+
+    page.trigger('beforeLoad', page, requests);
+
+    requests.forEach(function(request)
+    {
+      if (!request)
+      {
+        return;
+      }
+
+      if (typeof request === 'string')
+      {
+        moduleRequests.push(request);
+      }
+      else if (request.priority && request.promise && request.promise.then)
+      {
+        priorityRequests.push(page.promised(request.promise));
+      }
+      else if (request.priority && request.then)
+      {
+        priorityRequests.push(page.promised(request));
+      }
+      else if (request.then)
+      {
+        normalRequests.push(page.promised(request));
+      }
+    });
+
+    if (moduleRequests.length)
+    {
+      priorityRequests.unshift(loadModules(moduleRequests));
+    }
+
+    if (priorityRequests.length)
+    {
+      when.apply(null, priorityRequests).then(loadPage, onPageLoadFailure);
+    }
+    else
+    {
+      loadPage();
+    }
+
+    function loadPage()
+    {
+      if (_.isFunction(page.load))
+      {
+        page.load(when).then(onPageLoadSuccess, onPageLoadFailure);
+      }
+      else
+      {
+        when().then(onPageLoadSuccess, onPageLoadFailure);
+      }
+    }
 
     function when()
     {
-      return $.when.apply($, _.map(arguments, page.promised, page));
+      var requests = [];
+      var priorityRequests = [];
+      var moduleRequests = [];
+
+      for (var i = 0; i < arguments.length; ++i)
+      {
+        requests = requests.concat(arguments[i]);
+      }
+
+      requests.forEach(function(request)
+      {
+        if (!request)
+        {
+          return;
+        }
+
+        if (typeof request === 'string')
+        {
+          moduleRequests.push(request);
+        }
+        else if (request.priority && request.promise && request.promise.then)
+        {
+          priorityRequests.push(page.promised(request.promise));
+        }
+        else if (request.priority && request.then)
+        {
+          priorityRequests.push(page.promised(request));
+        }
+        else if (request.then)
+        {
+          normalRequests.push(page.promised(request));
+        }
+      });
+
+      if (moduleRequests.length)
+      {
+        priorityRequests.push(loadModules(moduleRequests));
+      }
+
+      if (priorityRequests.length)
+      {
+        return $.when.apply($, priorityRequests).then(function()
+        {
+          return $.when.apply($, normalRequests);
+        });
+      }
+
+      return $.when.apply($, normalRequests);
     }
 
     function onPageLoadSuccess()
     {
+      viewport.broker.publish('viewport.page.loaded', {page: page});
+
+      page.trigger('afterLoad', page);
+
       if (viewport.currentPage !== null)
       {
         viewport.currentPage.remove();
@@ -164,7 +327,7 @@ define([
         page.setUpLayout(layout);
       }
 
-      if (_.isObject(page.view))
+      if (_.isObject(page.view) && _.isEmpty(page.views))
       {
         page.setView(page.view);
       }
@@ -183,22 +346,34 @@ define([
       {
         page.render();
       }
+
+      viewport.broker.publish('viewport.page.shown', page);
     }
 
-    function onPageLoadFailure()
+    function onPageLoadFailure(jqXhr)
     {
-      console.log('onPageLoadFailure');
-
       page.remove();
+
+      viewport.broker.publish('viewport.page.loadingFailed', {page: page, xhr: jqXhr});
     }
 
-    if (_.isFunction(page.load))
+    function loadModules(modulesToLoad)
     {
-      page.load(when).then(onPageLoadSuccess, onPageLoadFailure);
-    }
-    else
-    {
-      onPageLoadSuccess();
+      var deferred = $.Deferred();
+
+      require(
+        modulesToLoad,
+        function()
+        {
+          deferred.resolve();
+        },
+        function(err)
+        {
+          deferred.reject(err);
+        }
+      );
+
+      return deferred.promise();
     }
   };
 
@@ -211,6 +386,7 @@ define([
       return this;
     }
 
+    var triggerEvent = true;
     var afterRender = dialogView.afterRender;
     var viewport = this;
 
@@ -223,12 +399,17 @@ define([
         $modalBody.empty().append(dialogView.el);
       }
 
+      if (triggerEvent)
+      {
+        triggerEvent = false;
+
+        viewport.$dialog.modal('show');
+      }
+
       if (_.isFunction(afterRender))
       {
         afterRender.apply(dialogView, arguments);
       }
-
-      viewport.$dialog.modal('show');
     };
 
     this.currentDialog = dialogView;
@@ -237,7 +418,7 @@ define([
 
     if (title)
     {
-      $header.find('.modal-title').text(title);
+      $header.find('.modal-title').html(title);
       $header.show();
     }
     else
@@ -249,6 +430,10 @@ define([
     {
       this.$dialog.addClass(_.result(dialogView, 'dialogClassName'));
     }
+
+    var backdrop = _.result(dialogView, 'dialogBackdrop');
+
+    this.$dialog.data('bs.modal').options.backdrop = backdrop == null ? true : backdrop;
 
     dialogView.render();
 
@@ -264,7 +449,7 @@ define([
 
     this.$dialog.modal('hide');
 
-    if (e)
+    if (e && e.preventDefault)
     {
       e.preventDefault();
     }
@@ -272,11 +457,29 @@ define([
     return this;
   };
 
+  Viewport.prototype.closeDialogs = function(closeCurrent, filter)
+  {
+    this.dialogQueue = this.dialogQueue.filter(filter || closeCurrent);
+
+    if (typeof closeCurrent === 'function' && this.currentDialog && closeCurrent(this.currentDialog))
+    {
+      this.closeDialog();
+    }
+  };
+
   Viewport.prototype.closeAllDialogs = function()
   {
     this.dialogQueue = [];
 
     this.closeDialog();
+  };
+
+  Viewport.prototype.adjustDialogBackdrop = function()
+  {
+    if (this.currentDialog)
+    {
+      this.$dialog.modal('adjustBackdrop');
+    }
   };
 
   Viewport.prototype.setLayout = function(layoutName)
@@ -303,12 +506,52 @@ define([
     this.currentLayout = createNewLayout();
 
     this.setView(selector, this.currentLayout);
+    this.trigger('layout:change', this.currentLayoutName, this.currentLayout);
 
     return this.currentLayout;
   };
 
+  Viewport.prototype.onDialogShowing = function()
+  {
+    if (!this.currentDialog)
+    {
+      return;
+    }
+
+    if (_.isFunction(this.currentDialog.onDialogShowing))
+    {
+      this.currentDialog.onDialogShowing(this);
+    }
+
+    this.broker.publish('viewport.dialog.showing', this.currentDialog);
+
+    this.currentDialog.trigger('dialog:showing');
+  };
+
+  Viewport.prototype.onDialogIn = function()
+  {
+    if (!this.currentDialog)
+    {
+      return;
+    }
+
+    if (_.isFunction(this.currentDialog.onDialogIn))
+    {
+      this.currentDialog.onDialogIn(this);
+    }
+
+    this.broker.publish('viewport.dialog.in', this.currentDialog);
+
+    this.currentDialog.trigger('dialog:in');
+  };
+
   Viewport.prototype.onDialogShown = function()
   {
+    if (!this.currentDialog)
+    {
+      return;
+    }
+
     this.currentDialog.$('[autofocus]').focus();
 
     if (_.isFunction(this.currentDialog.onDialogShown))
@@ -317,23 +560,50 @@ define([
     }
 
     this.broker.publish('viewport.dialog.shown', this.currentDialog);
+
+    this.currentDialog.trigger('dialog:shown');
+  };
+
+  Viewport.prototype.onDialogHiding = function()
+  {
+    var dialog = this.currentDialog;
+
+    if (!dialog)
+    {
+      return;
+    }
+
+    if (_.isFunction(dialog.remove))
+    {
+      dialog.trigger('dialog:hiding');
+
+      this.broker.publish('viewport.dialog.hiding', dialog);
+    }
   };
 
   Viewport.prototype.onDialogHidden = function()
   {
-    if (this.currentDialog.dialogClassName)
-    {
-      this.$dialog.removeClass(_.result(this.currentDialog, 'dialogClassName'));
-    }
+    var dialog = this.currentDialog;
 
-    if (_.isFunction(this.currentDialog.remove))
+    if (!dialog)
     {
-      this.currentDialog.remove();
-
-      this.broker.publish('viewport.dialog.hidden', this.currentDialog);
+      return;
     }
 
     this.currentDialog = null;
+
+    if (dialog.dialogClassName)
+    {
+      this.$dialog.removeClass(_.result(dialog, 'dialogClassName'));
+    }
+
+    if (_.isFunction(dialog.remove))
+    {
+      dialog.trigger('dialog:hidden');
+      dialog.remove();
+
+      this.broker.publish('viewport.dialog.hidden', dialog);
+    }
 
     if (this.dialogQueue.length)
     {

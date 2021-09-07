@@ -1,4 +1,4 @@
-// Part of <https://miracle.systems/p/walkner-xiconf> licensed under <CC BY-NC-SA 4.0>
+// Part of <https://miracle.systems/p/walkner-wmes> licensed under <CC BY-NC-SA 4.0>
 
 define([
   'h5.rql/index',
@@ -41,7 +41,7 @@ define([
     this.fragment = urlParts[3] || '';
 
     /**
-     * @type {object}
+     * @type {Object}
      */
     this.params = {};
 
@@ -51,14 +51,16 @@ define([
     this.query = {};
 
     /**
-     * @type {object}
+     * @type {Object}
      */
     this.rql = {};
 
-    if (this.queryString !== '')
-    {
-      this.defineGetters();
-    }
+    /**
+     * @type {boolean}
+     */
+    this.cancel = false;
+
+    this.defineGetters();
   }
 
   Request.prototype.defineGetters = function()

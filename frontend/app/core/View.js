@@ -1,43 +1,95 @@
-// Part of <https://miracle.systems/p/walkner-xiconf> licensed under <CC BY-NC-SA 4.0>
+// Part of <https://miracle.systems/p/walkner-wmes> licensed under <CC BY-NC-SA 4.0>
 
 define([
   'underscore',
   'jquery',
+  'backbone',
   'backbone.layout',
   'app/broker',
   'app/socket',
   'app/pubsub',
-  './util'
+  'app/i18n',
+  './util',
+  './util/html',
+  './util/forms/formGroup'
 ],
 function(
   _,
   $,
+  Backbone,
   Layout,
   broker,
   socket,
   pubsub,
-  util
+  t,
+  util,
+  html,
+  formGroup
 ) {
   'use strict';
 
   function View(options)
   {
-    this.idPrefix = _.uniqueId('v');
+    var view = this;
 
-    this.options = options || {};
+    view.idPrefix = _.uniqueId('v');
+    view.options = _.assign({}, view.options, options);
+    view.timers = {};
+    view.promises = [];
 
-    this.timers = {};
+    _.forEach(view.sections, function(selector, section)
+    {
+      if (typeof selector !== 'string' || selector === '#')
+      {
+        view.sections[section] = '#' + view.idPrefix + '-' + section;
+      }
+      else
+      {
+        view.sections[section] = selector.replace('#-', '#' + view.idPrefix + '-');
+      }
+    });
 
-    this.promises = [];
+    util.defineSandboxedProperty(view, 'broker', broker);
+    util.defineSandboxedProperty(view, 'pubsub', pubsub);
+    util.defineSandboxedProperty(view, 'socket', socket);
 
-    util.defineSandboxedProperty(this, 'broker', broker);
-    util.defineSandboxedProperty(this, 'pubsub', pubsub);
-    util.defineSandboxedProperty(this, 'socket', socket);
+    Object.defineProperty(view, 't', {
+      enumerable: true,
+      configurable: true,
+      get: function()
+      {
+        delete view.t;
 
-    Layout.call(this, options);
+        view.t = t.forDomain(view.getDefaultNlsDomain());
 
-    util.subscribeTopics(this, 'broker', this.localTopics, true);
-    util.subscribeTopics(this, 'pubsub', this.remoteTopics, true);
+        return view.t;
+      }
+    });
+
+    Layout.call(view, view.options);
+
+    util.subscribeTopics(view, 'broker', view.localTopics, true);
+
+    if (view.remoteTopicsAfterSync)
+    {
+      if (view.remoteTopicsAfterSync === true)
+      {
+        view.remoteTopicsAfterSync = 'model';
+      }
+
+      if (typeof view.remoteTopicsAfterSync === 'string' && view[view.remoteTopicsAfterSync])
+      {
+        view.listenToOnce(
+          view[view.remoteTopicsAfterSync],
+          'sync',
+          util.subscribeTopics.bind(util, view, 'pubsub', view.remoteTopics, true)
+        );
+      }
+    }
+    else
+    {
+      util.subscribeTopics(view, 'pubsub', view.remoteTopics, true);
+    }
   }
 
   util.inherits(View, Layout);
@@ -90,18 +142,60 @@ function(
     }, this);
   };
 
+  View.prototype.listenTo = function(obj)
+  {
+    if (obj)
+    {
+      return Layout.prototype.listenTo.apply(this, arguments);
+    }
+  };
+
+  View.prototype.listenToOnce = function(obj)
+  {
+    if (obj)
+    {
+      return Layout.prototype.listenToOnce.apply(this, arguments);
+    }
+  };
+
+  View.prototype.getViews = function(fn)
+  {
+    if (typeof fn === 'string' && /^#-/.test(fn))
+    {
+      fn = fn.replace('#-', '#' + this.idPrefix + '-');
+    }
+
+    return Layout.prototype.getViews.call(this, fn);
+  };
+
+  View.prototype.setView = function(name, view, insert, insertOptions)
+  {
+    if (typeof name === 'string' && /^#-/.test(name))
+    {
+      name = name.replace('#-', '#' + this.idPrefix + '-');
+    }
+
+    if (!(name instanceof Backbone.View) && !(view instanceof Backbone.View))
+    {
+      return null;
+    }
+
+    return Layout.prototype.setView.call(this, name, view, insert, insertOptions);
+  };
+
   View.prototype.cleanup = function()
   {
     this.destroy();
     this.cleanupSelect2();
+    this.cleanupPopovers();
 
     util.cleanupSandboxedProperties(this);
 
     if (_.isObject(this.timers))
     {
-      _.each(this.timers, clearTimeout);
+      _.forEach(this.timers, clearTimeout);
 
-      this.timers = null;
+      this.timers = {};
     }
 
     this.cancelRequests();
@@ -113,16 +207,87 @@ function(
   {
     var view = this;
 
-    this.$('.select2-container').each(function()
+    view.$('.select2-container').each(function()
     {
       view.$('#' + this.id.replace('s2id_', '')).select2('destroy');
     });
   };
 
+  View.prototype.cleanupPopovers = function()
+  {
+    var view = this;
+
+    view.$('[aria-describedby]').each(function()
+    {
+      var describedBy = this.getAttribute('aria-describedby');
+
+      if (/^popover/.test(describedBy))
+      {
+        view.$(this).popover('destroy');
+      }
+      else if (/^tooltip/.test(describedBy))
+      {
+        view.$(this).tooltip('destroy');
+      }
+    });
+  };
+
+  View.prototype.beforeRender = function() {};
+
   View.prototype.serialize = function()
   {
-    return {idPrefix: this.idPrefix};
+    return _.assign(this.getCommonTemplateData(), this.getTemplateData());
   };
+
+  View.prototype.getCommonTemplateData = function()
+  {
+    var helpers = this.getTemplateHelpers();
+
+    return {
+      idPrefix: this.idPrefix,
+      helpers: helpers,
+      t: helpers.t,
+      id: helpers.id,
+      cn: helpers.cn
+    };
+  };
+
+  View.prototype.getTemplateData = function()
+  {
+    return {};
+  };
+
+  View.prototype.getTemplateHelpers = function()
+  {
+    var idPrefix = this.idPrefix;
+    var classPrefix = this.classPrefix;
+
+    return {
+      t: this.t,
+      id: function()
+      {
+        return idPrefix + '-' + Array.prototype.slice.call(arguments).join('-');
+      },
+      cn: function()
+      {
+        return (classPrefix ? (classPrefix + '-') : '') + Array.prototype.slice.call(arguments).join('-');
+      },
+      props: this.props.bind(this),
+      formGroup: formGroup.bind(null, this)
+    };
+  };
+
+  View.prototype.renderPartial = function(partial, data)
+  {
+    return $(this.renderPartialHtml(partial, data));
+  };
+
+  View.prototype.renderPartialHtml = function(partial, data)
+  {
+    return partial(_.assign(this.getCommonTemplateData(), data));
+  };
+
+  View.prototype.afterRender = function() {};
 
   View.prototype.isRendered = function()
   {
@@ -170,19 +335,189 @@ function(
 
   View.prototype.cancelAnimations = function(clearQueue, jumpToEnd)
   {
+    this.$el.stop(clearQueue !== false, jumpToEnd !== false);
     this.$(':animated').stop(clearQueue !== false, jumpToEnd !== false);
   };
 
   View.prototype.$id = function(idSuffix)
   {
-    var id = '#';
+    var selector = '#';
 
     if (_.isString(this.idPrefix))
     {
-      id += this.idPrefix + '-';
+      selector += this.idPrefix + '-';
     }
 
-    return this.$(id + idSuffix);
+    selector += idSuffix;
+
+    var $el = this.$el.find(selector);
+
+    return $el.length ? $el : $(selector);
+  };
+
+  View.prototype.getDefaultModel = function()
+  {
+    return this[this.modelProperty] || this.model || this.collection;
+  };
+
+  View.prototype.getDefaultNlsDomain = function()
+  {
+    if (this.nlsDomain)
+    {
+      return _.result(this, 'nlsDomain');
+    }
+
+    var model = this.getDefaultModel();
+
+    if (model)
+    {
+      if (model.getNlsDomain)
+      {
+        return model.getNlsDomain();
+      }
+
+      if (model.nlsDomain)
+      {
+        return model.nlsDomain;
+      }
+    }
+
+    return 'core';
+  };
+
+  View.prototype.props = function(data, options)
+  {
+    var view = this;
+
+    if (!options)
+    {
+      options = data;
+      data = options.data;
+    }
+
+    var propsHtml = '<div class="props ' + (options.first ? 'first' : '') + '">';
+    var defaultNlsDomain = view.getDefaultNlsDomain();
+
+    [].concat(_.isArray(options) ? options : options.props).forEach(function(prop)
+    {
+      if (typeof prop === 'string')
+      {
+        prop = {id: prop};
+      }
+
+      var escape = prop.escape === false ? false : (prop.id.charAt(0) !== '!');
+      var id = escape ? prop.id : prop.id.substring(1);
+      var nlsDomain = prop.nlsDomain || options.nlsDomain || defaultNlsDomain;
+      var label = prop.label || t(nlsDomain, 'PROPERTY:' + id);
+      var value = _.isFunction(prop.value)
+        ? prop.value(data[id], prop, view)
+        : _.isUndefined(prop.value) ? data[id] : prop.value;
+
+      if (_.isFunction(prop.visible) && !prop.visible(value, prop, view))
+      {
+        return;
+      }
+
+      if (prop.visible != null && !prop.visible)
+      {
+        return;
+      }
+
+      var propAttrs = Object.assign(
+        {'data-prop': id},
+        prop.attrs,
+        {className: {prop: true}}
+      );
+
+      [prop.className, prop.attrs && prop.attrs.className].forEach(function(rawClassName)
+      {
+        if (typeof rawClassName === 'string' && rawClassName.length)
+        {
+          rawClassName = rawClassName.split(' ');
+        }
+
+        if (Array.isArray(rawClassName))
+        {
+          rawClassName.forEach(function(className)
+          {
+            propAttrs.className[className] = true;
+          });
+        }
+        else if (rawClassName && typeof rawClassName === 'object')
+        {
+          Object.assign(propAttrs.className, rawClassName);
+        }
+      });
+
+      var nameAttrs = Object.assign(
+        {},
+        prop.nameAttrs,
+        {className: {'prop-name': true}}
+      );
+
+      [prop.nameClassName, prop.nameAttrs && prop.nameAttrs.className].forEach(function(rawClassName)
+      {
+        if (typeof rawClassName === 'string' && rawClassName.length)
+        {
+          rawClassName = rawClassName.split(' ');
+        }
+
+        if (Array.isArray(rawClassName))
+        {
+          rawClassName.forEach(function(className)
+          {
+            nameAttrs.className[className] = true;
+          });
+        }
+        else if (rawClassName && typeof rawClassName === 'object')
+        {
+          Object.assign(nameAttrs.className, rawClassName);
+        }
+      });
+
+      var valueAttrs = Object.assign(
+        {},
+        prop.valueAttrs,
+        {className: {'prop-value': true}}
+      );
+
+      [prop.valueClassName, prop.valueAttrs && prop.valueAttrs.className].forEach(function(rawClassName)
+      {
+        if (typeof rawClassName === 'string' && rawClassName.length)
+        {
+          rawClassName = rawClassName.split(' ');
+        }
+
+        if (Array.isArray(rawClassName))
+        {
+          rawClassName.forEach(function(className)
+          {
+            valueAttrs.className[className] = true;
+          });
+        }
+        else if (rawClassName && typeof rawClassName === 'object')
+        {
+          Object.assign(valueAttrs.className, rawClassName);
+        }
+      });
+
+      if (typeof value !== 'string')
+      {
+        value = value == null ? '' : String(value);
+      }
+
+      if (escape)
+      {
+        value = _.escape(value);
+      }
+
+      var nameTag = html.tag('div', nameAttrs, label);
+      var valueTag = html.tag('div', valueAttrs, value);
+
+      propsHtml += html.tag('div', propAttrs, nameTag + valueTag);
+    });
+
+    return propsHtml + '</div>';
   };
 
   return View;

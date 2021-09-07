@@ -1,4 +1,4 @@
-// Part of <https://miracle.systems/p/walkner-xiconf> licensed under <CC BY-NC-SA 4.0>
+// Part of <https://miracle.systems/p/walkner-wmes> licensed under <CC BY-NC-SA 4.0>
 
 define([
   'underscore',
@@ -63,6 +63,14 @@ define([
   };
 
   /**
+   * @param {string} url
+   */
+  Router.prototype.setCurrentRequest = function(url)
+  {
+    this.currentRequest = new Request(url);
+  };
+
+  /**
    * @param {string|RegExp} pattern
    * @param {...function(app.core.Request, string)} handlers
    */
@@ -75,9 +83,15 @@ define([
     this.routes.unshift(this.createMatcher(pattern), handlers);
   };
 
+  /**
+   * @param {string} url
+   * @param {Object} [options]
+   * @param {boolean} [options.trigger=false]
+   * @param {boolean} [options.replace=false]
+   */
   Router.prototype.navigate = function(url, options)
   {
-    this.broker.publish('router.navigate', _.extend({url: url}, options));
+    this.broker.publish('router.navigate', _.assign({url: url}, options));
   };
 
   /**
@@ -142,7 +156,7 @@ define([
 
       if (_.isUndefined(nextUrl))
       {
-        this.broker.publish('router.404', req);
+        this.broker.publish('router.404', {req: req});
       }
       else
       {
@@ -244,7 +258,8 @@ define([
     var isRegExp = false;
     var patternRegExp = pattern.replace(escapeRegExp, '\\$&');
 
-    patternRegExp = patternRegExp.replace(pathParamRegExp, function(match, op, param)
+    patternRegExp
+      = patternRegExp.replace(pathParamRegExp, function(match, op, param)
     {
       isRegExp = true;
 

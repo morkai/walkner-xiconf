@@ -1,8 +1,12 @@
-// Part of <https://miracle.systems/p/walkner-xiconf> licensed under <CC BY-NC-SA 4.0>
+// Part of <https://miracle.systems/p/walkner-wmes> licensed under <CC BY-NC-SA 4.0>
 
 define([
   'h5.pubsub/MessageBroker'
 ],
+/**
+ * @param {function(new:h5.pubsub.MessageBroker)} MessageBroker
+ * @returns {h5.pubsub.MessageBroker}
+ */
 function(
   MessageBroker
 ) {
@@ -12,11 +16,6 @@ function(
 
   broker.on('message', function(topic, message)
   {
-    if (topic === 'controller.tagValuesChanged')
-    {
-      return;
-    }
-
     if (typeof message === 'undefined')
     {
       console.log('[%s]', topic);

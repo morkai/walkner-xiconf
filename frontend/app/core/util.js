@@ -1,4 +1,4 @@
-// Part of <https://miracle.systems/p/walkner-xiconf> licensed under <CC BY-NC-SA 4.0>
+// Part of <https://miracle.systems/p/walkner-wmes> licensed under <CC BY-NC-SA 4.0>
 
 define([
   'underscore'
@@ -16,7 +16,7 @@ define([
    */
   util.inherits = function(ctor, superCtor)
   {
-    _.extend(ctor, superCtor);
+    _.assign(ctor, superCtor);
 
     var Surrogate = function() { this.constructor = ctor; };
     Surrogate.prototype = superCtor.prototype;
@@ -112,7 +112,7 @@ define([
   /**
    * @param {Object} obj
    * @param {string} brokerProperty
-   * @param {Object.<string, function|string>|function(): object.<string, function|string>} topics
+   * @param {Object.<string, function|string>|function(): Object.<string, function|string>} topics
    * @param {boolean} bind
    */
   util.subscribeTopics = function(obj, brokerProperty, topics, bind)
@@ -147,11 +147,22 @@ define([
 
   /**
    * @param {string} string
+   * @param {boolean} [extended]
    * @returns {string}
    */
-  util.escapeRegExp = function(string)
+  util.escapeRegExp = function(string, extended)
   {
-    return string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, '\\$1');
+    return string.replace(extended ? /([-[\]{}()*+!<=:?.\/\\^$|#\s,])/g : /([.*+?^=!:${}()|\[\]\/\\])/g, '\\$1');
+  };
+
+  /**
+   * @param {string} string
+   * @param {boolean} [extended]
+   * @returns {string}
+   */
+  util.unescapeRegExp = function(string, extended)
+  {
+    return string.replace(extended ? /\\([-[\]{}()*+!<=:?.\/\\^$|#\s,])/g : /\\([.*+?^=!:${}()|\[\]\/\\])/g, '$1');
   };
 
   return util;
