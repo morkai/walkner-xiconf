@@ -1,3 +1,8 @@
+2.26.5 @ 2021-09-07
+===================
+
+  * Fixed the switch action of the embedded controls.
+
 2.26.4 @ 2021-04-02
 ===================
 
