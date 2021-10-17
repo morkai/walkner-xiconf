@@ -18,7 +18,7 @@ else if (process.platform === 'linux' && fs.existsSync(`${__dirname}/../node_mod
 
 const startTime = Date.now();
 
-process.on('uncaughtException', function(err)
+process.on('uncaughtException', err =>
 {
   console.error(err.stack);
 
@@ -33,13 +33,13 @@ if (!process.env.NODE_ENV)
   process.env.NODE_ENV = 'development';
 }
 
-require('./extensions');
-
 const config = require(process.argv[2]);
 const requireCache = require('./requireCache');
 const helpers = require('./helpers');
 const moment = require('moment');
 const main = require('h5.main');
+
+require('./extensions');
 
 if (!config.id)
 {
