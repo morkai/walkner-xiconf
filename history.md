@@ -1,3 +1,8 @@
+2.26.6 @ 2021-12-03
+===================
+
+  * Fixed service tag not being released if cancelled during acquisition.
+
 2.26.5 @ 2021-09-07
 ===================
 

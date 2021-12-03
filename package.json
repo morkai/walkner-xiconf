@@ -1,7 +1,7 @@
 {
   "guid": "10EDA1CE-8D27-4B75-97E9-003B3ADD4BA0",
   "name": "walkner-xiconf",
-  "version": "2.26.5",
+  "version": "2.26.6",
   "description": "LED driver programming and testing application.",
   "license": "CC-BY-NC-SA-4.0",
   "homepage": "https://github.com/morkai/walkner-xiconf",
