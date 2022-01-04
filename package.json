@@ -1,7 +1,7 @@
 {
   "guid": "10EDA1CE-8D27-4B75-97E9-003B3ADD4BA0",
   "name": "walkner-xiconf",
-  "version": "2.26.6",
+  "version": "2.26.7",
   "description": "LED driver programming and testing application.",
   "license": "CC-BY-NC-SA-4.0",
   "homepage": "https://github.com/morkai/walkner-xiconf",
@@ -43,7 +43,7 @@
     "semver": "^6.3.0",
     "jszip": "~2.6.1",
     "request": "^2.88.0",
-    "serialport": "^8.0.5",
+    "serialport": "^9.2.8",
     "mkdirp": "^0.5.1",
     "xml2js": "^0.4.22",
     "transliteration": "^2.1.7",
@@ -61,5 +61,15 @@
     "grunt-messageformat-amd": "morkai/grunt-messageformat-amd",
     "grunt-run": "^0.8.1",
     "grunt-text-replace": "^0.4.0"
+  },
+  "bin": "backend/main.js",
+  "pkg": {
+    "scripts": [
+      "backend/**/*.js",
+      "config/require.js"
+    ],
+    "assets": ["frontend-build/**/*", "backend/**/*.ejs", "backend/**/*.xml"],
+    "targets": ["node16-win-x64"],
+    "outputPath": "build"
   }
 }

@@ -1,3 +1,8 @@
+2.26.7 @ 2022-01-04
+===================
+
+  * Fixed a type resulting in a NULL-reference error.
+
 2.26.6 @ 2021-12-03
 ===================
 
